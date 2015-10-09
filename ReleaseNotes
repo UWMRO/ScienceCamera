@@ -1,0 +1,92 @@
+Release Notes
+============================
+
+Editing the Detector.ini file (not required for USB or iXon)
+------------------------------------------------------------
+
+The DetectorTemplate.ini file can be found in the /usr/local/etc/andor directory. When the following changes are complete, save the modified file as detector.ini.
+
+Change the value of Head in the System section to your CCD Model, and Controller to the code for your controller card. You can find the CCD Model and controller card code on the Performance sheet that comes with your System. For CC-??? type controller cards you will also need to edit the CodeFile property under the 
+Section for your head to use the pci_29k version of the cof file. If you have an iStar CCD Model you must also change the operation to 5. For USB cameras the Detector.ini file is not required as this information is stored in the camera head.
+
+eg 1. DV401 Head - Controller Card CCI-010
+
+[System]
+Controller=CCI-010
+Head=DV401
+Operation=4
+......
+
+[DV401]
+.....
+CodeFile=pcii29k_sldma.cof
+.....
+
+eg 2. DH734 25mm Head - Controller Card CC-001
+
+[System]
+Controller=CC-001
+Head=DH734_25mm
+Operation=5
+......
+
+
+[DH734_25mm]
+......
+CodeFile=pci_29k_sldma.cof
+......
+
+
+
+
+Undocumented Functions
+--------------------------
+
+None
+
+
+Ixon Issues
+------------
+
+Kinetic/Accumulation-
+Ixon CCD's cannot be used in the combination of Kinetic Series mode and Accumulation mode. Ensure that if you are switching between the modes that you set the number of accumulations to 1 when using kinetic series mode.
+
+Vertical Shift Speed-
+If your acquired images appear smeared you may need to decrease the vertical shift speed using SetVSSpeed. Use the function GetNumberVSSpeeds to obtain the number of possible settings for Vertical Shift speed. SetVSSpeed(0) gives the fastest speed, SetVSSpeed(1) the next fastest and so on..
+
+
+Extra Parameters to PCI Device Driver
+---------------------------------
+
+Some device drivers support extra parameters when loading the module, that give more control over the DMA area and the Circular buffer that is allocated when a device is opened. The parameters are described below.
+
+DMA_SIZE, DMA_ADDRESS and DMA_OFFSET:-
+
+These control the location and size (in MB) of the DMA area in physical memory. For example if you wish to set the location at 1000 MB and have allocated a size of 4 MB for the DMA you should add the following after the command that loads the module.
+	DMA_ADDRESS=1000 DMA_SIZE=4
+
+An offset (in MB) from the DMA_ADDRESS field can also be set using the DMA_OFFSET parameter. The default value for DMA_ADDRESS is a value based on the amount of memory that the kernel recognises which is calculated based on the 'mem=' kernel parameter. If DMA_ADDRESS is not set then DMA_OFFSET will be the offset from this default value. These values only take affect when the driver is loaded with DMA_MODE=1. The DMA_SIZE value should be enough to hold two full images at 4 bytes per pixel. eg. For a 512x512 chip the DMA_SIZE would need to be at least 2MB.
+
+
+USB Camera requirements
+-----------------------
+
+Kernel versions 2.4.X do not fully support usb devices and issues have been seen when using 3.X.X therefore it is recommended that one of the 2.6 series of kernels is used. The Andor USB system depends on the libusb library and so must be installed in your distribution. From a command prompt type 'whereis libusb' to check if the library is already installed. If not it may be available as a package from your distribution installation disk or website. It may also be obtained from http://libusb.sourceforge.net/. libusb also depends on the usbfs filesystem being mounted. libusb is released under the GNU Lesser General Public License; see file LIBUSBLICENSE for details on this. 
+
+
+
+Error Code DRV_USB_INTERRUPT_ENDPOINT_ERROR
+-------------------------------------------
+
+This error will be returned from the Initialize function if a problem was detected with USB communication to the camera. The error is generated if either the usb filesystem in /proc/bus/usb/ is mounted readonly or if the kernel does not support the interrupt polling rate requirement of the camera. If it is the former problem then you will need to mount the usb filesystem with write access, in the latter case you will need to upgrade your kernel to one that supports the polling rate requirements. Kernels after 2.6.10 are recommended.
+
+
+64-bit Support
+---------------
+
+Due to the change in size of the long type in 64-bit systems any SDK program currently written for a 32-bit system will not recompile against the 64-bit SDK without changes to the code. Functions that previously took the long or unsigned long type now take a fixed 32-bit type defined in the header file (at_32, at_u32). When converting a program to run under 64-bit, these andor defined types should be used. The types are backward compatible with 32-bit systems.
+
+
+
+
+

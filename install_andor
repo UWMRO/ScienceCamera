@@ -1,0 +1,433 @@
+#!/bin/bash
+# Installs the andor sdk.
+
+if [ `id -u` -ne 0 ]
+then
+    echo "You must have root privileges to install the andor software."
+    exit 1
+fi
+
+echo "Select your CCD Type from the following list:"
+echo "1. CCD"
+echo "2. ICCD"
+echo "3. iStar"
+echo "4. PCI iXon"
+echo "5. All USB Cameras (including iXon Ultra)"
+
+read type
+type=${type:0:1}
+
+if [ $type \< 1 ] || [ $type \> 5 ]
+then
+	echo "Invalid Type"
+	exit 2
+fi
+
+# These lines may need to be edited for a specific system #################
+module_dir=/lib/modules/`uname -r`
+rc_dir=/etc
+rc_file=rc.local
+hotplug_dir=/etc/hotplug
+install_dir=/usr/local
+udev_dir=/etc/udev
+###########################################################################
+
+ANDORMAJOR=2
+ANDORMINOR=100
+ANDORRELEASE=30001
+ANDORBUILD=0
+
+#ANDORUSBMAJOR=1
+#ANDORUSBMINOR=0
+#ANDORUSBRELEASE=0
+#ANDORUSBBUILD=0
+
+bustype=0
+if [ $type -eq 5 ]
+then
+	bustype=1
+fi
+
+if [ $bustype -eq 0 ]
+then
+	
+	debiansystem=0
+	
+	DMAMODE=
+	if [ $type -eq 4 ]
+	then
+		DMAMODE="DMA_MODE=1"
+	fi
+	
+	if [ ! -d $module_dir ]
+	then
+		echo "Module directory $module_dir not found; cannot install. Check INSTALL troubleshooting section"
+		echo "Installation of andor driver module failed."
+		exit 2
+	fi
+	
+	if [ ! -e $rc_dir/$rc_file ]
+	then
+		rc_dir=/etc/init.d
+		rc_file=boot.local
+		if [ ! -e $rc_dir/$rc_file ]
+		then  
+			#we want to check if we can now use the update-rc.d
+			t1=tempfile
+			t2=tempfile2
+			whereis update-rc.d > $t1
+			echo > $t2
+			more $t1 | sed -n '/\//p' > $t2
+		
+			if [ -s $t2 ]
+			then 
+				tempstore=$rc_file
+				rc_dir=/etc/init.d
+				rc_file=andor_local
+				echo > $rc_dir/$rc_file
+				debiansystem=1			
+			else
+				rc_dir=/etc/rc.d
+				rc_file=rc.local
+				if [ -d $rc_dir ]
+				then
+					if [ ! -f $rc_file ]
+					then
+						cp script/$rc_file $rc_dir
+						chmod 777 $rc_dir/$rc_file 
+					fi
+				else
+					echo "Installation of andor driver module failed - Cannot locate startup script."
+					rm tempfile
+					rm tempfile2
+					exit 3
+				fi
+			fi
+			
+			rm tempfile
+			rm tempfile2
+		
+
+		fi 
+	fi
+	
+	DEV="andordrvlx"
+	module_script="andordrvlx_load"
+
+	if [ ! -d /lib/modules/`uname -r`/build/include ]
+	then
+		echo "Kernel source not installed. Cannot build device driver."
+		exit 7
+	fi
+	
+	cd src/driver
+	KVER=`uname -r | awk -F. '{print $1}'`
+	KREV=`uname -r | awk -F. '{print $2}'`
+	rm -f Makefile
+	rm -f build.txt
+	
+	echo "Building Driver module..."
+	if [ $KVER = 2 ] && [ $KREV = 4 ]
+	then
+		FILE="andordrvlx.o"
+		cp Makefile2.4 Makefile
+		make clean >null
+		make 2>>build.txt >>build.txt
+	elif [ $KVER = 2 ] && [ $KREV = 6 ]
+	then
+		FILE="andordrvlx.ko"
+		cp Makefile2.6 Makefile
+		make clean >null
+		make 2>>build.txt >>build.txt
+	elif [ $KVER > 2 ]
+	then
+		FILE="andordrvlx.ko"
+		cp Makefile2.6 Makefile
+		make clean >null
+		make 2>>build.txt >>build.txt
+	else
+		echo "Kernel version $KVER.$KREV not supported"
+		exit 8
+	fi
+	
+	if [ ! $? = 0 ]
+	then
+		echo "Driver build failed, cannot continue installation. See build.txt file in src directory."
+		exit 9
+	fi
+	
+	cd ../..
+	
+	echo "Installing Module $DEV into directory $module_dir"
+	cp src/driver/$FILE $module_dir
+	
+	echo "Updating Module Dependencies..."
+	/sbin/depmod -a
+	
+	echo "Copying andor startup script $module_script into directory /etc"
+	cp script/$module_script $rc_dir/
+	
+	echo "Updating local startup script ($rc_dir/$rc_file)"
+	more $rc_dir/$rc_file | sed '/Run Andor Technology/d' > temp.rc
+	cat temp.rc > $rc_dir/$rc_file
+
+        CURRENT_LINE=`grep "andordrvlx_load" $rc_dir/$rc_file`
+        NEW_LINE="sh $rc_dir/andordrvlx_load $DMAMODE"
+        LOAD_STRING=$CURRENT_LINE
+
+        if [ "$CURRENT_LINE" = "$NEW_LINE" ]
+        then
+            echo " The current load instruction is the same as the new instruction."
+            echo " Updating script anyway."
+            LOAD_STRING=$NEW_LINE
+        elif [ ${#CURRENT_LINE} -gt 0 ]
+        then
+            echo ""
+            echo "The startup script already contains a different andor driver load command:"
+            echo "  $CURRENT_LINE"
+            echo "Overwrite? (y/n) "
+
+            read type
+            echo ""
+            yesno=${type:0:1}
+
+            if [ "$yesno" = "y" ] || [ "$yesno" "Y" ]
+            then
+                echo "You chose to update the driver load configuration."
+                LOAD_STRING=$NEW_LINE
+            elif [ "$yesno" = "n" ] || [ "$yesno" = "N" ]
+            then
+                echo "You chose not to overwrite the configuration."
+                echo "Please ensure that you change the DMA_MODE value to $DMAMODE"
+                LOAD_STRING=$CURRENT_LINE
+            fi
+        else
+            echo "Andor driver load command will be added to the startup script"
+            LOAD_STRING=$NEW_LINE
+        fi
+
+        more $rc_dir/$rc_file | sed '/andordrvlx_load/d' > temp.rc
+        cat temp.rc > $rc_dir/$rc_file
+        echo '#Run Andor Technology Startup Script' >> $rc_dir/$rc_file
+        echo $LOAD_STRING  >> $rc_dir/$rc_file
+	
+	echo 'Loading module for immediate use '
+	sh $rc_dir/andordrvlx_load $DMAMODE
+	if [ $debiansystem -eq 1 ]
+	then
+		chmod 777 $rc_dir/$rc_file 
+		whereis update-rc.d
+		update-rc.d $rc_file defaults
+	fi
+	
+	
+elif [ $bustype -eq 1 ]
+then
+  nohotplug=0
+	if [ -d $hotplug_dir/usb ]
+	then
+		echo "Copying usb hotplug scripts..."
+		cp -f script/andorusbhotplug.usermap $hotplug_dir/usb/andor.usermap
+		cp -f script/andorusbhotplug $hotplug_dir/usb/andor
+	else
+    nohotplug=1		
+	fi
+  noudev=0
+  if [ -d $udev_dir/rules.d ]
+	then
+		echo "Creating usb udev rules..."
+		cp -f script/andor.rules $udev_dir/rules.d/andor.rules
+		cp -f script/shamrock.rules $udev_dir/rules.d/98-shamrock.rules
+	else
+    noudev=1
+	fi
+  if [ $nohotplug -eq 1 ] && [ $noudev -eq 1 ]
+  then
+    echo "Cannot find hotplug or udev directory, usb camera device files may need to be made writable under /proc/bus/usb prior to use"
+  fi
+fi
+
+#Install the SDK library
+PLAT=`uname -i`
+if [ $PLAT = "unknown" ]
+then
+       PLAT=`uname -m`
+fi
+SDKLIB=""
+#USBLIB=""
+if [ $PLAT = "x86_64" ]
+then
+	echo "Platform: 64 bit"
+	SDKLIB=libandor-x86_64.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD
+	SIFLIB=libatsifio-x86_64.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD	
+	SHAMROCKLIB=libshamrockcif-x86_64.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD
+	USBI2CLIB=libUSBI2C-x86_64.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD	
+else
+	echo "Platform: 32 bit"
+	SDKLIB=libandor-i386.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD
+	SIFLIB=libatsifio-i386.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD	
+	SHAMROCKLIB=libshamrockcif-i386.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD	
+	USBI2CLIB=libUSBI2C-i386.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD	
+fi
+
+if [ ! -f lib/$SDKLIB ]
+then
+	echo "Valid SDK library not found for your system: " $SDKLIB
+	exit 5
+fi
+
+echo "installing SDK library $SDKLIB into $install_dir/lib..."
+if [ ! -d $install_dir/lib ]
+then
+	mkdir -p $install_dir/lib
+fi
+
+rm -f $install_dir/lib/libandor.so
+
+cp lib/$SDKLIB $install_dir/lib/libandor.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD 
+ln -s $install_dir/lib/libandor.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD $install_dir/lib/libandor.so
+cp lib/$SIFLIB $install_dir/lib/libatsifio.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD 
+ln -s $install_dir/lib/libatsifio.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD $install_dir/lib/libatsifio.so
+cp lib/$SHAMROCKLIB $install_dir/lib/libshamrockcif.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD 
+ln -s $install_dir/lib/libshamrockcif.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD $install_dir/lib/libshamrockcif.so
+cp lib/$USBI2CLIB $install_dir/lib/libUSBI2C.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD 
+ln -s $install_dir/lib/libUSBI2C.so.$ANDORMAJOR.$ANDORMINOR.$ANDORRELEASE.$ANDORBUILD $install_dir/lib/libUSBI2C.so
+
+
+#if [ $bustype -eq 1 ]
+#then
+#	if [ ! -f lib/$USBLIB ]
+#	then
+#		echo "Valid USB interface library not found for your system: " $SDKLIB
+#		exit 6
+#	fi
+#	echo "installing Andor USB Interface library $USBLIB into $install_dir/lib..."
+#	rm -f $install_dir/lib/libatusbfs.so
+	
+#	cp lib/$USBLIB $install_dir/lib/libatusbfs.so.$ANDORUSBMAJOR.$ANDORUSBMINOR.$ANDORUSBRELEASE.$ANDORUSBBUILD  
+#	ln -s $install_dir/lib/libatusbfs.so.$ANDORUSBMAJOR.$ANDORUSBMINOR.$ANDORUSBRELEASE.$ANDORUSBBUILD  $install_dir/lib/libatusbfs.so	
+#fi
+
+echo "Updating library cache, please wait..."
+if [ -d /etc/ld.so.conf.d/ ]
+then
+  cp script/andor_sdk.conf /etc/ld.so.conf.d/
+  /sbin/ldconfig 
+else
+  /sbin/ldconfig $install_dir/lib
+fi
+
+echo "installing SDK help file into $install_dir/doc..."
+if [ ! -d $install_dir/doc ]
+then
+	mkdir -p $install_dir/doc
+fi
+
+cp doc/*.pdf $install_dir/doc
+cp doc/*.chm $install_dir/doc
+
+echo "installing SDK header file into $install_dir/include..."
+if [ ! -d $install_dir/include ]
+then
+	mkdir -p $install_dir/include
+fi
+
+cp include/atmcdLXd.h $install_dir/include
+cp include/ATSIFIO.h $install_dir/include
+cp include/ATSIFTypes.h $install_dir/include
+cp include/ATSIFErrorCodes.h $install_dir/include
+cp include/ATSIFProperties.h $install_dir/include
+cp include/ATLibraryExport.h $install_dir/include
+cp include/ATPrimitiveTypes.h $install_dir/include
+cp include/ShamrockCIF.h $install_dir/include
+
+echo "installing configuration files into $install_dir/etc/andor..."
+if [ ! -d $install_dir/etc/andor ]
+then
+	mkdir -p $install_dir/etc/andor
+fi
+
+cp etc/* $install_dir/etc/andor/
+
+echo "updating installed directory list /etc/andor/andor.install for uninstall..."
+if [ ! -d /etc/andor ]
+then
+	mkdir -p /etc/andor
+fi
+
+touch /etc/andor/andor.install
+
+grep -sqx $install_dir /etc/andor/andor.install
+if [ $? -eq 0 ]
+then
+  echo $install_dir | sed 's/\//\\\//g' > tmpfile.tmp
+  installdirslash=`cat tmpfile.tmp`
+  rm -f tmpfile.tmp
+  sed '/'$installdirslash'/d' /etc/andor/andor.install > andor.install.tmp
+  mv andor.install.tmp /etc/andor/andor.install
+fi
+
+echo $install_dir > andor.install.tmp
+if [ -f /etc/andor/andor.install ]
+then
+  cat /etc/andor/andor.install >> andor.install.tmp
+fi
+mv andor.install.tmp /etc/andor/andor.install
+
+if [ $bustype -eq 0 ]
+then
+	if [ $type -eq 4 ]
+	then
+		echo
+		echo
+		echo "NOTE: iXon Type CCDs require that the mem= parameter is passed to your kernel to reserve memory for the Andor Driver. Failure to do so will result in instability, os crashes and possible damage to the file system. For instructions on how to do this read the INSTALL file section 'Large DMA Transfers'"
+		echo "Do you wish to Read the INSTALL file  Now(y/n)?"
+		read installfile
+		installfile=${installfile:0:1}
+	
+		if [ -z $installfile ]
+		then
+			installfile='n'
+		fi
+		if [ $installfile = 'y' ] || [ $installfile = 'Y' ]
+		then
+			less ./INSTALL
+		fi
+	else
+		echo "You MUST now edit the DetectorTemplate.ini file in the $install_dir/etc/andor directory to configure the SDK for your System. Once edited the file should be renamed detector.ini. See ReleaseNotes file."
+	fi
+else
+		echo
+		echo
+		echo "NOTE: On some operating systems USB cameras require additional libusb files to be installed in order to initialize the camera. For instructions on how to do this read the INSTALL file section 'OPEN() FAILED ERROR'"
+		echo "Do you wish to Read the INSTALL file  Now(y/n)?"
+		read installfile
+		installfile=${installfile:0:1}
+	
+		if [ -z $installfile ]
+		then
+			installfile='n'
+		fi
+		if [ $installfile = 'y' ] || [ $installfile = 'Y' ]
+		then
+			less ./INSTALL
+		fi
+fi
+
+echo
+echo "Do you wish to Read the Release Notes Now(y/n)?"
+read notes
+notes=${notes:0:1}
+if [ -z $notes ]
+then
+	notes='n'
+fi
+
+if [ $notes = 'y' ] || [ $notes = 'Y' ]
+then
+	less ./ReleaseNotes
+fi
+
+echo
+echo 'Andor Installation successful'
+

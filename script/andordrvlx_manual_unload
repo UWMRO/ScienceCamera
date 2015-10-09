@@ -1,0 +1,11 @@
+#!/bin/sh 
+# Uninstalls the andor driver 
+ 
+FILE="andordrvlx" 
+DEV="andordrvlx" 
+ 
+/sbin/rmmod $FILE $* || (echo "$DEV not removed" ; exit 1)
+ 
+# remove device nodes 
+cd /dev 
+rm -f andordrvlx0 andordrvlx1

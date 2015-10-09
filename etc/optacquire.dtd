@@ -1,0 +1,14 @@
+<!ELEMENT optacquire (supported_camera*)>
+<!ELEMENT supported_camera (#PCDATA|mode_name)*>
+<!ELEMENT mode_name (mode_description,output_amplifier,electron_multiplying_gain,readout_rate,shift_speed,vertical_clock_amplitude,preamplifier_gain,frame_transfer)>
+<!ELEMENT mode_description (#PCDATA)>
+<!ELEMENT output_amplifier (#PCDATA)>
+<!ELEMENT electron_multiplying_gain (#PCDATA)>
+<!ELEMENT readout_rate (#PCDATA)>
+<!ELEMENT shift_speed (#PCDATA)>
+<!ELEMENT vertical_clock_amplitude (#PCDATA)>
+<!ELEMENT preamplifier_gain (#PCDATA)>
+<!ELEMENT frame_transfer (#PCDATA)>
+
+<!ATTLIST supported_camera type CDATA #REQUIRED>
+<!ATTLIST mode_name name CDATA #REQUIRED>
