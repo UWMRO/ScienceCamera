@@ -54,5 +54,4 @@ class evora(object):
 if __name__ == "__main__":
     e = evora()
     e.startup()
-
-    e.
+    e.get_cooler()
