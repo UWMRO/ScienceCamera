@@ -4,7 +4,7 @@ import andor
 
 class evora(object):
 
-    def connect():
+    def startup():
         print andor.GetAvailableCameras()
         camHandle = andor.GetCameraHandle(0)
         print camHandle
