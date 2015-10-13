@@ -5,8 +5,7 @@ telnet clients to port 26999
 """
 
 from twisted.protocols import basic
-
-
+import evora_parser
 
 class CameraReciever(basic.LineReceiver):
     def connectionMade(self):
@@ -19,8 +18,10 @@ class CameraReciever(basic.LineReceiver):
 
     def lineReceived(self, line):
         print "received", repr(line)
-        for c in self.factory.clients:
-            c.message(line)
+	ep = evora_parser.Parser()	
+	ep.parse(str(line))
+        #for c in self.factory.clients:
+        #    c.message(ret)
 
     def message(self, message):
         self.transport.write(message + '\n')
