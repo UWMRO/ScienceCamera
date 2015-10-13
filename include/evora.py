@@ -15,15 +15,20 @@ class evora(object):
         camHandle = andor.GetCameraHandle(0)
         print camHandle
         print 'set camera:', andor.SetCurrentCamera(camHandle[1])
-        print 'Init:', andor.Initialize("/usr/local/etc/andor")
-        
-        #time.sleep(2)
-        
-        print 'Status:', andor.GetStatus()
+	
+	init = andor.Initialize("/usr/local/etc/andor")	
+
+        print 'Init:', init
+
+	state = andor.GetStatus()        
+
+        print 'Status:', state
         
         print 'SetAcquisitionMode:', andor.SetAcquisitionMode(1);
         
         print 'SetShutter:', andor.SetShutter(1,0,50,50);
+	
+	return str(init)
 
     def getTEC(self):
         # index on [result[0] - andor.DRV_TEMPERATURE_OFF]
@@ -32,8 +37,9 @@ class evora(object):
                          'WasStableNowDrifting')
 
         result = andor.GetTemperatureF()
+	res = coolerStatusNames[result[0] - andor.DRV_TEMPERATURE_OFF]
         print coolerStatusNames[result[0] - andor.DRV_TEMPERATURE_OFF], result[1]
-        return result[0]
+        return result
 
     def setTEC(self,setPoint=None):
 
@@ -42,27 +48,36 @@ class evora(object):
 	print setPoint
 
         if setPoint is not None:
-            if result == andor.DRV_TEMPERATURE_OFF:
+            if result[0] == andor.DRV_TEMPERATURE_OFF:
                 andor.CoolerON()
             print andor.SetTemperature(int(setPoint))
             self.getTEC()
-	return 0
+	return str(setPoint)
 
     def warmup(self):
         andor.SetTemperature(0)
 	andor.SetFanMode(0)
 	andor.CoolerOFF()
-
+	return "1"
 
     def getTemp(self):
 	result = andor.GetTemperatureStatus()
-
+	txt = ""
 	print result
-	return result
+	for e in result:
+		txt = txt+","+str(e)
+	return txt
 
     def shutdown(self):
+	self.warmup()
+	res = self.getTemp()
+	while res[1] < int(0):
+		time.sleep(5)
+		res = self.getTemp()
+		print 'waiting: %s' % str(res[1])
+	print 'closing down camera connection'
         andor.ShutDown()
-
+	return "1"
     
     def expose(self,expnum=None, itime=2, bin=1):
 
@@ -98,11 +113,10 @@ class evora(object):
         data=data.reshape(width/bin,height/bin)
         print data.shape,data.dtype
         hdu = pyfits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
-	filename = time.strftime('/data/tests4/image_%Y%m%d_%H%M%S.fits')
-        #filename = '/data/tests4/image{}_{:0.2f}s.fits'.format(expnum,itime)
+	filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
         hdu.writeto(filename,clobber=True)
         print "wrote: {}".format(filename)
-
+	return "1"
 
 
 if __name__ == "__main__":

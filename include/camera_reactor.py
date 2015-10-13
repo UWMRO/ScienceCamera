@@ -19,9 +19,10 @@ class CameraReciever(basic.LineReceiver):
     def lineReceived(self, line):
         print "received", repr(line)
 	ep = evora_parser.Parser()	
-	ep.parse(str(line))
-        #for c in self.factory.clients:
-        #    c.message(ret)
+	ret = ep.parse(str(line))
+	if ret != None:
+        	for c in self.factory.clients:
+        	    c.message(str(ret))
 
     def message(self, message):
         self.transport.write(message + '\n')
