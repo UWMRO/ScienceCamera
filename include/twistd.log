@@ -1,0 +1,18 @@
+2015-10-12 17:39:03-0700 [-] Log opened.
+2015-10-12 17:39:03-0700 [-] twistd 13.2.0 (/System/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python 2.7.10) starting up.
+2015-10-12 17:39:03-0700 [-] reactor class: twisted.internet.selectreactor.SelectReactor.
+2015-10-12 17:39:03-0700 [-] ServerFactory starting on 1025
+2015-10-12 17:39:03-0700 [-] Starting factory <twisted.internet.protocol.ServerFactory instance at 0x1101c8cb0>
+2015-10-12 17:39:38-0700 [twisted.internet.protocol.ServerFactory] Got new client!
+2015-10-12 17:39:46-0700 [MyChat,0,127.0.0.1] received 'test'
+2015-10-12 17:39:48-0700 [MyChat,0,127.0.0.1] received 'test'
+2015-10-12 17:39:49-0700 [MyChat,0,127.0.0.1] received '1'
+2015-10-12 17:39:50-0700 [MyChat,0,127.0.0.1] received '2'
+2015-10-12 17:39:50-0700 [MyChat,0,127.0.0.1] received '3'
+2015-10-12 17:39:51-0700 [MyChat,0,127.0.0.1] received '4'
+2015-10-12 17:39:59-0700 [MyChat,0,127.0.0.1] Lost a client!
+2015-10-12 17:41:45-0700 [-] Received SIGTERM, shutting down.
+2015-10-12 17:41:45-0700 [-] (TCP Port 1025 Closed)
+2015-10-12 17:41:45-0700 [-] Stopping factory <twisted.internet.protocol.ServerFactory instance at 0x1101c8cb0>
+2015-10-12 17:41:46-0700 [-] Main loop terminated.
+2015-10-12 17:41:46-0700 [-] Server Shut Down.
