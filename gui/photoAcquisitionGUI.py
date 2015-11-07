@@ -9,9 +9,11 @@ import AddLinearSpacer as als
 import matplotlib
 matplotlib.use("WXAgg")
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
-#from matplotlib.backends.backend_wx import NavigationToolbar2Wx
+from matplotlib.backends.backend_wxagg import NavigationToolbar2Wx as Toolbar
 import matplotlib.pyplot as plt
-import warnings
+from astropy.io import fits
+import numpy as np
+
 
 # Frame class.
 class Evora(wx.Frame):
@@ -65,14 +67,102 @@ class Evora(wx.Frame):
 class ImageWindow(wx.Frame):
 
     def __init__(self):
-        wx.Frame.__init__(self, None, -1, "Image Window", size=(500,500))
+        wx.Frame.__init__(self, None, -1, "Image Window", size=(650,550))
 
-        panel = wx.Panel(self)
+        self.image = 'example.fit'
+
+        ## Main sizers
+        self.topSizer = wx.BoxSizer(wx.VERTICAL)
+        self.sideSizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        # add ability to invert gray scale with check radio BoxSizer
+        # add min, max, mean, mode, and median as static text
+
+        self.panel = DrawImage(self)
+
+
 
         ### Put in matplotlib imshow window
+        self.panel.plotImage(self.image, 6.0)
+        self.devSlider = wx.Slider(self, id=-1, value=60, minValue=1, maxValue=200, size=(250,-1),\
+                         style=wx.SL_HORIZONTAL | wx.SL_LABELS)
 
-        self.figure = plt.figure()
-        self.axes = plt.subplots(1)
+
+
+
+        self.topSizer.Add(self.panel, proportion=1, flag=wx.EXPAND)
+        self.topSizer.Add(self.devSlider, flag=wx.ALIGN_CENTER)
+
+
+        self.devSlider.Bind(wx.EVT_SCROLL_CHANGED, self.onSlide)
+
+        self.SetSizer(self.topSizer)
+        self.Fit()
+
+
+    def onSlide(self, event):
+        value = float(event.GetPosition()) / 10.0
+        self.panel.plotImage(self.image, value)
+        self.panel.refresh()
+
+
+
+
+
+
+class DrawImage(wx.Panel):
+
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+
+        # Create figure, plot space, and canvas for drawing fit image
+        self.figure, self.axes = plt.subplots(1)
+        self.figure.frameon = False
+        self.canvas = FigureCanvas(self, -1, self.figure)
+        #self.toolbar = Toolbar(self.canvas)
+        #self.toolbar.Realize()
+
+
+        # set sizers
+        self.vertSizer = wx.BoxSizer(wx.VERTICAL)
+        #self.horzSizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        # add to sizers
+
+        self.vertSizer.Add(self.canvas, proportion=1, flag=wx.LEFT | wx.TOP | wx.GROW)
+        #self.vertSizer.Add(self.toolbar, proportion=0, flag= wx.EXPAND)
+
+
+        self.SetSizer(self.vertSizer)
+        self.Fit()
+
+    def plotImage(self, image, scale):
+        # get data
+        hdulist = fits.open(image)
+        data = hdulist[0].data
+        hdulist.close()
+
+        median = np.median(data.flat)
+        self.mad = np.median(np.abs(data.flat-median)) # median absolute deviation
+        self.deviation = scale * self.mad
+        self.upper = median + self.deviation
+        self.lower = median - self.deviation
+
+
+        plot = self.axes.imshow(data, cmap='gray', vmin=self.lower, vmax=self.upper)
+        self.figure.tight_layout()
+
+        #self.canvas.draw()
+        #self.canvas.Refresh()
+
+    def refresh(self):
+        self.canvas.draw()
+        self.canvas.Refresh()
+
+
+
+
+
 
 
 
@@ -214,10 +304,9 @@ class Scripting(wx.Panel): # 3rd tab that handles scripting
 
 
 if __name__ == "__main__":
-    warnings.filterwarnings("ignore")
     app = wx.PySimpleApp()
-    app.frame = Evora()
-    app.frame.Show()
-    app.frame = ImageWindow()
-    app.frame.Show()
+    app.frame1 = Evora()
+    app.frame1.Show()
+    app.frame2 = ImageWindow()
+    app.frame2.Show()
     app.MainLoop()

@@ -120,7 +120,8 @@ class TempControl(wx.Panel):
 
         self.buttonSizer.Add(self.tempButton, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.buttonSizer, 10)
-        self.buttonSizer.Add(self.stopExp, flag=wx.ALIGN_CENTER)
+        self.buttonSizer.Add(self.stopExp, 1, flag=wx.ALIGN_CENTER)
+
 
         ####
 
