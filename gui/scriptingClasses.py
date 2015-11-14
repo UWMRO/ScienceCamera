@@ -15,7 +15,7 @@ class ScriptStatus(wx.Panel):
         self.statusBox = wx.StaticBox(self, label = "Script Activity", size = (400,150))
         self.statusBoxSizer = wx.StaticBoxSizer(self.statusBox, wx.VERTICAL)
 
-        self.activityText = wx.TextCtrl(self, style=wx.TE_READONLY, size=(400,150))
+        self.activityText = wx.TextCtrl(self, style=wx.TE_READONLY|wx.TE_MULTILINE, size=(400,150))
 
         # adjust subsizers
         self.statusBoxSizer.Add(self.activityText, flag=wx.ALIGN_CENTER)

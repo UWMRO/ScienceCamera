@@ -19,7 +19,7 @@ class logBox(wx.Panel):
         self.logFrame = wx.StaticBox(self, label = "Event Log", size=(500, 300))
         self.logFrameSizer = wx.StaticBoxSizer(self.logFrame, wx.VERTICAL)
 
-        self.logBox = wx.TextCtrl(self, size=(500,300), style=wx.TE_READONLY)
+        self.logBox = wx.TextCtrl(self, size=(500,300), style=wx.TE_READONLY|wx.TE_MULTILINE)
 
 
         # adjust subsizers
