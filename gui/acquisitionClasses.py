@@ -89,9 +89,12 @@ class Exposure(wx.Panel):
         if als.isNumber(self.timeToSend):
             print float(self.timeToSend)
         else:
-            print "Not a number"
+            dialog = wx.MessageDialog(None, "Exposure time not a number...will not expose.", "", wx.OK|wx.ICON_ERROR)
+            dialog.ShowModal()
+
         if self.nameToSend is "":
-            print "No Name"
+            dialog = wx.MessageDialog(None,"No name was given...will not expose", "", wx.OK|wx.ICON_ERROR)
+            dialog.ShowModal()
         else:
             print self.nameToSend
 
@@ -214,7 +217,8 @@ class TempControl(wx.Panel):
         if als.isNumber(self.tempToSend):
             print float(self.tempToSend)
         else:
-            print "Opps Not a number"
+            dialog = wx.MessageDialog(None, "Temperature specified is not a number.", "", wx.OK|wx.ICON_ERROR)
+            dialog.ShowModal()
 
     def onStopCooling(self, event):
         print "Stopping Cooler"

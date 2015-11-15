@@ -114,7 +114,12 @@ class Evora(wx.Frame):
         self.window.Show()
 
     def onClose(self, event):
-        self.Close()
+        dialog = wx.MessageDialog(None, "Close Evora GUI?", "Closing Evora", wx.OK | wx.CANCEL|wx.ICON_QUESTION)
+        answer = dialog.ShowModal()
+        dialog.Destroy()
+        #print answer
+        if answer == wx.ID_OK:
+            self.Close()
 
     def onHelp(self, event):
         print "Help"
@@ -287,7 +292,6 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
         #self.hbox = wx.BoxSizer(wx.HORIZONTAL)
 
         ### Sub sizer
-        #self.leftVert = wx.BoxSizer(wx.VERTICAL)
         self.expTempSizer = wx.BoxSizer(wx.VERTICAL)
         self.controlHorz = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -311,11 +315,7 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
         # comes last
         self.SetSizer(self.topbox)
         self.topbox.Fit(self)
-        #self.Layout()
 
-    def getExpVal(self, e):
-        self.exp = self.expValue.GetValue()
-        print float(self.exp)
 
 class OtherParams(wx.Panel): # second tab; with other parameters like setting the temperature to cool.
 
