@@ -81,13 +81,10 @@ class Evora(wx.Frame):
         self.SetMenuBar(menuBar)
 
         ## Status Bar:  include temperature, binning type, gauge for exposure
-        #self.stats = self.CreateStatusBar()
         self.stats = EnhancedStatusBar.EnhancedStatusBar(self)
         self.stats.SetSize((23,-1))
         self.stats.SetFieldsCount(3)
         self.SetStatusBar(self.stats)
-        #self.stats = self.CreateStatusBar(3)
-        #self.stats.SetStatusStyles([0,0,0])
         self.stats.SetStatusText("Temp: ...", 0)
         self.stats.SetStatusText("Binning Type: ...", 2)
         self.stats.SetStatusText("Exp. Status:", 1)
