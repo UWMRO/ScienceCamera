@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 import numpy as np
 from scipy import stats
+import EnhancedStatusBar
 
 
 # Frame class.
@@ -27,45 +28,50 @@ class Evora(wx.Frame):
 
         # define the each tab
         page1 = TakeImage(notebook)
-        page2 = OtherParams(notebook)
-        page3 = Scripting(notebook)
-        page4 = Log(notebook)
+        #page2 = OtherParams(notebook)
+        page2 = Scripting(notebook)
+        page3 = Log(notebook)
 
         # add each tab to the notebook
         notebook.AddPage(page1, "Imaging")
-        notebook.AddPage(page2, "Controls")
-        notebook.AddPage(page3, "Scripting")
-        notebook.AddPage(page4, "Log")
+        #notebook.AddPage(page2, "Controls")
+        notebook.AddPage(page2, "Scripting")
+        notebook.AddPage(page3, "Log")
 
         # make instances of the tabs to access variables within them
         self.takeImage = notebook.GetPage(0)
-        self.otherParams = notebook.GetPage(1)
-        self.scripting = notebook.GetPage(2)
-        self.log = notebook.GetPage(3)
+        #self.otherParams = notebook.GetPage(1)
+        self.scripting = notebook.GetPage(1)
+        self.log = notebook.GetPage(2)
+
+        # Widgets
+
+        #
+
 
         ## Menu
         menuBar = wx.MenuBar()
 
         ## Sub menus
         filterSub = wx.Menu()
-        filterSub.Append(111, "&Connect", "Connect to the filter")
-        filterSub.Append(112, "&Refresh", "Refresh filter list")
+        filterSub.Append(1110, "&Connect", "Connect to the filter")
+        filterSub.Append(1111, "&Refresh", "Refresh filter list")
 
+        binningSub = wx.Menu()
+        binningSub.Append(1120, "1x1", "Set CCD readout binning", kind=wx.ITEM_RADIO)
+        binningSub.Append(1121, "2x2", "Set CCD readout binning", kind=wx.ITEM_RADIO)
 
         # create main menus
         fileMenu = wx.Menu()
-        fileMenu.AppendMenu(102, "&Filter", filterSub)
-        fileMenu.Append(101, "&Exit", "Quit from Evora")
-
+        fileMenu.AppendMenu(1001, "&Filter", filterSub)
+        fileMenu.AppendMenu(1002, "&Binning", binningSub)
+        fileMenu.Append(1000, "&Exit", "Quit from Evora")
 
         viewMenu = wx.Menu()
-        viewMenu.Append(201, "&Image", "Open Image Window")
-
+        viewMenu.Append(1200, "&Image", "Open Image Window")
 
         helpMenu = wx.Menu()
-        helpMenu.Append(301, "&Help")
-
-
+        helpMenu.Append(1300, "&Help")
 
         # add to menu bar
         menuBar.Append(fileMenu, "&File")
@@ -74,6 +80,19 @@ class Evora(wx.Frame):
         # instantiate menubar
         self.SetMenuBar(menuBar)
 
+        ## Status Bar:  include temperature, binning type, gauge for exposure
+        #self.stats = self.CreateStatusBar()
+        self.stats = EnhancedStatusBar.EnhancedStatusBar(self)
+        self.stats.SetSize((23,-1))
+        self.stats.SetFieldsCount(3)
+        self.SetStatusBar(self.stats)
+        #self.stats = self.CreateStatusBar(3)
+        #self.stats.SetStatusStyles([0,0,0])
+        self.stats.SetStatusText("Temp: ...", 0)
+        self.stats.SetStatusText("Binning Type: ...", 2)
+        self.stats.SetStatusText("Exp. Status:", 1)
+        self.expGauge = wx.Gauge(self.stats, id=1, range=100, size=(110, -1))
+        self.stats.AddWidget(self.expGauge, pos=1, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
 
 
         # size panels
@@ -81,9 +100,12 @@ class Evora(wx.Frame):
         sizer.Add(notebook, 1, wx.EXPAND)
 
         ## Bindings
-        self.Bind(wx.EVT_MENU, self.openImage, id=201)
-        self.Bind(wx.EVT_MENU, self.onClose, id=101)
-        self.Bind(wx.EVT_MENU, self.onHelp, id=301)
+        self.Bind(wx.EVT_MENU, self.openImage, id=1200)
+        self.Bind(wx.EVT_MENU, self.onClose, id=1000)
+        self.Bind(wx.EVT_MENU, self.onHelp, id=1300)
+        self.Bind(wx.EVT_MENU, self.onRefresh, id=1111)
+        self.Bind(wx.EVT_MENU, self.on1x1, id=1120)
+        self.Bind(wx.EVT_MENU, self.on2x2, id=1121)
 
 
 
@@ -98,8 +120,17 @@ class Evora(wx.Frame):
         self.Close()
 
     def onHelp(self, event):
+        print "Help"
+
+    def onRefresh(self, event):
+        self.takeImage.filterInstance.refreshList()
         print "hello"
 
+    def on1x1(self, event):
+        self.stats.SetStatusText("Binning Type: 1x1", 2)
+
+    def on2x2(self, event):
+        self.stats.SetStatusText("Binning Type: 2x2", 2)
 
 class ImageWindow(wx.Frame):
 
@@ -114,7 +145,6 @@ class ImageWindow(wx.Frame):
 
         ## Minor Sizers
         self.sliderSizer = wx.BoxSizer(wx.HORIZONTAL)
-
 
         self.panel = DrawImage(self)
 
@@ -135,8 +165,6 @@ class ImageWindow(wx.Frame):
         self.stats.SetStatusText("Mean: %.1f"%(self.panel.mean), 2)
         self.stats.SetStatusText("Mode: %.0f"%(self.panel.mode), 3)
         self.stats.SetStatusText("Median: %.0f"%(self.panel.median), 4)
-
-
 
 
         ##  Adjust sub sizers
@@ -256,11 +284,6 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
 
         # Things to add:  add updating text for temperature in bottom left of GUI
 
-        # Add functionalality here
-        #self.expTime = wx.StaticText(self, label="Exposure Time (s)")
-        #self.expValue = wx.TextCtrl(self, size=(75, -1), style=wx.TE_PROCESS_ENTER)
-        #self.expValue.SetStyle(self, style=wx.TE_PROCESS_ENTER)
-        #self.expButton = wx.Button(self, label="Expose", size=(60, -1))
 
         # Set sizers so I have horizontal and vertical control
         self.topbox = wx.BoxSizer(wx.VERTICAL)
@@ -271,6 +294,8 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
         self.expTempSizer = wx.BoxSizer(wx.VERTICAL)
         self.controlHorz = wx.BoxSizer(wx.HORIZONTAL)
 
+        self.filterInstance = ac.FilterControl(self)
+
         ## place sub sizers
         self.expTempSizer.Add(ac.Exposure(self), flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.expTempSizer, 8)
@@ -278,18 +303,13 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
 
         self.controlHorz.Add(self.expTempSizer, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.controlHorz, 50)
-        self.controlHorz.Add(ac.FilterControl(self), flag=wx.ALIGN_CENTER)
+        self.controlHorz.Add(self.filterInstance, flag=wx.ALIGN_CENTER)
 
         ### place main Sizer
         als.AddLinearSpacer(self.topbox, 20)
         self.topbox.Add(ac.TypeSelection(self), flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.topbox, 20)
         self.topbox.Add(self.controlHorz, flag=wx.ALIGN_CENTER)
-
-
-
-        #self.Bind(wx.EVT_TEXT_ENTER, self.getExpVal, self.expValue)
-        #self.Bind(wx.EVT_BUTTON, self.getValsButton, self.)
 
         # comes last
         self.SetSizer(self.topbox)
@@ -342,8 +362,8 @@ class Log(wx.Panel): # fourth tab; with logging of each command
         #als.AddLinearSpacer(self.horzSizer, 5)
         #self.horzSizer.Add(lc.logBox(self), flag=wx.ALIGN_CENTER)
 
-        als.AddLinearSpacer(self.vertSizer, 40)
-        self.vertSizer.Add(lc.logBox(self), flag=wx.ALIGN_CENTER)
+        als.AddLinearSpacer(self.vertSizer, 20)
+        self.vertSizer.Add(lc.logBox(self), proportion=1, flag=wx.ALIGN_CENTER|wx.EXPAND)
 
         self.SetSizer(self.vertSizer)
         self.vertSizer.Fit(self)

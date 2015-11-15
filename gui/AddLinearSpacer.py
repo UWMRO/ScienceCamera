@@ -9,3 +9,10 @@ def AddLinearSpacer(boxsizer, pixelSpacing) :
         boxsizer.Add( (pixelSpacing, 0) )
     elif (orientation == wx.VERTICAL) :
         boxsizer.Add( (0, pixelSpacing) )
+
+def isNumber(string):
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False

@@ -41,12 +41,12 @@ class ScriptCommands(wx.Panel):
         self.buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
 
         ## Widgets
-        self.commandFrame = wx.StaticBox(self, label = "Command Prompt", size=(200, 50))
+        self.commandFrame = wx.StaticBox(self, id=3000, label = "Command Prompt", size=(200, 50))
         self.commandFrameSizer = wx.StaticBoxSizer(self.commandFrame, wx.VERTICAL)
 
-        self.button = wx.Button(self, label="OK")
-        self.upButton = wx.Button(self, label="Upload")
-        self.commandBox = wx.TextCtrl(self, size=(200, -1))
+        self.button = wx.Button(self, id=3001, label="OK")
+        self.upButton = wx.Button(self, id=3002, label="Upload")
+        self.commandBox = wx.TextCtrl(self, id=3003, size=(200, -1))
 
 
         # adjust subsizers
@@ -66,5 +66,26 @@ class ScriptCommands(wx.Panel):
         # adjust main sizers
         self.vertSizer.Add(self.commandFrameSizer, flag=wx.ALIGN_CENTER)
 
+        ## Variables
+        self.command = ""
+
+        ## Bindings
+        self.Bind(wx.EVT_TEXT, self.getCommand, id=3003)
+        self.Bind(wx.EVT_BUTTON, self.onOk, id=3001)
+        self.Bind(wx.EVT_BUTTON, self.onUpload, id=3002)
+        ##
+
         self.SetSizer(self.vertSizer)
         self.vertSizer.Fit(self)
+
+    def getCommand(self, event):
+        self.command = self.commandBox.GetValue()
+
+    def onOk(self, event):
+        if self.command is "":
+            print "No command"
+        else:
+            print self.command
+
+    def onUpload(self, event):
+        print "Upload your script"

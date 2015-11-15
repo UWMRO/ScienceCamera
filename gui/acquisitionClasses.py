@@ -2,6 +2,7 @@
 
 import wx
 import AddLinearSpacer as als
+import numpy as np
 
 ## Class that handles widgets related to exposure
 class Exposure(wx.Panel):
@@ -22,13 +23,13 @@ class Exposure(wx.Panel):
         #####
 
         #### Widgets
-        self.expTime = wx.StaticText(self, label="Exposure Time (s)")
-        self.name = wx.StaticText(self, label="Image Name")
-        self.nameField = wx.TextCtrl(self, size=(150, -1))
-        self.expValue = wx.TextCtrl(self, size=(45, -1), style=wx.TE_PROCESS_ENTER)
-        self.expButton = wx.Button(self, label="Expose", size=(60, -1))
-        self.stopExp = wx.Button(self, label="Stop", size=(60,-1))
-        self.expBox = wx.StaticBox(self, label = "Exposure Control", size=(100,100), style=wx.ALIGN_CENTER)
+        self.expTime = wx.StaticText(self, id=2000, label="Exposure Time (s)")
+        self.name = wx.StaticText(self, id=2001, label="Save Name")
+        self.nameField = wx.TextCtrl(self, id=2002, size=(150, -1))
+        self.expValue = wx.TextCtrl(self, id=2003, size=(45, -1))
+        self.expButton = wx.Button(self, id=2004, label="Expose", size=(60, -1))
+        self.stopExp = wx.Button(self, id=2005, label="Stop", size=(60,-1))
+        self.expBox = wx.StaticBox(self, id=2006, label = "Exposure Controls", size=(100,100), style=wx.ALIGN_CENTER)
         self.expBoxSizer = wx.StaticBoxSizer(self.expBox, wx.VERTICAL)
         #####
 
@@ -63,8 +64,40 @@ class Exposure(wx.Panel):
 
         ####
 
+        ## variables
+        self.timeToSend = 0.0
+        self.nameToSend = ""
+
+
+        ### Bindings
+        self.Bind(wx.EVT_TEXT, self.nameText, id=2002)
+        self.Bind(wx.EVT_TEXT, self.onExpTime, id=2003)
+        self.Bind(wx.EVT_BUTTON, self.onExpose, id=2004)
+        self.Bind(wx.EVT_BUTTON, self.onStop, id=2005)
+        ###
+
         self.SetSizer(self.vertSizer)
         self.vertSizer.Fit(self)
+
+    def nameText(self, event):
+        self.nameToSend = self.nameField.GetValue()
+
+    def onExpTime(self, event):
+        self.timeToSend = self.expValue.GetValue()
+
+    def onExpose(self, event):
+        if als.isNumber(self.timeToSend):
+            print float(self.timeToSend)
+        else:
+            print "Not a number"
+        if self.nameToSend is "":
+            print "No Name"
+        else:
+            print self.nameToSend
+
+    def onStop(self, event):
+        print "Stop Exposure"
+
 
 # Class that handles Radio boxes for image types and exposure types
 class TypeSelection(wx.Panel):
@@ -80,8 +113,10 @@ class TypeSelection(wx.Panel):
         self.radioSizer = wx.BoxSizer(wx.HORIZONTAL)
 
         ### Widgets (specifially radio boxes)
-        self.imageType = wx.RadioBox(self, label="Image Type", size=wx.DefaultSize, choices=["Bias", "Flat", "Dark", "Object"], style=wx.RA_HORIZONTAL)
-        self.exposeType = wx.RadioBox(self, label = "Exposure Type", size=wx.DefaultSize, choices=["Single", "Continuous", "Series"], style=wx.RA_HORIZONTAL)
+        self.imageType = wx.RadioBox(self, id=2010, label="Image Type", size=wx.DefaultSize, \
+                         choices=["Bias", "Flat", "Dark", "Object"], style=wx.RA_HORIZONTAL)
+        self.exposeType = wx.RadioBox(self, id=2011, label = "Exposure Type", size=wx.DefaultSize, \
+                          choices=["Single", "Real Time", "Series"], style=wx.RA_HORIZONTAL)
 
         ### Line up sub-chunks
         self.radioSizer.Add(self.imageType)
@@ -93,8 +128,21 @@ class TypeSelection(wx.Panel):
 
         ####
 
+        ### Bindings
+        self.Bind(wx.EVT_RADIOBOX, self.onImageType, id=2010)
+        self.Bind(wx.EVT_RADIOBOX, self.onExposeType, id=2011)
+        ###
+
         self.SetSizer(self.vertSizer)
         self.vertSizer.Fit(self)
+
+    def onImageType(self, event):
+        index = self.imageType.GetSelection()
+        print self.imageType.GetStringSelection()
+
+    def onExposeType(self, event):
+        index = self.exposeType.GetSelection()
+        print self.exposeType.GetStringSelection()
 
 
 class TempControl(wx.Panel):
@@ -114,11 +162,11 @@ class TempControl(wx.Panel):
         #####
 
         #### Widgets
-        self.tempText = wx.StaticText(self, label="Temperature (C)")
-        self.tempValue = wx.TextCtrl(self, size=(45, -1), style=wx.TE_PROCESS_ENTER)
-        self.tempButton = wx.Button(self, label="Cool", size=(60, -1))
-        self.stopExp = wx.Button(self, label="Stop", size=(60,-1))
-        self.tempBox = wx.StaticBox(self, label="Temperature Control", size=(100,100), style=wx.ALIGN_CENTER)
+        self.tempText = wx.StaticText(self, id=2030, label="Temperature (C)")
+        self.tempValue = wx.TextCtrl(self, id=2031, size=(45, -1), style=wx.TE_PROCESS_ENTER)
+        self.tempButton = wx.Button(self, id=2032, label="Cool", size=(60, -1))
+        self.stopExp = wx.Button(self, id=2033, label="Stop", size=(60,-1))
+        self.tempBox = wx.StaticBox(self, id=2034, label="Temperature Controls", size=(100,100), style=wx.ALIGN_CENTER)
         self.tempBoxSizer = wx.StaticBoxSizer(self.tempBox, wx.VERTICAL)
         #####
 
@@ -146,9 +194,30 @@ class TempControl(wx.Panel):
         self.vertSizer.Add(self.tempBoxSizer, flag=wx.ALIGN_CENTER)
         ####
 
+        ### Variables
+        self.tempToSend = 0.0
+
+        ## Bindings
+        self.Bind(wx.EVT_TEXT, self.getTemp, id=2031)
+        self.Bind(wx.EVT_BUTTON, self.onCool, id=2032)
+        self.Bind(wx.EVT_BUTTON, self.onStopCooling, id=2033)
+        ##
+
+
         self.SetSizer(self.vertSizer)
         self.vertSizer.Fit(self)
 
+    def getTemp(self, event):
+        self.tempToSend = self.tempValue.GetValue()
+
+    def onCool(self, event):
+        if als.isNumber(self.tempToSend):
+            print float(self.tempToSend)
+        else:
+            print "Opps Not a number"
+
+    def onStopCooling(self, event):
+        print "Stopping Cooler"
 
 class FilterControl(wx.Panel):
 
@@ -164,18 +233,21 @@ class FilterControl(wx.Panel):
         self.subVert = wx.BoxSizer(wx.VERTICAL)
         self.statusVert = wx.BoxSizer(wx.VERTICAL)
 
+        ## Variables
+        self.filterList = np.genfromtxt("filters.txt", dtype='str').tolist()
+        ##
 
         #### Widgets
-        self.filterBox = wx.StaticBox(self, label = "Filter Controls", size=(100,100), style=wx.ALIGN_CENTER)
+        self.filterBox = wx.StaticBox(self, id=2040, label = "Filter Controls", size=(100,100), style=wx.ALIGN_CENTER)
         self.filBoxSizer = wx.StaticBoxSizer(self.filterBox, wx.VERTICAL)
 
-        self.statusBox = wx.StaticBox(self, label = "Filter Status", size=(150,150), style=wx.ALIGN_CENTER)
+        self.statusBox = wx.StaticBox(self, id=2041, label = "Filter Status", size=(150,150), style=wx.ALIGN_CENTER)
         self.statusBoxSizer = wx.StaticBoxSizer(self.statusBox, wx.VERTICAL)
 
-        self.filterText = wx.StaticText(self, label="Filter Type")
-        self.filterMenu = wx.ComboBox(self, choices=["g", "r", "i", "V", "B", "Ha"], size=(50, -1), style=wx.CB_READONLY)
-        self.filterButton = wx.Button(self, label = "Rotate To")
-        self.statusBox = wx.TextCtrl(self, style=wx.TE_READONLY|wx.TE_MULTILINE, size=(200,100))
+        self.filterText = wx.StaticText(self, id=2042, label="Filter Type")
+        self.filterMenu = wx.ComboBox(self, id=2043, choices=["g", "r", "i", "V", "B", "Ha"], size=(50, -1), style=wx.CB_READONLY)
+        self.filterButton = wx.Button(self, id=2044, label = "Rotate To")
+        self.statusBox = wx.TextCtrl(self, id=2045, style=wx.TE_READONLY|wx.TE_MULTILINE, size=(200,100))
 
 
         #### Line Up Smaller Sub Sizers
@@ -200,5 +272,29 @@ class FilterControl(wx.Panel):
         als.AddLinearSpacer(self.vertSizer, 15)
         self.vertSizer.Add(self.statusBoxSizer)
 
+        ## Variables
+        self.filterSelection = ""
+        ##
+
+        ## Bindings
+        self.Bind(wx.EVT_COMBOBOX, self.onFilterSelection, id=2043)
+        self.Bind(wx.EVT_BUTTON, self.onRotate, id=2044)
+        ##
+
         self.SetSizer(self.vertSizer)
         self.vertSizer.Fit(self)
+
+    def onFilterSelection(self, event):
+        self.filterSelection = self.filterMenu.GetValue()
+
+    def onRotate(self, event):
+        if self.filterSelection is "":
+            print "No filter selected"
+        else:
+            print self.filterSelection
+
+    def refreshList(self):
+        self.filterMenu.Clear()
+        newList = np.genfromtxt('filters.txt', dtype='str').tolist()
+        for i in newList:
+            self.filterMenu.Append(i)
