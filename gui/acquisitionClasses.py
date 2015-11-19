@@ -3,6 +3,7 @@
 import wx
 import AddLinearSpacer as als
 import numpy as np
+import EnhancedStatusBar
 
 ## Class that handles widgets related to exposure
 class Exposure(wx.Panel):
@@ -222,6 +223,11 @@ class TempControl(wx.Panel):
 
     def onStopCooling(self, event):
         print "Stopping Cooler"
+
+    def changeTemp(self, value, statusbar):
+        bitmap = wx.StaticBitmap(statusbar, size=(50,50))
+        bitmap.SetBitmap(wx.ArtProvider.GetBitmap("ID_YES"))
+        statusbar.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
 
 class FilterControl(wx.Panel):
 

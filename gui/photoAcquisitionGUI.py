@@ -85,12 +85,20 @@ class Evora(wx.Frame):
         self.stats.SetSize((23,-1))
         self.stats.SetFieldsCount(3)
         self.SetStatusBar(self.stats)
-        self.stats.SetStatusText("Temp: ...", 0)
+        self.stats.SetStatusText("Current Temp:        0 C", 0)
         self.stats.SetStatusText("Binning Type: ...", 2)
         self.stats.SetStatusText("Exp. Status:", 1)
         self.expGauge = wx.Gauge(self.stats, id=1, range=100, size=(110, -1))
         self.stats.AddWidget(self.expGauge, pos=1, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        bitmap = wx.StaticBitmap(self.stats, -1, size=(90, 0))
+        bitmap.SetBitmap(wx.Bitmap('greenCirc.png'))
+        #tempText = wx.StaticText(self.stats, -1, label="50 C")
+        self.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        #self.stats.AddWidget(tempText, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN)
 
+
+
+        #self.takeImage.tempInstance.changeTemp(50, self.stats)
 
         # size panels
         sizer = wx.BoxSizer()
@@ -103,7 +111,6 @@ class Evora(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onRefresh, id=1111)
         self.Bind(wx.EVT_MENU, self.on1x1, id=1120)
         self.Bind(wx.EVT_MENU, self.on2x2, id=1121)
-
 
 
         panel.SetSizer(sizer)
@@ -133,6 +140,8 @@ class Evora(wx.Frame):
 
     def on2x2(self, event):
         self.stats.SetStatusText("Binning Type: 2x2", 2)
+
+
 
 class ImageWindow(wx.Frame):
 
@@ -296,11 +305,12 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
         self.controlHorz = wx.BoxSizer(wx.HORIZONTAL)
 
         self.filterInstance = ac.FilterControl(self)
+        self.tempInstance = ac.TempControl(self)
 
         ## place sub sizers
         self.expTempSizer.Add(ac.Exposure(self), flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.expTempSizer, 8)
-        self.expTempSizer.Add(ac.TempControl(self), flag=wx.ALIGN_CENTER)
+        self.expTempSizer.Add(self.tempInstance, flag=wx.ALIGN_CENTER)
 
         self.controlHorz.Add(self.expTempSizer, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.controlHorz, 50)
