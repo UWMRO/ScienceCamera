@@ -1,12 +1,16 @@
 #!/usr/bin/python
 
-import wx
-import AddLinearSpacer as als
-import numpy as np
-import EnhancedStatusBar
+import wx # get wxPython
+import AddLinearSpacer as als # get useful methods
+import numpy as np # get NumPy
+import EnhancedStatusBar # allows widgets to be inserted into wxPython status bar
+                         # probably won't work on wxPython 3.x
 
 ## Class that handles widgets related to exposure
 class Exposure(wx.Panel):
+    """
+    Creates the group of widgets that handle related exposure controls
+    """
 
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
@@ -65,48 +69,74 @@ class Exposure(wx.Panel):
 
         ####
 
-        ## variables
+        ### Global variables
         self.timeToSend = 0.0
         self.nameToSend = ""
 
 
         ### Bindings
-        self.Bind(wx.EVT_TEXT, self.nameText, id=2002)
-        self.Bind(wx.EVT_TEXT, self.onExpTime, id=2003)
-        self.Bind(wx.EVT_BUTTON, self.onExpose, id=2004)
-        self.Bind(wx.EVT_BUTTON, self.onStop, id=2005)
+        self.Bind(wx.EVT_TEXT, self.nameText, id=2002) # bind self.nameField
+        self.Bind(wx.EVT_TEXT, self.onExpTime, id=2003) # bind self.expValue
+        self.Bind(wx.EVT_BUTTON, self.onExpose, id=2004) # bind self.expButton
+        self.Bind(wx.EVT_BUTTON, self.onStop, id=2005) # bind self.stopExp
         ###
 
         self.SetSizer(self.vertSizer)
         self.vertSizer.Fit(self)
 
     def nameText(self, event):
+        """
+        Executes on the even that anything new is type into the name text box and sets it to
+        the global variable self.nameToSend for sending to Evora.
+        """
         self.nameToSend = self.nameField.GetValue()
 
     def onExpTime(self, event):
+        """
+        Executes when there is a new string typed into the exposure time field.  It then
+        passes it to the global variable self.timeToSend for sending to Evora.
+        """
         self.timeToSend = self.expValue.GetValue()
 
     def onExpose(self, event):
+        """
+        Executes when the expose button is pressed. It checks that the variable
+        self.exposeToSend is a float. It it passes then this value is sent to Evora.  If it
+        fails a dialog box tells the user the varible is not a number and will not send it
+        to Evora.
+        """
         if als.isNumber(self.timeToSend):
             print float(self.timeToSend)
         else:
-            dialog = wx.MessageDialog(None, "Exposure time not a number...will not expose.", "", wx.OK|wx.ICON_ERROR)
+            dialog = wx.MessageDialog(None, "Exposure time not a number...will not expose.",
+                                      "", wx.OK|wx.ICON_ERROR)
             dialog.ShowModal()
 
         if self.nameToSend is "":
-            dialog = wx.MessageDialog(None,"No name was given...will not expose", "", wx.OK|wx.ICON_ERROR)
+            dialog = wx.MessageDialog(None,"No name was given...will not expose", "",
+                                      wx.OK|wx.ICON_ERROR)
             dialog.ShowModal()
         else:
             print self.nameToSend
 
     def onStop(self, event):
+        """
+        Executes when the stop button is pressed.  Sends a command to Evora to stop exposing.
+        """
         print "Stop Exposure"
 
 
 # Class that handles Radio boxes for image types and exposure types
 class TypeSelection(wx.Panel):
-
+    """
+    Creates the panel that holds the image and exposure type selections.
+    """
     def __init__(self, parent):
+        """
+        Initializes radio boxes that hold the different selections concerning with images and
+        exposure.
+        """
+
         wx.Panel.__init__(self, parent)
 
         ### Main Sizers
@@ -141,10 +171,18 @@ class TypeSelection(wx.Panel):
         self.vertSizer.Fit(self)
 
     def onImageType(self, event):
+        """
+        When a new image type is selected this will write that type to the header on the next
+        image that is exposed.
+        """
         index = self.imageType.GetSelection()
         print self.imageType.GetStringSelection()
 
     def onExposeType(self, event):
+        """
+        When a new exposure type is selected this will write that type to the header on the next
+        image that is exposed.
+        """
         index = self.exposeType.GetSelection()
         print self.exposeType.GetStringSelection()
 
@@ -222,9 +260,15 @@ class TempControl(wx.Panel):
             dialog.ShowModal()
 
     def onStopCooling(self, event):
+        """
+        When the stop cooling button is pressed this sends a command to Evora to stop exposure.
+        """
         print "Stopping Cooler"
 
     def changeTemp(self, value, statusbar):
+        """
+        Changes the temperature status in the status bar.
+        """
         bitmap = wx.StaticBitmap(statusbar, size=(50,50))
         bitmap.SetBitmap(wx.ArtProvider.GetBitmap("ID_YES"))
         statusbar.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)

@@ -1,17 +1,25 @@
 #!/usr/bin/python
 
-import wx
-import AddLinearSpacer as als
+import wx # get wxPython
+import AddLinearSpacer as als # access to simple functions
 
 # Class that handles selection of different types of binning
 class Binning(wx.Panel):
+    """
+    Currently not in use, where it would be held in the Controls tab.
+
+    This class creates the panel that holds the widgets for Binning Type
+    """
 
     def __init__(self, parent):
+        """
+        Initailizes panel with radio box widget that handles the selection of binning type.
+        """
         wx.Panel.__init__(self, parent)
 
         ### Main Sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
-        
+
         ###
 
         ### Additional Sub-sizers
