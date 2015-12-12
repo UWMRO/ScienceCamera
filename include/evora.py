@@ -11,6 +11,9 @@ class evora(object):
 	self.num = 0
 
     def startup(self):
+	"""
+	20002 is the magic number.  Any different number and it didn't work.
+	"""
         print andor.GetAvailableCameras()
         camHandle = andor.GetCameraHandle(0)
         print camHandle
@@ -55,6 +58,11 @@ class evora(object):
 	return str(setPoint)
 
     def warmup(self):
+	"""
+	Pre: Used to warmup camera.
+	Post: Sets the temperature to 0 and turns the fan to 0 then turns the cooler off and 
+	returns 1 that everything worked.
+	"""
         andor.SetTemperature(0)
 	andor.SetFanMode(0)
 	andor.CoolerOFF()
@@ -118,6 +126,17 @@ class evora(object):
         print "wrote: {}".format(filename)
 	return "1"
 
+	def abort(self):
+		"""
+		This will abort the exposure and throw it out.
+		"""
+		pass
+	
+	def stop(self):
+		"""
+		This will stop the exposure but read out where it stopped at, if possible.
+		"""
+		pass
 
 if __name__ == "__main__":
     e = evora()

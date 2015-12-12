@@ -1,7 +1,7 @@
 """The most basic chat protocol possible.
 
 run me with twistd -n -y camera_reactor.py, and then connect with multiple
-telnet clients to port 26999
+telnet clients to port 5502
 """
 
 from twisted.protocols import basic
@@ -36,4 +36,4 @@ factory.protocol = CameraReciever
 factory.clients = []
 
 application = service.Application("Evora")
-internet.TCPServer(26999, factory).setServiceParent(application)
+internet.TCPServer(5502, factory).setServiceParent(application)

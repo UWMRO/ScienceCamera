@@ -1,1 +1,1 @@
-cmd_/home/mrouser/andor/src/driver/andordrvlx.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/mrouser/andor/src/driver/andordrvlx.ko /home/mrouser/andor/src/driver/andordrvlx.o /home/mrouser/andor/src/driver/andordrvlx.mod.o
+cmd_/home/mrouser/ScienceCamera/src/driver/andordrvlx.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/mrouser/ScienceCamera/src/driver/andordrvlx.ko /home/mrouser/ScienceCamera/src/driver/andordrvlx.o /home/mrouser/ScienceCamera/src/driver/andordrvlx.mod.o
