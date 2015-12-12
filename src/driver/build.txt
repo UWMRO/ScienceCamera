@@ -1,23 +1,23 @@
-make -C /lib/modules/3.19.0-30-generic/build SUBDIRS=/home/mrouser/andor/src/driver modules
+make -C /lib/modules/3.19.0-30-generic/build SUBDIRS=/home/mrouser/ScienceCamera/src/driver modules
 make[1]: Entering directory `/usr/src/linux-headers-3.19.0-30-generic'
-  CC [M]  /home/mrouser/andor/src/driver/ioctl.o
-  CC [M]  /home/mrouser/andor/src/driver/amcc.o
-  CC [M]  /home/mrouser/andor/src/driver/andor.o
-  CC [M]  /home/mrouser/andor/src/driver/drvmain.o
-/home/mrouser/andor/src/driver/drvmain.c:72:4: warning: initialization from incompatible pointer type [enabled by default]
+  CC [M]  /home/mrouser/ScienceCamera/src/driver/ioctl.o
+  CC [M]  /home/mrouser/ScienceCamera/src/driver/amcc.o
+  CC [M]  /home/mrouser/ScienceCamera/src/driver/andor.o
+  CC [M]  /home/mrouser/ScienceCamera/src/driver/drvmain.o
+/home/mrouser/ScienceCamera/src/driver/drvmain.c:72:4: warning: initialization from incompatible pointer type [enabled by default]
     unlocked_ioctl: andor_ioctl,
     ^
-/home/mrouser/andor/src/driver/drvmain.c:72:4: warning: (near initialization for ‘andor_fops.unlocked_ioctl’) [enabled by default]
-/home/mrouser/andor/src/driver/drvmain.c:73:4: warning: initialization from incompatible pointer type [enabled by default]
+/home/mrouser/ScienceCamera/src/driver/drvmain.c:72:4: warning: (near initialization for ‘andor_fops.unlocked_ioctl’) [enabled by default]
+/home/mrouser/ScienceCamera/src/driver/drvmain.c:73:4: warning: initialization from incompatible pointer type [enabled by default]
     compat_ioctl: andor_ioctl,
     ^
-/home/mrouser/andor/src/driver/drvmain.c:73:4: warning: (near initialization for ‘andor_fops.compat_ioctl’) [enabled by default]
-  CC [M]  /home/mrouser/andor/src/driver/andor_isr.o
-  CC [M]  /home/mrouser/andor/src/driver/vmops.o
-  CC [M]  /home/mrouser/andor/src/driver/pld.o
-  LD [M]  /home/mrouser/andor/src/driver/andordrvlx.o
+/home/mrouser/ScienceCamera/src/driver/drvmain.c:73:4: warning: (near initialization for ‘andor_fops.compat_ioctl’) [enabled by default]
+  CC [M]  /home/mrouser/ScienceCamera/src/driver/andor_isr.o
+  CC [M]  /home/mrouser/ScienceCamera/src/driver/vmops.o
+  CC [M]  /home/mrouser/ScienceCamera/src/driver/pld.o
+  LD [M]  /home/mrouser/ScienceCamera/src/driver/andordrvlx.o
   Building modules, stage 2.
   MODPOST 1 modules
-  CC      /home/mrouser/andor/src/driver/andordrvlx.mod.o
-  LD [M]  /home/mrouser/andor/src/driver/andordrvlx.ko
+  CC      /home/mrouser/ScienceCamera/src/driver/andordrvlx.mod.o
+  LD [M]  /home/mrouser/ScienceCamera/src/driver/andordrvlx.ko
 make[1]: Leaving directory `/usr/src/linux-headers-3.19.0-30-generic'

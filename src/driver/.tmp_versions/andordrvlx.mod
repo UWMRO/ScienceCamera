@@ -1,2 +1,2 @@
-/home/mrouser/andor/src/driver/andordrvlx.ko
-/home/mrouser/andor/src/driver/ioctl.o /home/mrouser/andor/src/driver/amcc.o /home/mrouser/andor/src/driver/andor.o /home/mrouser/andor/src/driver/drvmain.o /home/mrouser/andor/src/driver/andor_isr.o /home/mrouser/andor/src/driver/vmops.o /home/mrouser/andor/src/driver/pld.o
+/home/mrouser/ScienceCamera/src/driver/andordrvlx.ko
+/home/mrouser/ScienceCamera/src/driver/ioctl.o /home/mrouser/ScienceCamera/src/driver/amcc.o /home/mrouser/ScienceCamera/src/driver/andor.o /home/mrouser/ScienceCamera/src/driver/drvmain.o /home/mrouser/ScienceCamera/src/driver/andor_isr.o /home/mrouser/ScienceCamera/src/driver/vmops.o /home/mrouser/ScienceCamera/src/driver/pld.o
