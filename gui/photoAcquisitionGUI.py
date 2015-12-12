@@ -15,7 +15,15 @@ from astropy.io import fits
 import numpy as np
 from scipy import stats
 import EnhancedStatusBar
+import sys
 
+# twisted imports
+from twisted.python import log
+from twisted.internet import wxreactor
+wxreactor.install()
+
+# always goes after wxreactor install
+from twisted.internet import reactor
 
 # Frame class.
 class Evora(wx.Frame):
@@ -112,6 +120,7 @@ class Evora(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on1x1, id=1120)
         self.Bind(wx.EVT_MENU, self.on2x2, id=1121)
 
+        wx.EVT_CLOSE(self, lambda evt: reactor.stop())
 
         panel.SetSizer(sizer)
         panel.Layout()
@@ -406,9 +415,14 @@ class Scripting(wx.Panel): # 3rd tab that handles scripting
 
 
 if __name__ == "__main__":
-    app = wx.PySimpleApp()
+    log.startLogging(sys.stdout)
+
+    app = wx.App(False)
     app.frame1 = Evora()
     app.frame1.Show()
     #app.frame2 = ImageWindow()
     #app.frame2.Show()
     app.MainLoop()
+    reactor.registerWxApp(app)
+
+    reactor.run()
