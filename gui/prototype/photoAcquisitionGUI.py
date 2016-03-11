@@ -36,7 +36,8 @@ class Evora(wx.Frame):
 
         panel = wx.Panel(self)
         notebook = wx.Notebook(panel)
-        notebook.protocol = self.protocol
+
+        notebook.parent = self # to reach any variables in Evore() from the notebooks
         # define the each tab
         page1 = TakeImage(notebook)
         #page2 = OtherParams(notebook)
@@ -58,6 +59,7 @@ class Evora(wx.Frame):
         # Widgets
 
         #
+        self.binning = "1x1"
 
 
         ## Menu
@@ -122,13 +124,15 @@ class Evora(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onRefresh, id=1111)
         self.Bind(wx.EVT_MENU, self.on1x1, id=1120)
         self.Bind(wx.EVT_MENU, self.on2x2, id=1121)
-        self.Bind(wx.EVT_CLOSE, self.onCloseFrame)
+        #self.Bind(wx.EVT_CLOSE, self.onClose)
 
         #wx.EVT_CLOSE(self, lambda evt: reactor.stop())
 
         panel.SetSizer(sizer)
         panel.Layout()
 
+    ## Memory upon destruction seems to not release.  This could cause memory usage to increase
+    ## with newly loaded images when using the evora camera.
     def openImage(self, event):
         self.window = ImageWindow(self)
         self.window.Show()
@@ -139,13 +143,9 @@ class Evora(wx.Frame):
         dialog.Destroy()
         #print answer
         if answer == wx.ID_OK:
-            self.Close()
-            #reactor.stop()
-
-    def onCloseFrame(self, event):
-        self.Destroy()
-        self.Close()
-        #reactor.stop()
+            self.Destroy()
+            #self.Close()
+            reactor.stop()
 
     def onHelp(self, event):
         print "Help"
@@ -155,9 +155,12 @@ class Evora(wx.Frame):
         print "hello"
 
     def on1x1(self, event):
+        self.binning = "1x1"
         self.stats.SetStatusText("Binning Type: 1x1", 2)
 
+
     def on2x2(self, event):
+        self.binning = "2x2"
         self.stats.SetStatusText("Binning Type: 2x2", 2)
 
 
@@ -228,7 +231,7 @@ class ImageWindow(wx.Frame):
     def onClose(self, event):
         self.panel.closeFig()
         self.Destroy()
-        self.Close()
+        #self.Close()
 
     def onInvert(self, event):
         value = event.IsChecked()
@@ -322,7 +325,7 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
         wx.Panel.__init__(self, parent)
 
         # Things to add:  add updating text for temperature in bottom left of GUI
-        self.takeImage_protocol = parent.protocol
+        self.parent = parent
 
         # Set sizers so I have horizontal and vertical control
         self.topbox = wx.BoxSizer(wx.VERTICAL)
@@ -334,8 +337,8 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
 
         self.filterInstance = ac.FilterControl(self)
         self.tempInstance = ac.TempControl(self)
-        self.exposureInstance = Exposure(self)
-
+        self.exposureInstance = ac.Exposure(self)
+        self.typeInstance = ac.TypeSelection(self)
 
         ## place sub sizers
         self.expTempSizer.Add(self.exposureInstance, flag=wx.ALIGN_CENTER)
@@ -348,7 +351,7 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
 
         ### place main Sizer
         als.AddLinearSpacer(self.topbox, 20)
-        self.topbox.Add(ac.TypeSelection(self), flag=wx.ALIGN_CENTER)
+        self.topbox.Add(self.typeInstance, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.topbox, 20)
         self.topbox.Add(self.controlHorz, flag=wx.ALIGN_CENTER)
 
@@ -390,7 +393,7 @@ class Log(wx.Panel): # fourth tab; with logging of each command
         self.horzSizer = wx.BoxSizer(wx.HORIZONTAL)
 
         # sub sizers
-
+        self.logInstance = lc.logBox(self)
 
         # adjust sub sizers
 
@@ -400,7 +403,7 @@ class Log(wx.Panel): # fourth tab; with logging of each command
         #self.horzSizer.Add(lc.logBox(self), flag=wx.ALIGN_CENTER)
 
         als.AddLinearSpacer(self.vertSizer, 20)
-        self.vertSizer.Add(lc.logBox(self), proportion=1, flag=wx.ALIGN_CENTER|wx.EXPAND)
+        self.vertSizer.Add(self.logInstance, proportion=1, flag=wx.ALIGN_CENTER|wx.EXPAND)
 
         self.SetSizer(self.vertSizer)
         self.vertSizer.Fit(self)
@@ -433,132 +436,6 @@ class Scripting(wx.Panel): # 3rd tab that handles scripting
         self.SetSizer(self.vertSizer)
         self.vertSizer.Fit(self)
 
-## Class that handles widgets related to exposure
-class Exposure(wx.Panel):
-    """
-    Creates the group of widgets that handle related exposure controls
-    """
-
-    def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
-
-        self.exposure_protocol = parent.takeImage_protocol
-
-        ### Main sizers
-        self.vertSizer = wx.BoxSizer(wx.VERTICAL)
-        self.horzSizer = wx.BoxSizer(wx.HORIZONTAL)
-
-        #####
-
-        ### Additional sub sizers
-        self.exposeSizer = wx.BoxSizer(wx.HORIZONTAL) # used for spacing expTime and expValue
-        self.buttonSizer = wx.BoxSizer(wx.HORIZONTAL) # used for spacing expose and stop buttons
-        self.nameSizer = wx.BoxSizer(wx.VERTICAL) # use for spacing name text and text ctrl
-        #####
-
-        #### Widgets
-        self.expTime = wx.StaticText(self, id=2000, label="Exposure Time (s)")
-        self.name = wx.StaticText(self, id=2001, label="Save Name")
-        self.nameField = wx.TextCtrl(self, id=2002, size=(150, -1))
-        self.expValue = wx.TextCtrl(self, id=2003, size=(45, -1))
-        self.expButton = wx.Button(self, id=2004, label="Expose", size=(60, -1))
-        self.stopExp = wx.Button(self, id=2005, label="Stop", size=(60,-1))
-        self.expBox = wx.StaticBox(self, id=2006, label = "Exposure Controls", size=(100,100), style=wx.ALIGN_CENTER)
-        self.expBoxSizer = wx.StaticBoxSizer(self.expBox, wx.VERTICAL)
-        #####
-
-        ##### Line up smaller sub sizers
-
-        als.AddLinearSpacer(self.exposeSizer, 15)
-        self.exposeSizer.Add(self.expTime, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.exposeSizer, 15)
-        self.exposeSizer.Add(self.expValue, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.exposeSizer, 15)
-
-        self.buttonSizer.Add(self.expButton, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.buttonSizer, 10)
-        self.buttonSizer.Add(self.stopExp, flag=wx.ALIGN_CENTER)
-
-        self.nameSizer.Add(self.name, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.nameSizer, 8)
-        self.nameSizer.Add(self.nameField, flag=wx.ALIGN_CENTER)
-
-        ####
-
-        #### Line up larger chuncks with main sizer
-        als.AddLinearSpacer(self.expBoxSizer, 10)
-        self.expBoxSizer.Add(self.nameSizer, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.expBoxSizer, 5)
-        self.expBoxSizer.Add(self.exposeSizer, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.expBoxSizer, 5)
-        self.expBoxSizer.Add(self.buttonSizer, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.expBoxSizer, 5)
-
-        self.vertSizer.Add(self.expBoxSizer, flag=wx.ALIGN_CENTER)
-
-        ####
-
-        ### Global variables
-        self.timeToSend = 0.0
-        self.nameToSend = ""
-
-
-        ### Bindings
-        self.Bind(wx.EVT_TEXT, self.nameText, id=2002) # bind self.nameField
-        self.Bind(wx.EVT_TEXT, self.onExpTime, id=2003) # bind self.expValue
-        self.Bind(wx.EVT_BUTTON, self.onExpose, id=2004) # bind self.expButton
-        self.Bind(wx.EVT_BUTTON, self.onStop, id=2005) # bind self.stopExp
-        ###
-
-        self.SetSizer(self.vertSizer)
-        self.vertSizer.Fit(self)
-
-    def nameText(self, event):
-        """
-        Executes on the even that anything new is type into the name text box and sets it to
-        the global variable self.nameToSend for sending to Evora.
-        """
-        self.nameToSend = self.nameField.GetValue()
-
-    def onExpTime(self, event):
-        """
-        Executes when there is a new string typed into the exposure time field.  It then
-        passes it to the global variable self.timeToSend for sending to Evora.
-        """
-        self.timeToSend = self.expValue.GetValue()
-
-    def onExpose(self, event):
-        """
-        Executes when the expose button is pressed. It checks that the variable
-        self.exposeToSend is a float. It it passes then this value is sent to Evora.  If it
-        fails a dialog box tells the user the varible is not a number and will not send it
-        to Evora.
-        """
-        if als.isNumber(self.timeToSend):
-            print float(self.timeToSend)
-        else:
-            dialog = wx.MessageDialog(None, "Exposure time not a number...will not expose.",
-                                      "", wx.OK|wx.ICON_ERROR)
-            dialog.ShowModal()
-
-        if self.nameToSend is "":
-            dialog = wx.MessageDialog(None,"No name was given...will not expose", "",
-                                      wx.OK|wx.ICON_ERROR)
-            dialog.ShowModal()
-        else:
-            print self.nameToSend
-
-        if als.isNumber(self.timeToSend) and self.nameToSend is not "":
-            self.exposure_protocol.sendLine("Exposing with name " + str(self.nameToSend) + " and time " + self.timeToSend + " s")
-
-
-
-
-    def onStop(self, event):
-        """
-        Executes when the stop button is pressed.  Sends a command to Evora to stop exposing.
-        """
-        print "Stop Exposure"
 
 
 ### Classes for twisted
@@ -567,22 +444,26 @@ class ProtoForwarder(basic.LineReceiver):
     def __init__(self):
         self.output = None
 
-    def connectionMade(self):
-        #self.output = self.factory.gui.text
-        pass
 
     def dataReceived(self, data):
         gui = self.factory.gui
 
-        gui.protocol = self
+        gui.takeImage.exposureInstance.protocol = self
+        gui.takeImage.tempInstance.protocol = self
+
         if gui:
-            val = gui.takeImage.exposureInstance.expValue.GetValue()
+            val = gui.log.logInstance.logBox.GetValue()
+            gui.log.logInstance.logBox.SetValue(val + data)
+            gui.log.logInstance.logBox.SetInsertionPointEnd()
+
+    def connectionMade(self):
+        self.output = self.factory.gui.log.logInstance.logBox
 
 class ProtoClient(protocol.ClientFactory):
 
     def __init__(self, gui):
         self.gui = gui
-        self.protocol = ProtoForwarder()
+        self.protocol = ProtoForwarder
 
 
     def clientConnectionLost(self, transport, reason):

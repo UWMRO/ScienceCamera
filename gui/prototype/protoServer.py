@@ -2,7 +2,7 @@ import numpy as np
 from twisted.protocols import basic
 from twisted.internet import protocol, reactor
 
-import ProtoParser
+#import ProtoParser
 
 # port for evora is 5502
 
@@ -16,9 +16,10 @@ class ProtoServer(basic.LineReceiver):
 		self.sendLine("Connection Lost")
 		self.factory.clients.remove(self)
 
+
 	def lineReceived(self, line):
 		print "received", line
-		PP = ProtoParser.ProtoParser()
+		PP = ProtoParser()
 		command = PP.parse(line)
 		if command != None:
 			self.sendMessage(command)
@@ -30,18 +31,22 @@ class ProtoServer(basic.LineReceiver):
 
 
 
-
-
-
 class ProtoClient(protocol.ServerFactory):
-	"""
-	Inherit Factory to be able to give commands
-	"""
-
 	protocol = ProtoServer
 	clients = []
 
 
+class ProtoParser():
+	def __init__(self):
+		print "Entered the parser"
+
+	def parse(self, command = None):
+		#print command
+		command = command.split() # split the evora command by white space.
+		if command[0] == "expose":
+			return "Exposing with name " + command[1] + " for " + command[2] + " seconds with " + command[3] + " binning, " + command[4] + " exposure type, and " + command[5] + " image type."
+		if command[0] == "temperature":
+			return "Changing temperature to " + command[1] + " C"
 
 if __name__=="__main__":
 	reactor.listenTCP(5502, ProtoClient())

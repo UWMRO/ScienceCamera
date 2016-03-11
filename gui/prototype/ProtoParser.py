@@ -5,7 +5,7 @@ class ProtoParser():
 		print "Entered the parser"
 
 	def parse(self, command = None):
-		print command
+		#print command
 		command = command.split() # split the evora command by white space.
 		if command[0] == "expose":
-			return "Exposing"
+			return "Exposing for " + command[1] + "seconds"
