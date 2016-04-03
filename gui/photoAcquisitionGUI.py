@@ -19,11 +19,12 @@ import sys
 
 # twisted imports
 from twisted.python import log
-from twisted.internet import wxreactor
+from twisted.internet import wxreactor, protocol
 wxreactor.install()
 
 # always goes after wxreactor install
 from twisted.internet import reactor
+from twisted.protocols import basic
 
 # Frame class.
 class Evora(wx.Frame):
@@ -31,8 +32,12 @@ class Evora(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, None, -1, "Evora Acquisition GUI", size = (600, 450))
 
+        self.protocol = None # client protocol
+
         panel = wx.Panel(self)
         notebook = wx.Notebook(panel)
+
+        notebook.parent = self # to reach variables in Evora() from the notebooks
 
         # define the each tab
         page1 = TakeImage(notebook)
@@ -55,7 +60,7 @@ class Evora(wx.Frame):
         # Widgets
 
         #
-
+        self.binning = "1x1"
 
         ## Menu
         menuBar = wx.MenuBar()
@@ -119,12 +124,15 @@ class Evora(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onRefresh, id=1111)
         self.Bind(wx.EVT_MENU, self.on1x1, id=1120)
         self.Bind(wx.EVT_MENU, self.on2x2, id=1121)
+        #self.Bind(wx.EVT_CLOSE, self.onClose)
 
-        wx.EVT_CLOSE(self, lambda evt: reactor.stop())
+        #wx.EVT_CLOSE(self, lambda evt: reactor.stop())
 
         panel.SetSizer(sizer)
         panel.Layout()
 
+    ## Memory upon destruction seems to not release.  This could cause memory usage to increase
+    ## with newly loaded images when using the evora camera.
     def openImage(self, event):
         self.window = ImageWindow(self)
         self.window.Show()
@@ -135,7 +143,8 @@ class Evora(wx.Frame):
         dialog.Destroy()
         #print answer
         if answer == wx.ID_OK:
-            self.Close()
+            self.Destroy()
+            reactor.stop()
 
     def onHelp(self, event):
         print "Help"
@@ -145,9 +154,11 @@ class Evora(wx.Frame):
         print "hello"
 
     def on1x1(self, event):
+        self.binning = "1x1"
         self.stats.SetStatusText("Binning Type: 1x1", 2)
 
     def on2x2(self, event):
+        self.binning = "2x2"
         self.stats.SetStatusText("Binning Type: 2x2", 2)
 
 
@@ -202,6 +213,7 @@ class ImageWindow(wx.Frame):
         ### Binds
         self.devSlider.Bind(wx.EVT_SCROLL, self.onSlide)
         self.invert.Bind(wx.EVT_CHECKBOX, self.onInvert)
+        self.Bind(wx.EVT_CLOSE, self.onClose)
 
         self.SetSizer(self.topSizer)
         self.Fit()
@@ -213,6 +225,11 @@ class ImageWindow(wx.Frame):
         upper = self.panel.median + value * self.panel.mad
         self.panel.updateLims(lower, upper)
         self.panel.refresh()
+
+    def onClose(self, event):
+        self.panel.closeFig()
+        self.Destroy()
+        #self.Close()
 
     def onInvert(self, event):
         value = event.IsChecked()
@@ -275,7 +292,7 @@ class DrawImage(wx.Panel):
         self.plot.set_clim(vmin=self.lower, vmax=self.upper)
         self.plot.set_cmap(cmap)
         self.figure.tight_layout()
-
+    
     def refresh(self):
         self.canvas.draw()
         self.canvas.Refresh()
@@ -295,6 +312,9 @@ class DrawImage(wx.Panel):
     def updateCmap(self, cmap):
         self.plot.set_cmap(cmap)
 
+    def closeFig(self):
+        plt.close('all')
+
 
 
 class TakeImage(wx.Panel): ## first tab; with photo imaging
@@ -303,7 +323,7 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
         wx.Panel.__init__(self, parent)
 
         # Things to add:  add updating text for temperature in bottom left of GUI
-
+        self.parent = parent
 
         # Set sizers so I have horizontal and vertical control
         self.topbox = wx.BoxSizer(wx.VERTICAL)
@@ -315,9 +335,11 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
 
         self.filterInstance = ac.FilterControl(self)
         self.tempInstance = ac.TempControl(self)
+        self.exposureInstance = ac.Exposure(self)
+        self.typeInstance = ac.TypeSelection(self)
 
         ## place sub sizers
-        self.expTempSizer.Add(ac.Exposure(self), flag=wx.ALIGN_CENTER)
+        self.expTempSizer.Add(self.exposureInstance, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.expTempSizer, 8)
         self.expTempSizer.Add(self.tempInstance, flag=wx.ALIGN_CENTER)
 
@@ -327,7 +349,7 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
 
         ### place main Sizer
         als.AddLinearSpacer(self.topbox, 20)
-        self.topbox.Add(ac.TypeSelection(self), flag=wx.ALIGN_CENTER)
+        self.topbox.Add(self.typeInstance, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.topbox, 20)
         self.topbox.Add(self.controlHorz, flag=wx.ALIGN_CENTER)
 
@@ -369,7 +391,7 @@ class Log(wx.Panel): # fourth tab; with logging of each command
         self.horzSizer = wx.BoxSizer(wx.HORIZONTAL)
 
         # sub sizers
-
+        self.logInstance = lc.logBox(self)
 
         # adjust sub sizers
 
@@ -379,7 +401,7 @@ class Log(wx.Panel): # fourth tab; with logging of each command
         #self.horzSizer.Add(lc.logBox(self), flag=wx.ALIGN_CENTER)
 
         als.AddLinearSpacer(self.vertSizer, 20)
-        self.vertSizer.Add(lc.logBox(self), proportion=1, flag=wx.ALIGN_CENTER|wx.EXPAND)
+        self.vertSizer.Add(self.logInstance, proportion=1, flag=wx.ALIGN_CENTER|wx.EXPAND)
 
         self.SetSizer(self.vertSizer)
         self.vertSizer.Fit(self)
@@ -412,17 +434,53 @@ class Scripting(wx.Panel): # 3rd tab that handles scripting
         self.SetSizer(self.vertSizer)
         self.vertSizer.Fit(self)
 
+### Classes for twisted
+class ProtoForwarder(basic.LineReceiver):
+
+    def __init__(self):
+        self.output = None
+
+
+    def dataReceived(self, data):
+        gui = self.factory.gui
+
+        gui.takeImage.exposureInstance.protocol = self
+        gui.takeImage.tempInstance.protocol = self
+
+        if gui:
+            val = gui.log.logInstance.logBox.GetValue()
+            gui.log.logInstance.logBox.SetValue(val + data)
+            gui.log.logInstance.logBox.SetInsertionPointEnd()
+
+    def connectionMade(self):
+        self.output = self.factory.gui.log.logInstance.logBox
+
+class ProtoClient(protocol.ClientFactory):
+
+    def __init__(self, gui):
+        self.gui = gui
+        self.protocol = ProtoForwarder
+
+
+    def clientConnectionLost(self, transport, reason):
+        reactor.stop()
+
+    def clientConnectionFailed(self, transport, reason):
+        reactor.stop()
+
+
 
 
 if __name__ == "__main__":
-    log.startLogging(sys.stdout)
+    #log.startLogging(sys.stdout)
 
     app = wx.App(False)
     app.frame1 = Evora()
     app.frame1.Show()
     #app.frame2 = ImageWindow()
     #app.frame2.Show()
-    app.MainLoop()
-    reactor.registerWxApp(app)
 
+    reactor.registerWxApp(app)
+    reactor.connectTCP("localhost", 5502, ProtoClient(app.frame1))
     reactor.run()
+    app.MainLoop()

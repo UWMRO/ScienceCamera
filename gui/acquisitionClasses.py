@@ -15,6 +15,9 @@ class Exposure(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
+        self.protocol = None
+        self.parent = parent
+        
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
         self.horzSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -119,6 +122,30 @@ class Exposure(wx.Panel):
         else:
             print self.nameToSend
 
+        if als.isNumber(self.timeToSend) and self.nameToSend is not "":
+            self.protocol.sendLine("Exposing with name " + str(self.nameToSend) + " and time " + str(self.timeToSend) + " s")
+            line = self.getAttributesToSend()
+            self.protocol.sendLine(line)
+
+    def getAttributesToSend(self):
+        # get binning type
+        binning = self.parent.parent.parent.binning
+
+        # get exposure type 
+        exposeType = self.parent.typeInstance.exposeType.GetStringSelection()
+
+        # get image type
+        imageType = self.parent.typeInstance.imageType.GetStringSelection()
+
+        line = "expose"
+        line += " " + str(self.nameToSend)
+        line += " " + str(self.timeToSend)
+        line += " " + str(binning)
+        line += " " + str(exposeType)
+        line += " " + str(imageType)
+        
+        return line
+
     def onStop(self, event):
         """
         Executes when the stop button is pressed.  Sends a command to Evora to stop exposing.
@@ -192,6 +219,8 @@ class TempControl(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
+        self.protocol = None
+
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
         self.horzSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -255,6 +284,7 @@ class TempControl(wx.Panel):
     def onCool(self, event):
         if als.isNumber(self.tempToSend):
             print float(self.tempToSend)
+            self.protocol.sendLine("temperature " + str(self.tempToSend))
         else:
             dialog = wx.MessageDialog(None, "Temperature specified is not a number.", "", wx.OK|wx.ICON_ERROR)
             dialog.ShowModal()
