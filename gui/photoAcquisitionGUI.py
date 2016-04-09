@@ -60,7 +60,7 @@ class Evora(wx.Frame):
         # Widgets
 
         #
-        self.binning = "1x1"
+        self.binning = "1"
 
         ## Menu
         menuBar = wx.MenuBar()
@@ -143,6 +143,7 @@ class Evora(wx.Frame):
         dialog.Destroy()
         #print answer
         if answer == wx.ID_OK:
+            self.protocol.sendLine("shutdown")
             self.Destroy()
             reactor.stop()
 
@@ -154,11 +155,11 @@ class Evora(wx.Frame):
         print "hello"
 
     def on1x1(self, event):
-        self.binning = "1x1"
+        self.binning = "1"
         self.stats.SetStatusText("Binning Type: 1x1", 2)
 
     def on2x2(self, event):
-        self.binning = "2x2"
+        self.binning = "2"
         self.stats.SetStatusText("Binning Type: 2x2", 2)
 
 
@@ -435,15 +436,14 @@ class Scripting(wx.Panel): # 3rd tab that handles scripting
         self.vertSizer.Fit(self)
 
 ### Classes for twisted
-class ProtoForwarder(basic.LineReceiver):
-
+class EvoraForwarder(basic.LineReceiver):
     def __init__(self):
         self.output = None
 
-
     def dataReceived(self, data):
         gui = self.factory.gui
-
+        
+        gui.protocol = self
         gui.takeImage.exposureInstance.protocol = self
         gui.takeImage.tempInstance.protocol = self
 
@@ -455,19 +455,17 @@ class ProtoForwarder(basic.LineReceiver):
     def connectionMade(self):
         self.output = self.factory.gui.log.logInstance.logBox
 
-class ProtoClient(protocol.ClientFactory):
-
+class EvoraClient(protocol.ClientFactory):
     def __init__(self, gui):
         self.gui = gui
-        self.protocol = ProtoForwarder
-
+        self.protocol = EvoraForwarder
 
     def clientConnectionLost(self, transport, reason):
         reactor.stop()
 
     def clientConnectionFailed(self, transport, reason):
         reactor.stop()
-
+ 
 
 
 
@@ -481,6 +479,6 @@ if __name__ == "__main__":
     #app.frame2.Show()
 
     reactor.registerWxApp(app)
-    reactor.connectTCP("localhost", 5502, ProtoClient(app.frame1))
+    reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
     reactor.run()
     app.MainLoop()

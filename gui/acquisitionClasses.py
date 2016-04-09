@@ -73,7 +73,7 @@ class Exposure(wx.Panel):
         ####
 
         ### Global variables
-        self.timeToSend = 0.0
+        self.timeToSend = 0
         self.nameToSend = ""
 
 
@@ -109,7 +109,7 @@ class Exposure(wx.Panel):
         to Evora.
         """
         if als.isNumber(self.timeToSend):
-            print float(self.timeToSend)
+            print int(self.timeToSend)
         else:
             dialog = wx.MessageDialog(None, "Exposure time not a number...will not expose.",
                                       "", wx.OK|wx.ICON_ERROR)
@@ -133,17 +133,27 @@ class Exposure(wx.Panel):
 
         # get exposure type 
         exposeType = self.parent.typeInstance.exposeType.GetStringSelection()
+        print exposeType
+        if exposeType == "Single":
+            exposeType = 1
+        if exposeType == "Real Time":
+            exposeType = 2
+        if exposeType == "Series":
+            exposeType = 3
 
         # get image type
         imageType = self.parent.typeInstance.imageType.GetStringSelection()
 
+        
+        name = " " + str(self.nameToSend)
+
         line = "expose"
-        line += " " + str(self.nameToSend)
+        line += " " + str(imageType).lower()
+        line += " " + str(exposeType)
         line += " " + str(self.timeToSend)
         line += " " + str(binning)
-        line += " " + str(exposeType)
-        line += " " + str(imageType)
         
+                
         return line
 
     def onStop(self, event):
@@ -200,7 +210,7 @@ class TypeSelection(wx.Panel):
     def onImageType(self, event):
         """
         When a new image type is selected this will write that type to the header on the next
-        image that is exposed.
+        image that is exposed.n
         """
         index = self.imageType.GetSelection()
         print self.imageType.GetStringSelection()
