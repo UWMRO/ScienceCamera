@@ -276,7 +276,7 @@ class TempControl(wx.Panel):
         ####
 
         ### Variables
-        self.tempToSend = 0.0
+        self.tempToSend = ""
 
         ## Bindings
         self.Bind(wx.EVT_TEXT, self.getTemp, id=2031)
@@ -294,16 +294,17 @@ class TempControl(wx.Panel):
     def onCool(self, event):
         if als.isNumber(self.tempToSend):
             print float(self.tempToSend)
-            self.protocol.sendLine("temperature " + str(self.tempToSend))
+            self.protocol.sendLine("setTEC " + str(int(self.tempToSend)))
         else:
             dialog = wx.MessageDialog(None, "Temperature specified is not a number.", "", wx.OK|wx.ICON_ERROR)
             dialog.ShowModal()
 
     def onStopCooling(self, event):
         """
-        When the stop cooling button is pressed this sends a command to Evora to stop exposure.
+        When the stop cooling button is pressed this sends a command to Evora to warmup.
         """
-        print "Stopping Cooler"
+        stat = self.protocol.sendLine("warmup")
+        print stat
 
     def changeTemp(self, value, statusbar):
         """

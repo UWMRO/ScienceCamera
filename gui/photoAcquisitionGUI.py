@@ -143,11 +143,13 @@ class Evora(wx.Frame):
         dialog.Destroy()
         #print answer
         if answer == wx.ID_OK:
-            self.protocol.sendLine("shutdown")
+            #if(self.protocol is not None):
+            #    self.protocol.sendLine("shutdown")
             self.Destroy()
             reactor.stop()
 
     def onHelp(self, event):
+        self.protocol.sendLine("shutdown")
         print "Help"
 
     def onRefresh(self, event):
