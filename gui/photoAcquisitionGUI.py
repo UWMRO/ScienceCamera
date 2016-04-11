@@ -20,11 +20,11 @@ import thread
 
 # twisted imports
 from twisted.python import log
-from twisted.internet import wxreactor, protocol, defer
+from twisted.internet import wxreactor, protocol
 wxreactor.install()
 
 # always goes after wxreactor install
-from twisted.internet import reactor
+from twisted.internet import reactor, defer
 from twisted.protocols import basic
 
 # Frame class.
