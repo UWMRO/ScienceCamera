@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import time
 import wx # get wxPython
 import AddLinearSpacer as als # get useful methods
 import numpy as np # get NumPy
@@ -123,7 +124,7 @@ class Exposure(wx.Panel):
             print self.nameToSend
 
         if als.isNumber(self.timeToSend) and self.nameToSend is not "":
-            self.protocol.sendLine("Exposing with name " + str(self.nameToSend) + " and time " + str(self.timeToSend) + " s")
+            #self.protocol.sendLine("Exposing with name " + str(self.nameToSend) + " and time " + str(self.timeToSend) + " s")
             line = self.getAttributesToSend()
             self.protocol.sendLine(line)
 
@@ -230,6 +231,7 @@ class TempControl(wx.Panel):
         wx.Panel.__init__(self, parent)
 
         self.protocol = None
+        self.parent = parent
 
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
@@ -303,8 +305,8 @@ class TempControl(wx.Panel):
         """
         When the stop cooling button is pressed this sends a command to Evora to warmup.
         """
-        stat = self.protocol.sendLine("warmup")
-        print stat
+        self.protocol.sendLine("warmup")
+        
 
     def changeTemp(self, value, statusbar):
         """
@@ -313,6 +315,38 @@ class TempControl(wx.Panel):
         bitmap = wx.StaticBitmap(statusbar, size=(50,50))
         bitmap.SetBitmap(wx.ArtProvider.GetBitmap("ID_YES"))
         statusbar.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
+
+    def watchTemp(self):
+        # create an infinite while loop
+        while True:
+
+            # sendLine for temp and get from the log txt ctrl for now
+            d = self.protocol.sendCommand("temp")
+            d.addCallback(self.callbackTemp)
+            #lines = self.parent.parent.parent.log.logInstance.logBox.GetValue()
+            #print lines
+            #line = lines.split("\n")[-1]
+            #val = line.split(",")[2]
+            #print val
+
+            # update status on temp
+
+            # based on temp change bitmap color
+        
+            # put thread to sleep; on wake up repeats
+            time.sleep(5)
+    
+    def callbackTemp(self, msg):
+        #print msg
+        temp = msg.split(",")[2]  #  parser sends "temp statsOnTemp" and data forwarder sends statsOnTemp so this grabs the data
+        temp = str(int(round(float(temp))))
+        
+        self.parent.parent.parent.stats.SetStatusText("Current Temp:            "+ temp +" C", 0)
+        #print temp
+
+
+        
+
 
 class FilterControl(wx.Panel):
 

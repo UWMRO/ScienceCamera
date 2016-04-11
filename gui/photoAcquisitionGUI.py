@@ -16,10 +16,11 @@ import numpy as np
 from scipy import stats
 import EnhancedStatusBar
 import sys
+import thread
 
 # twisted imports
 from twisted.python import log
-from twisted.internet import wxreactor, protocol
+from twisted.internet import wxreactor, protocol, defer
 wxreactor.install()
 
 # always goes after wxreactor install
@@ -98,7 +99,7 @@ class Evora(wx.Frame):
         self.stats.SetSize((23,-1))
         self.stats.SetFieldsCount(3)
         self.SetStatusBar(self.stats)
-        self.stats.SetStatusText("Current Temp:        0 C", 0)
+        self.stats.SetStatusText("Current Temp:            ... C", 0)
         self.stats.SetStatusText("Binning Type: ...", 2)
         self.stats.SetStatusText("Exp. Status:", 1)
         self.expGauge = wx.Gauge(self.stats, id=1, range=100, size=(110, -1))
@@ -127,10 +128,11 @@ class Evora(wx.Frame):
         #self.Bind(wx.EVT_CLOSE, self.onClose)
 
         #wx.EVT_CLOSE(self, lambda evt: reactor.stop())
-
+        
         panel.SetSizer(sizer)
         panel.Layout()
 
+        
     ## Memory upon destruction seems to not release.  This could cause memory usage to increase
     ## with newly loaded images when using the evora camera.
     def openImage(self, event):
@@ -143,14 +145,22 @@ class Evora(wx.Frame):
         dialog.Destroy()
         #print answer
         if answer == wx.ID_OK:
-            #if(self.protocol is not None):
-            #    self.protocol.sendLine("shutdown")
+            if(self.protocol is not None):
+                d = self.protocol.sendCommand("shutdown")
+                d.addCallback(self.quit)
+                #d.callback("Evora has shut down")
             self.Destroy()
             reactor.stop()
+    
+    def quit(self, msg):
+        print msg
+        self.Destroy()
+        reactor.stop()
 
     def onHelp(self, event):
-        self.protocol.sendLine("shutdown")
-        print "Help"
+        # start temperature reporting thread
+        thread.start_new_thread(self.takeImage.tempInstance.watchTemp, ())
+        #print "Help"
 
     def onRefresh(self, event):
         self.takeImage.filterInstance.refreshList()
@@ -441,6 +451,7 @@ class Scripting(wx.Panel): # 3rd tab that handles scripting
 class EvoraForwarder(basic.LineReceiver):
     def __init__(self):
         self.output = None
+        self._deferreds = {}
 
     def dataReceived(self, data):
         gui = self.factory.gui
@@ -451,8 +462,18 @@ class EvoraForwarder(basic.LineReceiver):
 
         if gui:
             val = gui.log.logInstance.logBox.GetValue()
+            #print val
             gui.log.logInstance.logBox.SetValue(val + data)
             gui.log.logInstance.logBox.SetInsertionPointEnd()
+            sep_data = data.split(" ")
+            if sep_data[0] in self._deferreds:
+                self._deferreds.pop(sep_data[0]).callback(sep_data[1])
+
+    def sendCommand(self, data):
+        self.sendLine(data)
+        d = self._deferreds[data.split(" ")[0]] = defer.Deferred()
+        #d.callback(data)
+        return d
 
     def connectionMade(self):
         self.output = self.factory.gui.log.logInstance.logBox
