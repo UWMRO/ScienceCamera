@@ -148,9 +148,9 @@ class Evora(wx.Frame):
             if(self.protocol is not None):
                 d = self.protocol.sendCommand("shutdown")
                 d.addCallback(self.quit)
-                #d.callback("Evora has shut down")
-            self.Destroy()
-            reactor.stop()
+
+            #self.Destroy()
+            #reactor.stop()
     
     def quit(self, msg):
         print msg
@@ -472,7 +472,6 @@ class EvoraForwarder(basic.LineReceiver):
     def sendCommand(self, data):
         self.sendLine(data)
         d = self._deferreds[data.split(" ")[0]] = defer.Deferred()
-        #d.callback(data)
         return d
 
     def connectionMade(self):

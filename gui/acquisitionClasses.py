@@ -319,29 +319,20 @@ class TempControl(wx.Panel):
     def watchTemp(self):
         # create an infinite while loop
         while True:
-
-            # sendLine for temp and get from the log txt ctrl for now
             d = self.protocol.sendCommand("temp")
             d.addCallback(self.callbackTemp)
-            #lines = self.parent.parent.parent.log.logInstance.logBox.GetValue()
-            #print lines
-            #line = lines.split("\n")[-1]
-            #val = line.split(",")[2]
-            #print val
-
-            # update status on temp
-
-            # based on temp change bitmap color
-        
-            # put thread to sleep; on wake up repeats
+            #  put thread to sleep; on wake up repeats
             time.sleep(5)
     
     def callbackTemp(self, msg):
         #print msg
-        temp = msg.split(",")[2]  #  parser sends "temp statsOnTemp" and data forwarder sends statsOnTemp so this grabs the data
+        temp = msg.split(",")[2]  #  parser sends stats on temperture where I grab that temp
         temp = str(int(round(float(temp))))
         
-        self.parent.parent.parent.stats.SetStatusText("Current Temp:            "+ temp +" C", 0)
+        self.parent.parent.parent.stats.SetStatusText("Current Temp:            " + temp + " C", 0)
+        
+        # based on temp change bitmap color
+        
         #print temp
 
 
