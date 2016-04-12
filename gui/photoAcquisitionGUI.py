@@ -27,6 +27,10 @@ wxreactor.install()
 from twisted.internet import reactor, defer
 from twisted.protocols import basic
 
+
+## Global Variables
+app = None
+
 # Frame class.
 class Evora(wx.Frame):
 
@@ -34,6 +38,7 @@ class Evora(wx.Frame):
         wx.Frame.__init__(self, None, -1, "Evora Acquisition GUI", size = (600, 450))
 
         self.protocol = None # client protocol
+        self.connection = None
 
         panel = wx.Panel(self)
         notebook = wx.Notebook(panel)
@@ -75,10 +80,16 @@ class Evora(wx.Frame):
         binningSub.Append(1120, "1x1", "Set CCD readout binning", kind=wx.ITEM_RADIO)
         binningSub.Append(1121, "2x2", "Set CCD readout binning", kind=wx.ITEM_RADIO)
 
+        cameraSub = wx.Menu()
+        cameraSub.Append(1130, "&Connect", "Connect to camera")
+        cameraSub.Append(1131, "&Disconnet", "Disconnect the camera")
+        cameraSub.Append(1132, "&Shutdown", "Shutdown and disconnect from camera")
+
         # create main menus
         fileMenu = wx.Menu()
         fileMenu.AppendMenu(1001, "&Filter", filterSub)
         fileMenu.AppendMenu(1002, "&Binning", binningSub)
+        fileMenu.AppendMenu(1003, "&Camera", cameraSub)
         fileMenu.Append(1000, "&Exit", "Quit from Evora")
 
         viewMenu = wx.Menu()
@@ -125,6 +136,9 @@ class Evora(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onRefresh, id=1111)
         self.Bind(wx.EVT_MENU, self.on1x1, id=1120)
         self.Bind(wx.EVT_MENU, self.on2x2, id=1121)
+        self.Bind(wx.EVT_MENU, self.onConnect, id=1130)
+        self.Bind(wx.EVT_MENU, self.onDisconnect, id=1131)
+        self.Bind(wx.EVT_MENU, self.onShutdown, id=1132)
         #self.Bind(wx.EVT_CLOSE, self.onClose)
 
         #wx.EVT_CLOSE(self, lambda evt: reactor.stop())
@@ -174,6 +188,20 @@ class Evora(wx.Frame):
         self.binning = "2"
         self.stats.SetStatusText("Binning Type: 2x2", 2)
 
+    def onConnect(self, event):
+        print "Connecting"
+        reactor.run()
+        self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
+        
+        
+    def onDisconnect(self, event):
+        print "Disconnecting"
+        self.connection.disconnect()
+        reactor.stop()
+        
+
+    def onShutdown(self, event):
+        pass
 
 
 class ImageWindow(wx.Frame):
@@ -501,6 +529,6 @@ if __name__ == "__main__":
     #app.frame2.Show()
 
     reactor.registerWxApp(app)
-    reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
+    #reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
     reactor.run()
     app.MainLoop()
