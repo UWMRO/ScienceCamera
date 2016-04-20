@@ -232,6 +232,7 @@ class TempControl(wx.Panel):
 
         self.protocol = None
         self.parent = parent
+        self.isConnected = False
 
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
@@ -318,7 +319,7 @@ class TempControl(wx.Panel):
 
     def watchTemp(self):
         # create an infinite while loop
-        while True:
+        while self.isConnected:
             d = self.protocol.sendCommand("temp")
             d.addCallback(self.callbackTemp)
             #  put thread to sleep; on wake up repeats

@@ -16,7 +16,8 @@ import numpy as np
 from scipy import stats
 import EnhancedStatusBar
 import sys
-import thread
+import threading
+#import thread
 
 # twisted imports
 from twisted.python import log
@@ -39,6 +40,8 @@ class Evora(wx.Frame):
 
         self.protocol = None # client protocol
         self.connection = None
+        self.connected = False
+        self.active_threads = [] # list of the active threads
 
         panel = wx.Panel(self)
         notebook = wx.Notebook(panel)
@@ -69,7 +72,7 @@ class Evora(wx.Frame):
         self.binning = "1"
 
         ## Menu
-        menuBar = wx.MenuBar()
+        self.menuBar = wx.MenuBar()
 
         ## Sub menus
         filterSub = wx.Menu()
@@ -81,9 +84,12 @@ class Evora(wx.Frame):
         binningSub.Append(1121, "2x2", "Set CCD readout binning", kind=wx.ITEM_RADIO)
 
         cameraSub = wx.Menu()
+        cameraSub.Append(1133, "&Startup", "Start the camera")
         cameraSub.Append(1130, "&Connect", "Connect to camera")
         cameraSub.Append(1131, "&Disconnet", "Disconnect the camera")
         cameraSub.Append(1132, "&Shutdown", "Shutdown and disconnect from camera")
+        cameraSub.Enable(1131, False)
+        cameraSub.Enable(1132, False)
 
         # create main menus
         fileMenu = wx.Menu()
@@ -99,11 +105,11 @@ class Evora(wx.Frame):
         helpMenu.Append(1300, "&Help")
 
         # add to menu bar
-        menuBar.Append(fileMenu, "&File")
-        menuBar.Append(viewMenu, "&View")
-        menuBar.Append(helpMenu, "&Help")
+        self.menuBar.Append(fileMenu, "&File")
+        self.menuBar.Append(viewMenu, "&View")
+        self.menuBar.Append(helpMenu, "&Help")
         # instantiate menubar
-        self.SetMenuBar(menuBar)
+        self.SetMenuBar(self.menuBar)
 
         ## Status Bar:  include temperature, binning type, gauge for exposure
         self.stats = EnhancedStatusBar.EnhancedStatusBar(self)
@@ -139,10 +145,13 @@ class Evora(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onConnect, id=1130)
         self.Bind(wx.EVT_MENU, self.onDisconnect, id=1131)
         self.Bind(wx.EVT_MENU, self.onShutdown, id=1132)
+        self.Bind(wx.EVT_MENU, self.onStartup, id=1133)
         #self.Bind(wx.EVT_CLOSE, self.onClose)
 
         #wx.EVT_CLOSE(self, lambda evt: reactor.stop())
         
+        self.disableButtons(True)
+
         panel.SetSizer(sizer)
         panel.Layout()
 
@@ -159,22 +168,26 @@ class Evora(wx.Frame):
         dialog.Destroy()
         #print answer
         if answer == wx.ID_OK:
-            if(self.protocol is not None):
-                d = self.protocol.sendCommand("shutdown")
-                d.addCallback(self.quit)
+            self.quit()
+            #if(self.protocol is not None):
+            #    d = self.protocol.sendCommand("shutdown")
+            #    d.addCallback(self.quit)
 
             #self.Destroy()
             #reactor.stop()
     
-    def quit(self, msg):
+    def quit(self):
         print msg
+        if self.connected:
+            self.connection.disconnect()
         self.Destroy()
         reactor.stop()
 
     def onHelp(self, event):
         # start temperature reporting thread
-        thread.start_new_thread(self.takeImage.tempInstance.watchTemp, ())
-        #print "Help"
+        #thread.start_new_thread(self.takeImage.tempInstance.watchTemp, ())
+        print "Help"
+        
 
     def onRefresh(self, event):
         self.takeImage.filterInstance.refreshList()
@@ -190,18 +203,80 @@ class Evora(wx.Frame):
 
     def onConnect(self, event):
         print "Connecting"
-        reactor.run()
+        #reactor.run()
         self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
-        
+        self.connected = True
+
+        # start temperature thread
+        t = threading.Thread(target=self.takeImage.tempInstance.watchTemp, args=())
+        self.takeImage.tempInstance.isConnected = True # setups infinite loop in watchTemp method
+        t.start()
+        self.active_threads.append(t)
+
+        # Enable disconnect and shutdown and disable connect menu items
+        self.enableConnections(False, True, True)
+        self.disableButtons(False)
         
     def onDisconnect(self, event):
         print "Disconnecting"
+        self.takeImage.tempInstance.isConnected = False # closes infinite loop in watchTemp method
+        self.stats.SetStatusText("Current Temp:            ... C", 0)
+        self.joinThreads()
         self.connection.disconnect()
-        reactor.stop()
+        self.connected = False
+        self.enableConnections(True, False, False)
+        self.disableButtons(True)
+        #reactor.stop()
         
+    def onStartup(self, event):
+        #self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
+        d = self.protocol.sendCommand("connect")
+        d.addCallback(self.callStartup)
+
+    def callStartup(self, msg):
+        self.connected = True
+        self.enableConnections(False, True, True)
+        print "Started up"
 
     def onShutdown(self, event):
-        pass
+        if(self.protocol is not None):
+            d = self.protocol.sendCommand("shutdown")
+            d.addCallback(self.callShutdown)
+            self.disableButtons(True)
+
+    def callShutdown(self, msg):
+        self.takeImage.tempInstance.isConnected = False
+        self.stats.SetStatusText("Current Temp:            ... C", 0)
+        self.joinThreads()
+        self.connection.disconnect()
+        self.connected = False
+        self.enableConnections(True, False, False)
+    
+
+    def enableConnections(self, con, discon, shut):
+        # get file menu
+        fileMenu = self.menuBar.GetMenu(0) # first index
+        # get camera sub menu
+        cameraSub = [fileMenu.FindItemById(1130), fileMenu.FindItemById(1131), fileMenu.FindItemById(1132)]
+        
+        cameraSub[0].Enable(con)
+        cameraSub[1].Enable(discon)
+        cameraSub[2].Enable(shut)
+
+    def disableButtons(self, boolean):
+        # Diable GUI functionality (expose, stop, cool, warmup, rotate to)
+        boolean = not boolean 
+        self.takeImage.exposureInstance.expButton.Enable(boolean)
+        self.takeImage.exposureInstance.stopExp.Enable(boolean)
+        
+        self.takeImage.tempInstance.tempButton.Enable(boolean)
+        self.takeImage.tempInstance.stopExp.Enable(boolean)
+
+        self.takeImage.filterInstance.filterButton.Enable(boolean)
+
+    def joinThreads(self):
+        for t in self.active_threads:
+            t.join()
 
 
 class ImageWindow(wx.Frame):
@@ -511,7 +586,8 @@ class EvoraClient(protocol.ClientFactory):
         self.protocol = EvoraForwarder
 
     def clientConnectionLost(self, transport, reason):
-        reactor.stop()
+        print "connection Lost"
+        #reactor.stop()
 
     def clientConnectionFailed(self, transport, reason):
         reactor.stop()
