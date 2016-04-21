@@ -15,12 +15,27 @@ from twisted.internet import protocol, reactor
 
 class EvoraServer(basic.LineReceiver):
     def connectionMade(self):
-        self.sendLine("Welcome to the Evora Server")
+        """
+        If you send more than one line then the callback to start the gui completely will fail.
+        """
         self.factory.clients.append(self)
+        #self.sendMessage("Welcome to the Evora Server")
+        if len(self.factory.clients) is 1:
+            #self.sendMessage("Starting camera")
+            ep = EvoraParser()
+            command = ep.parse("connect")
+            self.sendMessage("startup 1") # activate the callback to give full control to the camera.
+        else:
+            self.sendMessage("startup 1") # for when there is more than one client open
 
     def connectionLost(self, reason):
-        self.sendLine("Connection Lost")
-        self.factory.clients.remove(self)
+        #self.sendLine("Connection Lost")
+        if len(self.factory.clients) is 1:
+            ep = EvoraParser()
+            command = ep.parse("shutdown")
+            #self.sendMessage(command)
+        
+        self.factory.clients.remove(self)            
 
     def lineReceived(self, line):
         print "received", line
@@ -203,8 +218,8 @@ class Evora(object):
 
 
 if __name__=="__main__":
-    ep = Evora()
-    ep.startup()
+    #ep = Evora()
+    #ep.startup()
     reactor.listenTCP(5502, EvoraClient())
     reactor.run()
 

@@ -86,7 +86,7 @@ class Evora(wx.Frame):
         cameraSub = wx.Menu()
         cameraSub.Append(1133, "&Startup", "Start the camera")
         cameraSub.Append(1130, "&Connect", "Connect to camera")
-        cameraSub.Append(1131, "&Disconnet", "Disconnect the camera")
+        cameraSub.Append(1131, "&Disconnect", "Disconnect the camera")
         cameraSub.Append(1132, "&Shutdown", "Shutdown and disconnect from camera")
         cameraSub.Enable(1131, False)
         cameraSub.Enable(1132, False)
@@ -205,6 +205,23 @@ class Evora(wx.Frame):
         print "Connecting"
         #reactor.run()
         self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
+        
+        '''
+        self.connected = True
+
+        # start temperature thread
+        t = threading.Thread(target=self.takeImage.tempInstance.watchTemp, args=())
+        self.takeImage.tempInstance.isConnected = True # setups infinite loop in watchTemp method
+        t.start()
+        self.active_threads.append(t)
+
+        # Enable disconnect and shutdown and disable connect menu items
+        self.enableConnections(False, True, True)
+        self.disableButtons(False)
+        '''
+        
+    def onConnectCallback(self, msg):
+        print msg, "Startup callback entered"
         self.connected = True
 
         # start temperature thread
@@ -222,11 +239,18 @@ class Evora(wx.Frame):
         self.takeImage.tempInstance.isConnected = False # closes infinite loop in watchTemp method
         self.stats.SetStatusText("Current Temp:            ... C", 0)
         self.joinThreads()
-        self.connection.disconnect()
+        self.connection.disconnect() # this is the acutal disconnection from the server'
+        """
         self.connected = False
         self.enableConnections(True, False, False)
         self.disableButtons(True)
+        """
         #reactor.stop()
+        
+    def onDisconnectCallback(self):
+        self.connected = False
+        self.enableConnections(True, False, False) # edit the connections menu in the file menu
+        self.disableButtons(True)
         
     def onStartup(self, event):
         #self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
@@ -579,6 +603,17 @@ class EvoraForwarder(basic.LineReceiver):
 
     def connectionMade(self):
         self.output = self.factory.gui.log.logInstance.logBox
+        
+        ## Add a callback that will open up the rest of the gui when the camera is done setting up
+        gui = self.factory.gui # get gui for adding the callback method
+        d = defer.Deferred()
+        d.addCallback(gui.onConnectCallback)
+        self._deferreds["startup"] = d
+
+    def connectionLost(self, reason):
+        ## Add a "callback" that will close down the gui functionality when camera connection is closed.
+        gui = self.factory.gui
+        gui.onDisconnectCallback()
 
 class EvoraClient(protocol.ClientFactory):
     def __init__(self, gui):
