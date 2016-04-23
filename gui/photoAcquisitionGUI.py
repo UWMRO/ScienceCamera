@@ -154,9 +154,9 @@ class Evora(wx.Frame):
         self.disableButtons(True)
 
         # Add and set icon
-        logo = wx.StaticBitmap(None, -1, wx.Bitmap("evora_logo"))
-        #icon = wx.Icon(logo, wx.BITMAP_TYPE_ICO)
-        self.SetIcon(logo)
+        #logo = wx.StaticBitmap(None, -1, wx.Bitmap("evora_logo"))
+        ico = wx.Icon("evora_logo_circ.ico", wx.BITMAP_TYPE_ICO)
+        self.SetIcon(ico)
 
         panel.SetSizer(sizer)
         panel.Layout()
