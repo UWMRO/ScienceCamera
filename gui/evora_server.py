@@ -16,7 +16,7 @@ from twisted.internet import protocol, reactor
 class EvoraServer(basic.LineReceiver):
     def connectionMade(self):
         """
-        If you send more than one line then the callback to start the gui completely will fail.
+        If you send more than one line then the callback to start the gui will completely fail.
         """
         self.factory.clients.append(self)
         #self.sendMessage("Welcome to the Evora Server")
@@ -117,14 +117,22 @@ class Evora(object):
                          'NotReached', 'OutOfRange', 'NotSupported',
                          'WasStableNowDrifting')
 
-        result = andor.GetTemperatureF()
+        # 20037 is NotReached
+        # 20035 is NotStabalized
+        # 20036 is Stabalized
+        # 20034 is Off  
+
+        result = andor.GetTemperatureF() 
 	res = coolerStatusNames[result[0] - andor.DRV_TEMPERATURE_OFF]
         print coolerStatusNames[result[0] - andor.DRV_TEMPERATURE_OFF], result[1]
-        return result
+        return_res = "getTEC " + str(result[0]) + "," + str(result[1])
+        return return_res
 
     def setTEC(self,setPoint=None):
 
-        result = self.getTEC()
+        result = self.getTEC().split(" ")[1].split(",")
+        result = [int(result[0]), float(result[1])]
+        print result
 
 	print setPoint
 
@@ -147,8 +155,13 @@ class Evora(object):
 	return "1"
 
     def getTemp(self):
-	result = andor.GetTemperatureStatus()
-	txt = ""
+        # 20037 is NotReached
+        # 20035 is NotStabalized
+        # 20036 is Stabalized
+        # 20034 is Off  
+        result = andor.GetTemperatureStatus()
+        mode = andor.GetTemperatureF()
+        txt = "" + str(mode[0])
 	print result
 	for e in result:
 		txt = txt+","+str(e)

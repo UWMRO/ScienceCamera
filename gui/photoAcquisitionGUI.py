@@ -84,12 +84,12 @@ class Evora(wx.Frame):
         binningSub.Append(1121, "2x2", "Set CCD readout binning", kind=wx.ITEM_RADIO)
 
         cameraSub = wx.Menu()
-        cameraSub.Append(1133, "&Startup", "Start the camera")
+        #cameraSub.Append(1133, "&Startup", "Start the camera")
         cameraSub.Append(1130, "&Connect", "Connect to camera")
         cameraSub.Append(1131, "&Disconnect", "Disconnect the camera")
-        cameraSub.Append(1132, "&Shutdown", "Shutdown and disconnect from camera")
+        #cameraSub.Append(1132, "&Shutdown", "Shutdown and disconnect from camera")
         cameraSub.Enable(1131, False)
-        cameraSub.Enable(1132, False)
+        #cameraSub.Enable(1132, False)
 
         # create main menus
         fileMenu = wx.Menu()
@@ -121,10 +121,10 @@ class Evora(wx.Frame):
         self.stats.SetStatusText("Exp. Status:", 1)
         self.expGauge = wx.Gauge(self.stats, id=1, range=100, size=(110, -1))
         self.stats.AddWidget(self.expGauge, pos=1, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-        bitmap = wx.StaticBitmap(self.stats, -1, size=(90, 0))
-        bitmap.SetBitmap(wx.Bitmap('greenCirc.png'))
+        self.bitmap = wx.StaticBitmap(self.stats, -1, wx.Bitmap("greenCirc.png"),size=(20, 40))
+        #self.bitmap.SetBitmap(wx.Bitmap('greenCirc.png'))
         #tempText = wx.StaticText(self.stats, -1, label="50 C")
-        self.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        self.stats.AddWidget(self.bitmap, pos=0)#, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
         #self.stats.AddWidget(tempText, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN)
 
 
@@ -144,8 +144,8 @@ class Evora(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on2x2, id=1121)
         self.Bind(wx.EVT_MENU, self.onConnect, id=1130)
         self.Bind(wx.EVT_MENU, self.onDisconnect, id=1131)
-        self.Bind(wx.EVT_MENU, self.onShutdown, id=1132)
-        self.Bind(wx.EVT_MENU, self.onStartup, id=1133)
+        #self.Bind(wx.EVT_MENU, self.onShutdown, id=1132)
+        #self.Bind(wx.EVT_MENU, self.onStartup, id=1133)
         #self.Bind(wx.EVT_CLOSE, self.onClose)
 
         #wx.EVT_CLOSE(self, lambda evt: reactor.stop())
@@ -231,7 +231,7 @@ class Evora(wx.Frame):
         self.active_threads.append(t)
 
         # Enable disconnect and shutdown and disable connect menu items
-        self.enableConnections(False, True, True)
+        self.enableConnections(False, True)
         self.disableButtons(False)
         
     def onDisconnect(self, event):
@@ -249,19 +249,23 @@ class Evora(wx.Frame):
         
     def onDisconnectCallback(self):
         self.connected = False
-        self.enableConnections(True, False, False) # edit the connections menu in the file menu
+        self.enableConnections(True, False) # edit the connections menu in the file menu
         self.disableButtons(True)
         
+    """
     def onStartup(self, event):
         #self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
         d = self.protocol.sendCommand("connect")
         d.addCallback(self.callStartup)
+    
 
     def callStartup(self, msg):
         self.connected = True
-        self.enableConnections(False, True, True)
+        self.enableConnections(False, True)
         print "Started up"
-
+    """
+    
+    """
     def onShutdown(self, event):
         if(self.protocol is not None):
             d = self.protocol.sendCommand("shutdown")
@@ -274,18 +278,18 @@ class Evora(wx.Frame):
         self.joinThreads()
         self.connection.disconnect()
         self.connected = False
-        self.enableConnections(True, False, False)
-    
+        self.enableConnections(True, False)
+    """
 
-    def enableConnections(self, con, discon, shut):
+    def enableConnections(self, con, discon):
         # get file menu
         fileMenu = self.menuBar.GetMenu(0) # first index
         # get camera sub menu
-        cameraSub = [fileMenu.FindItemById(1130), fileMenu.FindItemById(1131), fileMenu.FindItemById(1132)]
+        cameraSub = [fileMenu.FindItemById(1130), fileMenu.FindItemById(1131)]
         
         cameraSub[0].Enable(con)
         cameraSub[1].Enable(discon)
-        cameraSub[2].Enable(shut)
+       # cameraSub[2].Enable(shut)
 
     def disableButtons(self, boolean):
         # Diable GUI functionality (expose, stop, cool, warmup, rotate to)
