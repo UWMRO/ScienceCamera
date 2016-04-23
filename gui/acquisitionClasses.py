@@ -326,7 +326,6 @@ class TempControl(wx.Panel):
 
     def watchTemp(self):
         # create an infinite while loop
-        self.mode = 0 # reference to current mode which by default is off (20034)
         while self.isConnected:
             d = self.protocol.sendCommand("temp")
             d.addCallback(self.callbackTemp)
@@ -337,47 +336,25 @@ class TempControl(wx.Panel):
         #print msg
         temp = msg.split(",")[2]  #  parser sends stats on temperture where I grab that temp
         temp = str(int(round(float(temp))))
-        currentMode = int(msg.split(",")[0])
-        #mode = int(msg.split(",")[0])
-        print currentMode,type(currentMode),self.mode, type(self.mode)
-        #stats = self.parent.parent.parent.stats
+        mode = int(msg.split(",")[0])
         self.parent.parent.parent.stats.SetStatusText("Current Temp:            " + temp + " C", 0)
         
-
-
         ## based on temp change bitmap color
         # 20037 is NotReached
         # 20035 is NotStabalized
         # 20036 is Stabalized
         # 20034 is Off  
-        #bitmap = self.parent.parent.parent.bitmap
-        #bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, size=(90, 0))
-        print self.mode != currentMode
-        if(self.mode != currentMode):
-            print "entered bitmap change"
-            #self.parent.parent.parent.bitmap.Destroy()
-            #self.parent.parent.parent.bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, size=(90,0))
-            if(currentMode == 20034):
-                #self.parent.parent.parent.bitmap.SetBitmap(wx.Bitmap('greenCirc.png'))
-                #self.parent.parent.parent.stats.AddWidget(self.parent.parent.parent.bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-                bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('greenCirc.png'), size=(20,40))
-                self.parent.parent.parent.stats.AddWidget(bitmap, pos=0)
-            if(currentMode == 20037):
-                #self.parent.parent.parent.bitmap.SetBitmap(wx.Bitmap('redCirc.png'))
-                #self.parent.parent.parent.stats.AddWidget(self.parent.parent.parent.bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-                bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('redCirc.png'), size=(20,40))
-                self.parent.parent.parent.stats.AddWidget(bitmap, pos=0)
-            if(currentMode == 20035):
-                self.parent.parent.parent.bitmap.SetBitmap(wx.Bitmap('yellowCirc.png'))
-                self.parent.parent.parent.stats.AddWidget(self.parent.parent.parent.bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-            if(currentMode == 20036):
-                self.parent.parent.parent.bitmap.SetBitmap(wx.Bitmap('blueCirc.png'))
-                self.parent.parent.parent.stats.AddWidget(self.parent.parent.parent.bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-            self.mode = currentMode
-
-        #self.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-        #print temp
-
+        if(mode == 20034 and float(temp) >= 0):
+            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('greenCirc.png'), size=(90,17))
+        if(mode == 20037 or (mode == 20034 and float(temp) < 0)):
+            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('redCirc.png'), size=(90,17))
+        if(mode == 20035):
+            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('yellowCirc.png'), size=(90,17))
+        if(mode == 20036):
+            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('blueCirc.png'), size=(90,17))
+        
+        self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        
 
         
 

@@ -121,10 +121,11 @@ class Evora(wx.Frame):
         self.stats.SetStatusText("Exp. Status:", 1)
         self.expGauge = wx.Gauge(self.stats, id=1, range=100, size=(110, -1))
         self.stats.AddWidget(self.expGauge, pos=1, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-        self.bitmap = wx.StaticBitmap(self.stats, -1, wx.Bitmap("greenCirc.png"),size=(20, 40))
+        
+        #self.bitmap = wx.StaticBitmap(self.stats, -1, wx.Bitmap("greenCirc.png"),size=(90, 17))
         #self.bitmap.SetBitmap(wx.Bitmap('greenCirc.png'))
         #tempText = wx.StaticText(self.stats, -1, label="50 C")
-        self.stats.AddWidget(self.bitmap, pos=0)#, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        #self.stats.AddWidget(self.bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
         #self.stats.AddWidget(tempText, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN)
 
 
@@ -152,8 +153,15 @@ class Evora(wx.Frame):
         
         self.disableButtons(True)
 
+        # Add and set icon
+        logo = wx.StaticBitmap(None, -1, wx.Bitmap("evora_logo"))
+        #icon = wx.Icon(logo, wx.BITMAP_TYPE_ICO)
+        self.SetIcon(logo)
+
         panel.SetSizer(sizer)
         panel.Layout()
+
+
 
         
     ## Memory upon destruction seems to not release.  This could cause memory usage to increase
@@ -237,7 +245,11 @@ class Evora(wx.Frame):
     def onDisconnect(self, event):
         print "Disconnecting"
         self.takeImage.tempInstance.isConnected = False # closes infinite loop in watchTemp method
+        
         self.stats.SetStatusText("Current Temp:            ... C", 0)
+        bitmap = wx.StaticBitmap(self.stats, -1, size=(20,40))
+        self.stats.AddWidget(bitmap, pos=0)
+        
         self.joinThreads()
         self.connection.disconnect() # this is the acutal disconnection from the server'
         """
