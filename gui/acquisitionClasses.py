@@ -6,6 +6,7 @@ import AddLinearSpacer as als # get useful methods
 import numpy as np # get NumPy
 import EnhancedStatusBar # allows widgets to be inserted into wxPython status bar
                          # probably won't work on wxPython 3.x
+import threading
 
 ## Class that handles widgets related to exposure
 class Exposure(wx.Panel):
@@ -18,7 +19,10 @@ class Exposure(wx.Panel):
 
         self.protocol = None
         self.parent = parent
-        
+        self.active_threads = []
+        self.startTimer = 1
+        self.endTimer = 0
+
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
         self.horzSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -40,6 +44,7 @@ class Exposure(wx.Panel):
         self.stopExp = wx.Button(self, id=2005, label="Stop", size=(60,-1))
         self.expBox = wx.StaticBox(self, id=2006, label = "Exposure Controls", size=(100,100), style=wx.ALIGN_CENTER)
         self.expBoxSizer = wx.StaticBoxSizer(self.expBox, wx.VERTICAL)
+        self.timer = wx.Timer(self, id=2007)
         #####
 
         ##### Line up smaller sub sizers
@@ -83,6 +88,7 @@ class Exposure(wx.Panel):
         self.Bind(wx.EVT_TEXT, self.onExpTime, id=2003) # bind self.expValue
         self.Bind(wx.EVT_BUTTON, self.onExpose, id=2004) # bind self.expButton
         self.Bind(wx.EVT_BUTTON, self.onStop, id=2005) # bind self.stopExp
+        self.Bind(wx.EVT_TIMER, self.onExposeTimer, id=2007)
         ###
 
         self.SetSizer(self.vertSizer)
@@ -126,7 +132,64 @@ class Exposure(wx.Panel):
         if als.isNumber(self.timeToSend) and self.nameToSend is not "":
             #self.protocol.sendLine("Exposing with name " + str(self.nameToSend) + " and time " + str(self.timeToSend) + " s")
             line = self.getAttributesToSend()
-            self.protocol.sendLine(line)
+            d = self.protocol.sendCommand(line)
+            d.addCallback(self.exposeCallback)
+            # start up progress bar updating with wx Timer
+            t = threading.Thread(target=self.exposeTimer, args=())
+            t.start()
+            self.active_threads.append(t)
+            
+
+    def exposeTimer(self):
+        # get exposure time 
+        expTime = int(self.timeToSend)
+        
+        # get the max range for progress bar
+        self.endTimer = int(expTime / (10.0*10**-3)) # timer will update every 10 ms
+        
+        # set exposure progress bar range
+        self.parent.parent.parent.expGauge.SetRange(self.endTimer)
+
+        # start timer
+        self.timer.Start(10) # 10 millisecond intervals
+
+    def onExposeTimer(self, event):
+        if(self.startTimer == self.endTimer - 1):
+            self.timer.Stop()
+            self.startTimer = 0
+        else:
+            # get gauge value
+            val = self.parent.parent.parent.expGauge.GetValue()
+            self.parent.parent.parent.expGauge.SetValue(val + 1)
+            
+
+    def exposeCallback(self, msg):
+        ### May need to thread to a different method if to slow
+
+        ## complete progress bar for image acquisition
+        # check to see if timer is still going and stop it (callback might come in early)
+        if(self.timer.IsRunning()):
+            self.timer.Stop()
+        # join threads
+        self.joinThreads()
+        # finish out gauge and then reset it
+        self.parent.parent.parent.expGauge.SetValue(self.endTimer)
+
+        # get name of image and path
+        filePath = msg.split("/")
+        name = filePath[-1]
+        path = ""
+        for i in filePath[:-1]:
+            path += i + "/"
+            
+        print path, name
+
+        # copy fits image to another file
+
+        # write fits header
+
+        # at the end of the callback reset the gauge (signifies a reset for exposure)
+        self.parent.parent.parent.expGauge.SetValue(0)
 
     def getAttributesToSend(self):
         # get binning type
@@ -163,6 +226,9 @@ class Exposure(wx.Panel):
         """
         print "Stop Exposure"
 
+    def joinThreads(self):
+        for t in self.active_threads:
+            t.join()
 
 # Class that handles Radio boxes for image types and exposure types
 class TypeSelection(wx.Panel):

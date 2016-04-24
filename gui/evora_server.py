@@ -215,7 +215,7 @@ class Evora(object):
 	filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
         hdu.writeto(filename,clobber=True)
         print "wrote: {}".format(filename)
-	return "1"
+	return "expose " + filename
 
 	def abort(self):
 		"""
