@@ -5,9 +5,11 @@ import andor
 import numpy as np
 import pyfits
 import time
+import threading
+from Queue import Queue
 
 from twisted.protocols import basic
-from twisted.internet import protocol, reactor
+from twisted.internet import protocol, reactor, threads
 
 #import ProtoParser
 
@@ -40,10 +42,18 @@ class EvoraServer(basic.LineReceiver):
     def lineReceived(self, line):
         print "received", line
         ep = EvoraParser()
-        command = ep.parse(line)
-        if command != None:
-            self.sendMessage(str(command))
+        #command = ep.parse(line)
+        d = threads.deferToThread(ep.parse, line)
+        d.addCallback(self.sendData)
+        #if command != None:
+        #    self.sendMessage(str(command))
+    
+    def sendData(self, data):
+        print "Sending", data, "from server."
+        if data != None:
+            self.sendMessage(str(data))
            
+
     def sendMessage(self, message):
         for client in self.factory.clients:
             client.sendLine(message)
@@ -80,6 +90,8 @@ class EvoraParser(object):
             expnum = int(input[2])
             itime = int(input[3]) # why int?
             bin = int(input[4])
+            #queue = Queue()
+            
             return self.e.expose(expnum, itime, bin)
 
 
@@ -215,6 +227,7 @@ class Evora(object):
 	filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
         hdu.writeto(filename,clobber=True)
         print "wrote: {}".format(filename)
+        #queue.put("expose " + filename)
 	return "expose " + filename
 
 	def abort(self):
@@ -229,7 +242,10 @@ class Evora(object):
 		"""
 		pass
 
-
+"""
+class ThreadWithReturn(threading.Thread):
+    def __init__
+"""
 if __name__=="__main__":
     #ep = Evora()
     #ep.startup()

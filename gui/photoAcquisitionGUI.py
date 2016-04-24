@@ -42,7 +42,8 @@ class Evora(wx.Frame):
         self.connection = None
         self.connected = False
         self.active_threads = [] # list of the active threads
-
+        self.imageOpen = False # keep track of whether the image window is open
+        self.window = None # holds the image window
         panel = wx.Panel(self)
         notebook = wx.Notebook(panel)
 
@@ -169,6 +170,7 @@ class Evora(wx.Frame):
     def openImage(self, event):
         self.window = ImageWindow(self)
         self.window.Show()
+        self.imageOpen = True
 
     def onClose(self, event):
         dialog = wx.MessageDialog(None, "Close Evora GUI?", "Closing Evora", wx.OK | wx.CANCEL|wx.ICON_QUESTION)
@@ -335,10 +337,10 @@ class ImageWindow(wx.Frame):
 
         self.panel = DrawImage(self)
 
-        self.data = self.panel.getData(self.image)
+        #self.data = self.panel.getData(self.image)
 
         ### Put in matplotlib imshow window
-        self.panel.plotImage(self.data, 6.0, 'gray')
+        #self.panel.plotImage(self.data, 6.0, 'gray')
         self.devSlider = wx.Slider(self, id=-1, value=60, minValue=1, maxValue=200, size=(250,-1),\
                          style=wx.SL_HORIZONTAL)
         self.invert = wx.CheckBox(self, id=-1, label="Invert")
@@ -386,6 +388,7 @@ class ImageWindow(wx.Frame):
         self.panel.closeFig()
         self.Destroy()
         #self.Close()
+        self.parent.openImage = False
 
     def onInvert(self, event):
         value = event.IsChecked()
@@ -597,6 +600,11 @@ class EvoraForwarder(basic.LineReceiver):
         self._deferreds = {}
 
     def dataReceived(self, data):
+        print "Receieved:", data
+        sep_data = data.split(" ")
+        print sep_data
+
+
         gui = self.factory.gui
         
         gui.protocol = self
@@ -608,9 +616,11 @@ class EvoraForwarder(basic.LineReceiver):
             #print val
             gui.log.logInstance.logBox.SetValue(val + data)
             gui.log.logInstance.logBox.SetInsertionPointEnd()
-            sep_data = data.split(" ")
-            if sep_data[0] in self._deferreds:
-                self._deferreds.pop(sep_data[0]).callback(sep_data[1])
+            #sep_data = data.split(" ")
+            #print sep_data
+        if sep_data[0] in self._deferreds:
+            self._deferreds.pop(sep_data[0]).callback(sep_data[1])
+
 
     def sendCommand(self, data):
         self.sendLine(data)
