@@ -139,21 +139,9 @@ class Exposure(wx.Panel):
             d = self.protocol.sendCommand(line)
             d.addCallback(self.exposeCallback)
             # start up progress bar updating with wx Timer
-            #t = threading.Thread(target=self.exposeTimer, args=())
-            #t1 = threading.Thread(target=self.onExposeThread, args=(line,))
-            t2 = threading.Thread(target=self.exposeTimer, args=())
-            #t1.start()
-            t2.start()
-            #self.active_threads.append(t1)
-            self.active_threads.append(t2)
-
-    def onExposeThread(self, line):
-        d = self.protocol.sendCommand(line)
-       
-        d.addCallback(self.exposeCallback)
-        
-
-        #self.exposeTimer()
+            t = threading.Thread(target=self.exposeTimer, args=())
+            t.start()
+            self.active_threads.append(t)
 
 
     def exposeTimer(self):
@@ -167,13 +155,7 @@ class Exposure(wx.Panel):
         self.parent.parent.parent.expGauge.SetRange(self.endTimer)
 
         # start timer
-        #self.timer.Start(10) # 10 millisecond intervals
-        while(self.startTimer <= self.endTimer -1):
-            val = self.parent.parent.parent.expGauge.GetValue()
-            self.parent.parent.parent.expGauge.SetValue(val + 1)
-            self.startTimer += 1
-            time.sleep(10*10**(-3))
-        self.startTimer = 0
+        self.timer.Start(10) # 10 millisecond intervals
 
     def onExposeTimer(self, event):
         if(self.startTimer == self.endTimer - 1):
@@ -188,13 +170,12 @@ class Exposure(wx.Panel):
     def exposeCallback(self, msg):
         ### May need to thread to a different method if to slow
 
-        print msg
         ## complete progress bar for image acquisition
         # check to see if timer is still going and stop it (callback might come in early)
-        #if(self.timer.IsRunning()):
-        #    self.timer.Stop()
+        if(self.timer.IsRunning()):
+            self.timer.Stop()
         # join threads
-        #self.joinThreads()
+        self.joinThreads()
         # finish out gauge and then reset it
         self.parent.parent.parent.expGauge.SetValue(self.endTimer)
 
@@ -214,19 +195,17 @@ class Exposure(wx.Panel):
         # at the end of the callback reset the gauge (signifies a reset for exposure)
         self.parent.parent.parent.expGauge.SetValue(0)
         
-
+        print self.parent.parent.parent.imageOpen
         # open image window 
         if(not self.parent.parent.parent.imageOpen):
             # create new window
-
             self.parent.parent.parent.openImage("manual open")
-            #self.parent.parent.parent.window = pag.ImageWindow(self.parent.parent.parent)
-            #self.parent.parent.parent.window.Show()
-            #self.parent.parent.parent.imageOpen = True
+
+        self.parent.parent.parent.window.panel.clear()
         data = self.parent.parent.parent.window.panel.getData(path+name)
         self.parent.parent.parent.window.panel.plotImage(data, 6.0, 'gray')
-        
-        self.joinThreads()
+        self.parent.parent.parent.window.panel.updateScreenStats()
+        self.parent.parent.parent.window.panel.refresh()
 
     def getAttributesToSend(self):
         # get binning type
@@ -253,8 +232,7 @@ class Exposure(wx.Panel):
         line += " " + str(exposeType)
         line += " " + str(self.timeToSend)
         line += " " + str(binning)
-        
-                
+            
         return line
 
     def onStop(self, event):
@@ -336,9 +314,6 @@ class TempControl(wx.Panel):
         self.protocol = None
         self.parent = parent
         self.isConnected = False
-
-        # Initialize bitmaps
-        #self.bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, size=(90, 0))
 
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)

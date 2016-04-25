@@ -327,6 +327,7 @@ class ImageWindow(wx.Frame):
         wx.Frame.__init__(self, parent, -1, "Image Window", size=(650,550))
 
         self.image = 'example.fit'
+        self.parent = parent
 
         ## Main sizers
         self.topSizer = wx.BoxSizer(wx.VERTICAL)
@@ -336,6 +337,7 @@ class ImageWindow(wx.Frame):
         self.sliderSizer = wx.BoxSizer(wx.HORIZONTAL)
 
         self.panel = DrawImage(self)
+        self.parent.imageOpen = True
 
         #self.data = self.panel.getData(self.image)
 
@@ -373,6 +375,10 @@ class ImageWindow(wx.Frame):
         self.invert.Bind(wx.EVT_CHECKBOX, self.onInvert)
         self.Bind(wx.EVT_CLOSE, self.onClose)
 
+        # Set Icon
+        ico = wx.Icon("evora_logo_circ.ico", wx.BITMAP_TYPE_ICO)
+        self.SetIcon(ico)
+
         self.SetSizer(self.topSizer)
         self.Fit()
 
@@ -385,10 +391,11 @@ class ImageWindow(wx.Frame):
         self.panel.refresh()
 
     def onClose(self, event):
+        print "entered close"
+        self.parent.imageOpen = False
         self.panel.closeFig()
         self.Destroy()
         #self.Close()
-        self.parent.openImage = False
 
     def onInvert(self, event):
         value = event.IsChecked()
@@ -405,6 +412,8 @@ class DrawImage(wx.Panel):
 
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
+
+        self.parent = parent
 
         # Create figure, plot space, and canvas for drawing fit image
         self.figure, self.axes = plt.subplots(1)
@@ -455,9 +464,20 @@ class DrawImage(wx.Panel):
     def refresh(self):
         self.canvas.draw()
         self.canvas.Refresh()
+    
+    def clear(self):
+        self.axes.clear()
 
     def getData(self, image):
         return fits.getdata(image)
+
+    def updateScreenStats(self):
+        self.parent.stats.SetStatusText("Min: %.0f"%(self.min), 0)
+        self.parent.stats.SetStatusText("Max: %.0f"%(self.max), 1)
+        self.parent.stats.SetStatusText("Mean: %.1f"%(self.mean), 2)
+        self.parent.stats.SetStatusText("Mode: %.0f"%(self.mode), 3)
+        self.parent.stats.SetStatusText("Median: %.0f"%(self.median), 4)
+
 
     def updateStats(self, data):
         self.min = np.min(data.flat)
@@ -601,8 +621,6 @@ class EvoraForwarder(basic.LineReceiver):
 
     def dataReceived(self, data):
         print "Receieved:", data
-        sep_data = data.split(" ")
-        print sep_data
 
 
         gui = self.factory.gui
@@ -618,6 +636,7 @@ class EvoraForwarder(basic.LineReceiver):
             gui.log.logInstance.logBox.SetInsertionPointEnd()
             #sep_data = data.split(" ")
             #print sep_data
+        sep_data = data.split(" ")
         if sep_data[0] in self._deferreds:
             self._deferreds.pop(sep_data[0]).callback(sep_data[1])
 
