@@ -25,7 +25,7 @@ from twisted.internet import wxreactor, protocol
 wxreactor.install()
 
 # always goes after wxreactor install
-from twisted.internet import reactor, defer
+from twisted.internet import reactor, defer, threads
 from twisted.protocols import basic
 
 
@@ -41,7 +41,7 @@ class Evora(wx.Frame):
         self.protocol = None # client protocol
         self.connection = None
         self.connected = False
-        self.active_threads = [] # list of the active threads
+        self.active_threads = {} # list of the active threads
         self.imageOpen = False # keep track of whether the image window is open
         self.window = None # holds the image window
         panel = wx.Panel(self)
@@ -88,16 +88,17 @@ class Evora(wx.Frame):
         #cameraSub.Append(1133, "&Startup", "Start the camera")
         cameraSub.Append(1130, "&Connect", "Connect to camera")
         cameraSub.Append(1131, "&Disconnect", "Disconnect the camera")
-        #cameraSub.Append(1132, "&Shutdown", "Shutdown and disconnect from camera")
+        cameraSub.Append(1132, "&Shutdown", "Shutdown and disconnect from camera")
         cameraSub.Enable(1131, False)
-        #cameraSub.Enable(1132, False)
+        cameraSub.Enable(1132, False)
 
         # create main menus
         fileMenu = wx.Menu()
         fileMenu.AppendMenu(1001, "&Filter", filterSub)
         fileMenu.AppendMenu(1002, "&Binning", binningSub)
-        fileMenu.AppendMenu(1003, "&Camera", cameraSub)
+        #fileMenu.AppendMenu(1003, "&Camera", cameraSub)
         fileMenu.Append(1000, "&Exit", "Quit from Evora")
+
 
         viewMenu = wx.Menu()
         viewMenu.Append(1200, "&Image", "Open Image Window")
@@ -107,6 +108,7 @@ class Evora(wx.Frame):
 
         # add to menu bar
         self.menuBar.Append(fileMenu, "&File")
+        self.menuBar.Append(cameraSub, "&Camera")
         self.menuBar.Append(viewMenu, "&View")
         self.menuBar.Append(helpMenu, "&Help")
         # instantiate menubar
@@ -146,7 +148,7 @@ class Evora(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on2x2, id=1121)
         self.Bind(wx.EVT_MENU, self.onConnect, id=1130)
         self.Bind(wx.EVT_MENU, self.onDisconnect, id=1131)
-        #self.Bind(wx.EVT_MENU, self.onShutdown, id=1132)
+        self.Bind(wx.EVT_MENU, self.onShutdown, id=1132)
         #self.Bind(wx.EVT_MENU, self.onStartup, id=1133)
         #self.Bind(wx.EVT_CLOSE, self.onClose)
 
@@ -194,6 +196,7 @@ class Evora(wx.Frame):
         reactor.stop()
 
     def onHelp(self, event):
+        " Open up, ideally, markdown window (or potentially html markup) that gives indepth documentations on what is what."
         # start temperature reporting thread
         #thread.start_new_thread(self.takeImage.tempInstance.watchTemp, ())
         print "Help"
@@ -216,54 +219,67 @@ class Evora(wx.Frame):
         #reactor.run()
         self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
         
-        '''
-        self.connected = True
-
-        # start temperature thread
-        t = threading.Thread(target=self.takeImage.tempInstance.watchTemp, args=())
-        self.takeImage.tempInstance.isConnected = True # setups infinite loop in watchTemp method
-        t.start()
-        self.active_threads.append(t)
-
-        # Enable disconnect and shutdown and disable connect menu items
-        self.enableConnections(False, True, True)
-        self.disableButtons(False)
-        '''
         
     def onConnectCallback(self, msg):
         print msg, "Startup callback entered"
         self.connected = True
 
-        # start temperature thread
-        t = threading.Thread(target=self.takeImage.tempInstance.watchTemp, args=())
-        self.takeImage.tempInstance.isConnected = True # setups infinite loop in watchTemp method
-        t.start()
-        self.active_threads.append(t)
-
-        # Enable disconnect and shutdown and disable connect menu items
-        self.enableConnections(False, True)
-        self.disableButtons(False)
+        # get the number of clients
+        status = int(msg.split(",")[0])
         
+        if(status == 20075): # camera is uninitialized
+            d = self.protocol.sendCommand("connect")
+            d.addCallback(self.callStartup)
+        else: # if camera is already initialized then start server like regular
+            # start temperature thread
+            t = threading.Thread(target=self.takeImage.tempInstance.watchTemp, args=(), name="temp thread")
+            self.takeImage.tempInstance.isConnected = True # setups infinite loop in watchTemp method
+            t.daemon = True
+            t.start()
+            self.active_threads["temp"] = t
+            
+            # Enable disconnect and shutdown and disable connect menu items
+            self.enableConnections(False, True, True)
+            self.disableButtons(False)
+    
+    def callStartup(self, msg):
+        result = int(msg)
+
+        self.connected = True # boolean to tell if connected to server
+        self.enableConnections(False, True, True) # grey and un-grey camera menu options
+        self.disableButtons(False) # enable gui functionality
+        self.takeImage.tempInstance.isConnected = True # setups infinite loop in watchTemp method
+        t = threading.Thread(target=self.takeImage.tempInstance.watchTemp, args=(), name="temp thread")
+        t.daemon = True
+        t.start()
+        self.active_threads["temp"] = t
+
+        print "Started up"
+    
+
+    
     def onDisconnect(self, event):
         print "Disconnecting"
         self.takeImage.tempInstance.isConnected = False # closes infinite loop in watchTemp method
         
+        bitmap = wx.StaticBitmap(self.stats, -1, size=(90,17))
+        self.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
         self.stats.SetStatusText("Current Temp:            ... C", 0)
-        bitmap = wx.StaticBitmap(self.stats, -1, size=(20,40))
-        self.stats.AddWidget(bitmap, pos=0)
         
-        self.joinThreads()
+        #t = threading.Thread(target=self.joinThreads, args=("temp",))
+        #t.start()
+        self.joinThreads("temp", demonized=True)
         self.connection.disconnect() # this is the acutal disconnection from the server'
-        """
+
         self.connected = False
         self.enableConnections(True, False, False)
         self.disableButtons(True)
-        """
+
         #reactor.stop()
         
     def onDisconnectCallback(self):
         self.connected = False
-        self.enableConnections(True, False) # edit the connections menu in the file menu
+        self.enableConnections(True, False, False) # edit the connections menu in the file menu
         self.disableButtons(True)
         
     """
@@ -271,15 +287,10 @@ class Evora(wx.Frame):
         #self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
         d = self.protocol.sendCommand("connect")
         d.addCallback(self.callStartup)
-    
-
-    def callStartup(self, msg):
-        self.connected = True
-        self.enableConnections(False, True)
-        print "Started up"
     """
     
-    """
+    
+    
     def onShutdown(self, event):
         if(self.protocol is not None):
             d = self.protocol.sendCommand("shutdown")
@@ -288,22 +299,27 @@ class Evora(wx.Frame):
 
     def callShutdown(self, msg):
         self.takeImage.tempInstance.isConnected = False
+        
+        bitmap = wx.StaticBitmap(self.stats, -1, size=(90,17))
+        self.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
         self.stats.SetStatusText("Current Temp:            ... C", 0)
-        self.joinThreads()
+        
+        self.joinThreads("temp", demonized=False)
         self.connection.disconnect()
         self.connected = False
-        self.enableConnections(True, False)
-    """
+        self.enableConnections(True, False, False)
 
-    def enableConnections(self, con, discon):
+    
+
+    def enableConnections(self, con, discon, shut):
         # get file menu
-        fileMenu = self.menuBar.GetMenu(0) # first index
+        cameraSub = self.menuBar.GetMenu(1) # first index
         # get camera sub menu
-        cameraSub = [fileMenu.FindItemById(1130), fileMenu.FindItemById(1131)]
+        #cameraSub = [fileMenu.FindItemById(1130), fileMenu.FindItemById(1131)]
         
-        cameraSub[0].Enable(con)
-        cameraSub[1].Enable(discon)
-       # cameraSub[2].Enable(shut)
+        cameraSub.Enable(1130, con)
+        cameraSub.Enable(1131, discon)
+        cameraSub.Enable(1132, shut)
 
     def disableButtons(self, boolean):
         # Diable GUI functionality (expose, stop, cool, warmup, rotate to)
@@ -316,9 +332,13 @@ class Evora(wx.Frame):
 
         self.takeImage.filterInstance.filterButton.Enable(boolean)
 
-    def joinThreads(self):
-        for t in self.active_threads:
-            t.join()
+    def joinThreads(self, threadKey, demonized=False):
+        t = self.active_threads.pop(threadKey)
+        if demonized:
+            t.join(0)
+        else:
+            t.join(0)
+        print "Thread with key", threadKey, "is shutdown"
 
 
 class ImageWindow(wx.Frame):
@@ -644,6 +664,7 @@ class EvoraForwarder(basic.LineReceiver):
     def sendCommand(self, data):
         self.sendLine(data)
         d = self._deferreds[data.split(" ")[0]] = defer.Deferred()
+        #d = self._deferreds[data.split(" ")[0]] = threads.deferToThread(None)
         return d
 
     def connectionMade(self):
@@ -653,12 +674,13 @@ class EvoraForwarder(basic.LineReceiver):
         gui = self.factory.gui # get gui for adding the callback method
         d = defer.Deferred()
         d.addCallback(gui.onConnectCallback)
-        self._deferreds["startup"] = d
+        self._deferreds["status"] = d
 
     def connectionLost(self, reason):
         ## Add a "callback" that will close down the gui functionality when camera connection is closed.
-        gui = self.factory.gui
-        gui.onDisconnectCallback()
+        #gui = self.factory.gui
+        #gui.onDisconnectCallback()
+        pass
 
 class EvoraClient(protocol.ClientFactory):
     def __init__(self, gui):

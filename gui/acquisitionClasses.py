@@ -409,9 +409,11 @@ class TempControl(wx.Panel):
             d.addCallback(self.callbackTemp)
             #  put thread to sleep; on wake up repeats
             time.sleep(5)
-    
+
+ 
     def callbackTemp(self, msg):
         #print msg
+        print threading.current_thread().name
         temp = msg.split(",")[2]  #  parser sends stats on temperture where I grab that temp
         temp = str(int(round(float(temp))))
         mode = int(msg.split(",")[0])

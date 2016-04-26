@@ -5,8 +5,6 @@ import andor
 import numpy as np
 import pyfits
 import time
-import threading
-from Queue import Queue
 
 from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
@@ -22,19 +20,17 @@ class EvoraServer(basic.LineReceiver):
         """
         self.factory.clients.append(self)
         #self.sendMessage("Welcome to the Evora Server")
-        if len(self.factory.clients) is 1:
-            #self.sendMessage("Starting camera")
-            ep = EvoraParser()
-            command = ep.parse("connect")
-            self.sendMessage("startup 1") # activate the callback to give full control to the camera.
-        else:
-            self.sendMessage("startup 1") # for when there is more than one client open
+        #self.sendMessage("Starting camera")
+        ep = EvoraParser()
+        command = ep.parse("status") 
+        self.sendMessage(str(command)) # activate the callback to give full control to the camera.
+        
 
     def connectionLost(self, reason):
         #self.sendLine("Connection Lost")
-        if len(self.factory.clients) is 1:
-            ep = EvoraParser()
-            command = ep.parse("shutdown")
+        #if len(self.factory.clients) is 1:
+        #    ep = EvoraParser()
+        #    command = ep.parse("shutdown")
             #self.sendMessage(command)
         
         self.factory.clients.remove(self)            
@@ -49,7 +45,7 @@ class EvoraServer(basic.LineReceiver):
         #    self.sendMessage(str(command))
     
     def sendData(self, data):
-        print "Sending", data, "from server."
+        #print "Sending", data, "from server."
         if data != None:
             self.sendMessage(str(data))
            
@@ -84,14 +80,14 @@ class EvoraParser(object):
         if input[0] == 'shutdown':
             print "entered shutdown"
             return self.e.shutdown()
+        if input[0] == "status":
+            return self.e.getStatus()
         if input[0] == 'expose':
             # expose flat 1 10 2
             type = input[1]
             expnum = int(input[2])
             itime = int(input[3]) # why int?
-            bin = int(input[4])
-            #queue = Queue()
-            
+            bin = int(input[4])            
             return self.e.expose(expnum, itime, bin)
 
 
@@ -99,6 +95,12 @@ class Evora(object):
 
     def __init__(self):
         self.num = 0
+
+    def getStatus(self):
+        # if the first status[0] is 20075 then the camera is not initialized yet and
+        # one needs to run the startup methodg.
+        status = andor.GetStatus()
+        return "status " + str(status[0]) + "," + str(status[1])
 
     def startup(self):
 	"""
@@ -121,7 +123,7 @@ class Evora(object):
         
         print 'SetShutter:', andor.SetShutter(1,0,50,50);
 	
-	return str(init)
+	return "connect " + str(init)
 
     def getTEC(self):
         # index on [result[0] - andor.DRV_TEMPERATURE_OFF]
@@ -215,7 +217,7 @@ class Evora(object):
         print status
         while(status[1]==andor.DRV_ACQUIRING):
             status = andor.GetStatus()
-            # print status
+            # print statucs
 
         data = np.zeros(width/bin*height/bin, dtype='uint16')
         print data.shape
@@ -242,10 +244,9 @@ class Evora(object):
 		"""
 		pass
 
-"""
-class ThreadWithReturn(threading.Thread):
-    def __init__
-"""
+
+
+
 if __name__=="__main__":
     #ep = Evora()
     #ep.startup()
