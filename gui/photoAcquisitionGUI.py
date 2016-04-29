@@ -17,7 +17,12 @@ from scipy import stats
 import EnhancedStatusBar
 import sys
 import threading
+import Queue
 #import thread
+
+import signal
+#import settings
+from uuid import uuid4
 
 # twisted imports
 from twisted.python import log
@@ -27,7 +32,6 @@ wxreactor.install()
 # always goes after wxreactor install
 from twisted.internet import reactor, defer, threads
 from twisted.protocols import basic
-
 
 ## Global Variables
 app = None
@@ -221,6 +225,9 @@ class Evora(wx.Frame):
         
         
     def onConnectCallback(self, msg):
+        #msg = args[0]
+        #thread = args[1]
+
         print msg, "Startup callback entered"
         self.connected = True
 
@@ -241,7 +248,12 @@ class Evora(wx.Frame):
             # Enable disconnect and shutdown and disable connect menu items
             self.enableConnections(False, True, True)
             self.disableButtons(False)
-    
+
+        #settings.done_ids.put(threading.current_thread().name)
+        #signal.alarm(1) # signal thread is done here
+        #print "done"
+            
+
     def callStartup(self, msg):
         result = int(msg)
 
@@ -255,6 +267,10 @@ class Evora(wx.Frame):
         self.active_threads["temp"] = t
 
         print "Started up"
+
+        #settings.done_ids.put(threading.current_thread().name)
+        #signal.alarm(1)
+
     
 
     
@@ -369,13 +385,13 @@ class ImageWindow(wx.Frame):
         self.invert.SetValue(False)
         self.text = wx.StaticText(self, label='Contrast:')
 
-        self.stats = self.CreateStatusBar(5)
-        self.stats.SetStatusStyles([1,1,1,1,1])
+        self.stats = self.CreateStatusBar(4)
+        self.stats.SetStatusStyles([1,1,1,1])
         self.stats.SetStatusText("Min: %.0f"%(self.panel.min), 0)
         self.stats.SetStatusText("Max: %.0f"%(self.panel.max), 1)
         self.stats.SetStatusText("Mean: %.1f"%(self.panel.mean), 2)
-        self.stats.SetStatusText("Mode: %.0f"%(self.panel.mode), 3)
-        self.stats.SetStatusText("Median: %.0f"%(self.panel.median), 4)
+        #self.stats.SetStatusText("Mode: %.0f"%(self.panel.mode), 3)
+        self.stats.SetStatusText("Median: %.0f"%(self.panel.median), 3)
 
 
         ##  Adjust sub sizers
@@ -448,7 +464,7 @@ class DrawImage(wx.Panel):
         self.max = 0
         self.mean = 0
         self.median = 0
-        self.mode = 0
+        #self.mode = 0
         self.mad = 0
         # set sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
@@ -463,13 +479,19 @@ class DrawImage(wx.Panel):
         self.Fit()
 
     def plotImage(self, data, scale, cmap):
+        """
+        Should call updatePassedStats first before calling this.
+        """
         # get data
 
+        """
         self.min = np.min(data.flat)
         self.max = np.max(data.flat)
         self.mean = np.mean(data.flat)
         self.median = np.median(data.flat)
         self.mode = stats.mode(data.flat)[0][0]
+        """
+        #print "Reached"
 
         self.mad = np.median(np.abs(data.flat-self.median)) # median absolute deviation
         deviation = scale * self.mad
@@ -477,6 +499,8 @@ class DrawImage(wx.Panel):
         self.lower = self.median - deviation
 
         self.plot = self.axes.imshow(data, vmin=self.lower, vmax=self.upper)
+        
+        #print "Not reached"
         self.plot.set_clim(vmin=self.lower, vmax=self.upper)
         self.plot.set_cmap(cmap)
         self.figure.tight_layout()
@@ -495,9 +519,16 @@ class DrawImage(wx.Panel):
         self.parent.stats.SetStatusText("Min: %.0f"%(self.min), 0)
         self.parent.stats.SetStatusText("Max: %.0f"%(self.max), 1)
         self.parent.stats.SetStatusText("Mean: %.1f"%(self.mean), 2)
-        self.parent.stats.SetStatusText("Mode: %.0f"%(self.mode), 3)
-        self.parent.stats.SetStatusText("Median: %.0f"%(self.median), 4)
+        #self.parent.stats.SetStatusText("Mode: %.0f"%(self.mode), 3)
+        self.parent.stats.SetStatusText("Median: %.0f"%(self.median), 3)
 
+
+    def updatePassedStats(self, stats_list):  # list needs to be [min, max, mean, median]
+        self.min = stats_list[0]
+        self.max = stats_list[1]
+        self.mean = stats_list[2]
+        #self.mode = stats_list[3]
+        self.median = stats_list[3]
 
     def updateStats(self, data):
         self.min = np.min(data.flat)
@@ -638,6 +669,11 @@ class EvoraForwarder(basic.LineReceiver):
     def __init__(self):
         self.output = None
         self._deferreds = {}
+        #self.queueOfThreads = Queue.Queue()
+        #self.done_ids = Queue.Queue()
+        #self.ce = CallbackEvaluator()
+        # build signal
+        #signal.signal(signal.SIGALRM, self.handler)
 
     def dataReceived(self, data):
         print "Receieved:", data
@@ -658,8 +694,22 @@ class EvoraForwarder(basic.LineReceiver):
             #print sep_data
         sep_data = data.split(" ")
         if sep_data[0] in self._deferreds:
+            #t = threading.Thread(target=self.deferredThread, args=(sep_data,))
+            #self.queueOfThreads.put(t)
+            #t.start()
+            #threads.blockingCallFromThread(reactor, self.testFunc, sep_data)
             self._deferreds.pop(sep_data[0]).callback(sep_data[1])
+            #d = self._deferreds.pop(sep_data[0])
+            #self.ce.put(d, sep_data[1])
+            #settings.callback_evaluator.put(d, sep_data[1])
+            
+    def deferredThread(self, sep_data):
+        t = self.queueOfThreads.get()
+        self._deferreds.pop(sep_data[0]).callback((sep_data[1], t))
 
+    def testFunc(self, sep_data):
+        print "entered test func"
+        self._deferreds.pop(sep_data[0]).callback(sep_data[1])
 
     def sendCommand(self, data):
         self.sendLine(data)
@@ -681,6 +731,40 @@ class EvoraForwarder(basic.LineReceiver):
         #gui = self.factory.gui
         #gui.onDisconnectCallback()
         pass
+    """
+    def handler(self, signum, frame):
+        print "Signal handler called with signal", signum
+        self.ce.stopThread(self.done_ids)
+    """
+
+"""
+class CallbackEvaluator():
+    def __init__(self):
+        print "made CallbackEvaluator"
+        self.active_threads = {}
+
+    def put(self, d, results):
+        # get id
+        tid = str(uuid4())
+        print tid
+
+        # start new thread on target callback
+        t = threading.Thread(target=self.startCallback, args=(d, results), name=tid)
+        #t.daemon = True
+        self.active_threads[tid] = t
+        t.start()
+
+    def startCallback(self, d, results):
+        print "starting callback"
+        d.callback(results)
+
+    def stopThread(self, IDqueue):
+        currentID = IDqueue.get()
+        print "stopping thread"
+        print currentID
+        t = self.active_threads.pop(currentID)
+        t.join()
+"""
 
 class EvoraClient(protocol.ClientFactory):
     def __init__(self, gui):
@@ -693,20 +777,30 @@ class EvoraClient(protocol.ClientFactory):
 
     def clientConnectionFailed(self, transport, reason):
         reactor.stop()
- 
 
-
+""" 
+done_ids = Queue.Queue()
+callback_evaluator = CallbackEvaluator()
+signal.signal(signal.SIG_ALRM, handler)
+def handler(signum, frame):
+    print "Signal handler called with signal", signum
+    callback_evaluator.stopThread(done_ids)
+"""
 
 if __name__ == "__main__":
     #log.startLogging(sys.stdout)
 
+    #settings.init()
     app = wx.App(False)
     app.frame1 = Evora()
     app.frame1.Show()
     #app.frame2 = ImageWindow()
     #app.frame2.Show()
-
+    #client = EvoraClient(app.frame1)
+    #signal.signal(signal.SIGALRM, client.protocol.handler)
     reactor.registerWxApp(app)
     #reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
     reactor.run()
     app.MainLoop()
+    #signal.pause()
+    

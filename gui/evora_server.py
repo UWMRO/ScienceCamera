@@ -83,6 +83,7 @@ class EvoraParser(object):
         if input[0] == "status":
             return self.e.getStatus()
         if input[0] == 'expose':
+            # split into different modes (single, real time, and series)
             # expose flat 1 10 2
             type = input[1]
             expnum = int(input[2])
@@ -210,7 +211,7 @@ class Evora(object):
     
         andor.SetShutter(1,0,5,5)
 
-        print 'SetExposureTime:', andor.SetExposureTime(itime)
+        print 'SetExposureTime:', andor.SetExposureTime(itime) # can't just set actual exposure.  Need to run GetAcquisitionTimings see page 42 of docs.
         print 'StartAcquisition:', andor.StartAcquisition()
 
         status = andor.GetStatus()
@@ -232,6 +233,13 @@ class Evora(object):
         #queue.put("expose " + filename)
 	return "expose " + filename
 
+        def realTimeExposure(self):
+            """
+            This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
+            """
+            pass
+
+
 	def abort(self):
 		"""
 		This will abort the exposure and throw it out.
@@ -243,6 +251,8 @@ class Evora(object):
 		This will stop the exposure but read out where it stopped at, if possible.
 		"""
 		pass
+
+        
 
 
 

@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
 import wx # get wxPython
+from astropy.io import fits
+import numpy as np
+from scipy import stats
 
 def AddLinearSpacer(boxsizer, pixelSpacing) :
     """
@@ -31,3 +34,17 @@ def isNumber(string):
         return True
     except ValueError:
         return False
+
+
+def getData(path):
+    return fits.getdata(path)
+
+def calcStats(data):
+    stats_list = []
+    stats_list.append(min(data.flat))
+    stats_list.append(max(data.flat))
+    stats_list.append(np.mean(data.flat))
+    #stats_list.append(stats.mode(data.flat)[0][0])
+    stats_list.append(np.median(data.flat))
+    
+    return stats_list

@@ -6,7 +6,10 @@ import AddLinearSpacer as als # get useful methods
 import numpy as np # get NumPy
 import EnhancedStatusBar # allows widgets to be inserted into wxPython status bar
                          # probably won't work on wxPython 3.x
-import threading
+import threading, thread
+import signal
+#from twisted.internet import threads
+#import settings
 #import photoAcquisitionGUI as pag
 
 ## Class that handles widgets related to exposure
@@ -137,12 +140,12 @@ class Exposure(wx.Panel):
             
             line = self.getAttributesToSend()
             d = self.protocol.sendCommand(line)
-            d.addCallback(self.exposeCallback)
+            d.addCallback(self.expose_callback_thread)
             # start up progress bar updating with wx Timer
-            t = threading.Thread(target=self.exposeTimer, args=())
-            t.start()
-            self.active_threads.append(t)
-
+            #t = threading.Thread(target=self.exposeTimer, args=())
+            #t.start()
+            #self.active_threads.append(t)
+            thread.start_new_thread(self.exposeTimer, ())
 
     def exposeTimer(self):
         # get exposure time 
@@ -167,15 +170,25 @@ class Exposure(wx.Panel):
             self.parent.parent.parent.expGauge.SetValue(val + 1)
         self.startTimer += 1
 
+    def expose_callback_thread(self, msg):
+        #wx.CallAfter(self.exposeCallback, msg)
+        thread.start_new_thread(self.exposeCallback, (msg,))
+        #t = threading.Thread(target=self.exposeCallback, args=(msg,))
+        #t.start()
+        #d = threads.deferToThread(self.exposeCallback, msg)
+        #d.addCallback(self.joinThreads)
+        pass
+
     def exposeCallback(self, msg):
         ### May need to thread to a different method if to slow
-
+        
+        print threading.current_thread().name
         ## complete progress bar for image acquisition
         # check to see if timer is still going and stop it (callback might come in early)
         if(self.timer.IsRunning()):
             self.timer.Stop()
         # join threads
-        self.joinThreads()
+        #self.joinThreads()
         # finish out gauge and then reset it
         self.parent.parent.parent.expGauge.SetValue(self.endTimer)
 
@@ -189,10 +202,55 @@ class Exposure(wx.Panel):
         print path, name
 
         # copy fits image to another file
-        
+        "starting thread"
         # write fits header
-
+        #thread.start_new_thread(self.openData, (path, name,))
+        
+        
         # at the end of the callback reset the gauge (signifies a reset for exposure)
+        self.parent.parent.parent.expGauge.SetValue(0)
+        
+        print self.parent.parent.parent.imageOpen
+         #open image window 
+        #if(not self.parent.parent.parent.imageOpen):
+            # create new window
+            #self.parent.parent.parent.openImage("manual open")
+            #wx.CallAfter(self.parent.parent.parent.openImage, "manual open")
+        print "opened window"
+
+        # get data
+        data = als.getData(path+name)
+        stats_list = als.calcStats(data)
+
+        wx.CallAfter(self.plotstuff, data, stats_list)
+
+        #self.parent.parent.parent.window.panel.clear()
+        #wx.CallAfter(self.parent.parent.parent.window.panel.clear)
+        #data = self.parent.parent.parent.window.panel.getData(path+name)
+        #print "got data"
+        #wx.CallAfter(self.parent.parent.parent.window.panel.plotImage,data, 6.0, 'gray')
+        #self.parent.parent.parent.window.panel.plotImage(data, 6.0, 'gray')
+        #print "plotted"
+        #wx.CallAfter(self.parent.parent.parent.window.panel.updateScreenStats)
+        #self.parent.parent.parent.window.panel.updateScreenStats()
+        #self.parent.parent.parent.window.panel.refresh()
+        #wx.CallAfter(self.parent.parent.parent.window.panel.refresh)
+
+    def plotstuff(self, data, stats_list):
+        if(not self.parent.parent.parent.imageOpen):
+            # create new window
+            self.parent.parent.parent.openImage("manual open")
+        else:
+            self.parent.parent.parent.window.panel.clear()
+        
+        self.parent.parent.parent.window.panel.updatePassedStats(stats_list)
+        self.parent.parent.parent.window.panel.plotImage(data, 6.0, 'gray')
+        self.parent.parent.parent.window.panel.updateScreenStats()
+        self.parent.parent.parent.window.panel.refresh()
+        
+
+    def openData(self, path, name):
+        print "opening"
         self.parent.parent.parent.expGauge.SetValue(0)
         
         print self.parent.parent.parent.imageOpen
@@ -200,12 +258,16 @@ class Exposure(wx.Panel):
         if(not self.parent.parent.parent.imageOpen):
             # create new window
             self.parent.parent.parent.openImage("manual open")
+        print "opened window"
 
         self.parent.parent.parent.window.panel.clear()
         data = self.parent.parent.parent.window.panel.getData(path+name)
+        print "got data"
         self.parent.parent.parent.window.panel.plotImage(data, 6.0, 'gray')
+        print "plotted"
         self.parent.parent.parent.window.panel.updateScreenStats()
         self.parent.parent.parent.window.panel.refresh()
+
 
     def getAttributesToSend(self):
         # get binning type
@@ -434,8 +496,9 @@ class TempControl(wx.Panel):
             bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('blueCirc.png'), size=(90,17))
         
         self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-        
 
+        #settings.done_ids.put(threading.current_thread().name)
+        #signal.alarm(1)
         
 
 
