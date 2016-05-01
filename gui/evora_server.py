@@ -3,7 +3,7 @@
 
 import andor
 import numpy as np
-import pyfits
+#import pyfits
 from astropy.io import fits
 import time
 
