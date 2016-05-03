@@ -3,7 +3,8 @@
 
 import andor
 import numpy as np
-import pyfits
+#import pyfits
+from astropy.io import fits
 import time
 
 from twisted.protocols import basic
@@ -85,11 +86,20 @@ class EvoraParser(object):
         if input[0] == 'expose':
             # split into different modes (single, real time, and series)
             # expose flat 1 10 2
+            # get the type of exposure (i.e. bias, flat, object)
             type = input[1]
+            print type
+            # exposure attributes
             expnum = int(input[2])
             itime = int(input[3]) # why int?
-            bin = int(input[4])            
-            return self.e.expose(expnum, itime, bin)
+            bin = int(input[4])
+            
+            if(type == 'bias'):
+                print 'entered bias'
+                self.e.bias_exposure(expnum, bin)
+            else:
+                print 'not entered bias'
+                return self.e.expose(expnum, itime, bin)
 
 
 class Evora(object):
@@ -193,6 +203,48 @@ class Evora(object):
         andor.ShutDown()
         return "shutdown 1"
     
+    def bias_exposure(self, expnum=None, bin=1):
+        if expnum is None:
+            self.num += 1
+            expnum = self.num
+        else:
+            self.num = expnum
+
+        retval,width,height = andor.GetDetector()
+        print 'GetDetector:', retval,width,height
+        # print 'SetImage:', andor.SetImage(1,1,1,width,1,height)
+        print 'SetReadMode:', andor.SetReadMode(4)
+        print 'SetImage:', andor.SetImage(bin,bin,1,width,1,height)
+        print 'GetDetector (again):', andor.GetDetector()
+    
+        andor.SetShutter(1,0,0,0)
+
+         # can't just set actual exposure.  Need to run GetAcquisitionTimings see page 42 of docs.
+        print 'SetExposureTime:', andor.SetExposureTime(0)
+    
+        print 'StartAcquisition:', andor.StartAcquisition()
+
+        status = andor.GetStatus()
+        print status
+        while(status[1]==andor.DRV_ACQUIRING):
+            status = andor.GetStatus()
+            # print statucs
+
+        data = np.zeros(width/bin*height/bin, dtype='uint16')
+        print data.shape
+        result = andor.GetAcquiredData16(data)
+        print result, 'success={}'.format(result == 20002)
+        data=data.reshape(width/bin,height/bin)
+        print data.shape,data.dtype
+        hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
+	filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
+        hdu.writeto(filename,clobber=True)
+        print "wrote: {}".format(filename)
+        #queue.put("expose " + filename)
+	return "expose " + filename
+
+        #print "this is a bias exposure"
+
     def expose(self,expnum=None, itime=2, bin=1):
 
         if expnum is None:
@@ -211,14 +263,15 @@ class Evora(object):
     
         andor.SetShutter(1,0,5,5)
 
-        print 'SetExposureTime:', andor.SetExposureTime(itime) # can't just set actual exposure.  Need to run GetAcquisitionTimings see page 42 of docs.
+         # can't just set actual exposure.  Need to run GetAcquisitionTimings see page 42 of docs.
+        print 'SetExposureTime:', andor.SetExposureTime(itime)
         print 'StartAcquisition:', andor.StartAcquisition()
 
         status = andor.GetStatus()
         print status
         while(status[1]==andor.DRV_ACQUIRING):
             status = andor.GetStatus()
-            # print statucs
+            # print status
 
         data = np.zeros(width/bin*height/bin, dtype='uint16')
         print data.shape
@@ -226,7 +279,7 @@ class Evora(object):
         print result, 'success={}'.format(result == 20002)
         data=data.reshape(width/bin,height/bin)
         print data.shape,data.dtype
-        hdu = pyfits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
+        hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
 	filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
         hdu.writeto(filename,clobber=True)
         print "wrote: {}".format(filename)
