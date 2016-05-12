@@ -20,10 +20,6 @@ import threading
 import Queue
 #import thread
 
-import signal
-#import settings
-from uuid import uuid4
-
 # twisted imports
 from twisted.python import log
 from twisted.internet import wxreactor, protocol
@@ -201,8 +197,6 @@ class Evora(wx.Frame):
 
     def onHelp(self, event):
         " Open up, ideally, markdown window (or potentially html markup) that gives indepth documentations on what is what."
-        # start temperature reporting thread
-        #thread.start_new_thread(self.takeImage.tempInstance.watchTemp, ())
         print "Help"
         
 
@@ -443,6 +437,11 @@ class ImageWindow(wx.Frame):
             self.panel.refresh()
 
 
+    def resetWidgets(self):
+        # Set slid to 60
+        self.devSlider.SetValue(60)
+        self.invert.SetValue(False)
+
 
 class DrawImage(wx.Panel):
 
@@ -669,11 +668,7 @@ class EvoraForwarder(basic.LineReceiver):
     def __init__(self):
         self.output = None
         self._deferreds = {}
-        #self.queueOfThreads = Queue.Queue()
-        #self.done_ids = Queue.Queue()
-        #self.ce = CallbackEvaluator()
-        # build signal
-        #signal.signal(signal.SIGALRM, self.handler)
+
 
     def dataReceived(self, data):
         print "Receieved:", data
@@ -694,14 +689,8 @@ class EvoraForwarder(basic.LineReceiver):
             #print sep_data
         sep_data = data.split(" ")
         if sep_data[0] in self._deferreds:
-            #t = threading.Thread(target=self.deferredThread, args=(sep_data,))
-            #self.queueOfThreads.put(t)
-            #t.start()
-            #threads.blockingCallFromThread(reactor, self.testFunc, sep_data)
             self._deferreds.pop(sep_data[0]).callback(sep_data[1])
-            #d = self._deferreds.pop(sep_data[0])
-            #self.ce.put(d, sep_data[1])
-            #settings.callback_evaluator.put(d, sep_data[1])
+
             
     def deferredThread(self, sep_data):
         t = self.queueOfThreads.get()
@@ -714,7 +703,6 @@ class EvoraForwarder(basic.LineReceiver):
     def sendCommand(self, data):
         self.sendLine(data)
         d = self._deferreds[data.split(" ")[0]] = defer.Deferred()
-        #d = self._deferreds[data.split(" ")[0]] = threads.deferToThread(None)
         return d
 
     def connectionMade(self):
@@ -731,40 +719,8 @@ class EvoraForwarder(basic.LineReceiver):
         #gui = self.factory.gui
         #gui.onDisconnectCallback()
         pass
-    """
-    def handler(self, signum, frame):
-        print "Signal handler called with signal", signum
-        self.ce.stopThread(self.done_ids)
-    """
 
-"""
-class CallbackEvaluator():
-    def __init__(self):
-        print "made CallbackEvaluator"
-        self.active_threads = {}
 
-    def put(self, d, results):
-        # get id
-        tid = str(uuid4())
-        print tid
-
-        # start new thread on target callback
-        t = threading.Thread(target=self.startCallback, args=(d, results), name=tid)
-        #t.daemon = True
-        self.active_threads[tid] = t
-        t.start()
-
-    def startCallback(self, d, results):
-        print "starting callback"
-        d.callback(results)
-
-    def stopThread(self, IDqueue):
-        currentID = IDqueue.get()
-        print "stopping thread"
-        print currentID
-        t = self.active_threads.pop(currentID)
-        t.join()
-"""
 
 class EvoraClient(protocol.ClientFactory):
     def __init__(self, gui):
@@ -778,29 +734,17 @@ class EvoraClient(protocol.ClientFactory):
     def clientConnectionFailed(self, transport, reason):
         reactor.stop()
 
-""" 
-done_ids = Queue.Queue()
-callback_evaluator = CallbackEvaluator()
-signal.signal(signal.SIG_ALRM, handler)
-def handler(signum, frame):
-    print "Signal handler called with signal", signum
-    callback_evaluator.stopThread(done_ids)
-"""
 
 if __name__ == "__main__":
     #log.startLogging(sys.stdout)
 
-    #settings.init()
     app = wx.App(False)
     app.frame1 = Evora()
     app.frame1.Show()
     #app.frame2 = ImageWindow()
     #app.frame2.Show()
-    #client = EvoraClient(app.frame1)
-    #signal.signal(signal.SIGALRM, client.protocol.handler)
     reactor.registerWxApp(app)
     #reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
     reactor.run()
     app.MainLoop()
-    #signal.pause()
     

@@ -83,6 +83,10 @@ class EvoraParser(object):
             return self.e.shutdown()
         if input[0] == "status":
             return self.e.getStatus()
+        if input[0] == "timings":
+            return self.e.getTimings()
+        if input[0] == "abort":
+            return self.e.abort()
         if input[0] == 'expose':
             # split into different modes (single, real time, and series)
             # expose flat 1 10 2
@@ -96,7 +100,7 @@ class EvoraParser(object):
             
             if(type == 'bias'):
                 print 'entered bias'
-                self.e.bias_exposure(expnum, bin)
+                return self.e.bias_exposure(expnum, bin)
             else:
                 print 'not entered bias'
                 return self.e.expose(expnum, itime, bin)
@@ -202,6 +206,10 @@ class Evora(object):
 	print 'closing down camera connection'
         andor.ShutDown()
         return "shutdown 1"
+
+    def getTimings(self):
+        return andor.GetAcquisitionTimings()
+
     
     def bias_exposure(self, expnum=None, bin=1):
         if expnum is None:
@@ -241,6 +249,7 @@ class Evora(object):
         hdu.writeto(filename,clobber=True)
         print "wrote: {}".format(filename)
         #queue.put("expose " + filename)
+        print "reached"
 	return "expose " + filename
 
         #print "this is a bias exposure"
@@ -265,6 +274,7 @@ class Evora(object):
 
          # can't just set actual exposure.  Need to run GetAcquisitionTimings see page 42 of docs.
         print 'SetExposureTime:', andor.SetExposureTime(itime)
+        #print "Adjusted Exposure Time:", andor.GetAcquisitionTimings(0.0, 0.0, 0.0)
         print 'StartAcquisition:', andor.StartAcquisition()
 
         status = andor.GetStatus()
@@ -276,6 +286,13 @@ class Evora(object):
         data = np.zeros(width/bin*height/bin, dtype='uint16')
         print data.shape
         result = andor.GetAcquiredData16(data)
+        success = None
+        if(result == 20002):
+            success = 1 # for true
+        else:
+            success = 0 # for false
+        print "Printing success:"
+        print success
         print result, 'success={}'.format(result == 20002)
         data=data.reshape(width/bin,height/bin)
         print data.shape,data.dtype
@@ -284,26 +301,27 @@ class Evora(object):
         hdu.writeto(filename,clobber=True)
         print "wrote: {}".format(filename)
         #queue.put("expose " + filename)
-	return "expose " + filename
+	return "expose " + str(success)+","+filename
 
-        def realTimeExposure(self):
-            """
-            This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
-            """
-            pass
+    def realTimeExposure(self):
+        """
+        This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
+        """
+        pass
 
 
-	def abort(self):
-		"""
-		This will abort the exposure and throw it out.
-		"""
-		pass
+    def abort(self):
+        """
+        This will abort the exposure and throw it out.
+        """
+        print "Aborted:", andor.AbortAcquisition()
+        return 'abort 1'
 	
-	def stop(self):
-		"""
-		This will stop the exposure but read out where it stopped at, if possible.
-		"""
-		pass
+    def stop(self):
+        """
+        This will stop the exposure but read out where it stopped at, if possible.
+        """
+        pass
 
         
 

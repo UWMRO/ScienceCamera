@@ -27,6 +27,8 @@ class Exposure(wx.Panel):
         self.startTimer = 1
         self.endTimer = 0
 
+        self.abort = False
+
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
         self.horzSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -43,9 +45,11 @@ class Exposure(wx.Panel):
         self.expTime = wx.StaticText(self, id=2000, label="Exposure Time (s)")
         self.name = wx.StaticText(self, id=2001, label="Save Name")
         self.nameField = wx.TextCtrl(self, id=2002, size=(150, -1))
+
         self.expValue = wx.TextCtrl(self, id=2003, size=(45, -1))
         self.expButton = wx.Button(self, id=2004, label="Expose", size=(60, -1))
         self.stopExp = wx.Button(self, id=2005, label="Stop", size=(60,-1))
+
         self.expBox = wx.StaticBox(self, id=2006, label = "Exposure Controls", size=(100,100), style=wx.ALIGN_CENTER)
         self.expBoxSizer = wx.StaticBoxSizer(self.expBox, wx.VERTICAL)
         self.timer = wx.Timer(self, id=2007)
@@ -135,17 +139,25 @@ class Exposure(wx.Panel):
             pass
             #print self.nameToSend
 
-        if als.isNumber(self.timeToSend) and self.nameToSend is not "":
-            #self.protocol.sendLine("Exposing with name " + str(self.nameToSend) + " and time " + str(self.timeToSend) + " s")
+        if(self.abort):
+            d = self.protocol.sendCommand("abort")
+            d.addCallback(self.abort_callback)
+            self.expButton.SetLabel("Expose")
+            self.abort = False
+        else:
+            if als.isNumber(self.timeToSend) and self.nameToSend is not "":
+                #self.protocol.sendLine("Exposing with name " + str(self.nameToSend) + " and time " + str(self.timeToSend) + " s")
             
-            line = self.getAttributesToSend()
-            d = self.protocol.sendCommand(line)
-            d.addCallback(self.expose_callback_thread)
-            # start up progress bar updating with wx Timer
-            #t = threading.Thread(target=self.exposeTimer, args=())
-            #t.start()
-            #self.active_threads.append(t)
-            thread.start_new_thread(self.exposeTimer, ())
+                line = self.getAttributesToSend()
+                d = self.protocol.sendCommand(line)
+                d.addCallback(self.expose_callback_thread)
+                # start up progress bar updating with wx Timer
+                #t = threading.Thread(target=self.exposeTimer, args=())
+                #t.start()
+                #self.active_threads.append(t)
+                thread.start_new_thread(self.exposeTimer, ())
+                self.expButton.SetLabel("Abort")
+                self.abort = True
 
     def exposeTimer(self):
         # get exposure time 
@@ -181,8 +193,13 @@ class Exposure(wx.Panel):
 
     def exposeCallback(self, msg):
         ### May need to thread to a different method if to slow
-        
-        print threading.current_thread().name
+        results = msg.split(",")
+
+        # immediatly reset button
+        self.abort = False
+        wx.CallAfter(self.expButton.SetLabel, "Expose")
+
+        #print threading.current_thread().name
         ## complete progress bar for image acquisition
         # check to see if timer is still going and stop it (callback might come in early)
         if(self.timer.IsRunning()):
@@ -192,62 +209,50 @@ class Exposure(wx.Panel):
         # finish out gauge and then reset it
         self.parent.parent.parent.expGauge.SetValue(self.endTimer)
 
+        
+        # get success;
+        success = int(results[0]) # 1 for true 0 for false
+        #print success
         # get name of image and path
-        filePath = msg.split("/")
+        filePath = results[1].split("/")
         name = filePath[-1].rstrip()
         path = ""
         for i in filePath[:-1]:
             path += i + "/"
             
         print path, name
-
-        # copy fits image to another file
-        "starting thread"
-        # write fits header
-        #thread.start_new_thread(self.openData, (path, name,))
-        
-        
+ 
         # at the end of the callback reset the gauge (signifies a reset for exposure)
         self.parent.parent.parent.expGauge.SetValue(0)
-        
+
         print self.parent.parent.parent.imageOpen
-         #open image window 
-        #if(not self.parent.parent.parent.imageOpen):
-            # create new window
-            #self.parent.parent.parent.openImage("manual open")
-            #wx.CallAfter(self.parent.parent.parent.openImage, "manual open")
         print "opened window"
 
-        # get data
-        data = als.getData(path+name)
-        stats_list = als.calcStats(data)
+        if(success == 1):
+            # get data
+            data = als.getData(path+name)
+            stats_list = als.calcStats(data)
+            # change the gui with thread safety
+            wx.CallAfter(self.safePlot, data, stats_list)
+        else:
+            print "Successfully Aborted"
+            pass
 
-        wx.CallAfter(self.plotstuff, data, stats_list)
-
-        #self.parent.parent.parent.window.panel.clear()
-        #wx.CallAfter(self.parent.parent.parent.window.panel.clear)
-        #data = self.parent.parent.parent.window.panel.getData(path+name)
-        #print "got data"
-        #wx.CallAfter(self.parent.parent.parent.window.panel.plotImage,data, 6.0, 'gray')
-        #self.parent.parent.parent.window.panel.plotImage(data, 6.0, 'gray')
-        #print "plotted"
-        #wx.CallAfter(self.parent.parent.parent.window.panel.updateScreenStats)
-        #self.parent.parent.parent.window.panel.updateScreenStats()
-        #self.parent.parent.parent.window.panel.refresh()
-        #wx.CallAfter(self.parent.parent.parent.window.panel.refresh)
-
-    def plotstuff(self, data, stats_list):
+    def safePlot(self, data, stats_list):
         if(not self.parent.parent.parent.imageOpen):
             # create new window
             self.parent.parent.parent.openImage("manual open")
         else:
             self.parent.parent.parent.window.panel.clear()
-        
+            self.parent.parent.parent.window.resetWidgets()
+
         self.parent.parent.parent.window.panel.updatePassedStats(stats_list)
         self.parent.parent.parent.window.panel.plotImage(data, 6.0, 'gray')
         self.parent.parent.parent.window.panel.updateScreenStats()
         self.parent.parent.parent.window.panel.refresh()
-        
+
+    def abort_callback(self, msg):
+        print "Aborted", msg
 
     def openData(self, path, name):
         print "opening"
