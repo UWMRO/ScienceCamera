@@ -291,15 +291,17 @@ class Exposure(wx.Panel):
         # get image type
         imageType = self.parent.typeInstance.imageType.GetStringSelection()
 
-        
+        expNum = 1
+
         name = " " + str(self.nameToSend)
 
         line = "expose"
-        line += " " + str(imageType).lower()
         line += " " + str(exposeType)
+        line += " " + str(imageType).lower()
+        line += " " + str(expNum) # This is the exposure number.  Should have dialog come up for when set to series to take in the number of exposures 
         line += " " + str(self.timeToSend)
         line += " " + str(binning)
-            
+    
         return line
 
     def onStop(self, event):
