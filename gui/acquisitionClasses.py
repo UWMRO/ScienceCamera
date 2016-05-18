@@ -70,7 +70,6 @@ class Exposure(wx.Panel):
         self.nameSizer.Add(self.name, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.nameSizer, 8)
         self.nameSizer.Add(self.nameField, flag=wx.ALIGN_CENTER)
-
         ####
 
         #### Line up larger chuncks with main sizer
@@ -149,13 +148,24 @@ class Exposure(wx.Panel):
                 #self.protocol.sendLine("Exposing with name " + str(self.nameToSend) + " and time " + str(self.timeToSend) + " s")
             
                 line = self.getAttributesToSend()
-                d = self.protocol.sendCommand(line)
-                d.addCallback(self.expose_callback_thread)
-                # start up progress bar updating with wx Timer
-                #t = threading.Thread(target=self.exposeTimer, args=())
-                #t.start()
-                #self.active_threads.append(t)
-                thread.start_new_thread(self.exposeTimer, ())
+                # get image type 
+                imType = int(line.split()[0])
+                if(imType == 1): # single exposure
+                    d = self.protocol.sendCommand("expose " + line)
+                    d.addCallback(self.expose_callback_thread)
+                    # start up progress bar updating with wx Timer
+                    #t = threading.Thread(target=self.exposeTimer, args=())
+                    #t.start()
+                    #self.active_threads.append(t)
+                    thread.start_new_thread(self.exposeTimer, ())
+                if(imType == 2): # real time exposure
+                    d = self.protocol.sendCommand("real " + line)
+                    #d.addCallback(something) # this will clear the image path queue
+                    # enter threaded method that will request frames until abort
+                if(imType == 3): # series exposure
+                    d = self.protocol.sendCommand("series " + line)
+                    #d.addCallback(something) # this will clear the image path queue
+                    # enter threaded method that will request the prescribed number of frames
                 self.expButton.SetLabel("Abort")
                 self.abort = True
 
@@ -183,7 +193,6 @@ class Exposure(wx.Panel):
         self.startTimer += 1
 
     def expose_callback_thread(self, msg):
-        #wx.CallAfter(self.exposeCallback, msg)
         thread.start_new_thread(self.exposeCallback, (msg,))
         #t = threading.Thread(target=self.exposeCallback, args=(msg,))
         #t.start()
@@ -295,8 +304,8 @@ class Exposure(wx.Panel):
 
         name = " " + str(self.nameToSend)
 
-        line = "expose"
-        line += " " + str(exposeType)
+        #line = "expose" # this is given beforet the command is sent off
+        line = str(exposeType)
         line += " " + str(imageType).lower()
         line += " " + str(expNum) # This is the exposure number.  Should have dialog come up for when set to series to take in the number of exposures 
         line += " " + str(self.timeToSend)

@@ -1,3 +1,6 @@
+
+
+
 #!/usr/bin/python
 
 
@@ -7,6 +10,7 @@ import ctypes
 #import pyfits
 from astropy.io import fits
 import time
+import Queue
 
 from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
@@ -118,6 +122,7 @@ class Evora(object):
 
     def __init__(self):
         self.num = 0
+        self.image_path_queue = Queue.Queue()
 
     def getStatus(self):
         # if the first status[0] is 20075 then the camera is not initialized yet and
@@ -224,7 +229,14 @@ class Evora(object):
 
         return "timings"
 
+    def requestRealImage(self):
+        filename = self.image_path_queue.get()
+        return "requestImage " + filename
     
+    def clearImageQueue(self):
+        self.image_path_queue.queue.clear() # clear the image path queue when client requests
+        return "clear 1" # 1 for success
+        
     def bias_exposure(self, expnum=None, bin=1):
         if expnum is None:
             self.num += 1
@@ -239,7 +251,7 @@ class Evora(object):
         print 'SetImage:', andor.SetImage(bin,bin,1,width,1,height)
         print 'GetDetector (again):', andor.GetDetector()
     
-        andor.SetShutter(1,0,0,0)
+        andor.SetShutter(1,2,0,0)
 
          # can't just set actual exposure.  Need to run GetAcquisitionTimings see page 42 of docs.
         print 'SetExposureTime:', andor.SetExposureTime(0)
@@ -288,6 +300,7 @@ class Evora(object):
         print 'GetDetector:', retval,width,height
         # print 'SetImage:', andor.SetImage(1,1,1,width,1,height)
         print 'SetReadMode:', andor.SetReadMode(4)
+        print 'SetAcquisitionMode:', andor.SetAcquisitionMode(1)
         print 'SetImage:', andor.SetImage(bin,bin,1,width,1,height)
         print 'GetDetector (again):', andor.GetDetector()
     
@@ -295,7 +308,7 @@ class Evora(object):
 
          # can't just set actual exposure.  Need to run GetAcquisitionTimings see page 42 of docs.
         print 'SetExposureTime:', andor.SetExposureTime(itime)
-        #expTime, accTime, kTime = ctypes.pointer(ctypes.c_float()), ctypes.pointer(ctypes.c_float()), ctypes.pointer(ctypes.c_float())
+        #expTime, accTime, kTime = ctypes.c_float(), ctypes.c_float(), ctypes.c_float()
         #expTime, accTime, kTime = andor.GetAcquisitionTimings()
         #print "Adjusted Exposure Time:", andor.GetAcquisitionTimings(expTime, accTime, kTime)
         print 'StartAcquisition:', andor.StartAcquisition()
@@ -326,52 +339,54 @@ class Evora(object):
         #queue.put("expose " + filename)
 	return "expose " + str(success) + ","+filename
 
-    def realTimeExposure(self, itime, binning):
+    def realTimeExposure(self, itime, binning=1):
         """
         This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
         """
         retval,width,height = andor.GetDetector()
         print 'GetDetector:', retval,width,height
-        # print 'SetImage:', andor.SetImage(1,1,1,width,1,height)
-        print 'SetReadMode:', andor.SetReadMode(5)
-        print 'SetImage:', andor.SetImage(bin,bin,1,width,1,height)
+
+        print "SetAcquisitionMode:", andor.SetAcquisitionMode(5)
+        print 'SetReadMode:', andor.SetReadMode(4)
+
+        print 'SetImage:', andor.SetImage(binning,binning,1,width,1,height)
         print 'GetDetector (again):', andor.GetDetector()
 
-        andor.SetShutter(1,0,5,5)
-
-         # can't just set actual exposure.  Need to run GetAcquisitionTimings see page 42 of docs.
         print 'SetExposureTime:', andor.SetExposureTime(itime)
-        #print "Adjusted Exposure Time:", andor.GetAcquisitionTimings(0.0, 0.0, 0.0)
+        print 'SetKineticTime:', andor.SetKineticCycleTime(0)
+
+        print "Shutter Success:", andor.SetShutter(1,0,5,5)
+
         print 'StartAcquisition:', andor.StartAcquisition()
 
+        
         status = andor.GetStatus()
         print status
+        counter = 1
         while(status[1]==andor.DRV_ACQUIRING):
             status = andor.GetStatus()
             
-            # print status
+            print status
+            acquired = andor.WaitForAcquisition()
+            status = andor.GetStatus()
+            if(status[1] == andor.DRV_ACQUIRING and acquired == andor.DRV_SUCCESS):
+                data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
+                results = andor.GetMostRecentImage16(data) # store image data
+                print results, 'success={}'.format(results == 20002) # print if the results were successful
+                
+                if(results == andor.DRV_SUCCESS): # if the array filled store successfully
+                    data=data.reshape(width/binning,height/binning) # reshape into image
+                    print data.shape,data.dtype
+                    hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
+                    filename = time.strftime('/tmp/image_%Y%m%d_%H%M%S.fits') 
+                    hdu.writeto(filename,clobber=True)
+                    print "wrote: {}".format(filename)
+                    
+                    # put file path in queue
+                    self.image_path_queue.put(filename) # client will request a name from this 
 
-        data = np.zeros(width/bin*height/bin, dtype='uint16')
-        print data.shape
-        result = andor.GetAcquiredData16(data)
-
-        success = None
-        if(result == 20002):
-            success = 1 # for true
-        else:
-            success = 0 # for false
-
-        print result, 'success={}'.format(result == 20002)
-        data=data.reshape(width/bin,height/bin)
-        print data.shape,data.dtype
-        hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
-	filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
-        hdu.writeto(filename,clobber=True)
-        print "wrote: {}".format(filename)
-        #queue.put("expose " + filename)
-	return "expose " + str(success) + ","+filename
-
-
+                counter += 1
+        
         return "Taking real time exposures"
         
 
