@@ -1,0 +1,13 @@
+
+from photoAcquisitionGUI import CallbackEvaluator
+from Queue import Queue
+import signal
+
+callback_evaluator = CallbackEvaluator()
+done_ids = Queue()
+
+signal.signal(signal.SIGALRM, handler)
+
+def handler(signum, frame):
+    print "Signal handler called with signal", signum
+    callback_evaluator.stopThread(done_ids)

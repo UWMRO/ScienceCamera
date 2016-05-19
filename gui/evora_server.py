@@ -1,6 +1,3 @@
-
-
-
 #!/usr/bin/python
 
 
@@ -18,6 +15,9 @@ from twisted.internet import protocol, reactor, threads
 #import ProtoParser
 
 # port for evora is 5502
+
+# Global variables
+image_path_queue = Queue.Queue()
 
 class EvoraServer(basic.LineReceiver):
     def connectionMade(self):
@@ -92,6 +92,10 @@ class EvoraParser(object):
             return self.e.getTimings()
         if input[0] == "abort":
             return self.e.abort()
+        if input[0] == 'clear':
+            return self.e.clearImageQueue()
+        if input[0] == 'realImage':
+            return self.e.requestRealImage()
         if input[0] == 'expose':
             # split into different modes (single, real time, and series)
             # expose 1 flat 1 10 2
@@ -112,17 +116,30 @@ class EvoraParser(object):
                     print 'not entered bias'
                     return self.e.expose(expnum, itime, bin)
 
-            if(exposureSetting == 2):
-                return self.e.realTimeExposure(itime, bin)
-
-            if(exposureSetting == 3):
-                return self.e.seriesExposure()
+        if input[0] == 'real':
+            exposureSetting = int(input[1]) 
+            type = input[2]
+            print type
+            # exposure attributes
+            expnum = int(input[3])
+            itime = int(input[4])
+            binning = int(input[5])
+            return self.e.realTimeExposure(itime, binning)
+        if input[0] == 'series':
+            exposureSetting = int(input[1]) 
+            type = input[2]
+            print type
+            # exposure attributes
+            expnum = int(input[3])
+            itime = int(input[4])
+            binning = int(input[5])
+            return self.e.seriesExposure()
 
 class Evora(object):
 
     def __init__(self):
         self.num = 0
-        self.image_path_queue = Queue.Queue()
+        #self.image_path_queue = Queue.Queue()
 
     def getStatus(self):
         # if the first status[0] is 20075 then the camera is not initialized yet and
@@ -183,7 +200,7 @@ class Evora(object):
                 andor.CoolerON()
             print andor.SetTemperature(int(setPoint))
             self.getTEC()
-	return str(setPoint)
+	return "setTEC " + str(setPoint)
 
     def warmup(self):
 	"""
@@ -194,7 +211,7 @@ class Evora(object):
         andor.SetTemperature(0)
 	andor.SetFanMode(0)
 	andor.CoolerOFF()
-	return "1"
+	return "warmup 1"
 
     def getTemp(self):
         # 20037 is NotReached
@@ -230,11 +247,19 @@ class Evora(object):
         return "timings"
 
     def requestRealImage(self):
-        filename = self.image_path_queue.get()
-        return "requestImage " + filename
+        global image_path_queue
+        #print 'returning request'
+        filename = ""
+        if(not image_path_queue.empty()):
+            filename = image_path_queue.get()
+        else:
+            filename = None
+        #print 'reached filename'
+        return "realImage " + str(filename)
     
     def clearImageQueue(self):
-        self.image_path_queue.queue.clear() # clear the image path queue when client requests
+        global image_path_queue
+        image_path_queue.queue.clear() # clear the image path queue when client requests
         return "clear 1" # 1 for success
         
     def bias_exposure(self, expnum=None, bin=1):
@@ -340,6 +365,7 @@ class Evora(object):
 	return "expose " + str(success) + ","+filename
 
     def realTimeExposure(self, itime, binning=1):
+        global image_path_queue
         """
         This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
         """
@@ -383,11 +409,12 @@ class Evora(object):
                     print "wrote: {}".format(filename)
                     
                     # put file path in queue
-                    self.image_path_queue.put(filename) # client will request a name from this 
-
+                    image_path_queue.put(filename) # client will request a name from this 
+                    print "Put %s in image queue"%filename
+                print image_path_queue.qsize()
                 counter += 1
         
-        return "Taking real time exposures"
+        return "real 1" # exits with 1 for success
         
 
 

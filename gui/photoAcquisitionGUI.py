@@ -18,7 +18,7 @@ import EnhancedStatusBar
 import sys
 import threading
 import Queue
-#import thread
+import thread
 
 # twisted imports
 from twisted.python import log
@@ -669,13 +669,11 @@ class EvoraForwarder(basic.LineReceiver):
         self.output = None
         self._deferreds = {}
 
-
     def dataReceived(self, data):
         print "Receieved:", data
-
-
-        gui = self.factory.gui
         
+        gui = self.factory.gui
+            
         gui.protocol = self
         gui.takeImage.exposureInstance.protocol = self
         gui.takeImage.tempInstance.protocol = self
@@ -687,19 +685,17 @@ class EvoraForwarder(basic.LineReceiver):
             gui.log.logInstance.logBox.SetInsertionPointEnd()
             #sep_data = data.split(" ")
             #print sep_data
-        sep_data = data.split(" ")
-        if sep_data[0] in self._deferreds:
-            self._deferreds.pop(sep_data[0]).callback(sep_data[1])
+        
+        # if there is more than one line that was sent and received 
+        sep_data = data.rsplit() # split for multiple lines
+        size = len(sep_data) # size of sep_data will always be even (key followed by data pair)
+        for i in range(0, size, 2):
+            singular_sep_data = [sep_data[i], sep_data[i+1]]
 
-            
-    def deferredThread(self, sep_data):
-        t = self.queueOfThreads.get()
-        self._deferreds.pop(sep_data[0]).callback((sep_data[1], t))
-
-    def testFunc(self, sep_data):
-        print "entered test func"
-        self._deferreds.pop(sep_data[0]).callback(sep_data[1])
-
+            print singular_sep_data
+            if singular_sep_data[0] in self._deferreds:
+                self._deferreds.pop(singular_sep_data[0]).callback(singular_sep_data[1])
+        
     def sendCommand(self, data):
         self.sendLine(data)
         d = self._deferreds[data.split(" ")[0]] = defer.Deferred()
