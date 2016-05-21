@@ -254,7 +254,7 @@ class Evora(wx.Frame):
         self.connected = True # boolean to tell if connected to server
         self.enableConnections(False, True, True) # grey and un-grey camera menu options
         self.disableButtons(False) # enable gui functionality
-        self.takeImage.tempInstance.isConnected = True # setups infinite loop in watchTemp method
+n        self.takeImage.tempInstance.isConnected = True # setups infinite loop in watchTemp method
         t = threading.Thread(target=self.takeImage.tempInstance.watchTemp, args=(), name="temp thread")
         t.daemon = True
         t.start()

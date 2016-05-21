@@ -24,7 +24,7 @@ class Exposure(wx.Panel):
         self.protocol = None
         self.parent = parent
         self.active_threads = []
-        self.startTimer = 1
+        self.startTimer = 0
         self.endTimer = 0
 
         self.abort = False
@@ -158,8 +158,9 @@ class Exposure(wx.Panel):
                     # start up progress bar updating with wx Timer
                     #t = threading.Thread(target=self.exposeTimer, args=())
                     #t.start()
+
                     #self.active_threads.append(t)
-                    thread.start_new_thread(self.exposeTimer, ())
+                    thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
                 if(imType == 2): # real time exposure
                     d = self.protocol.sendCommand("real " + line)
                     d.addCallback(self.realCallback) # this will clear the image path queue
@@ -170,9 +171,9 @@ class Exposure(wx.Panel):
                     #d.addCallback(something) # this will clear the image path queue
                     # enter threaded method that will request the prescribed number of frames
 
-    def exposeTimer(self):
+    def exposeTimer(self, time):
         # get exposure time 
-        expTime = int(self.timeToSend)
+        expTime = int(time)
         
         # get the max range for progress bar
         self.endTimer = int(expTime / (10.0*10**-3)) # timer will update every 10 ms
@@ -191,7 +192,7 @@ class Exposure(wx.Panel):
             # get gauge value
             val = self.parent.parent.parent.expGauge.GetValue()
             self.parent.parent.parent.expGauge.SetValue(val + 1)
-        self.startTimer += 1
+            self.startTimer += 1
 
     def expose_callback_thread(self, msg):
         thread.start_new_thread(self.exposeCallback, (msg,))
@@ -265,18 +266,23 @@ class Exposure(wx.Panel):
         # start while loop that is based on the abort button
         print "in display self.abort is:", self.abort
         #counter = 1
-        # while abort button is present
+        while self.abort:
         #print "displaying.."
-        thread.start_new_thread(self.exposeTimer, ())
-        # request image from real time image queue
-        d = self.protocol.sendCommand("realImage")
-        #counter += 1
-        # set up callback that will wait for the real image
-        d.addCallback(self.displayRealImage_callback_thread)
-        # sleep thread for certain amount of time (5th or 10th of exposure time)
-        #time.sleep(0.5)
+            print "starting timer"
+            print self.startTimer
+            if(self.startTimer == 0):
+                print "started timer"
+                thread.start_new_thread(self.exposeTimer, (expTime,))
+            # request image from real time image queue
+            d = self.protocol.sendCommand("realImage")
+            #counter += 1
 
-        #print "Done with real image"
+            # set up callback that will wait for the real image
+            d.addCallback(self.displayRealImage_callback_thread)
+            # sleep thread for certain amount of time (5th or 10th of exposure time)
+            time.sleep(0.5)
+
+        print "Done with real image"
 
     def displayRealImage_callback_thread(self, msg):
         print "From real image callback thread:", repr(msg)
@@ -288,18 +294,30 @@ class Exposure(wx.Panel):
 
         ## complete progress bar for image acquisition
         # check to see if timer is still going and stop it (callback might come in early)
-        if(self.timer.IsRunning()):
-            self.timer.Stop()
+        if (self.startTimer == self.endTimer - 1):
+            if(self.timer.IsRunning()):
+                self.timer.Stop()
 
-        # finish out gauge and then reset it
-        self.parent.parent.parent.expGauge.SetValue(self.endTimer)
+            # finish out gauge and then reset it
+            self.parent.parent.parent.expGauge.SetValue(self.endTimer)
     
-        print path
- 
-        # at the end of the callback reset the gauge (signifies a reset for exposure)
-        self.parent.parent.parent.expGauge.SetValue(0)
+            # at the end of the callback reset the gauge (signifies a reset for exposure)
+            self.parent.parent.parent.expGauge.SetValue(0)
+
+            print path
 
         if(msg != "None"):
+            if(self.timer.IsRunning()):
+                self.timer.Stop()
+
+            # finish out gauge and then reset it
+            self.parent.parent.parent.expGauge.SetValue(self.endTimer)
+    
+            # at the end of the callback reset the gauge (signifies a reset for exposure)
+            self.parent.parent.parent.expGauge.SetValue(0)
+
+            print path
+
             print self.parent.parent.parent.imageOpen
             print "opened window"
 
@@ -309,11 +327,12 @@ class Exposure(wx.Panel):
             # change the gui with thread safety
             wx.CallAfter(self.safePlot, data, stats_list)
 
+        """
         if(self.abort):
             thread.start_new_thread(self.displayRealImage, (self.timeToSend,))
         else:
             pass
-
+        """
 
     def realCallback(self, msg):
         d = self.protocol.sendCommand("clear")
@@ -544,18 +563,18 @@ class TempControl(wx.Panel):
         statusbar.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
 
     def watchTemp(self):
-        """
+        
         # create an infinite while loop
         while self.isConnected:
             d = self.protocol.sendCommand("temp")
-            d.addCallback(self.callbackTemp_thread)
+            d.addCallback(self.callbackTemp)
             #  put thread to sleep; on wake up repeats
-            time.sleep(5)
+            time.sleep(10)
         """
         if self.isConnected:
             d = self.protocol.sendCommand("temp")
-            d.addCallback(self.callbackTemp_thread)
-
+            d.addCallback(self.callbackTemp)
+        """
 
     def callbackTemp_thread(self, msg):
         thread.start_new_thread(self.callbackTemp, (msg,))
@@ -567,8 +586,8 @@ class TempControl(wx.Panel):
         temp = str(int(round(float(temp))))
         mode = int(msg.split(",")[0])
         
-        #self.parent.parent.parent.stats.SetStatusText("Current Temp:            " + temp + " C", 0)
-        wx.CallAfter(self.parent.parent.parent.stats.SetStatusText, "Current Temp:            " + temp + " C", 0)
+        self.parent.parent.parent.stats.SetStatusText("Current Temp:            " + temp + " C", 0)
+        #wx.CallAfter(self.parent.parent.parent.stats.SetStatusText, "Current Temp:            " + temp + " C", 0)
         
         ## based on temp change bitmap color
         # 20037 is NotReached
@@ -584,14 +603,16 @@ class TempControl(wx.Panel):
         if(mode == 20036):
             bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('blueCirc.png'), size=(90,17))
         
-        #self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-        wx.CallAfter(self.parent.parent.parent.stats.AddWidget, bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        #wx.CallAfter(self.parent.parent.parent.stats.AddWidget, bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
 
+        """
         if(self.isConnected):
             time.sleep(5)
             thread.start_new_thread(self.watchTemp, ())
         else:
             print "Done updating temperature"
+        """
         #settings.done_ids.put(threading.current_thread().name)
         #signal.alarm(1)
         
