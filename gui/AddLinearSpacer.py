@@ -4,6 +4,8 @@ import wx # get wxPython
 from astropy.io import fits
 import numpy as np
 from scipy import stats
+import threading
+import time
 
 def AddLinearSpacer(boxsizer, pixelSpacing) :
     """
@@ -48,3 +50,37 @@ def calcStats(data):
     stats_list.append(np.median(data.flat))
     
     return stats_list
+
+class SampleTimer(object):
+    def __init__(self, timeLength):
+        self.end = timeLength
+        
+        self.tick = 10 * 10 ** -3 # tick is 10 milliseconds
+
+        self.stopTimer = False
+
+        self.currentTick = 0
+        self.totalTicks = self.end / self.tick
+        
+    def timer(self):
+        while not self.stopTimer:
+            if(self.currentTick == self.totalTicks):
+                self.currentTick = 0
+            else:
+                self.currentTick += 1
+            time.sleep(0.01)
+
+    def sample(self):
+        return [self.currentTick, self.totalTicks]
+
+    def stop(self):
+        self.stopTimer = True
+        self.t.join(0)
+                
+    def start(self):
+        self.stopTimer = False
+        self.currentTick = 1
+        self.t = threading.Thread(target=self.timer, args=())
+        self.t.daemon = True
+        self.t.start()
+    
