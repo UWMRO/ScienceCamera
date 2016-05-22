@@ -16,9 +16,6 @@ from twisted.internet import protocol, reactor, threads
 
 # port for evora is 5502
 
-# Global variables
-image_path_queue = Queue.Queue()
-
 class EvoraServer(basic.LineReceiver):
     def connectionMade(self):
         """
@@ -101,43 +98,47 @@ class EvoraParser(object):
             itime = float(input[1])
             return self.e.testReal(itime)
         if input[0] == 'expose':
-            # split into different modes (single, real time, and series)
             # expose 1 flat 1 10 2
             # get the type of exposure (i.e. bias, flat, object)
-            exposureSetting = int(input[1]) # this will be 1:singe, 2:real, or 3:series
-            type = input[2]
-            print type
+            #exposureSetting = int(input[1]) # this will be 1:singe, 2:real, or 3:series
+            imType = input[1]
+            print imType
             # exposure attributes
-            expnum = int(input[3])
-            itime = int(input[4]) # why int?
-            bin = int(input[5])
-            
-            if(exposureSetting == 1):
-                if(type == 'bias'):
-                    print 'entered bias'
-                    return self.e.bias_exposure(expnum, bin)
-                else:
-                    print 'not entered bias'
-                    return self.e.expose(expnum, itime, bin)
+            expnum = int(input[2])
+            itime = float(input[3]) # why int?
+            binning = int(input[4])
+            return self.e.expose(imType, expnum, itime, binning)
 
         if input[0] == 'real':
-            exposureSetting = int(input[1]) 
-            type = input[2]
-            print type
+            #exposureSetting = int(input[1]) 
+            imType = input[1]
+            print imType
             # exposure attributes
-            expnum = int(input[3])
-            itime = int(input[4])
-            binning = int(input[5])
-            return self.e.realTimeExposure(self.protocol, itime, binning)
+            expnum = int(input[2]) # don't need this
+            itime = float(input[3])
+            binning = int(input[4])
+            return self.e.realTimeExposure(self.protocol, imType, itime, binning)
+
         if input[0] == 'series':
-            exposureSetting = int(input[1]) 
-            type = input[2]
-            print type
+            imType = input[1]
+            print imType
             # exposure attributes
-            expnum = int(input[3])
-            itime = int(input[4])
-            binning = int(input[5])
-            return self.e.seriesExposure()
+            expnum = int(input[2])
+            itime = float(input[3])
+            binning = int(input[4])
+            return self.e.kseriesExposure(self.protocol, imType, itime, numexp=expnum, binning=binning)
+
+        # This is a deprecated function for series exposure.  It utilizes run till abort, e.g. real time, and will
+        # self abort when a counter has reached the user specified number of exposures.
+        if input[0] == 'series_tillAbort':
+            #exposureSetting = int(input[1]) 
+            imType = input[1]
+            print imType
+            # exposure attributes
+            expnum = int(input[2])
+            itime = float(input[3])
+            binning = int(input[4])
+            return self.e.seriesExposure(self.protocol, imType, itime, expnum, binning)
 
 class Evora(object):
 
@@ -192,7 +193,6 @@ class Evora(object):
         return return_res
 
     def setTEC(self,setPoint=None):
-
         result = self.getTEC().split(" ")[1].split(",")
         result = [int(result[0]), float(result[1])]
         print result
@@ -266,77 +266,33 @@ class Evora(object):
         image_path_queue.queue.clear() # clear the image path queue when client requests
         return "clear 1" # 1 for success
         
-    def bias_exposure(self, expnum=None, bin=1):
+    def expose(self, imType=None, expnum=None, itime=2, binning=1):
+
         if expnum is None:
             self.num += 1
             expnum = self.num
         else:
             self.num = expnum
 
-        retval,width,height = andor.GetDetector()
-        print 'GetDetector:', retval,width,height
-        # print 'SetImage:', andor.SetImage(1,1,1,width,1,height)
-        print 'SetReadMode:', andor.SetReadMode(4)
-        print 'SetImage:', andor.SetImage(bin,bin,1,width,1,height)
-        print 'GetDetector (again):', andor.GetDetector()
-    
-        andor.SetShutter(1,2,0,0)
-
-         # can't just set actual exposure.  Need to run GetAcquisitionTimings see page 42 of docs.
-        print 'SetExposureTime:', andor.SetExposureTime(0)
-    
-        print 'StartAcquisition:', andor.StartAcquisition()
-
-        status = andor.GetStatus()
-        print status
-        while(status[1]==andor.DRV_ACQUIRING):
-            status = andor.GetStatus()
-            # print statucs
-
-        data = np.zeros(width/bin*height/bin, dtype='uint16')
-        print data.shape
-        result = andor.GetAcquiredData16(data)
-
-        success = None
-        if(result == 20002):
-            success = 1 # for true
-        else:
-            success = 0 # for false 
-
-        print result, 'success={}'.format(result == 20002)
-        data=data.reshape(width/bin,height/bin)
-        print data.shape,data.dtype
-        hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
-	filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
-        hdu.writeto(filename,clobber=True)
-        print "wrote: {}".format(filename)
-        #queue.put("expose " + filename)
-        print "reached"
-	return "expose "  + str(success) + "," + filename
-
-        #print "this is a bias exposure"
-
-    def expose(self,expnum=None, itime=2, bin=1):
-
-        if expnum is None:
-            self.num += 1
-            expnum = self.num
-        else:
-        
-            self.num = expnum
+        if imType is None: # if the image type is not specified it defaults to object
+            imType = "object"
 
         retval,width,height = andor.GetDetector()
         print 'GetDetector:', retval,width,height
         # print 'SetImage:', andor.SetImage(1,1,1,width,1,height)
         print 'SetReadMode:', andor.SetReadMode(4)
         print 'SetAcquisitionMode:', andor.SetAcquisitionMode(1)
-        print 'SetImage:', andor.SetImage(bin,bin,1,width,1,height)
+        print 'SetImage:', andor.SetImage(binning,binning,1,width,1,height)
         print 'GetDetector (again):', andor.GetDetector()
     
-        andor.SetShutter(1,0,5,5)
+        if(imType == "bias"):
+            andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
+            print 'SetExposureTime:', andor.SetExposureTime(0)            
+        else:
+            andor.SetShutter(1,0,5,5)
+            print 'SetExposureTime:', andor.SetExposureTime(itime) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
 
-         # can't just set actual exposure.  Need to run GetAcquisitionTimings see page 42 of docs.
-        print 'SetExposureTime:', andor.SetExposureTime(itime)
+
         #expTime, accTime, kTime = ctypes.c_float(), ctypes.c_float(), ctypes.c_float()
         #expTime, accTime, kTime = andor.GetAcquisitionTimings()
         #print "Adjusted Exposure Time:", andor.GetAcquisitionTimings(expTime, accTime, kTime)
@@ -344,11 +300,10 @@ class Evora(object):
 
         status = andor.GetStatus()
         print status
-        while(status[1]==andor.DRV_ACQUIRING):
-            status = andor.GetStatus()
-            # print status
+        acquired = andor.WaitForAcquisition()
+        print acquired
 
-        data = np.zeros(width/bin*height/bin, dtype='uint16')
+        data = np.zeros(width/binning*height/binning, dtype='uint16')
         print data.shape
         result = andor.GetAcquiredData16(data)
 
@@ -359,7 +314,7 @@ class Evora(object):
             success = 0 # for false
 
         print result, 'success={}'.format(result == 20002)
-        data=data.reshape(width/bin,height/bin)
+        data=data.reshape(width/binning,height/binning)
         print data.shape,data.dtype
         hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
 	filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
@@ -368,8 +323,7 @@ class Evora(object):
         #queue.put("expose " + filename)
 	return "expose " + str(success) + ","+filename
 
-    def realTimeExposure(self, protocol, itime, binning=1): 
-        global image_path_queue
+    def realTimeExposure(self, protocol, imType, itime, binning=1): 
         """
         This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
         """
@@ -385,7 +339,13 @@ class Evora(object):
         print 'SetExposureTime:', andor.SetExposureTime(itime)
         print 'SetKineticTime:', andor.SetKineticCycleTime(0)
 
-        print "Shutter Success:", andor.SetShutter(1,0,5,5)
+
+        if(imType == "bias"):
+            andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
+            print 'SetExposureTime:', andor.SetExposureTime(0)            
+        else:
+            andor.SetShutter(1,0,5,5)
+            print 'SetExposureTime:', andor.SetExposureTime(itime) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
 
         print 'StartAcquisition:', andor.StartAcquisition()
 
@@ -422,9 +382,8 @@ class Evora(object):
         
         return "real 1" # exits with 1 for success
        
-    def testReal(self, itime, binning=1): 
-        # average time is 0.2395 with deviation of 0.0001
-        global image_path_queue
+
+    def seriesExposure(self, protocol, imType, itime, numexp=1, binning=1):
         """
         This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
         """
@@ -440,40 +399,114 @@ class Evora(object):
         print 'SetExposureTime:', andor.SetExposureTime(itime)
         print 'SetKineticTime:', andor.SetKineticCycleTime(0)
 
-        print "Shutter Success:", andor.SetShutter(1,0,5,5) # adds 10 milliseconds to total time
+        if(imType == "bias"):
+            andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
+            print 'SetExposureTime:', andor.SetExposureTime(0)            
+        else:
+            andor.SetShutter(1,0,5,5)
+            print 'SetExposureTime:', andor.SetExposureTime(itime) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
 
         print 'StartAcquisition:', andor.StartAcquisition()
 
-        
         status = andor.GetStatus()
-        t = 0 - time.time()
-        timeList = []
-        while(status[1]==andor.DRV_ACQUIRING):            
-            acquired = andor.WaitForAcquisition()
-            t += time.time()
-            print "Time for acquisition:", t
-            timeList.append(t)
+        print status
+
+        counter = 1
+        while(status[1]==andor.DRV_ACQUIRING and counter <= numexp):
             status = andor.GetStatus()
-            t = 0 - time.time()
-    
+            
+            print status
+            acquired = andor.WaitForAcquisition()
+            status = andor.GetStatus()
 
-        timeList = np.asarray(timeList)
-        print
-        print "Average Time:", timeList.mean()
-        print "Standard deviation:", np.std(timeList)
-        print 
+            if(status[1] == andor.DRV_ACQUIRING and acquired == andor.DRV_SUCCESS):
+                data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
+                results = andor.GetMostRecentImage16(data) # store image data
+                print results, 'success={}'.format(results == 20002) # print if the results were successful
+                
+                if(results == andor.DRV_SUCCESS): # if the array filled store successfully
+                    data=data.reshape(width/binning,height/binning) # reshape into image
+                    print data.shape,data.dtype
 
-        return "real 1" # exits with 1 for success
+                    hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
+                    filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
+                    hdu.writeto(filename,clobber=True)
+
+                    print "wrote: {}".format(filename)
+                    
+                    protocol.sendData("seriesSent " + filename)
+
+                counter += 1
+        print "Aborting", andor.AbortAcquisition()
+        return "series 1" # exits with 1 for success
 
 
+    def kseriesExposure(self, protocol, imType, itime, numexp=1, binning=1, numAccum=1, accumCycleTime=0, kCycleTime=0):
+        """
+        This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
+        """
+        retval,width,height = andor.GetDetector()
+        print 'GetDetector:', retval,width,height
 
-    def seriesExposure(self):
-        return "Taking series exposure"
+        print "SetAcquisitionMode:", andor.SetAcquisitionMode(3)
+        print 'SetReadMode:', andor.SetReadMode(4)
+
+        print 'SetImage:', andor.SetImage(binning,binning,1,width,1,height)
+        print 'GetDetector (again):', andor.GetDetector()
+
+        if(imType == "bias"):
+            andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
+            print 'SetExposureTime:', andor.SetExposureTime(0)            
+        else:
+            andor.SetShutter(1,0,5,5)
+            print 'SetExposureTime:', andor.SetExposureTime(itime) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
+
+        print "SetNumberOfAccumulations:", andor.SetNumberAccumulations(numAccum) # number of exposures to be combined
+        print "SetAccumulationTime:", andor.SetAccumulationCycleTime(accumCycleTime)
+        print "SetNumberOfKinetics:", andor.SetNumberKinetics(numexp) # this is the number of exposures the user wants
+        print 'SetKineticTime:', andor.SetKineticCycleTime(accumCycleTime)
+        print "SetTriggerMode:", andor.SetTriggerMode(0)
+
+        print 'StartAcquisition:', andor.StartAcquisition()
+
+        status = andor.GetStatus()
+        print status
+
+        counter = 1
+        while(status[1]==andor.DRV_ACQUIRING and counter <= numexp):
+            status = andor.GetStatus()
+            
+            print status
+            acquired = andor.WaitForAcquisition()
+            status = andor.GetStatus()
+
+            if(acquired == andor.DRV_SUCCESS):
+                data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
+                results = andor.GetMostRecentImage16(data) # store image data
+                print results, 'success={}'.format(results == 20002) # print if the results were successful
+                
+                if(results == andor.DRV_SUCCESS): # if the array filled store successfully
+                    data=data.reshape(width/binning,height/binning) # reshape into image
+                    print data.shape,data.dtype
+
+                    hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
+                    filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
+                    hdu.writeto(filename,clobber=True)
+
+                    print "wrote: {}".format(filename)
+                    
+                    protocol.sendData("seriesSent " + filename)
+                
+                    counter += 1
+            print andor.GetStatus()
+        return "kseries 1" # exits with 1 for success
+
 
     def abort(self):
         """
         This will abort the exposure and throw it out.
         """
+        print "Cancel Wait:", andor.CancelWait() # if in series or real time exposure this is neccessary to release a locked thread
         print "Aborted:", andor.AbortAcquisition()
         return 'abort 1'
 	

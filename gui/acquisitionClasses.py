@@ -159,6 +159,7 @@ class Exposure(wx.Panel):
                 # get image type 
                 imType = int(line.split()[0])
                 itime = float(line.split()[3])
+                line = " ".join(line[1:])
                 self.expButton.SetLabel("Abort")
                 self.abort = True
                 if(imType == 1): # single exposure
@@ -169,7 +170,7 @@ class Exposure(wx.Panel):
                     #t.start()
 
                     #self.active_threads.append(t)
-                    thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
+                    thread.start_new_thread(self.exposeTimer, (itime,))
                 if(imType == 2): # real time exposure
                     # start callback that looks for a path leading to a real image
                     d = self.protocol.addDeferred("realSent")
@@ -183,7 +184,7 @@ class Exposure(wx.Panel):
                     # enter threaded method that will request frames until abort
                     #thread.start_new_thread(self.displayRealImage, (itime,))
 
-                    thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
+                    thread.start_new_thread(self.exposeTimer, (itime,))
 
                 if(imType == 3): # series exposure
                     d = self.protocol.sendCommand("series " + line)
@@ -215,9 +216,7 @@ class Exposure(wx.Panel):
 
         self.parent.parent.parent.expGauge.SetValue(0)
             
-
     
-        
     def exposeTimer(self, time):
         # get exposure time 
         expTime = float(time) + 0.2
