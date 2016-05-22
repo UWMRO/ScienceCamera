@@ -254,7 +254,7 @@ class Evora(wx.Frame):
         self.connected = True # boolean to tell if connected to server
         self.enableConnections(False, True, True) # grey and un-grey camera menu options
         self.disableButtons(False) # enable gui functionality
-n        self.takeImage.tempInstance.isConnected = True # setups infinite loop in watchTemp method
+        self.takeImage.tempInstance.isConnected = True # setups infinite loop in watchTemp method
         t = threading.Thread(target=self.takeImage.tempInstance.watchTemp, args=(), name="temp thread")
         t.daemon = True
         t.start()
@@ -692,7 +692,7 @@ class EvoraForwarder(basic.LineReceiver):
         for i in range(0, size, 2):
             singular_sep_data = [sep_data[i], sep_data[i+1]]
 
-            print singular_sep_data
+            #print singular_sep_data
             if singular_sep_data[0] in self._deferreds:
                 self._deferreds.pop(singular_sep_data[0]).callback(singular_sep_data[1])
         
@@ -709,6 +709,20 @@ class EvoraForwarder(basic.LineReceiver):
         d = defer.Deferred()
         d.addCallback(gui.onConnectCallback)
         self._deferreds["status"] = d
+
+    def addDeferred(self, string):
+        """
+        This is used for creating deferred objects when expecting to receive data.
+        """
+        d = self._deferreds[string] = defer.Deferred()
+        return d
+
+    def removeDeferred(self, string):
+        """
+        Used to get rid of any trailing deferred obejcts (e.g. realSent after an abort)
+        """
+        if(string in self._deferreds):
+            self._deferreds.pop(string)
 
     def connectionLost(self, reason):
         ## Add a "callback" that will close down the gui functionality when camera connection is closed.

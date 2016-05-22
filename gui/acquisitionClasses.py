@@ -8,7 +8,7 @@ import EnhancedStatusBar # allows widgets to be inserted into wxPython status ba
                          # probably won't work on wxPython 3.x
 import threading, thread
 import signal
-#from twisted.internet import threads
+from twisted.internet import defer
 #import settings
 #import photoAcquisitionGUI as pag
 
@@ -28,6 +28,7 @@ class Exposure(wx.Panel):
         self.endTimer = 0
 
         self.abort = False
+        self.realDeferal = None
 
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
@@ -53,6 +54,8 @@ class Exposure(wx.Panel):
         self.expBox = wx.StaticBox(self, id=2006, label = "Exposure Controls", size=(100,100), style=wx.ALIGN_CENTER)
         self.expBoxSizer = wx.StaticBoxSizer(self.expBox, wx.VERTICAL)
         self.timer = wx.Timer(self, id=2007)
+        self.sampleTimer = wx.Timer(self, id=2008)
+        self.sampleTime = None
         #####
 
         ##### Line up smaller sub sizers
@@ -88,7 +91,7 @@ class Exposure(wx.Panel):
         ### Global variables
         self.timeToSend = 0
         self.nameToSend = ""
-
+        self.sampleTimerCount = 0
 
         ### Bindings
         self.Bind(wx.EVT_TEXT, self.nameText, id=2002) # bind self.nameField
@@ -141,6 +144,11 @@ class Exposure(wx.Panel):
         if(self.abort):
             d = self.protocol.sendCommand("abort")
             d.addCallback(self.abort_callback)
+
+            if(self.timer.IsRunning()):
+                self.timer.Stop()
+            self.parent.parent.parent.expGauge.SetValue(0)
+            
             self.expButton.SetLabel("Expose")
             self.abort = False
         else:
@@ -150,6 +158,7 @@ class Exposure(wx.Panel):
                 line = self.getAttributesToSend()
                 # get image type 
                 imType = int(line.split()[0])
+                itime = float(line.split()[3])
                 self.expButton.SetLabel("Abort")
                 self.abort = True
                 if(imType == 1): # single exposure
@@ -162,18 +171,56 @@ class Exposure(wx.Panel):
                     #self.active_threads.append(t)
                     thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
                 if(imType == 2): # real time exposure
+                    # start callback that looks for a path leading to a real image
+                    d = self.protocol.addDeferred("realSent")
+                    d.addCallback(self.displayRealImage)
+
                     d = self.protocol.sendCommand("real " + line)
                     d.addCallback(self.realCallback) # this will clear the image path queue
+
+                    # start timer that is mainly independent of requesting real images
+                    #thread.start_new_thread(self.sampleTimerMethod, (itime,))
                     # enter threaded method that will request frames until abort
-                    thread.start_new_thread(self.displayRealImage, (self.timeToSend,))
+                    #thread.start_new_thread(self.displayRealImage, (itime,))
+
+                    thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
+
                 if(imType == 3): # series exposure
                     d = self.protocol.sendCommand("series " + line)
                     #d.addCallback(something) # this will clear the image path queue
                     # enter threaded method that will request the prescribed number of frames
 
+    def sampleTimerMethod(self, itime):
+        # update global SampleTimer object
+        timer = als.SampleTimer(itime)
+
+        # get timer object stats before start
+        start, stop = timer.sample()
+
+        # set guage
+        wx.CallAfter(self.parent.parent.parent.expGauge.SetRange, stop)
+
+        #restart = False
+        timer.start()
+        #print "reached"
+        while self.abort: # is true while abort button is present
+            # sample the timer
+            #print "reached...again"
+            current, stop = timer.sample()
+            #wx.CallAfter(self.parent.parent.parent.expGauge.SetValue, current)
+            self.parent.parent.parent.expGauge.SetValue(current)
+            time.sleep(0.01)
+
+        timer.stop()
+
+        self.parent.parent.parent.expGauge.SetValue(0)
+            
+
+    
+        
     def exposeTimer(self, time):
         # get exposure time 
-        expTime = int(time)
+        expTime = float(time) + 0.2
         
         # get the max range for progress bar
         self.endTimer = int(expTime / (10.0*10**-3)) # timer will update every 10 ms
@@ -191,7 +238,7 @@ class Exposure(wx.Panel):
         else:
             # get gauge value
             val = self.parent.parent.parent.expGauge.GetValue()
-            self.parent.parent.parent.expGauge.SetValue(val + 1)
+            wx.CallAfter(self.parent.parent.parent.expGauge.SetValue, (val + 1))
             self.startTimer += 1
 
     def expose_callback_thread(self, msg):
@@ -243,6 +290,7 @@ class Exposure(wx.Panel):
             # get data
             data = als.getData(path+name)
             stats_list = als.calcStats(data)
+
             # change the gui with thread safety
             wx.CallAfter(self.safePlot, data, stats_list)
         else:
@@ -262,27 +310,33 @@ class Exposure(wx.Panel):
         self.parent.parent.parent.window.panel.updateScreenStats()
         self.parent.parent.parent.window.panel.refresh()
 
-    def displayRealImage(self, expTime):
-        # start while loop that is based on the abort button
-        print "in display self.abort is:", self.abort
-        #counter = 1
-        while self.abort:
-        #print "displaying.."
-            print "starting timer"
-            print self.startTimer
-            if(self.startTimer == 0):
-                print "started timer"
-                thread.start_new_thread(self.exposeTimer, (expTime,))
-            # request image from real time image queue
-            d = self.protocol.sendCommand("realImage")
-            #counter += 1
+    def displayRealImage_thread(self, msg):
+        thread.start_new_thread(self.displayRealImage, (msg,))
 
-            # set up callback that will wait for the real image
-            d.addCallback(self.displayRealImage_callback_thread)
-            # sleep thread for certain amount of time (5th or 10th of exposure time)
-            time.sleep(0.5)
+    def displayRealImage(self, msg):
+        path = msg
+        # no abort then display the image
+        if self.abort:
+            # add a new deffered object
+            d = self.protocol.addDeferred("realSent")
+            d.addCallback(self.displayRealImage_thread)
 
-        print "Done with real image"
+            if(self.timer.IsRunning()):
+                self.timer.Stop()
+
+            self.parent.parent.parent.expGauge.SetValue(self.endTimer)
+
+
+            # get stats
+            data = als.getData(path)
+            stats_list = als.calcStats(data)
+            # change the gui with thread safety
+            wx.CallAfter(self.safePlot, data, stats_list)
+
+            self.parent.parent.parent.expGauge.SetValue(0)
+            
+            thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
+
 
     def displayRealImage_callback_thread(self, msg):
         print "From real image callback thread:", repr(msg)
@@ -294,6 +348,7 @@ class Exposure(wx.Panel):
 
         ## complete progress bar for image acquisition
         # check to see if timer is still going and stop it (callback might come in early)
+        '''
         if (self.startTimer == self.endTimer - 1):
             if(self.timer.IsRunning()):
                 self.timer.Stop()
@@ -305,21 +360,22 @@ class Exposure(wx.Panel):
             self.parent.parent.parent.expGauge.SetValue(0)
 
             print path
-
+        '''
         if(msg != "None"):
-            if(self.timer.IsRunning()):
-                self.timer.Stop()
+            
+            #if(self.timer.IsRunning()):
+            #    self.timer.Stop()
 
             # finish out gauge and then reset it
-            self.parent.parent.parent.expGauge.SetValue(self.endTimer)
+            #self.parent.parent.parent.expGauge.SetValue(self.endTimer)
     
             # at the end of the callback reset the gauge (signifies a reset for exposure)
-            self.parent.parent.parent.expGauge.SetValue(0)
+            #self.parent.parent.parent.expGauge.SetValue(0)
 
-            print path
+            #print path
 
-            print self.parent.parent.parent.imageOpen
-            print "opened window"
+            #print self.parent.parent.parent.imageOpen
+            #print "opened window"
 
             # get data
             data = als.getData(path)
@@ -335,8 +391,9 @@ class Exposure(wx.Panel):
         """
 
     def realCallback(self, msg):
-        d = self.protocol.sendCommand("clear")
-        d.addCallback(self.imageQueueClear)
+        #d = self.protocol.sendCommand("clear")
+        #d.addCallback(self.imageQueueClear)
+        self.protocol.removeDeferred("realSent")
         print "Completed real time series with exit:", msg
 
     def imageQueueClear(self, msg):
@@ -567,7 +624,7 @@ class TempControl(wx.Panel):
         # create an infinite while loop
         while self.isConnected:
             d = self.protocol.sendCommand("temp")
-            d.addCallback(self.callbackTemp)
+            d.addCallback(self.callbackTemp_thread)
             #  put thread to sleep; on wake up repeats
             time.sleep(10)
         """
@@ -586,8 +643,8 @@ class TempControl(wx.Panel):
         temp = str(int(round(float(temp))))
         mode = int(msg.split(",")[0])
         
-        self.parent.parent.parent.stats.SetStatusText("Current Temp:            " + temp + " C", 0)
-        #wx.CallAfter(self.parent.parent.parent.stats.SetStatusText, "Current Temp:            " + temp + " C", 0)
+        #self.parent.parent.parent.stats.SetStatusText("Current Temp:            " + temp + " C", 0)
+        wx.CallAfter(self.parent.parent.parent.stats.SetStatusText, "Current Temp:            " + temp + " C", 0)
         
         ## based on temp change bitmap color
         # 20037 is NotReached
@@ -603,8 +660,8 @@ class TempControl(wx.Panel):
         if(mode == 20036):
             bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('blueCirc.png'), size=(90,17))
         
-        self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-        #wx.CallAfter(self.parent.parent.parent.stats.AddWidget, bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        #self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        wx.CallAfter(self.parent.parent.parent.stats.AddWidget, bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
 
         """
         if(self.isConnected):

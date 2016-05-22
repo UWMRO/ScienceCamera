@@ -35,6 +35,7 @@ def isNumber(string):
         float(string)
         return True
     except ValueError:
+
         return False
 
 
@@ -53,7 +54,7 @@ def calcStats(data):
 
 class SampleTimer(object):
     def __init__(self, timeLength):
-        self.end = timeLength
+        self.end = timeLength + 0.24 # add an extra 0.24 for readout and shutter time
         
         self.tick = 10 * 10 ** -3 # tick is 10 milliseconds
 
@@ -62,12 +63,21 @@ class SampleTimer(object):
         self.currentTick = 0
         self.totalTicks = self.end / self.tick
         
+        self.t = None
+        
     def timer(self):
+        counter = 0
         while not self.stopTimer:
             if(self.currentTick == self.totalTicks):
-                self.currentTick = 0
+                if(counter == 9):
+                    self.currentTick = -10
+                    counter = 0
+                else:
+                    self.currentTick = 0
+                    counter += 1
             else:
                 self.currentTick += 1
+
             time.sleep(0.01)
 
     def sample(self):
@@ -83,4 +93,3 @@ class SampleTimer(object):
         self.t = threading.Thread(target=self.timer, args=())
         self.t.daemon = True
         self.t.start()
-    

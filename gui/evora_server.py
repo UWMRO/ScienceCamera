@@ -27,7 +27,7 @@ class EvoraServer(basic.LineReceiver):
         self.factory.clients.append(self)
         #self.sendMessage("Welcome to the Evora Server")
         #self.sendMessage("Starting camera")
-        ep = EvoraParser()
+        ep = EvoraParser(self)
         command = ep.parse("status") 
         self.sendMessage(str(command)) # activate the callback to give full control to the camera.
         
@@ -43,7 +43,7 @@ class EvoraServer(basic.LineReceiver):
 
     def lineReceived(self, line):
         print "received", line
-        ep = EvoraParser()
+        ep = EvoraParser(self)
         #command = ep.parse(line)
         d = threads.deferToThread(ep.parse, line)
         d.addCallback(self.sendData)
@@ -67,8 +67,9 @@ class EvoraClient(protocol.ServerFactory):
 
 ## Evora Parser commands sent here from server where it envokes the camera commands.
 class EvoraParser(object):
-    def __init__(self):
+    def __init__(self, protocol):
         self.e = Evora()
+        self.protocol = protocol
 
     def parse(self, input = None):
         print input
@@ -96,6 +97,9 @@ class EvoraParser(object):
             return self.e.clearImageQueue()
         if input[0] == 'realImage':
             return self.e.requestRealImage()
+        if input[0] == 'testReal':
+            itime = float(input[1])
+            return self.e.testReal(itime)
         if input[0] == 'expose':
             # split into different modes (single, real time, and series)
             # expose 1 flat 1 10 2
@@ -124,7 +128,7 @@ class EvoraParser(object):
             expnum = int(input[3])
             itime = int(input[4])
             binning = int(input[5])
-            return self.e.realTimeExposure(itime, binning)
+            return self.e.realTimeExposure(self.protocol, itime, binning)
         if input[0] == 'series':
             exposureSetting = int(input[1]) 
             type = input[2]
@@ -364,7 +368,7 @@ class Evora(object):
         #queue.put("expose " + filename)
 	return "expose " + str(success) + ","+filename
 
-    def realTimeExposure(self, itime, binning=1):
+    def realTimeExposure(self, protocol, itime, binning=1): 
         global image_path_queue
         """
         This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
@@ -408,14 +412,58 @@ class Evora(object):
                     hdu.writeto(filename,clobber=True)
                     print "wrote: {}".format(filename)
                     
+                    protocol.sendData("realSent " + filename)
+
                     # put file path in queue
                     image_path_queue.put(filename) # client will request a name from this 
-                    print "Put %s in image queue"%filename
-                print image_path_queue.qsize()
+                    #print "Put %s in image queue"%filename
+                #print image_path_queue.qsize()
                 counter += 1
         
         return "real 1" # exits with 1 for success
+       
+    def testReal(self, itime, binning=1): 
+        # average time is 0.2395 with deviation of 0.0001
+        global image_path_queue
+        """
+        This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
+        """
+        retval,width,height = andor.GetDetector()
+        print 'GetDetector:', retval,width,height
+
+        print "SetAcquisitionMode:", andor.SetAcquisitionMode(5)
+        print 'SetReadMode:', andor.SetReadMode(4)
+
+        print 'SetImage:', andor.SetImage(binning,binning,1,width,1,height)
+        print 'GetDetector (again):', andor.GetDetector()
+
+        print 'SetExposureTime:', andor.SetExposureTime(itime)
+        print 'SetKineticTime:', andor.SetKineticCycleTime(0)
+
+        print "Shutter Success:", andor.SetShutter(1,0,5,5) # adds 10 milliseconds to total time
+
+        print 'StartAcquisition:', andor.StartAcquisition()
+
         
+        status = andor.GetStatus()
+        t = 0 - time.time()
+        timeList = []
+        while(status[1]==andor.DRV_ACQUIRING):            
+            acquired = andor.WaitForAcquisition()
+            t += time.time()
+            print "Time for acquisition:", t
+            timeList.append(t)
+            status = andor.GetStatus()
+            t = 0 - time.time()
+    
+
+        timeList = np.asarray(timeList)
+        print
+        print "Average Time:", timeList.mean()
+        print "Standard deviation:", np.std(timeList)
+        print 
+
+        return "real 1" # exits with 1 for success
 
 
 
