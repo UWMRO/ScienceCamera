@@ -335,10 +335,10 @@ class Evora(wx.Frame):
         # Diable GUI functionality (expose, stop, cool, warmup, rotate to)
         boolean = not boolean 
         self.takeImage.exposureInstance.expButton.Enable(boolean)
-        self.takeImage.exposureInstance.stopExp.Enable(boolean)
+        #self.takeImage.exposureInstance.stopExp.Enable(boolean)
         
         self.takeImage.tempInstance.tempButton.Enable(boolean)
-        self.takeImage.tempInstance.stopExp.Enable(boolean)
+        #self.takeImage.tempInstance.stopExp.Enable(boolean)
 
         self.takeImage.filterInstance.filterButton.Enable(boolean)
 

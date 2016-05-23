@@ -8,6 +8,8 @@ import ctypes
 from astropy.io import fits
 import time
 import Queue
+import thread
+
 
 from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
@@ -15,6 +17,11 @@ from twisted.internet import protocol, reactor, threads
 #import ProtoParser
 
 # port for evora is 5502
+import threading
+
+# Global Variables
+acquired = None
+t = None
 
 class EvoraServer(basic.LineReceiver):
     def connectionMade(self):
@@ -44,6 +51,7 @@ class EvoraServer(basic.LineReceiver):
         #command = ep.parse(line)
         d = threads.deferToThread(ep.parse, line)
         d.addCallback(self.sendData)
+        print "done"
         #if command != None:
         #    self.sendMessage(str(command))
     
@@ -82,7 +90,6 @@ class EvoraParser(object):
         if input[0] == 'warmup':
             return self.e.warmup()
         if input[0] == 'shutdown':
-            print "entered shutdown"
             return self.e.shutdown()
         if input[0] == "status":
             return self.e.getStatus()
@@ -90,13 +97,6 @@ class EvoraParser(object):
             return self.e.getTimings()
         if input[0] == "abort":
             return self.e.abort()
-        if input[0] == 'clear':
-            return self.e.clearImageQueue()
-        if input[0] == 'realImage':
-            return self.e.requestRealImage()
-        if input[0] == 'testReal':
-            itime = float(input[1])
-            return self.e.testReal(itime)
         if input[0] == 'expose':
             # expose 1 flat 1 10 2
             # get the type of exposure (i.e. bias, flat, object)
@@ -144,7 +144,6 @@ class Evora(object):
 
     def __init__(self):
         self.num = 0
-        #self.image_path_queue = Queue.Queue()
 
     def getStatus(self):
         # if the first status[0] is 20075 then the camera is not initialized yet and
@@ -242,30 +241,14 @@ class Evora(object):
         return "shutdown 1"
 
     def getTimings(self):
-        retval, width, height = andor.GetDetector()
-        print retval, width, height
+        #retval, width, height = andor.GetDetector()
+        #print retval, width, height
         expTime, accTime, kTime = 1, 0, 0
         expTime,accTime,kTime = andor.GetAcquisitionTimings(expTime, accTime, kTime)
         print expTime,accTime,kTime
 
         return "timings"
-
-    def requestRealImage(self):
-        global image_path_queue
-        #print 'returning request'
-        filename = ""
-        if(not image_path_queue.empty()):
-            filename = image_path_queue.get()
-        else:
-            filename = None
-        #print 'reached filename'
-        return "realImage " + str(filename)
-    
-    def clearImageQueue(self):
-        global image_path_queue
-        image_path_queue.queue.clear() # clear the image path queue when client requests
-        return "clear 1" # 1 for success
-        
+            
     def expose(self, imType=None, expnum=None, itime=2, binning=1):
 
         if expnum is None:
@@ -300,8 +283,15 @@ class Evora(object):
 
         status = andor.GetStatus()
         print status
+        while status[1] == andor.DRV_ACQUIRING:
+            status = andor.GetStatus()
+            
+        print status
+
+        """
         acquired = andor.WaitForAcquisition()
-        print acquired
+        print "Result of waiting:", acquired
+        """
 
         data = np.zeros(width/binning*height/binning, dtype='uint16')
         print data.shape
@@ -314,19 +304,22 @@ class Evora(object):
             success = 0 # for false
 
         print result, 'success={}'.format(result == 20002)
-        data=data.reshape(width/binning,height/binning)
-        print data.shape,data.dtype
-        hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
-	filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
-        hdu.writeto(filename,clobber=True)
-        print "wrote: {}".format(filename)
+        filename = None
+        if success == 1:
+            data=data.reshape(width/binning,height/binning)
+            print data.shape,data.dtype
+            hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
+            filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
+            hdu.writeto(filename,clobber=True)
+            print "wrote: {}".format(filename)
         #queue.put("expose " + filename)
-	return "expose " + str(success) + ","+filename
+	return "expose " + str(success) + ","+str(filename)
 
     def realTimeExposure(self, protocol, imType, itime, binning=1): 
         """
         This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
         """
+        #global acquired
         retval,width,height = andor.GetDetector()
         print 'GetDetector:', retval,width,height
 
@@ -346,42 +339,54 @@ class Evora(object):
         else:
             andor.SetShutter(1,0,5,5)
             print 'SetExposureTime:', andor.SetExposureTime(itime) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
-
+            
+        data = np.zeros(width/binning*height/binning, dtype='uint16')
         print 'StartAcquisition:', andor.StartAcquisition()
 
         
         status = andor.GetStatus()
         print status
-        counter = 1
         while(status[1]==andor.DRV_ACQUIRING):
-            status = andor.GetStatus()
+            #status = andor.GetStatus()
             
-            print status
-            acquired = andor.WaitForAcquisition()
+            #print status
+            #acquired = andor.WaitForAcquisitionTimeOut(int(itime))
+            #if acquired == andor.DRV_SUCCESS:
+            #    print acquired, 'success={}'.format(acquired == andor.DRV_SUCCESS)
+            #print acquired
             status = andor.GetStatus()
+            #if(status[1] != andor.DRV_ACQUIRING):
+               #print status
+            #acquired = andor.GetAcquiredData16(data)
+            #print acquired, 'success={}'.format(acquired == andor.DRV_SUCCESS)
+            #acc, series = np.zeros((1,), dtype=np.int_), np.zeros((1,), dtype=np.int_)
+            #results = andor.GetAcquisitionProgress(acc, series)
+            #acquired = None
+            #results = andor.GetMostRecentImage16(data)
+            #if(results == andor.DRV_SUCCESS):
+            #    print results
             if(status[1] == andor.DRV_ACQUIRING and acquired == andor.DRV_SUCCESS):
                 data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
-                results = andor.GetMostRecentImage16(data) # store image data
-                print results, 'success={}'.format(results == 20002) # print if the results were successful
+                #results = andor.GetMostRecentImage16(data) # store image data
+                #print results, 'success={}'.format(results == 20002) # print if the results were successful
                 
-                if(results == andor.DRV_SUCCESS): # if the array filled store successfully
+                if(acquired == andor.DRV_SUCCESS): # if the array filled store successfully
                     data=data.reshape(width/binning,height/binning) # reshape into image
                     print data.shape,data.dtype
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
                     filename = time.strftime('/tmp/image_%Y%m%d_%H%M%S.fits') 
                     hdu.writeto(filename,clobber=True)
                     print "wrote: {}".format(filename)
-                    
+                    data = np.zeros(width/binning*height/binning, dtype='uint16')
                     protocol.sendData("realSent " + filename)
 
-                    # put file path in queue
-                    image_path_queue.put(filename) # client will request a name from this 
-                    #print "Put %s in image queue"%filename
-                #print image_path_queue.qsize()
-                counter += 1
-        
         return "real 1" # exits with 1 for success
-       
+
+    def waitForAcquisition(self):
+        global acquired
+        result = andor.WaitForAcquisition()
+        acquired = result
+        
 
     def seriesExposure(self, protocol, imType, itime, numexp=1, binning=1):
         """
@@ -434,7 +439,7 @@ class Evora(object):
 
                     print "wrote: {}".format(filename)
                     
-                    protocol.sendData("seriesSent " + filename)
+                    Protocol.sendData("seriesSent " + filename)
 
                 counter += 1
         print "Aborting", andor.AbortAcquisition()
@@ -524,6 +529,7 @@ class Evora(object):
 if __name__=="__main__":
     #ep = Evora()
     #ep.startup()
+    reactor.suggestThreadPoolSize(30)
     reactor.listenTCP(5502, EvoraClient())
     reactor.run()
 

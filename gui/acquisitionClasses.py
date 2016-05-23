@@ -49,7 +49,8 @@ class Exposure(wx.Panel):
 
         self.expValue = wx.TextCtrl(self, id=2003, size=(45, -1))
         self.expButton = wx.Button(self, id=2004, label="Expose", size=(60, -1))
-        self.stopExp = wx.Button(self, id=2005, label="Stop", size=(60,-1))
+        self.stopExp = wx.Button(self, id=2005, label="Abort", size=(60,-1))
+        self.stopExp.Enable(False)
 
         self.expBox = wx.StaticBox(self, id=2006, label = "Exposure Controls", size=(100,100), style=wx.ALIGN_CENTER)
         self.expBoxSizer = wx.StaticBoxSizer(self.expBox, wx.VERTICAL)
@@ -91,7 +92,6 @@ class Exposure(wx.Panel):
         ### Global variables
         self.timeToSend = 0
         self.nameToSend = ""
-        self.sampleTimerCount = 0
 
         ### Bindings
         self.Bind(wx.EVT_TEXT, self.nameText, id=2002) # bind self.nameField
@@ -159,10 +159,14 @@ class Exposure(wx.Panel):
                 # get image type 
                 imType = int(line.split()[0])
                 itime = float(line.split()[3])
-                line = " ".join(line[1:])
-                self.expButton.SetLabel("Abort")
-                self.abort = True
+                line = " ".join(line.split()[1:])
+                print line
+                
+                #self.expButton.SetLabel("Abort")
                 if(imType == 1): # single exposure
+                    self.expButton.Enable(False)
+                    self.stopExp.Enable(True)
+                    self.abort = True
                     d = self.protocol.sendCommand("expose " + line)
                     d.addCallback(self.expose_callback_thread)
                     # start up progress bar updating with wx Timer
@@ -172,6 +176,9 @@ class Exposure(wx.Panel):
                     #self.active_threads.append(t)
                     thread.start_new_thread(self.exposeTimer, (itime,))
                 if(imType == 2): # real time exposure
+                    self.expButton.Enable(False)
+                    self.stopExp.Enable(True)
+                    self.abort = True
                     # start callback that looks for a path leading to a real image
                     d = self.protocol.addDeferred("realSent")
                     d.addCallback(self.displayRealImage)
@@ -190,31 +197,6 @@ class Exposure(wx.Panel):
                     d = self.protocol.sendCommand("series " + line)
                     #d.addCallback(something) # this will clear the image path queue
                     # enter threaded method that will request the prescribed number of frames
-
-    def sampleTimerMethod(self, itime):
-        # update global SampleTimer object
-        timer = als.SampleTimer(itime)
-
-        # get timer object stats before start
-        start, stop = timer.sample()
-
-        # set guage
-        wx.CallAfter(self.parent.parent.parent.expGauge.SetRange, stop)
-
-        #restart = False
-        timer.start()
-        #print "reached"
-        while self.abort: # is true while abort button is present
-            # sample the timer
-            #print "reached...again"
-            current, stop = timer.sample()
-            #wx.CallAfter(self.parent.parent.parent.expGauge.SetValue, current)
-            self.parent.parent.parent.expGauge.SetValue(current)
-            time.sleep(0.01)
-
-        timer.stop()
-
-        self.parent.parent.parent.expGauge.SetValue(0)
             
     
     def exposeTimer(self, time):
@@ -254,9 +236,8 @@ class Exposure(wx.Panel):
 
         # immediatly reset button
         self.abort = False
-        wx.CallAfter(self.expButton.SetLabel, "Expose")
+        self.expButton.Enable(True)
 
-        #print threading.current_thread().name
         ## complete progress bar for image acquisition
         # check to see if timer is still going and stop it (callback might come in early)
         if(self.timer.IsRunning()):
@@ -270,14 +251,6 @@ class Exposure(wx.Panel):
         # get success;
         success = int(results[0]) # 1 for true 0 for false
         #print success
-        # get name of image and path
-        filePath = results[1].split("/")
-        name = filePath[-1].rstrip()
-        path = ""
-        for i in filePath[:-1]:
-            path += i + "/"
-            
-        print path, name
  
         # at the end of the callback reset the gauge (signifies a reset for exposure)
         self.parent.parent.parent.expGauge.SetValue(0)
@@ -286,6 +259,15 @@ class Exposure(wx.Panel):
         print "opened window"
 
         if(success == 1):
+            # get name of image and path
+            filePath = results[1].split("/")
+            name = filePath[-1].rstrip()
+            path = ""
+            for i in filePath[:-1]:
+                path += i + "/"
+            
+            print path, name
+
             # get data
             data = als.getData(path+name)
             stats_list = als.calcStats(data)
@@ -455,6 +437,17 @@ class Exposure(wx.Panel):
         """
         Executes when the stop button is pressed.  Sends a command to Evora to stop exposing.
         """
+        d = self.protocol.sendCommand("abort")
+        d.addCallback(self.abort_callback)
+        
+        if(self.timer.IsRunning()):
+            self.timer.Stop()
+        self.parent.parent.parent.expGauge.SetValue(0)
+            
+        self.expButton.Enable(True)
+        self.stopExp.Enable(False)
+        self.abort = False
+
         print "Stop Exposure"
 
     def joinThreads(self):
@@ -547,6 +540,7 @@ class TempControl(wx.Panel):
         self.tempValue = wx.TextCtrl(self, id=2031, size=(45, -1), style=wx.TE_PROCESS_ENTER)
         self.tempButton = wx.Button(self, id=2032, label="Cool", size=(60, -1))
         self.stopExp = wx.Button(self, id=2033, label="Stop", size=(60,-1))
+        self.stopExp.Enable(False)
         self.tempBox = wx.StaticBox(self, id=2034, label="Temperature Controls", size=(100,100), style=wx.ALIGN_CENTER)
         self.tempBoxSizer = wx.StaticBoxSizer(self.tempBox, wx.VERTICAL)
         #####
