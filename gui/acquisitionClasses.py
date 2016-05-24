@@ -29,6 +29,7 @@ class Exposure(wx.Panel):
 
         self.abort = False
         self.realDeferal = None
+        self.seriesImageNumber = None # initialize a series image number
 
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
@@ -126,79 +127,91 @@ class Exposure(wx.Panel):
         to Evora.
         """
         if als.isNumber(self.timeToSend):
-            pass
-            #print int(self.timeToSend)
+            if(float(self.timeToSend) < 0):
+                dialog = wx.MessageDialog(None, "Exposure time can not be less than 0...will not expose", "", wx.OK|wx.ICON_ERROR)
+                dialog.ShowModal()
+                dialog.Destroy()
+
         else:
             dialog = wx.MessageDialog(None, "Exposure time not a number...will not expose.",
                                       "", wx.OK|wx.ICON_ERROR)
             dialog.ShowModal()
+            dialong.Destroy()
 
         if self.nameToSend is "":
             dialog = wx.MessageDialog(None,"No name was given...will not expose", "",
                                       wx.OK|wx.ICON_ERROR)
             dialog.ShowModal()
+            dialog.Destroy()
         else:
             pass
-            #print self.nameToSend
 
-        if(self.abort):
-            d = self.protocol.sendCommand("abort")
-            d.addCallback(self.abort_callback)
 
-            if(self.timer.IsRunning()):
-                self.timer.Stop()
-            self.parent.parent.parent.expGauge.SetValue(0)
+
+        if als.isNumber(self.timeToSend) and self.nameToSend is not "":
+            #self.protocol.sendLine("Exposing with name " + str(self.nameToSend) + " and time " + str(self.timeToSend) + " s")
             
-            self.expButton.SetLabel("Expose")
-            self.abort = False
-        else:
-            if als.isNumber(self.timeToSend) and self.nameToSend is not "":
-                #self.protocol.sendLine("Exposing with name " + str(self.nameToSend) + " and time " + str(self.timeToSend) + " s")
+            line = self.getAttributesToSend().split()
+        
+            # get image type 
+            imType = int(line[0])
+            itime = float(line[3])
+        
+            #self.expButton.SetLabel("Abort")
+            if(imType == 1): # single exposure
+                self.expButton.Enable(False)
+                self.stopExp.Enable(True)
+                self.abort = True
+                line = " ".join(line[1:]) # bring all the parameters together
+                d = self.protocol.sendCommand("expose " + line)
+                d.addCallback(self.expose_callback_thread)
+                thread.start_new_thread(self.exposeTimer, (itime,))
+
+            if(imType == 2): # real time exposure
+                self.expButton.Enable(False)
+                self.stopExp.Enable(True)
+                self.abort = True
+                line = " ".join(line[1:])
+                # start callback that looks for a path leading to a real image
+                d = self.protocol.addDeferred("realSent")
+                d.addCallback(self.displayRealImage_thread)
+
+                d = self.protocol.sendCommand("real " + line)
+                d.addCallback(self.realCallback) # this will clear the image path queue
+
+                # start timer
+                thread.start_new_thread(self.exposeTimer, (itime,))
+
+            if(imType == 3): # series exposure
+                dialog = wx.TextEntryDialog(None, "How many exposure?", "Entry", "1", wx.OK | wx.CANCEL)
+                answer = dialog.ShowModal()
+                dialog.Destroy()
+                if answer == wx.ID_OK:
+                    self.seriesImageNumber = dialog.GetValue()
+                    if(als.isInt(self.seriesImageNumber)):
+                        print "Number of image to be taken:", int(self.seriesImageNumber)
+                        self.expButton.Enable(False)
+                        self.stopExp.Enable(True)
+                        self.abort = True
+
+                        line[2] = self.seriesImageNumber
+                        line = " ".join(line[1:])
+                        
+                        d = self.protocol.sendCommand("seriesSent")
+                        d.addCallback(self.displaySeriesImage_thread)
+
+                        d = self.protocol.sendCommand("series " + str(line))
+                        d.addCallback(self.seriesCallback)
+                        
+                        # start timer
+                        thread.start_new_thread(self.exposeTimer, (itime,))
+
+                    else:
+                        dialog = wx.MessageDialog(None, "Entry was not a valid integer!", "", wx.OK | wx.ICON_ERROR)
+                        dialog.ShowModal()
+                        dialog.Destroy()
             
-                line = self.getAttributesToSend()
-                # get image type 
-                imType = int(line.split()[0])
-                itime = float(line.split()[3])
-                line = " ".join(line.split()[1:])
-                print line
-                
-                #self.expButton.SetLabel("Abort")
-                if(imType == 1): # single exposure
-                    self.expButton.Enable(False)
-                    self.stopExp.Enable(True)
-                    self.abort = True
-                    d = self.protocol.sendCommand("expose " + line)
-                    d.addCallback(self.expose_callback_thread)
-                    # start up progress bar updating with wx Timer
-                    #t = threading.Thread(target=self.exposeTimer, args=())
-                    #t.start()
 
-                    #self.active_threads.append(t)
-                    thread.start_new_thread(self.exposeTimer, (itime,))
-                if(imType == 2): # real time exposure
-                    self.expButton.Enable(False)
-                    self.stopExp.Enable(True)
-                    self.abort = True
-                    # start callback that looks for a path leading to a real image
-                    d = self.protocol.addDeferred("realSent")
-                    d.addCallback(self.displayRealImage)
-
-                    d = self.protocol.sendCommand("real " + line)
-                    d.addCallback(self.realCallback) # this will clear the image path queue
-
-                    # start timer that is mainly independent of requesting real images
-                    #thread.start_new_thread(self.sampleTimerMethod, (itime,))
-                    # enter threaded method that will request frames until abort
-                    #thread.start_new_thread(self.displayRealImage, (itime,))
-
-                    thread.start_new_thread(self.exposeTimer, (itime,))
-
-                if(imType == 3): # series exposure
-                    d = self.protocol.sendCommand("series " + line)
-                    #d.addCallback(something) # this will clear the image path queue
-                    # enter threaded method that will request the prescribed number of frames
-            
-    
     def exposeTimer(self, time):
         # get exposure time 
         expTime = float(time) + 0.2
@@ -224,11 +237,7 @@ class Exposure(wx.Panel):
 
     def expose_callback_thread(self, msg):
         thread.start_new_thread(self.exposeCallback, (msg,))
-        #t = threading.Thread(target=self.exposeCallback, args=(msg,))
-        #t.start()
-        #d = threads.deferToThread(self.exposeCallback, msg)
-        #d.addCallback(self.joinThreads)
-        pass
+
 
     def exposeCallback(self, msg):
         ### May need to thread to a different method if to slow
@@ -240,10 +249,10 @@ class Exposure(wx.Panel):
 
         ## complete progress bar for image acquisition
         # check to see if timer is still going and stop it (callback might come in early)
+        
         if(self.timer.IsRunning()):
             self.timer.Stop()
-        # join threads
-        #self.joinThreads()
+        
         # finish out gauge and then reset it
         self.parent.parent.parent.expGauge.SetValue(self.endTimer)
 
@@ -254,6 +263,7 @@ class Exposure(wx.Panel):
  
         # at the end of the callback reset the gauge (signifies a reset for exposure)
         self.parent.parent.parent.expGauge.SetValue(0)
+        self.startTimer = 0
 
         print self.parent.parent.parent.imageOpen
         print "opened window"
@@ -301,12 +311,13 @@ class Exposure(wx.Panel):
             # add a new deffered object
             d = self.protocol.addDeferred("realSent")
             d.addCallback(self.displayRealImage_thread)
-
+            
+            
             if(self.timer.IsRunning()):
                 self.timer.Stop()
-
+            
             self.parent.parent.parent.expGauge.SetValue(self.endTimer)
-
+            
 
             # get stats
             data = als.getData(path)
@@ -314,8 +325,9 @@ class Exposure(wx.Panel):
             # change the gui with thread safety
             wx.CallAfter(self.safePlot, data, stats_list)
 
-            self.parent.parent.parent.expGauge.SetValue(0)
-            
+            self.parent.parent.parent.expGauge.SetValue(0) 
+            self.startTimer = 0
+
             thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
 
 
@@ -327,60 +339,77 @@ class Exposure(wx.Panel):
     def displayRealImage_callback(self, msg):
         path = msg # path to image (/tmp/image_date.fits)
 
-        ## complete progress bar for image acquisition
-        # check to see if timer is still going and stop it (callback might come in early)
-        '''
-        if (self.startTimer == self.endTimer - 1):
-            if(self.timer.IsRunning()):
-                self.timer.Stop()
-
-            # finish out gauge and then reset it
-            self.parent.parent.parent.expGauge.SetValue(self.endTimer)
-    
-            # at the end of the callback reset the gauge (signifies a reset for exposure)
-            self.parent.parent.parent.expGauge.SetValue(0)
-
-            print path
-        '''
         if(msg != "None"):
-            
-            #if(self.timer.IsRunning()):
-            #    self.timer.Stop()
-
-            # finish out gauge and then reset it
-            #self.parent.parent.parent.expGauge.SetValue(self.endTimer)
-    
-            # at the end of the callback reset the gauge (signifies a reset for exposure)
-            #self.parent.parent.parent.expGauge.SetValue(0)
-
-            #print path
-
-            #print self.parent.parent.parent.imageOpen
-            #print "opened window"
-
-            # get data
+                        # get data
             data = als.getData(path)
             stats_list = als.calcStats(data)
             # change the gui with thread safety
             wx.CallAfter(self.safePlot, data, stats_list)
 
-        """
-        if(self.abort):
-            thread.start_new_thread(self.displayRealImage, (self.timeToSend,))
-        else:
-            pass
-        """
-
     def realCallback(self, msg):
-        #d = self.protocol.sendCommand("clear")
-        #d.addCallback(self.imageQueueClear)
         self.protocol.removeDeferred("realSent")
         print "Completed real time series with exit:", msg
 
-    def imageQueueClear(self, msg):
-        print "Cleared image path queue with exit:", msg
+    def displaySeriesImage_thread(self, msg):
+        thread.start_new_thread(self.displaySeriesImage, (msg,))
+
+    def displaySeriesImage(self, msg):
+        msg = msg.split(",")
+        imNum = int(msg[0])
+        path = msg[1]
+        print "Got:", msg
+        # no abort then display the image
+        if(self.abort and imNum <= int(self.seriesImageNumber)):
+            print "Entered to display series image"
+            # add a new deffered object
+            d = self.protocol.addDeferred("seriesSent")
+            d.addCallback(self.displaySeriesImage_thread)
+            
+            
+            if(self.timer.IsRunning()):
+                self.timer.Stop()
+            
+            self.parent.parent.parent.expGauge.SetValue(self.endTimer)
+            
+
+            # get stats
+            data = als.getData(path)
+            stats_list = als.calcStats(data)
+            # change the gui with thread safety
+            wx.CallAfter(self.safePlot, data, stats_list)
+
+            self.parent.parent.parent.expGauge.SetValue(0) 
+            self.startTimer = 0
+
+            if(self.seriesImageNumber != None):
+                if(imNum < int(self.seriesImageNumber)):
+                    thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
+
+
+    def seriesCallback(self, msg):
+        self.protocol.removeDeferred("seriesSent")
+        # reset series image number 
+        self.seriesImageNumber = None
+        
+        self.abort = False
+        self.expButton.Enable(True)
+        # stop timer if running
+        if(self.timer.IsRunning()):
+            self.timer.Stop()   
+
+        # finish out the gauge
+        self.parent.parent.parent.expGauge.SetValue(self.endTimer)
+            
+        # restart gauge and the timer count
+        self.parent.parent.parent.expGauge.SetValue(0)
+        self.startTimer = 0
+
+
+        print "Completed real time series with exit:", msg
+
 
     def abort_callback(self, msg):
+        self.parent.parent.parent.expGauge.SetValue(0) # redundancy to clear the exposure gauge
         print "Aborted", msg
 
     def openData(self, path, name):
@@ -539,8 +568,8 @@ class TempControl(wx.Panel):
         self.tempText = wx.StaticText(self, id=2030, label="Temperature (C)")
         self.tempValue = wx.TextCtrl(self, id=2031, size=(45, -1), style=wx.TE_PROCESS_ENTER)
         self.tempButton = wx.Button(self, id=2032, label="Cool", size=(60, -1))
-        self.stopExp = wx.Button(self, id=2033, label="Stop", size=(60,-1))
-        self.stopExp.Enable(False)
+        self.stopCool = wx.Button(self, id=2033, label="Stop", size=(60,-1))
+        self.stopCool.Enable(False)
         self.tempBox = wx.StaticBox(self, id=2034, label="Temperature Controls", size=(100,100), style=wx.ALIGN_CENTER)
         self.tempBoxSizer = wx.StaticBoxSizer(self.tempBox, wx.VERTICAL)
         #####
@@ -555,7 +584,7 @@ class TempControl(wx.Panel):
 
         self.buttonSizer.Add(self.tempButton, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.buttonSizer, 10)
-        self.buttonSizer.Add(self.stopExp, 1, flag=wx.ALIGN_CENTER)
+        self.buttonSizer.Add(self.stopCool, 1, flag=wx.ALIGN_CENTER)
 
 
         ####
@@ -589,19 +618,43 @@ class TempControl(wx.Panel):
         if als.isNumber(self.tempToSend):
             if(float(self.tempToSend) >= -80.0 and float(self.tempToSend) <= -10.0):
                 print float(self.tempToSend)
-                self.protocol.sendLine("setTEC " + str(int(self.tempToSend)))
+                if self.parent.exposureInstance.abort:
+                    dialog = wx.MessageDialog(None, "Do you want to changing temperature during exposure?", "", wx.OK | wx.CANCEL|wx.ICON_QUESTION)
+                    answer = dialog.ShowModal()
+                    dialog.Destroy()
+
+                    if answer == wx.ID_OK:
+                        d = self.protocol.sendCommand("setTEC " + str(int(self.tempToSend)))
+                        d.addCallback(self.cooling_callback)
+                        if(not self.stopCool.IsEnabled()):
+                            self.stopCool.Enable(True)
+                else:
+                    d = self.protocol.sendCommand("setTEC " + str(int(self.tempToSend)))
+                    d.addCallback(self.cooling_callback)
+                    if(not self.stopCool.IsEnabled()):
+                        self.stopCool.Enable(True)
             else:
                 dialog = wx.MessageDialog(None, "Temperature is not within the bounds.", "", wx.OK|wx.ICON_ERROR)
                 dialog.ShowModal()
+                dialog.Destroy()
         else:
             dialog = wx.MessageDialog(None, "Temperature specified is not a number.", "", wx.OK|wx.ICON_ERROR)
             dialog.ShowModal()
+            dialog.Destroy()
+
+    def cooling_callback(self, msg):
+        print "Cooling to:", msg
 
     def onStopCooling(self, event):
         """
         When the stop cooling button is pressed this sends a command to Evora to warmup.
         """
-        self.protocol.sendLine("warmup")
+        self.stopCool.Enable(False)
+        d = self.protocol.sendCommand("warmup")
+        d.addCallback(self.stopCooling_callback)
+
+    def stopCooling_callback(self, msg):
+        print "Warmed with exit:", msg
         
 
     def changeTemp(self, value, statusbar):

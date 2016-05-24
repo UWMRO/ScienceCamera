@@ -51,7 +51,7 @@ class EvoraServer(basic.LineReceiver):
         #command = ep.parse(line)
         d = threads.deferToThread(ep.parse, line)
         d.addCallback(self.sendData)
-        print "done"
+        #print "done"
         #if command != None:
         #    self.sendMessage(str(command))
     
@@ -118,6 +118,17 @@ class EvoraParser(object):
             itime = float(input[3])
             binning = int(input[4])
             return self.e.realTimeExposure(self.protocol, imType, itime, binning)
+
+        if input[0] == 'realTest':
+            #exposureSetting = int(input[1]) 
+            imType = input[1]
+            print imType
+            # exposure attributes
+            expnum = int(input[2]) # don't need this
+            itime = float(input[3])
+            binning = int(input[4])
+            return self.e.realTimeExposure_test(self.protocol, imType, itime, binning)
+
 
         if input[0] == 'series':
             imType = input[1]
@@ -211,10 +222,13 @@ class Evora(object):
 	Post: Sets the temperature to 0 and turns the fan to 0 then turns the cooler off and 
 	returns 1 that everything worked.
 	"""
-        andor.SetTemperature(0)
-	andor.SetFanMode(0)
-	andor.CoolerOFF()
-	return "warmup 1"
+        setTemp = andor.SetTemperature(0)
+	setFan = andor.SetFanMode(0)
+	setCooler = andor.CoolerOFF()
+        results = 1
+        if(setTemp != andor.DRV_SUCCESS or setFan != andor.DRV_SUCCESS or setCooler != andor.DRV_SUCCESS):
+            results = 0
+	return "warmup " + str(results)
 
     def getTemp(self):
         # 20037 is NotReached
@@ -354,6 +368,7 @@ class Evora(object):
             #if acquired == andor.DRV_SUCCESS:
             #    print acquired, 'success={}'.format(acquired == andor.DRV_SUCCESS)
             #print acquired
+            acquired = andor.WaitForAcquisition()
             status = andor.GetStatus()
             #if(status[1] != andor.DRV_ACQUIRING):
                #print status
@@ -367,10 +382,10 @@ class Evora(object):
             #    print results
             if(status[1] == andor.DRV_ACQUIRING and acquired == andor.DRV_SUCCESS):
                 data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
-                #results = andor.GetMostRecentImage16(data) # store image data
-                #print results, 'success={}'.format(results == 20002) # print if the results were successful
+                results = andor.GetMostRecentImage16(data) # store image data
+                print results, 'success={}'.format(results == 20002) # print if the results were successful
                 
-                if(acquired == andor.DRV_SUCCESS): # if the array filled store successfully
+                if(results == andor.DRV_SUCCESS): # if the array filled store successfully
                     data=data.reshape(width/binning,height/binning) # reshape into image
                     print data.shape,data.dtype
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
@@ -378,14 +393,10 @@ class Evora(object):
                     hdu.writeto(filename,clobber=True)
                     print "wrote: {}".format(filename)
                     data = np.zeros(width/binning*height/binning, dtype='uint16')
+
                     protocol.sendData("realSent " + filename)
 
         return "real 1" # exits with 1 for success
-
-    def waitForAcquisition(self):
-        global acquired
-        result = andor.WaitForAcquisition()
-        acquired = result
         
 
     def seriesExposure(self, protocol, imType, itime, numexp=1, binning=1):
@@ -439,7 +450,7 @@ class Evora(object):
 
                     print "wrote: {}".format(filename)
                     
-                    Protocol.sendData("seriesSent " + filename)
+                    protocol.sendData("seriesSent " + str(counter)+","+filename)
 
                 counter += 1
         print "Aborting", andor.AbortAcquisition()
@@ -500,11 +511,83 @@ class Evora(object):
 
                     print "wrote: {}".format(filename)
                     
-                    protocol.sendData("seriesSent " + filename)
+                    protocol.sendData("seriesSent " + str(counter)+","+filename)
                 
                     counter += 1
             print andor.GetStatus()
-        return "kseries 1" # exits with 1 for success
+        return "series 1" # exits with 1 for success
+
+
+    def realTimeExposure_test(self, protocol, imType, itime, binning=1): 
+        """
+        This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
+        """
+      
+        retval,width,height = andor.GetDetector()
+        print 'GetDetector:', retval,width,height
+
+        print "SetAcquisitionMode:", andor.SetAcquisitionMode(5)
+        print 'SetReadMode:', andor.SetReadMode(4)
+
+        print 'SetImage:', andor.SetImage(binning,binning,1,width,1,height)
+        print 'GetDetector (again):', andor.GetDetector()
+
+        print 'SetExposureTime:', andor.SetExposureTime(itime)
+        print 'SetKineticTime:', andor.SetKineticCycleTime(0)
+
+
+        if(imType == "bias"):
+            andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
+            print 'SetExposureTime:', andor.SetExposureTime(0)            
+        else:
+            andor.SetShutter(1,0,5,5)
+            print 'SetExposureTime:', andor.SetExposureTime(itime) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
+        #trigger = andor.SetTriggerMode(10)
+        #print "SetTriggerMode:", trigger
+        print "DRV_SUCCESS:", andor.DRV_SUCCESS
+        print "DRV_ACQUIRING:", andor.DRV_ACQUIRING
+        print "DRV_NOT_INITIALIZED:", andor.DRV_NOT_INITIALIZED
+        print "DRV_P1INVALID:", andor.DRV_P1INVALID
+        triggerCap = andor.IsTriggerModeAvailable(10)
+        print "Is Available:", triggerCap
+        print "DRV_INVALID_MODE:", andor.DRV_INVALID_MODE
+        if(triggerCap == andor.DRV_SUCCESS):
+            print "TriggerModeAvailable:", "success={}".format(triggerCap==andor.DRV_SUCCESS)
+        print 'StartAcquisition:', andor.StartAcquisition()
+
+    
+        status = andor.GetStatus()
+        print status
+        data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
+        print "Acquired:", andor.GetMostRecentImage16(data)
+        print "DRV_NO_NEW_DATA:", andor.DRV_NO_NEW_DATA
+        while(status[1] == andor.DRV_ACQUIRING):
+            acquired = andor.GetMostRecentImage16(data)
+            status = andor.GetStatus()
+            if(acquired == andor.DRV_SUCCESS):
+                print "Successfully acquired the data"
+                data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
+        
+        """
+        while(status[1]==andor.DRV_ACQUIRING):
+            acquired = andor.WaitForAcquisition()
+            status = andor.GetStatus()
+            if(status[1] == andor.DRV_ACQUIRING and acquired == andor.DRV_SUCCESS):
+                data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
+                results = andor.GetMostRecentImage16(data) # store image data
+                print results, 'success={}'.format(results == 20002) # print if the results were successful                
+                if(results == andor.DRV_SUCCESS): # if the array filled store successfully
+                    data=data.reshape(width/binning,height/binning) # reshape into image
+                    print data.shape,data.dtype
+                    hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
+                    filename = time.strftime('/tmp/image_%Y%m%d_%H%M%S.fits') 
+                    hdu.writeto(filename,clobber=True)
+                    print "wrote: {}".format(filename)
+
+                    protocol.sendData("realSent " + filename)
+        """
+        return "real 1" # exits with 1 for success
+
 
 
     def abort(self):

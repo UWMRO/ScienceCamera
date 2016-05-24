@@ -35,7 +35,17 @@ def isNumber(string):
         float(string)
         return True
     except ValueError:
+        return False
 
+def isInt(string):
+    """
+    Takes in a string and trys to convert it to an int.  If successful it returns True otherwise
+    it captures the error and returns False.
+    """
+    try:
+        int(string)
+        return True
+    except ValueError:
         return False
 
 
