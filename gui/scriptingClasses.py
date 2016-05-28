@@ -86,6 +86,7 @@ class ScriptCommands(wx.Panel):
             print "No command"
         else:
             print self.command
+            self.parseCommand(self.command)
 
     def onUpload(self, event):
         print "Upload your script"
@@ -99,15 +100,16 @@ class ScriptCommands(wx.Panel):
         outside the parser.
         """
         scriptLine = command.split()
+        print scriptLine
 
         command = None
         subcommand = None
 
         commandList = ['expose', 'filter', 'help', 'set']
         exposeSub = ['abort', 'bias', 'dark', 'flat', 'object', 'help']
-        filterSub = ['home', 'slew', 'status', 'help']
+        filterSub = ['home', 'status', 'help']
         helpSub = ['expose', 'filter', 'set']
-        setSub = ['binning', 'temp', 'warmup', 'help']
+        setSub = ['binning', 'filter', 'temp', 'warmup', 'help']
         
         
         runList = [] # first entry is the command to send the next entries depend on the command being sent
@@ -125,6 +127,7 @@ class ScriptCommands(wx.Panel):
             
                         if subcommand == 'abort':
                             runList.append("abort") # only command to send
+                            print runList
                             print "abort mission"
                         elif subcommand in ['bias', 'dark', 'flat', 'object']:
                             print "exposing of this type"
@@ -137,14 +140,17 @@ class ScriptCommands(wx.Panel):
                             except IndexError:
                                 print "No time, base, or exposure number string args"
                             else:
+                                if(len(scriptLine[0:]) > 5):
+                                    print "too many arugments"
 
                                 arg1 = arg1.split("=")
                                 arg2 = arg2.split("=")
                                 arg3 = arg3.split("=")
                                 argDict = {}
+                                print arg1, arg2, arg3
                                 # Makes sure that when args are split by equals that there are two entries and that the first one is
                                 # either time or basename.
-                                if((len(arg1) == 2 and (arg1[0] in ['time', 'basename', 'nexposure'])) and (len(arg2) == 2 and (arg2 in ['time', 'basename', 'nexposure'])) and (len(arg3) == 2 and (arg3[0] in ['time', 'basename', 'nexposure']))):
+                                if((len(arg1) == 2 and (arg1[0] in ['time', 'basename', 'nexposure'])) and (len(arg2) == 2 and (arg2[0] in ['time', 'basename', 'nexposure'])) and (len(arg3) == 2 and (arg3[0] in ['time', 'basename', 'nexposure']))):
                                     # map arguments to be able to call them in order
                                     argDict[arg1[0]] = arg1[1]
                                     argDict[arg2[0]] = arg2[1]
@@ -158,6 +164,7 @@ class ScriptCommands(wx.Panel):
                                         runList.append(int(argDict['nexposure']))
                                         runList.append(float(argDict['time']))
                                         runList.append(argDict['basename'])
+                                        print runList
                                         print "The specified time is", float(argDict['time'])
                                         print "The specified number of exposures is", float(argDict['nexposure'])
                                         
@@ -173,68 +180,126 @@ class ScriptCommands(wx.Panel):
                             except IndexError:
                                 print "help argument was not given"
                             else:
+                                if(len(scriptLine[0:]) > 3):
+                                    print "there are too many arguments"
                                 runList.append(command)
                                 runList.append(subcommand)
                                 runList.append(helpArg)
                             print "choose an argument for help"
-            
-                        print "exposing with subcommand", subcommand
                     else:
                         print "not a recognized subcommand", subcommand
 
+                # possible commands (only one arg):
+                # set binning (1 or 2)
+                # set filter (1, 2, 3, 4, 5, or 6)
+                # set temp (-80 to -10)
+                # set help (binning, filter temp)
                 if command == "set":
                     
                     if subcommand in setSub:
-                        if subcommand in ['binning', 'temp', 'help']:
-                            try:
-                                arg1 = scriptLine[2]
-                            except:
-                                print "Didn't specify an arg"
-                            else:
-                            
-                                if(subcommand == 'binning'):
-                                    if(als.isInt(arg1)):
-                                        if(int(arg1) == 1 or int(arg1) == 2):
+                        try:
+                            arg1 = scriptLine[2]
+                        except IndexError:
+                            print "Didn't specify an arg"
+                        else:
+                            if(len(scriptLine[0:]) > 3):
+                               print "there are too many arguments given"
+
+                            if(subcommand == 'binning'):
+                                if(als.isInt(arg1)):
+                                    if(int(arg1) == 1 or int(arg1) == 2):
                                             
-                                            runList.append(command)
-                                            runList.append(subcommand)
-                                            runList.append(arg1)
-                                        else:
-                                            print "binning number out of range"
-                                    else:
-                                        print "binning value is not an int or number"
-                                if(subcommand == 'temp'):
-                                    if(als.isInt(arg1)):
-                                        if(int(arg1) >= -80 and int(arg1) <= -10):
-                                            runList.append("setTEC")
-                                            runList.append(arg1)
-                                        else:
-                                            print "Temperature out of range"
-                                    else:
-                                        print "Temperature is not a number"
-                                if(subcommand == 'help'):
-                                    if arg1 in ['binning', 'temp', 'warmup']:
                                         runList.append(command)
                                         runList.append(subcommand)
                                         runList.append(arg1)
+                                        print runList
                                     else:
-                                        print "not a known argument"
-                        if(subcommand == 'warmup'):
-                            runList.append(subcommand) # simple command of warming up
-                        print "setting with subcommand", subcommand
+                                        print "binning number out of range"
+                                else:
+                                    print "binning value is not an int or number"
+                            if(subcommand == 'temp'):
+                                if(als.isInt(arg1)):
+                                    if(int(arg1) >= -80 and int(arg1) <= -10):
+                                        runList.append("setTEC")
+                                        runList.append(arg1)
+                                        print runList
+                                    else:
+                                        print "Temperature out of range"
+                                elif(arg1 == 'warmup'):
+                                    runList.append("warmup") # command for sending warmup
+                                    print runList
+                                else:
+                                    print "Temperature is not a number"
+                            if(subcommand == 'filter'):
+                                if(als.isInt(arg1)):
+                                    if(int(arg1) >= 1 and int(arg1) <= 6): # 6 filter positions: (1, 2, 3, 4, 5, 6)
+                                        runList.append(command)
+                                        runList.appedn(subcommand)
+                                        runList.append(arg1)
+                                        print runList
+                                    else:
+                                        print "filter position out of range"
+                                else:
+                                    print "filter position specified is not a number"
+                            if(subcommand == 'help'):
+                                if arg1 in ['binning', 'temp']:
+                                    runList.append(command)
+                                    runList.append(subcommand)
+                                    runList.append(arg1)
+                                    print runList
+                                else:
+                                    print "not a known argument"
                     else:
                         print "not a recognized subcommand", subcommand
             
+                # possible commands
+                # filter home  # will slew filter to home
+                # filter status # will give details on the state of connection
+                # filter help (filter or home) # gives details on how to run the command and what it does
                 if command == "filter":
-                    if subcommand in filterSub:
-                        print "filtering with subcommand", subcommand
+                    if subcommand in filterSub: # home, status, help
+
+                        if(subcommand == 'home'):
+                            runList.append(command)
+                            runList.append(subcommand)
+                            print runList
+                        if(subcommand == 'status'):
+                            runList.append(command)
+                            runList.append(subcommand)
+                            print runList
+                        if(subcommand == 'help'):
+                            try:
+                                arg1 = scriptLine[2]
+                            except IndexError:
+                                print "no third argument specified"
+                            else:
+                                if(len(scriptLine[0:]) > 3):  # make sure there aren't anymore args given than needed
+                                    print "extra argument given"
+                                if(arg1 == 'home'):
+                                    print "slews to filter"
+                                if(arg1 == 'status'):
+                                    print "gives the status of the filter"
+                                runList.append(command)
+                                runList.append(subcommand)
+                                runList.append(arg1)
+                                print runList
+                                   
                     else:
                         print "not a recognized subcommand", subcommand
 
+                # possible commands 
+                # help expose
+                # help set
+                # help filter
                 if command == "help":
                     if subcommand in helpSub:
-                        print "helping with subcommand", subcommand
+                        if(subcommand == 'expose'):
+                            print "What are the expose options?"
+                        if(subcommand == 'set'):
+                            print "What are the set options?"
+                        if(subcommand == 'filter'):
+                            print "What are the filter options?"
                     else:
                         print "not a recognized subcommand", subcommand
-        else:
-            print "not a recognized command"
+            else:
+                print "not a recognized command"

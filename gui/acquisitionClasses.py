@@ -246,6 +246,8 @@ class Exposure(wx.Panel):
         # immediatly reset button
         self.abort = False
         self.expButton.Enable(True)
+        if(self.stopExp.IsEnabled()):
+            self.stopExp.Enable(False)
 
         ## complete progress bar for image acquisition
         # check to see if timer is still going and stop it (callback might come in early)
@@ -393,6 +395,8 @@ class Exposure(wx.Panel):
         
         self.abort = False
         self.expButton.Enable(True)
+        if(self.stopExp.IsEnabled()):
+            self.stopExp.Enable(False)
         # stop timer if running
         if(self.timer.IsRunning()):
             self.timer.Stop()   
