@@ -197,7 +197,7 @@ class Exposure(wx.Panel):
                         line[2] = self.seriesImageNumber
                         line = " ".join(line[1:])
                         
-                        d = self.protocol.sendCommand("seriesSent")
+                        d = self.protocol.addDeferred("seriesSent")
                         d.addCallback(self.displaySeriesImage_thread)
 
                         d = self.protocol.sendCommand("series " + str(line))
@@ -358,7 +358,8 @@ class Exposure(wx.Panel):
     def displaySeriesImage(self, msg):
         msg = msg.split(",")
         imNum = int(msg[0])
-        path = msg[1]
+        time = float(msg[1])
+        path = msg[2]
         print "Got:", msg
         # no abort then display the image
         if(self.abort and imNum <= int(self.seriesImageNumber)):
@@ -385,7 +386,7 @@ class Exposure(wx.Panel):
 
             if(self.seriesImageNumber != None):
                 if(imNum < int(self.seriesImageNumber)):
-                    thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
+                    thread.start_new_thread(self.exposeTimer, (time,))
 
 
     def seriesCallback(self, msg):

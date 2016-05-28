@@ -32,6 +32,9 @@ from twisted.protocols import basic
 ## Global Variables
 app = None
 
+# getting to parents
+# three parents will get to the evora class and out of the notebook
+
 # Frame class.
 class Evora(wx.Frame):
 
@@ -640,6 +643,8 @@ class Scripting(wx.Panel): # 3rd tab that handles scripting
     def __init__(self,parent):
         wx.Panel.__init__(self, parent)
 
+        self.parent = parent
+
         ## Main Sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
         self.horzSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -648,14 +653,16 @@ class Scripting(wx.Panel): # 3rd tab that handles scripting
 
         # adjust subsizers
 
+        self.scriptStatus = sc.ScriptStatus(self)
+        self.scriptCommands = sc.ScriptCommands(self)
 
         # adjust main sizers
         als.AddLinearSpacer(self.horzSizer, 15)
-        self.horzSizer.Add(sc.ScriptStatus(self), flag=wx.ALIGN_CENTER)
+        self.horzSizer.Add(self.scriptStatus, flag=wx.ALIGN_CENTER)
 
 
         als.AddLinearSpacer(self.vertSizer, 15)
-        self.vertSizer.Add(sc.ScriptCommands(self), flag=wx.ALIGN_CENTER)
+        self.vertSizer.Add(self.scriptCommands, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.vertSizer, 15)
         self.vertSizer.Add(self.horzSizer, flag=wx.ALIGN_CENTER)
 
@@ -677,6 +684,8 @@ class EvoraForwarder(basic.LineReceiver):
         gui.protocol = self
         gui.takeImage.exposureInstance.protocol = self
         gui.takeImage.tempInstance.protocol = self
+        gui.scripting.scriptCommands.protocol = self
+
 
         if gui:
             val = gui.log.logInstance.logBox.GetValue()
