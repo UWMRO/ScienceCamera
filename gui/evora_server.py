@@ -98,7 +98,7 @@ class EvoraParser(object):
         if input[0] == "abort":
             return self.e.abort()
         if input[0] == 'expose':
-            # expose 1 flat 1 10 2
+            # expose flat 1 10 2
             # get the type of exposure (i.e. bias, flat, object)
             #exposureSetting = int(input[1]) # this will be 1:singe, 2:real, or 3:series
             imType = input[1]
@@ -131,6 +131,7 @@ class EvoraParser(object):
 
 
         if input[0] == 'series':
+            # series bias 1 10 2
             imType = input[1]
             print imType
             # exposure attributes
@@ -225,8 +226,9 @@ class Evora(object):
         setTemp = andor.SetTemperature(0)
 	setFan = andor.SetFanMode(0)
 	setCooler = andor.CoolerOFF()
+        
         results = 1
-        if(setTemp != andor.DRV_SUCCESS or setFan != andor.DRV_SUCCESS or setCooler != andor.DRV_SUCCESS):
+        if(setFan != andor.DRV_SUCCESS or setCooler != andor.DRV_SUCCESS):
             results = 0
 	return "warmup " + str(results)
 
@@ -416,6 +418,7 @@ class Evora(object):
         print 'SetKineticTime:', andor.SetKineticCycleTime(0)
 
         if(imType == "bias"):
+            itime = 0
             andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             print 'SetExposureTime:', andor.SetExposureTime(0)            
         else:
@@ -450,7 +453,7 @@ class Evora(object):
 
                     print "wrote: {}".format(filename)
                     
-                    protocol.sendData("seriesSent " + str(counter)+","+filename)
+                    protocol.sendData("seriesSent " + str(counter)+","+itime+","+filename)
 
                 counter += 1
         print "Aborting", andor.AbortAcquisition()
@@ -471,6 +474,7 @@ class Evora(object):
         print 'GetDetector (again):', andor.GetDetector()
 
         if(imType == "bias"):
+            itime = 0
             andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             print 'SetExposureTime:', andor.SetExposureTime(0)            
         else:
@@ -511,7 +515,7 @@ class Evora(object):
 
                     print "wrote: {}".format(filename)
                     
-                    protocol.sendData("seriesSent " + str(counter)+","+filename)
+                    protocol.sendData("seriesSent " + str(counter)+","+str(itime)+","+filename)
                 
                     counter += 1
             print andor.GetStatus()

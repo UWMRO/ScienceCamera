@@ -2,6 +2,7 @@
 
 import wx
 import AddLinearSpacer as als
+import thread
 
 class ScriptStatus(wx.Panel):
 
@@ -33,6 +34,11 @@ class ScriptCommands(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
+        # Global variables
+        self.parent = parent
+        
+        self.protocol = None
+
         # Main Sizer
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -47,7 +53,6 @@ class ScriptCommands(wx.Panel):
         self.button = wx.Button(self, id=3001, label="OK")
         self.upButton = wx.Button(self, id=3002, label="Upload")
         self.commandBox = wx.TextCtrl(self, id=3003, size=(200, -1))
-
 
         # adjust subsizers
         self.buttonSizer.Add(self.button, flag=wx.ALIGN_CENTER)
@@ -86,10 +91,50 @@ class ScriptCommands(wx.Panel):
             print "No command"
         else:
             print self.command
-            self.parseCommand(self.command)
+            runList = self.parseCommand(self.command) # parses user command
+            self.executeCommand(runList) # executes user command
+            
 
     def onUpload(self, event):
         print "Upload your script"
+
+    def executeCommand(self, runList):
+        """
+        This will take the known order of runList from the command and then send it to the server
+        while also displaying pertanent information.
+        """
+        val = self.parent.scriptStatus.activityText.GetValue()
+        self.parent.scriptStatus.activityText.SetValue(val + str(runList) + "\n")
+        self.parent.scriptStatus.activityText.SetInsertionPointEnd()
+        print val
+
+        if(type(runList) == list):
+            print runList
+            print "sending command"
+
+            # surround in str to get rid of unicode, otherwise fails at sending
+            sendCommand = str(runList[0])
+            if(sendCommand == 'series'):
+                imtype = str(runList[1])
+                nexposure = str(runList[2])
+                exposeClass = self.parent.parent.parent.takeImage.exposureInstance
+
+                # example runList (['series', 'bias', int(nexposure), 'basename'])
+                if(imtype == 'bias'):
+                    d = self.protocol.addDeferred("seriesSent")
+                    d.addCallback(exposeClass.displaySeriesImage_thread)
+
+                    d = self.protocol.sendCommand(sendCommand + " " + imtype + " " + nexposure + " 0 " + str(self.parent.parent.parent.binning))
+                    d.addCallback(exposeClass.seriesCallback)
+                        
+                    # start timer
+                    thread.start_new_thread(exposeClass.exposeTimer, (0,))
+
+
+        else:
+            print "something went wrong"
+            print runList
+        pass
 
     def parseCommand(self, command):
         """
@@ -121,27 +166,72 @@ class ScriptCommands(wx.Panel):
         else:
             if command in commandList:
             #print "moving on to sub command"
+
+                # Possible commands (the order of time=X.X, basename=somename, and nexposure=XX is ambiguous)
+                # expose abort
+                # expose bias basename=bias nexposure=XX
+                # expose dark time=X.X basename=dark nexposure=XX
+                # expose flat time=X.X basename=flat nexposure=XX
+                # expose object time=X.X basename=object nexposure=XX
+                # expose help abort
+                # expose help bias
+                # expose help dark
+                # expose help flat 
+                # expose help object
                 if command == "expose":
 
                     if subcommand in exposeSub:
             
                         if subcommand == 'abort':
                             runList.append("abort") # only command to send
-                            print runList
                             print "abort mission"
-                        elif subcommand in ['bias', 'dark', 'flat', 'object']:
+                            return runList
+                        elif(subcommand == 'bias'):
                             print "exposing of this type"
-                            time = None
-                            baseString = None
+                            try:
+                                arg1 = scriptLine[2]
+                                arg2 = scriptLine[3]
+                            except IndexError:
+                                print "No basename or nexposure args"
+                            else:
+                                if(len(scriptLine[0:]) > 4):
+                                    return "too many arguments"
+                                arg1 = arg1.split("=")
+                                arg2 = arg2.split("=")
+                                argDict = {}
+                                print arg1, arg2
+                                
+                                if((len(arg1) == 2 and (arg1[0] in ['basename', 'nexposure'])) and (len(arg2) == 2 and (arg2[0] in ['basename', 'nexposure']))):
+                                    # map arguements to be able to call them in order
+                                    argDict[arg1[0]] = arg1[1]
+                                    argDict[arg2[0]] = arg2[1]
+                                    
+                                    if(als.isInt(argDict['nexposure'])):
+                                        # final stop; everything has been checked so now we build up the list to return
+                                        runList.append('series')
+                                        runList.append(subcommand)
+                                        runList.append(int(argDict['nexposure']))
+                                        runList.append(argDict['basename'])
+                                        print "The specified number of exposures is", float(argDict['nexposure'])
+                                        return runList
+                                        
+                                    else:
+                                        return "specified time or number of exposure is not number"
+                                else:
+                                    return "basename or number of exposures is wrong"
+
+                                
+                        elif subcommand in ['dark', 'flat', 'object']:
+                            print "exposing of this type"
                             try:
                                 arg1 = scriptLine[2]
                                 arg2 = scriptLine[3]
                                 arg3 = scriptLine[4]
                             except IndexError:
-                                print "No time, base, or exposure number string args"
+                                return "No time, basename, or exposure number string args"
                             else:
                                 if(len(scriptLine[0:]) > 5):
-                                    print "too many arugments"
+                                    return "too many arugments"
 
                                 arg1 = arg1.split("=")
                                 arg2 = arg2.split("=")
@@ -164,30 +254,29 @@ class ScriptCommands(wx.Panel):
                                         runList.append(int(argDict['nexposure']))
                                         runList.append(float(argDict['time']))
                                         runList.append(argDict['basename'])
-                                        print runList
                                         print "The specified time is", float(argDict['time'])
                                         print "The specified number of exposures is", float(argDict['nexposure'])
-                                        
+                                        return runList
                                         
                                     else:
-                                        print "specified time or number of exposure is not number"
+                                        return "specified time or number of exposure is not number"
                                 else:
-                                    print "time argument or basename or number of exposure  is wrong"
+                                    return "time argument or basename or number of exposure  is wrong"
                             
                         else:
                             try:
                                 helpArg = scriptLine[2]
                             except IndexError:
-                                print "help argument was not given"
+                                return "help argument was not given"
                             else:
                                 if(len(scriptLine[0:]) > 3):
-                                    print "there are too many arguments"
+                                    return "there are too many arguments"
                                 runList.append(command)
                                 runList.append(subcommand)
                                 runList.append(helpArg)
-                            print "choose an argument for help"
+                                return runList
                     else:
-                        print "not a recognized subcommand", subcommand
+                        return "not a recognized subcommand", subcommand
 
                 # possible commands (only one arg):
                 # set binning (1 or 2)
@@ -200,10 +289,10 @@ class ScriptCommands(wx.Panel):
                         try:
                             arg1 = scriptLine[2]
                         except IndexError:
-                            print "Didn't specify an arg"
+                            return "Didn't specify an arg"
                         else:
                             if(len(scriptLine[0:]) > 3):
-                               print "there are too many arguments given"
+                               return "there are too many arguments given"
 
                             if(subcommand == 'binning'):
                                 if(als.isInt(arg1)):
@@ -212,45 +301,45 @@ class ScriptCommands(wx.Panel):
                                         runList.append(command)
                                         runList.append(subcommand)
                                         runList.append(arg1)
-                                        print runList
+                                        return runList
                                     else:
-                                        print "binning number out of range"
+                                        return "binning number out of range"
                                 else:
-                                    print "binning value is not an int or number"
+                                    return "binning value is not an int or number"
                             if(subcommand == 'temp'):
                                 if(als.isInt(arg1)):
                                     if(int(arg1) >= -80 and int(arg1) <= -10):
                                         runList.append("setTEC")
                                         runList.append(arg1)
-                                        print runList
+                                        return runList
                                     else:
-                                        print "Temperature out of range"
+                                        return "Temperature out of range"
                                 elif(arg1 == 'warmup'):
                                     runList.append("warmup") # command for sending warmup
-                                    print runList
+                                    return runList
                                 else:
-                                    print "Temperature is not a number"
+                                    return "Temperature is not a number"
                             if(subcommand == 'filter'):
                                 if(als.isInt(arg1)):
                                     if(int(arg1) >= 1 and int(arg1) <= 6): # 6 filter positions: (1, 2, 3, 4, 5, 6)
                                         runList.append(command)
                                         runList.appedn(subcommand)
                                         runList.append(arg1)
-                                        print runList
+                                        return runList
                                     else:
-                                        print "filter position out of range"
+                                        return "filter position out of range"
                                 else:
-                                    print "filter position specified is not a number"
+                                    return "filter position specified is not a number"
                             if(subcommand == 'help'):
                                 if arg1 in ['binning', 'temp']:
                                     runList.append(command)
                                     runList.append(subcommand)
                                     runList.append(arg1)
-                                    print runList
+                                    return runList
                                 else:
-                                    print "not a known argument"
+                                    return "not a known argument"
                     else:
-                        print "not a recognized subcommand", subcommand
+                        return "not a recognized subcommand", subcommand
             
                 # possible commands
                 # filter home  # will slew filter to home
@@ -262,19 +351,19 @@ class ScriptCommands(wx.Panel):
                         if(subcommand == 'home'):
                             runList.append(command)
                             runList.append(subcommand)
-                            print runList
+                            return runList
                         if(subcommand == 'status'):
                             runList.append(command)
                             runList.append(subcommand)
-                            print runList
+                            return runList
                         if(subcommand == 'help'):
                             try:
                                 arg1 = scriptLine[2]
                             except IndexError:
-                                print "no third argument specified"
+                                return "no third argument specified"
                             else:
                                 if(len(scriptLine[0:]) > 3):  # make sure there aren't anymore args given than needed
-                                    print "extra argument given"
+                                    return "extra argument given"
                                 if(arg1 == 'home'):
                                     print "slews to filter"
                                 if(arg1 == 'status'):
@@ -282,10 +371,10 @@ class ScriptCommands(wx.Panel):
                                 runList.append(command)
                                 runList.append(subcommand)
                                 runList.append(arg1)
-                                print runList
+                                return runList
                                    
                     else:
-                        print "not a recognized subcommand", subcommand
+                        return "not a recognized subcommand", subcommand
 
                 # possible commands 
                 # help expose
@@ -294,12 +383,12 @@ class ScriptCommands(wx.Panel):
                 if command == "help":
                     if subcommand in helpSub:
                         if(subcommand == 'expose'):
-                            print "What are the expose options?"
+                            return "What are the expose options?"
                         if(subcommand == 'set'):
-                            print "What are the set options?"
+                            return "What are the set options?"
                         if(subcommand == 'filter'):
-                            print "What are the filter options?"
+                            return "What are the filter options?"
                     else:
-                        print "not a recognized subcommand", subcommand
+                        return "not a recognized subcommand", subcommand
             else:
-                print "not a recognized command"
+                return "not a recognized command"
