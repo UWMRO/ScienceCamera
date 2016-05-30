@@ -25,7 +25,7 @@ class FilterMotor(object):
 		"""Add docs to all functions"""
 		self.stepper = None
 		self.fw = fw_io.FWIO()
-		self.dict = {"velocity":None, "amp":None, "acceleration":None, "position":None, "power":None, "hall":None, "commanded":None, "filterDelta":6860, "ID":None, "home":False}
+		self.dict = {"velocity":None, "amp":None, "acceleration":None, "currentPos":None, "power":None, "hall":None, "commandedPos":None, "filterDelta":6860, "ID":None, "home":False, "filterPos":None}
 
 	def DisplayDeviceInfo(self):
 		#==> rename to getDeviceInfo
@@ -39,7 +39,7 @@ class FilterMotor(object):
                 self.stepper.openPhidget()
                 self.stepper.waitForAttach(10000)
 
-		self.setParm(20000,6000,0.75)
+		self.setParm(20000,5000,0.8)
 
 		self.fw.openPort()
 		time.sleep(2)
@@ -66,11 +66,12 @@ class FilterMotor(object):
  
 	def status(self):
 		self.dict['power'] = self.stepper.getEngaged(0)
-		self.dict['position'] = int(self.stepper.getCurrentPosition(0))
+		self.dict['currentPos'] = int(self.stepper.getCurrentPosition(0))
 		self.dict['acceleration'] =self.stepper.getAcceleration(0)
 		self.dict['velocity'] = self.stepper.getVelocityLimit(0)
 		self.dict['amp'] = self.stepper.getCurrentLimit(0)
 		self.dict['hall'] = self.fw.getStatus()
+		self.dict['filterPos'] = int(self.dict['currentPos'])/int(self.dict['filterDelta'])
 		return self.dict
 
 	def setPos(self, pos = None):
@@ -80,7 +81,7 @@ class FilterMotor(object):
 	def moveMotor(self, pos = None):
 		self.motorPower(True)
 		self.stepper.setTargetPosition(0, int(pos))
-		self.dict["commanded"] = pos
+		self.dict["commandedPos"] = pos
 		return
 
 	def nudge(self, mov):
@@ -127,15 +128,15 @@ class FilterMotor(object):
 			self.moveMotor(100000)
 			time.sleep(.2)
 			self.status()
-			while int(self.dict['position']) < int(self.dict['commanded']):
+			while int(self.dict['currentPos']) < int(self.dict['commandedPos']):
 				self.status()
 				if self.dict['hall'][0] == '0':
 					if self.dict['hall'][0] == '0' and self.dict['hall'][1] == '0':
 						if pastHome == 0: 
 							pastHome = pastHome + 1
 							print 'first home', self.status()
-							previousPos = self.dict['position']
-						if  self.dict['position'] - previousPos >  3000:
+							previousPos = self.dict['currentPos']
+						if  self.dict['currentPos'] - previousPos >  3000:
 							pastHome = pastHome + 1
 							print 'second home', self.status()
 						if pastHome == 2:
@@ -143,15 +144,15 @@ class FilterMotor(object):
 							self.setPos(int(100))
 							time.sleep(2)
 							print self.status()
-							if self.dict['position'] == self.dict['commanded']:
+							if self.dict['currentPos'] == self.dict['commandedPos']:
 								raise Exception
 							break
 		
-					if self.dict['position'] - previousPos >  3000:
+					if self.dict['currentPos'] - previousPos >  3000:
 						#print self.dict['position'] - previousPos
-						crossArr.append(self.dict['position'] - previousPos)
+						crossArr.append(self.dict['currentPos'] - previousPos)
 						#print self.status(), crossArr
-						previousPos = self.dict['position']
+						previousPos = self.dict['currentPos']
 			del crossArr[0]
 			del crossArr[0]
 			self.dict['filterDelta'] = int(np.mean(crossArr))
