@@ -36,3 +36,14 @@ class logBox(wx.Panel):
 
         self.SetSizer(self.logFrameSizer)
         self.logFrameSizer.Fit(self)
+
+
+    def threadSafeLogStatus(self, string):
+        """ 
+        Pre: Takes in a string.
+        Post: Displays that string in the log status box in the log tab of the gui.
+        """
+        msg = als.timeStamp() + string
+        val = self.logBox.GetValue()
+        self.logBox.SetValue(val + msg + "\n")
+        self.logBox.SetInsertionPointEnd()

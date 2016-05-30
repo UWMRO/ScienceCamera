@@ -361,8 +361,8 @@ def GetCameraInformation(*args):
   return _andor.GetCameraInformation(*args)
 GetCameraInformation = _andor.GetCameraInformation
 
-def GetCameraSerialNumber(*args):
-  return _andor.GetCameraSerialNumber(*args)
+def GetCameraSerialNumber():
+  return _andor.GetCameraSerialNumber()
 GetCameraSerialNumber = _andor.GetCameraSerialNumber
 
 def GetCapabilities(*args):
@@ -517,8 +517,8 @@ def GetExternalTriggerTermination(*args):
   return _andor.GetExternalTriggerTermination(*args)
 GetExternalTriggerTermination = _andor.GetExternalTriggerTermination
 
-def GetFastestRecommendedVSSpeed(*args):
-  return _andor.GetFastestRecommendedVSSpeed(*args)
+def GetFastestRecommendedVSSpeed():
+  return _andor.GetFastestRecommendedVSSpeed()
 GetFastestRecommendedVSSpeed = _andor.GetFastestRecommendedVSSpeed
 
 def GetFIFOUsage(*args):
@@ -609,8 +609,8 @@ def GetMaximumExposure(*args):
   return _andor.GetMaximumExposure(*args)
 GetMaximumExposure = _andor.GetMaximumExposure
 
-def GetMaximumNumberRingExposureTimes(*args):
-  return _andor.GetMaximumNumberRingExposureTimes(*args)
+def GetMaximumNumberRingExposureTimes():
+  return _andor.GetMaximumNumberRingExposureTimes()
 GetMaximumNumberRingExposureTimes = _andor.GetMaximumNumberRingExposureTimes
 
 def GetMCPGain(*args):
@@ -633,8 +633,8 @@ def GetMinimumImageLength(*args):
   return _andor.GetMinimumImageLength(*args)
 GetMinimumImageLength = _andor.GetMinimumImageLength
 
-def GetMinimumNumberInSeries(*args):
-  return _andor.GetMinimumNumberInSeries(*args)
+def GetMinimumNumberInSeries():
+  return _andor.GetMinimumNumberInSeries()
 GetMinimumNumberInSeries = _andor.GetMinimumNumberInSeries
 
 def GetMostRecentColorImage16(*args):
@@ -689,12 +689,12 @@ def GetNumberDevices(*args):
   return _andor.GetNumberDevices(*args)
 GetNumberDevices = _andor.GetNumberDevices
 
-def GetNumberFKVShiftSpeeds(*args):
-  return _andor.GetNumberFKVShiftSpeeds(*args)
+def GetNumberFKVShiftSpeeds():
+  return _andor.GetNumberFKVShiftSpeeds()
 GetNumberFKVShiftSpeeds = _andor.GetNumberFKVShiftSpeeds
 
-def GetNumberHorizontalSpeeds(*args):
-  return _andor.GetNumberHorizontalSpeeds(*args)
+def GetNumberHorizontalSpeeds():
+  return _andor.GetNumberHorizontalSpeeds()
 GetNumberHorizontalSpeeds = _andor.GetNumberHorizontalSpeeds
 
 def GetNumberHSSpeeds(*args):
@@ -729,16 +729,16 @@ def GetNumberIO(*args):
   return _andor.GetNumberIO(*args)
 GetNumberIO = _andor.GetNumberIO
 
-def GetNumberVerticalSpeeds(*args):
-  return _andor.GetNumberVerticalSpeeds(*args)
+def GetNumberVerticalSpeeds():
+  return _andor.GetNumberVerticalSpeeds()
 GetNumberVerticalSpeeds = _andor.GetNumberVerticalSpeeds
 
-def GetNumberVSAmplitudes(*args):
-  return _andor.GetNumberVSAmplitudes(*args)
+def GetNumberVSAmplitudes():
+  return _andor.GetNumberVSAmplitudes()
 GetNumberVSAmplitudes = _andor.GetNumberVSAmplitudes
 
-def GetNumberVSSpeeds(*args):
-  return _andor.GetNumberVSSpeeds(*args)
+def GetNumberVSSpeeds():
+  return _andor.GetNumberVSSpeeds()
 GetNumberVSSpeeds = _andor.GetNumberVSSpeeds
 
 def GetOldestImage(*args):

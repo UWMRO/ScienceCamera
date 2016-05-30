@@ -12,6 +12,8 @@ import time
 import Queue
 import thread
 import threading
+import AddLinearSpacer as als
+
 
 from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
@@ -92,6 +94,10 @@ class EvoraParser(object):
             return self.e.getStatus()
         if input[0] == "timings":
             return self.e.getTimings()
+        if input[0] == "vertStats":
+            return self.e.verticalSpeedStats(int(input[1]))
+        if input[0] == "horzStats":
+            return self.e.horizontalSpeedStats(int(input[1]), int(input[2]), int(input[3]))
         if input[0] == 'filterConnect':
             pass
         if input[0] == 'filterSlew':
@@ -290,6 +296,15 @@ class Evora(object):
 
         return "timings"
 
+    def verticalSpeedStats(self, index):
+        print("GetNumberVSSpeeds:", andor.GetNumberVSSpeeds())
+        print("GetNumberVSAmplitudes:", andor.GetNumberVSAmplitudes())
+        print("GetVSSpeed:", andor.GetVSSpeed(index))
+        print("GetFastestRecommendedVSSpeed:", andor.GetFastestRecommendedVSSpeed())
+
+    def horizontalSpeedStats(self, channel, type, index):
+        print("GetNumberHSSpeeds:", andor.GetNumberHSSpeeds(channel, type))
+        print("GetHSSpeed:", andor.GetHSSpeed(channel, type, index))
 
     def writeData(self):
         """
@@ -332,7 +347,7 @@ class Evora(object):
         print('SetAcquisitionMode:', andor.SetAcquisitionMode(1))
         print('SetImage:', andor.SetImage(binning,binning,1,width,1,height))
         print('GetDetector (again):', andor.GetDetector())
-    
+
         if(imType == "bias"):
             andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             print('SetExposureTime:', andor.SetExposureTime(0))
@@ -347,6 +362,9 @@ class Evora(object):
         #expTime, accTime, kTime = ctypes.c_float(), ctypes.c_float(), ctypes.c_float()
         #expTime, accTime, kTime = andor.GetAcquisitionTimings()
         print("Adjusted Exposure Time:", andor.GetAcquisitionTimings())
+        # set VSSpeeds
+        #print("SetVSSpeed:", andor.SetVSSpeed(3))
+        print("SetHSSpeed:", andor.SetHSSpeed(0, 1))
         print('StartAcquisition:', andor.StartAcquisition())
 
         status = andor.GetStatus()
@@ -378,11 +396,12 @@ class Evora(object):
             data=data.reshape(width//binning,height//binning)
             print(data.shape,data.dtype)
             hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
-            filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
+            #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
+            filename = als.getImagePath()
             hdu.writeto(filename,clobber=True)
             print("wrote: {}".format(filename))
         #queue.put("expose " + filename)
-        return "expose " + str(success) + ","+str(filename)
+        return "expose " + str(success) + ","+str(filename) + "," + str(itime)
 
     def realTimeExposure(self, protocol, imType, itime, binning=1): 
         """
@@ -413,6 +432,7 @@ class Evora(object):
             print('SetExposureTime:', andor.SetExposureTime(itime)) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
             
         data = np.zeros(width//binning*height//binning, dtype='uint16')
+        print("SetHSSpeed:", andor.SetHSSpeed(0, 1))
         print('StartAcquisition:', andor.StartAcquisition())
 
         
@@ -434,7 +454,8 @@ class Evora(object):
                     data=data.reshape(width//binning,height//binning) # reshape into image
                     print(data.shape,data.dtype)
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
-                    filename = time.strftime('/tmp/image_%Y%m%d_%H%M%S.fits') 
+                    #filename = time.strftime('/tmp/image_%Y%m%d_%H%M%S.fits') 
+                    filename = als.getImagePath()
                     hdu.writeto(filename,clobber=True)
                     print("wrote: {}".format(filename))
                     data = np.zeros(width//binning*height//binning, dtype='uint16')
@@ -494,7 +515,8 @@ class Evora(object):
                     print(data.shape,data.dtype)
 
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
-                    filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
+                    #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
+                    filename = als.getImagePath()
                     hdu.writeto(filename,clobber=True)
 
                     print("wrote: {}".format(filename))
@@ -540,6 +562,7 @@ class Evora(object):
 
         print("Timings:", andor.GetAcquisitionTimings())
 
+        print("SetHSSpeed:", andor.SetHSSpeed(0, 1))
         print('StartAcquisition:', andor.StartAcquisition())
 
         status = andor.GetStatus()
