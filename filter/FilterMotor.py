@@ -43,13 +43,15 @@ class FilterMotor(object):
 
 		self.fw.openPort()
 		time.sleep(2)
-		self.DisplayDeviceInfo()
+		print "Stepper Driver Connected"
+		self.status()
 		return 1
 
 	def disconnDev(self):
 		time.sleep(1)
 		self.motorPower(False)
 		self.stepper.closePhidget()
+		print "Stepper Driver Disconnected"
 		return
 
 	def motorPower(self, val = False):

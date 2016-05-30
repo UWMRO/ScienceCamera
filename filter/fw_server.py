@@ -33,6 +33,7 @@ class FilterWheelServer(basic.LineReceiver):
 
     def connectionLost(self, reason):
         self.factory.clients.remove(self)
+	self.f.disconnDev()
 
     def lineReceived(self, line):
         print("received", line)
