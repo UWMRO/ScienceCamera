@@ -185,8 +185,12 @@ class ScriptCommands(wx.Panel):
                     bin = str(runList[2])
                     if(bin == '1'):
                         topInstance.on1x1(None)
+                        file = topInstance.menuBar.GetMenu(0)
+                        file.FindItemById(1120).Check(check=True)
                     else:
                         topInstance.on2x2(None)
+                        file = topInstance.menuBar.GetMenu(0)
+                        file.FindItemById(1121).Check(check=True)
                     
 
             if(sendCommand == 'set'):
