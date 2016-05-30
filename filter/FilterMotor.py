@@ -25,7 +25,7 @@ class FilterMotor(object):
 		"""Add docs to all functions"""
 		self.stepper = None
 		self.fw = fw_io.FWIO()
-		self.dict = {"velocity":None, "amp":None, "acceleration":None, "position":None, "power":None, "hall":None, "commanded":None, "filterDelta":6860, "ID":None}
+		self.dict = {"velocity":None, "amp":None, "acceleration":None, "position":None, "power":None, "hall":None, "commanded":None, "filterDelta":6860, "ID":None, "home":False}
 
 	def DisplayDeviceInfo(self):
 		#==> rename to getDeviceInfo
@@ -96,28 +96,12 @@ class FilterMotor(object):
 			continue
 		print "hi" 
 
-	def filterselect(self, num = None):
+	def filterSelect(self, num = None):
+		delta = int(self.dict['filterDelta'])
 		print "Moving to filter position %d" % num
-		if int(num)<= 6 and int(num)>=0:
-			self.movemotor(int(num)*7050)
-			tpos = num*7050
-			while self.getCurrentPosition() != tpos:
-				continue
-			while switch == false:
-				self.movemotor(tpos+1000)
-				if switch == True:
-					self.motorstop()
-					self.setCurrentPosition(0,tpos)
-				else: 
-					self.movemotor(tpos-1000)
-					if switch == True:
-						self.motorstop()
-						self.setCurrentPosition(0,tpos)
-			
-		elif int(num)>6:
-			print "Not Valid Filter Number"
-		elif int(num)<0:
-			print "Not Valid Filter Number"
+		tpos = num*delta
+		self.moveMotor(tpos)			
+		return
 
 	def test(self, x): #test for drifting
 		n=0		
@@ -130,54 +114,65 @@ class FilterMotor(object):
 			time.sleep(8)	
 
 	def motorStop(self):
-		self.stepper.setVelocityLimit(0,0)
-		time.sleep(0.2)
-		self.setParm(20000,6000,0.75)
+		self.motorPower(False)
 		return
 
 	def home(self): 
 		crossArr = [0]
 		pastHome = 0
 		previousPos = 0
-		print "starting home sequence"
-		self.setPos(0)
-		print "starting slew"
-		self.moveMotor(100000)
-		time.sleep(1)
-		self.status()
-		while int(self.dict['position']) < int(self.dict['commanded']):
+		try:
+			print "starting home sequence"
+			self.setPos(0)
+			self.moveMotor(100000)
+			time.sleep(.2)
 			self.status()
-			if self.dict['hall'][0] == '0':
-				if self.dict['hall'][0] == '0' and self.dict['hall'][1] == '0':
-					if pastHome == 0: 
-						pastHome = pastHome + 1
-                                        	print "First Home: ", self.status()
+			while int(self.dict['position']) < int(self.dict['commanded']):
+				self.status()
+				if self.dict['hall'][0] == '0':
+					if self.dict['hall'][0] == '0' and self.dict['hall'][1] == '0':
+						if pastHome == 0: 
+							pastHome = pastHome + 1
+							print 'first home', self.status()
+							previousPos = self.dict['position']
+						if  self.dict['position'] - previousPos >  3000:
+							pastHome = pastHome + 1
+							print 'second home', self.status()
+						if pastHome == 2:
+							self.motorStop()
+							self.setPos(int(100))
+							time.sleep(2)
+							print self.status()
+							if self.dict['position'] == self.dict['commanded']:
+								raise Exception
+							break
+		
+					if self.dict['position'] - previousPos >  3000:
+						#print self.dict['position'] - previousPos
+						crossArr.append(self.dict['position'] - previousPos)
+						#print self.status(), crossArr
 						previousPos = self.dict['position']
-					if  self.dict['position'] - previousPos >  3000:
-						pastHome = pastHome + 1
-						print "Second Home: ", self.status() 
-					if pastHome == 2:
-						print "Set Home"
-						self.motorStop()
-						time.sleep(1)
-						self.setPos(0)
-						break
-				if self.dict['position'] - previousPos >  3000:
-					print self.dict['position'] - previousPos
-					crossArr.append(self.dict['position'] - previousPos)
-					print self.status(), crossArr
-					previousPos = self.dict['position']
-		del crossArr[0]
-		del crossArr[0]
-		self.dict['filterDelta'] = int(np.mean(crossArr))
-		print "home"
+			del crossArr[0]
+			del crossArr[0]
+			self.dict['filterDelta'] = int(np.mean(crossArr))
+			print "homed", self.status()
+			self.moveMotor(0)
+			time.sleep(1)
+			self.dict["home"] = True
+		except:
+			self.dict["home"] = False
+		self.motorPower(False)
 		return
 
 if __name__ == "__main__":
 	p = FilterMotor()
 	p.connDev()
-	time.sleep(1)
+	time.sleep(.5)
 	p.home()
-	time.sleep(1)
+	time.sleep(.5)
+	p.filterSelect(1)
+	time.sleep(5)
+	p.filterSelect(3)
+	time.sleep(5)
 	p.disconnDev()
 
