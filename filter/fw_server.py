@@ -21,14 +21,15 @@ import threading
 
 class FilterWheelServer(basic.LineReceiver):
     def __init__(self):
-	self.fw = FilterWheelParser(self)
+	self.f = FilterMotor()
+	self.fw = FilterWheelParser(self, self.f)
+	self.f.connDev()
 
     def connectionMade(self):
         """
         If you send more than one line then the callback to start the gui will completely fail.
         """
         self.factory.clients.append(self)
-        fw = FilterWheelParser(self)
 
     def connectionLost(self, reason):
         self.factory.clients.remove(self)
@@ -52,15 +53,14 @@ class FilterWheelClient(protocol.ServerFactory):
     clients = []
 
 class FilterWheelParser(object):
-    def __init__(self, protocol):
-        self.f = FilterMotor()
+    def __init__(self, protocol, f):
+        #self.f = FilterMotor()
+	self.f = f
         self.protocol = protocol
 
     def parse(self, input=None):
         print(input)
         input = input.split()
-        if input[0] == 'connect':
-            return self.f.connDev()
         if input[0] == 'disconnect':
             return self.f.disconnDev()
         if input[0] == 'status':        
