@@ -10,7 +10,7 @@ from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
 
 # For filter controls
-from FilterMotor import FilterMotor
+from FilterMotor import *
 import Queue
 import thread
 import threading
@@ -20,29 +20,22 @@ import threading
 
 
 class FilterWheelServer(basic.LineReceiver):
+    def __init__(self):
+	self.fw = FilterWheelParser(self)
+
     def connectionMade(self):
         """
         If you send more than one line then the callback to start the gui will completely fail.
         """
         self.factory.clients.append(self)
-        #self.sendMessage("Welcome to the Evora Server")
-        #self.sendMessage("Starting camera")
-        fw = FWParser(self)
-        command = fw.parse("status") 
-        self.sendMessage(str(command)) # activate the callback to give full control to the camera.
+        fw = FilterWheelParser(self)
 
     def connectionLost(self, reason):
-        #self.sendLine("Connection Lost")
-        #if len(self.factory.clients) is 1:
-        #    ep = EvoraParser()
-        #    command = ep.parse("shutdown")
-            #self.sendMessage(command)        
         self.factory.clients.remove(self)
 
     def lineReceived(self, line):
         print("received", line)
-        fw = FilterWheelParser(self)
-        d = threads.deferToThread(fw.parse, line)
+        d = threads.deferToThread(self.fw.parse, line)
         d.addCallback(self.sendData)
 
     def sendData(self, data):
@@ -58,21 +51,26 @@ class FilterWheelClient(protocol.ServerFactory):
     protocol = FilterWheelServer
     clients = []
 
-## Evora Parser commands sent here from server where it envokes the camera commands.
 class FilterWheelParser(object):
     def __init__(self, protocol):
-        self.fw = FilterWheel()
+        self.f = FilterMotor()
         self.protocol = protocol
 
     def parse(self, input=None):
         print(input)
         input = input.split()
         if input[0] == 'connect':
-            return self.fw.connDev()
+            return self.f.connDev()
         if input[0] == 'disconnect':
-            return self.fw.disconnDev()
+            return self.f.disconnDev()
         if input[0] == 'status':        
-            return self.fw.status()
+            return self.f.status()
+	if input[0] == 'power':
+	    return self.f.motorPower(bool(input[1]))
+	if input[0] == 'move':
+	    return self.f.moveFilter(int(input[1]))
+	if input[0] == 'home':
+	    return self.f.home()
         if input[0] == 'test':
 	    return 'test routine'
  
@@ -81,6 +79,6 @@ if __name__ == "__main__":
     #ep = Evora()
     #ep.startup()
     reactor.suggestThreadPoolSize(30)
-    reactor.listenTCP(5503, EvoraClient())
+    reactor.listenTCP(5503, FilterWheelClient())
     reactor.run()
 

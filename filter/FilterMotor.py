@@ -43,7 +43,8 @@ class FilterMotor(object):
 
 		self.fw.openPort()
 		time.sleep(2)
-		return
+		self.DisplayDeviceInfo()
+		return 1
 
 	def disconnDev(self):
 		time.sleep(1)
@@ -97,22 +98,12 @@ class FilterMotor(object):
 			continue
 		print "hi" 
 
-	def filterSelect(self, num = None):
+	def moveFilter(self, num = None):
 		delta = int(self.dict['filterDelta'])
 		print "Moving to filter position %d" % num
 		tpos = num*delta
 		self.moveMotor(tpos)			
 		return
-
-	def test(self, x): #test for drifting
-		n=0		
-		while n<x:
-			n+=1
-			print n
-			self.filterselect(6)
-			time.sleep(8)
-			self.filterselect(0)
-			time.sleep(8)	
 
 	def motorStop(self):
 		self.motorPower(False)
