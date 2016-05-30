@@ -73,7 +73,7 @@ class Evora(wx.Frame):
         # Widgets
 
         #
-        self.binning = "1"
+        self.binning = "2" # starts in 2x2 binning
 
         ## Menu
         self.menuBar = wx.MenuBar()
@@ -86,6 +86,8 @@ class Evora(wx.Frame):
         binningSub = wx.Menu()
         binningSub.Append(1120, "1x1", "Set CCD readout binning", kind=wx.ITEM_RADIO)
         binningSub.Append(1121, "2x2", "Set CCD readout binning", kind=wx.ITEM_RADIO)
+        binningSub.Check(id=1121, check=True)
+        
 
         cameraSub = wx.Menu()
         #cameraSub.Append(1133, "&Startup", "Start the camera")
@@ -123,7 +125,7 @@ class Evora(wx.Frame):
         self.stats.SetFieldsCount(3)
         self.SetStatusBar(self.stats)
         self.stats.SetStatusText("Current Temp:            ... C", 0)
-        self.stats.SetStatusText("Binning Type: ...", 2)
+        self.stats.SetStatusText("Binning Type: 2x2", 2)
         self.stats.SetStatusText("Exp. Status:", 1)
         self.expGauge = wx.Gauge(self.stats, id=1, range=100, size=(110, -1))
         self.stats.AddWidget(self.expGauge, pos=1, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)

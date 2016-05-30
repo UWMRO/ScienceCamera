@@ -353,11 +353,15 @@ class Exposure(wx.Panel):
         print "Completed real time series with exit:", msg
 
     def displaySeriesImage_thread(self, msg):
+        print "From real image callback thread:", repr(msg)
+        msg = msg.rstrip()
         thread.start_new_thread(self.displaySeriesImage, (msg,))
 
     def displaySeriesImage(self, msg):
         msg = msg.split(",")
+        
         imNum = int(msg[0])
+        print type(imNum)
         time = float(msg[1])
         path = msg[2]
         print "Got:", msg

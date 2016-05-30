@@ -101,7 +101,8 @@ class ScriptCommands(wx.Panel):
     def executeCommand(self, runList):
         """
         This will take the known order of runList from the command and then send it to the server
-        while also displaying pertanent information.
+        while also displaying pertanent information.  It will essentially be running methods,
+        whenever possible from the acquisitionClasses.py file.
         """
         val = self.parent.scriptStatus.activityText.GetValue()
         self.parent.scriptStatus.activityText.SetValue(val + str(runList) + "\n")
@@ -117,10 +118,15 @@ class ScriptCommands(wx.Panel):
             if(sendCommand == 'series'):
                 imtype = str(runList[1])
                 nexposure = str(runList[2])
+
                 exposeClass = self.parent.parent.parent.takeImage.exposureInstance
+                exposeClass.seriesImageNumber = int(nexposure)
 
                 # example runList (['series', 'bias', int(nexposure), 'basename'])
                 if(imtype == 'bias'):
+
+                    basename = str(runList[3])
+
                     d = self.protocol.addDeferred("seriesSent")
                     d.addCallback(exposeClass.displaySeriesImage_thread)
 
@@ -129,8 +135,68 @@ class ScriptCommands(wx.Panel):
                         
                     # start timer
                     thread.start_new_thread(exposeClass.exposeTimer, (0,))
+                if(imtype in ['flat', 'object', 'dark']):
+                    exposeClass.expButton.Enable(False)
+                    exposeClass.stopExp.Enable(True)
+                    exposeClass.abort = True
 
+                    itime = str(runList[3])
+                    basname = str(runList[4])
+                    d = self.protocol.addDeferred("seriesSent")
+                    d.addCallback(exposeClass.displaySeriesImage_thread)
+                    
 
+                    d = self.protocol.sendCommand(sendCommand + " " + imtype + " " + nexposure + " " + itime + " " + str(self.parent.parent.parent.binning))
+                    d.addCallback(exposeClass.seriesCallback)
+                    # start timer 
+                    thread.start_new_thread(exposeClass.exposeTimer, (float(itime),))
+                                
+            if(sendCommand == 'abort'):
+                exposeClass = self.parent.parent.parent.takeImage.exposureInstance
+                exposeClass.onStop(None)
+            if(sendCommand == 'expose' and runList[1] == 'help'):
+                # report on all the help options
+                if(runList[2] == 'abort'):
+                    pass
+                if(runList[2] == 'bias'):
+                    pass
+                if(runList[2] == 'dark'):
+                    pass
+                if(runList[2] == 'flat'):
+                    pass
+                if(runList[2] == 'object'):
+                    pass
+            # deal with set commands
+            if(sendCommand == 'setTEC'):
+                temp = int(runList[1])
+                tempClass = self.parent.parent.parent.takeImage.tempInstance
+                tempClass.tempToSend = temp
+                tempClass.onCool(None)
+            if(sendCommand == 'warmup'):
+                tempClass = self.parent.parent.parent.takeImage.tempInstance
+                tempClass.onStopCooling(None)
+
+            if(sendCommand == 'set'):
+                if(runList[1] == 'filter'):
+                    pos = int(runList[2])
+            if(sendCommand == 'set'):
+                if(runList[1] == 'binning'):
+                    topInstance = self.parent.parent.parent
+                    bin = str(runList[2])
+                    if(bin == '1'):
+                        topInstance.on1x1(None)
+                    else:
+                        topInstance.on2x2(None)
+                    
+
+            if(sendCommand == 'set'):
+                if(runList[1] == 'help'):
+                    if(runList[2] == 'binning'):
+                        pass
+                    if(runList[2] == 'temp'):
+                        pass
+                    if(runList[2] == 'filter'):
+                        pass
         else:
             print "something went wrong"
             print runList
@@ -213,7 +279,7 @@ class ScriptCommands(wx.Panel):
                                         runList.append(int(argDict['nexposure']))
                                         runList.append(argDict['basename'])
                                         print "The specified number of exposures is", float(argDict['nexposure'])
-                                        return runList
+                                        return runList # [series, bias, nexposure, basename]
                                         
                                     else:
                                         return "specified time or number of exposure is not number"
@@ -256,7 +322,7 @@ class ScriptCommands(wx.Panel):
                                         runList.append(argDict['basename'])
                                         print "The specified time is", float(argDict['time'])
                                         print "The specified number of exposures is", float(argDict['nexposure'])
-                                        return runList
+                                        return runList #[series, dark/flat/object, nexposure, time, basename]
                                         
                                     else:
                                         return "specified time or number of exposure is not number"
@@ -301,7 +367,7 @@ class ScriptCommands(wx.Panel):
                                         runList.append(command)
                                         runList.append(subcommand)
                                         runList.append(arg1)
-                                        return runList
+                                        return runList # [set, binning, 1]
                                     else:
                                         return "binning number out of range"
                                 else:

@@ -183,6 +183,12 @@ class Evora(object):
         print 'SetAcquisitionMode:', andor.SetAcquisitionMode(1);
         
         print 'SetShutter:', andor.SetShutter(1,0,50,50);
+
+        # make sure cooling is off when it first starts
+        print 'SetTemperature:', andor.SetTemperature(0)
+	print 'SetFan', andor.SetFanMode(0)
+	print 'SetCooler', andor.CoolerOFF()
+
 	
 	return "connect " + str(init)
 
@@ -288,7 +294,10 @@ class Evora(object):
             andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             print 'SetExposureTime:', andor.SetExposureTime(0)            
         else:
-            andor.SetShutter(1,0,5,5)
+            if(imType in ['flat', 'object']):
+                andor.SetShutter(1,0,5,5)
+            else:
+                andor.SetShutter(1,2,0,0)
             print 'SetExposureTime:', andor.SetExposureTime(itime) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
 
 
@@ -353,7 +362,10 @@ class Evora(object):
             andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             print 'SetExposureTime:', andor.SetExposureTime(0)            
         else:
-            andor.SetShutter(1,0,5,5)
+            if(imType in ['flat', 'object']):
+                andor.SetShutter(1,0,5,5)
+            else:
+                andor.SetShutter(1,2,0,0)
             print 'SetExposureTime:', andor.SetExposureTime(itime) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
             
         data = np.zeros(width/binning*height/binning, dtype='uint16')
@@ -478,7 +490,10 @@ class Evora(object):
             andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             print 'SetExposureTime:', andor.SetExposureTime(0)            
         else:
-            andor.SetShutter(1,0,5,5)
+            if(imType in ['flat', 'object']):
+                andor.SetShutter(1,0,5,5)
+            else:
+                andor.SetShutter(1,2,0,0)
             print 'SetExposureTime:', andor.SetExposureTime(itime) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
 
         print "SetNumberOfAccumulations:", andor.SetNumberAccumulations(numAccum) # number of exposures to be combined
