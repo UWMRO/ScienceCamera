@@ -362,9 +362,34 @@ class Evora(object):
         #expTime, accTime, kTime = ctypes.c_float(), ctypes.c_float(), ctypes.c_float()
         #expTime, accTime, kTime = andor.GetAcquisitionTimings()
         print("Adjusted Exposure Time:", andor.GetAcquisitionTimings())
-        # set VSSpeeds
+        # set Readout speeds
         #print("SetVSSpeed:", andor.SetVSSpeed(3))
         print("SetHSSpeed:", andor.SetHSSpeed(0, 1))
+
+        # make new fits header object
+        header = fits.Header()
+        ut_time = time.gmtime() # get UT time
+        dateObs = time.strftime("%Y-%m-%dT%H:%M:%S", ut_time)
+        ut_str = time.strftime("%H:%M:%S", ut_time)
+        header.append(card=("DATE-OBS", dateObs, "Time at start of exposure"))
+        header.append(card=("UT", ut_str, "UT time at start of exposure"))
+        header.append(card=("OBSERVAT", "mro", "per the iraf list"))
+        header.append(card=("IMAGETYP", imType))
+        header.append(card=("BINX", binning, "Horizontal Binning"))
+        header.append(card=("BINY", binning, "Vertical Binning"))
+        header.append(card=("EXPOSURE", itime, "Total exposure time"))
+        header.append(card=("ACQMODE", "Single Scan", "Acquisition mode"))
+        header.append(card=("READMODE", "Image", "Readout mode"))
+        header.append(card=("INSTRUME", "evora", "Instrument used for imaging"))
+        header.append(card=("LATITUDE", 120.744466667, "Decimal degrees of MRO latitude"))
+        header.append(card=("LONGITUD", 46.9528, "Decimal degress of MRO longitude"))
+
+        # get readout time and temp
+        temp = andor.GetTemperatureStatus()[1]
+        readTime = andor.GetAcquisitionTimings()[1] - itime
+        header.append(card=("TEMP", temp, "Temperature"))
+        header.append(card=("READTIME", readTime, "Pixel readout time"))
+
         print('StartAcquisition:', andor.StartAcquisition())
 
         status = andor.GetStatus()
@@ -395,7 +420,7 @@ class Evora(object):
         if success == 1:
             data=data.reshape(width//binning,height//binning)
             print(data.shape,data.dtype)
-            hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
+            hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True, header=header)
             #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
             filename = als.getImagePath()
             hdu.writeto(filename,clobber=True)
@@ -464,7 +489,8 @@ class Evora(object):
                     workingImNum += 1
 
         return "real 1" # exits with 1 for success
-        
+
+    # deprecated to kseriesExposure
     def seriesExposure(self, protocol, imType, itime, numexp=1, binning=1):
         global isAborted
         isAborted = False
@@ -563,6 +589,16 @@ class Evora(object):
         print("Timings:", andor.GetAcquisitionTimings())
 
         print("SetHSSpeed:", andor.SetHSSpeed(0, 1))
+
+        # write headers
+        header = fits.Header()
+        ut_time = time.gmtime() # get UT time
+        dateObs = time.strftime("%Y-%m-%dT%H:%M:%S", ut_time)
+        ut_str = time.strftime("%H:%M:%S", ut_time)
+        header.append(card=("DATE-OBS", dateObs, "Time at start of exposure"))
+        header.append(card=("UT", ut_str, "UT time at start of exposure"))
+
+
         print('StartAcquisition:', andor.StartAcquisition())
 
         status = andor.GetStatus()
@@ -587,6 +623,25 @@ class Evora(object):
                 if(results == andor.DRV_SUCCESS): # if the array filled store successfully
                     data=data.reshape(width//binning,height//binning) # reshape into image
                     print(data.shape,data.dtype)
+                    
+                    # write static headers
+                    header.append(card=("OBSERVAT", "mro", "per the iraf list"))
+                    header.append(card=("IMAGETYP", imType))
+                    header.append(card=("BINX", binning, "Horizontal Binning"))
+                    header.append(card=("BINY", binning, "Vertical Binning"))
+                    header.append(card=("EXPOSURE", itime, "Total exposure time"))
+                    header.append(card=("ACQMODE", "Single Scan", "Acquisition mode"))
+                    header.append(card=("READMODE", "Image", "Readout mode"))
+                    header.append(card=("INSTRUME", "evora", "Instrument used for imaging"))
+                    header.append(card=("LATITUDE", 120.744466667, "Decimal degrees of MRO latitude"))
+                    header.append(card=("LONGITUD", 46.9528, "Decimal degress of MRO longitude"))
+
+                    # get readout time and temp
+                    temp = andor.GetTemperatureStatus()[1]
+                    readTime = andor.GetAcquisitionTimings()[1] - itime
+                    header.append(card=("TEMP", temp, "Temperature"))
+                    header.append(card=("READTIME", readTime, "Pixel readout time"))
+
 
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
                     filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
@@ -595,7 +650,14 @@ class Evora(object):
                     print("wrote: {}".format(filename))
                     
                     protocol.sendData("seriesSent"+str(counter)+" "+str(counter)+","+str(itime)+","+filename)
-                    
+                    # make a new header and write time to it for new exposure.
+                    header = fits.Header()
+                    ut_time = time.gmtime() # get UT time
+                    dateObs = time.strftime("%Y-%m-%dT%H:%M:%S", ut_time)
+                    ut_str = time.strftime("%H:%M:%S", ut_time)
+                    header.append(card=("DATE-OBS", dateObs, "Time at start of exposure"))
+                    header.append(card=("UT", ut_str, "UT time at start of exposure"))
+
                     if(counter == numexp):
                         print("entered abort")
                         isAborted = True
