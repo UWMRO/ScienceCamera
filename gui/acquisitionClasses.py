@@ -197,7 +197,7 @@ class Exposure(wx.Panel):
                         line[2] = self.seriesImageNumber
                         line = " ".join(line[1:])
                         
-                        d = self.protocol.sendCommand("seriesSent")
+                        d = self.protocol.addDeferred("seriesSent")
                         d.addCallback(self.displaySeriesImage_thread)
 
                         d = self.protocol.sendCommand("series " + str(line))
@@ -246,6 +246,8 @@ class Exposure(wx.Panel):
         # immediatly reset button
         self.abort = False
         self.expButton.Enable(True)
+        if(self.stopExp.IsEnabled()):
+            self.stopExp.Enable(False)
 
         ## complete progress bar for image acquisition
         # check to see if timer is still going and stop it (callback might come in early)
@@ -351,12 +353,17 @@ class Exposure(wx.Panel):
         print "Completed real time series with exit:", msg
 
     def displaySeriesImage_thread(self, msg):
+        print "From real image callback thread:", repr(msg)
+        msg = msg.rstrip()
         thread.start_new_thread(self.displaySeriesImage, (msg,))
 
     def displaySeriesImage(self, msg):
         msg = msg.split(",")
+        
         imNum = int(msg[0])
-        path = msg[1]
+        print type(imNum)
+        time = float(msg[1])
+        path = msg[2]
         print "Got:", msg
         # no abort then display the image
         if(self.abort and imNum <= int(self.seriesImageNumber)):
@@ -383,7 +390,7 @@ class Exposure(wx.Panel):
 
             if(self.seriesImageNumber != None):
                 if(imNum < int(self.seriesImageNumber)):
-                    thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
+                    thread.start_new_thread(self.exposeTimer, (time,))
 
 
     def seriesCallback(self, msg):
@@ -393,6 +400,8 @@ class Exposure(wx.Panel):
         
         self.abort = False
         self.expButton.Enable(True)
+        if(self.stopExp.IsEnabled()):
+            self.stopExp.Enable(False)
         # stop timer if running
         if(self.timer.IsRunning()):
             self.timer.Stop()   
