@@ -4,82 +4,155 @@
 from ctypes import *
 import sys
 import time
+import os
+import select
 #Phidget specific imports
 from Phidgets.PhidgetException import PhidgetErrorCodes, PhidgetException
 from Phidgets.Events.Events import AttachEventArgs, DetachEventArgs, ErrorEventArgs, InputChangeEventArgs, CurrentChangeEventArgs, StepperPositionChangeEventArgs, VelocityChangeEventArgs
 from Phidgets.Devices.Stepper import Stepper
 from Phidgets.Phidget import PhidgetLogLevel
+#install for raspberrypi
+#libusb via aptget
+#phidgetlib from phidget website
+#pip install phidgets
 
-"""
-Haydon Kerk Bipolar Stepper start parameters
-A = Red/White
-B = Red
-C = Green/White
-D = Green
-
-Vel Limit = 22321
-Accel = 262144
-Current Limit = 0.31
-"""
-
-class PhidgetMotorController(object):
+class filtermotor(object):
 	def __init__(self):
 		self.stepper = Stepper()
 		self.stepper.openPhidget()
 		print('attaching stepper dev ...')
 		self.stepper.waitForAttach(10000)
-		self.DisplayDeviceInfo
-		
+		self.DisplayDeviceInfo()
+		self.stepper.setAcceleration(0,30000)
+		self.stepper.setVelocityLimit(0,8000)
+		self.stepper.setCurrentLimit(0,0.5)
+		self.gvel = 8000
+		self.gacc = 30000
 
 	def DisplayDeviceInfo(self):
     		print("|- %8s -|- %30s -|- %10d -|- %8d -|" % (self.stepper.isAttached(), self.stepper.getDeviceName(), self.stepper.getSerialNum(), self.stepper.getDeviceVersion()))
     		print("Number of Motors: %i" % (self.stepper.getMotorCount()))
 
 	def disconnDev(self):
-#		print "Setting to Home Position"
-#		self.stepper.setTargetPosition(0, 0)
-#		time.sleep(4)
-#		print "Shutting Down"
-		self.motorPower(False)
-#		print "Goodbye"
+		time.sleep(1)
+		self.motorpower(False)
 		self.stepper.closePhidget()
 
-	def setupParm(self):
-		self.stepper.setAcceleration(0, 30000)
-	    	self.stepper.setVelocityLimit(0, 8000)
-    		self.stepper.setCurrentLimit(0, 1.0)
-		self.stepper.setCurrentPosition(0,0)
-
-	def moveMotor(self, pos = None):
-		self.stepper.setTargetPosition(0, int(pos))
-		while self.stepper.getCurrentPosition(0) != int(pos) :
-			print self.stepper.getCurrentPosition(0)
-			time.sleep(.1)
-
-	def motorPower(self, val = False):
+	def motorpower(self, val = False):
 		self.stepper.setEngaged(0,val)
+
+	def startup(self):
+		self.param(0,30000,8000,0.5)
+		self.motorpower(True)
+
+	def param(self, pos, acc, vel, cur):
+		self.stepper.setAcceleration(0, acc) 
+	    	self.stepper.setVelocityLimit(0, vel)
+		self.gvel = vel
+		self.gacc = acc
+		if cur>1.6:				
+	    		self.stepper.setCurrentLimit(0, 0.5)
+			print "Cannot set current above 1.5. Current set to 0.5"
+		self.stepper.setCurrentPosition(0, pos)
+		print "Parameters set to: Acceleration: %d Velocity: %d Current: %d" % (self.stepper.getAcceleration(0), self.stepper.getVelocityLimit(0), self.stepper.getCurrentLimit(0))
+ 
+	def status(self):
+		print ("Engaged: %r \nCurrent Position: %d \nAcceleration: %d \nVelocity: %d \nCurrent: %d" % (self.stepper.getEngaged(0), self.stepper.getCurrentPosition(0), self.stepper.getAcceleration(0), self.stepper.getVelocityLimit(0), self.stepper.getCurrentLimit(0))) 
+
+	def movemotor(self, pos = None):
+		self.stepper.setTargetPosition(0, int(pos))
+
+	def nudge(self, mov):
+		x = self.stepper.getCurrentPosition(0) + mov 
+		self.movemotor(x)
+		time.sleep(0.5)
+		print "New Position:", self.stepper.getCurrentPosition(0)
+
+	def test3(self):
+		x = 0
+		while x != 1:
+			continue
+		print "hi" 
 
 	def filterselect(self, num = None):
 		print "Moving to filter position %d" % num
-		if int(num)<= 6 and int(num)>=1:
-			self.stepper.setTargetPosition(0, int(num)*6958)
+		if int(num)<= 6 and int(num)>=0:
+			self.movemotor(int(num)*7050)
+			tpos = num*7050
+			while self.getCurrentPosition() != tpos:
+				continue
+			while switch == false:
+				self.movemotor(tpos+1000)
+				if switch == True:
+					self.motorstop()
+					self.setCurrentPosition(0,tpos)
+				else: 
+					self.movemotor(tpos-1000)
+					if switch == True:
+						self.motorstop()
+						self.setCurrentPosition(0,tpos)
+			
 		elif int(num)>6:
 			print "Not Valid Filter Number"
-		elif int(num)<1:
+		elif int(num)<0:
 			print "Not Valid Filter Number"
 
-#	def findhome(self):
-#		while x = False
-#			self.stepper.setTargetPosition(0, 9999999)
-#		
+	def test(self, x): #test for drifting
+		n=0		
+		while n<x:
+			n+=1
+			print n
+			self.filterselect(6)
+			time.sleep(8)
+			self.filterselect(0)
+			time.sleep(8)	
+
+	def motorstop(self):
+		self.stepper.setAcceleration(0,200000)
+		self.stepper.setVelocityLimit(0,0)
+		time.sleep(0.2)
+		y = self.stepper.getCurrentPosition(0)
+		self.stepper.setCurrentPosition(0,y)
+		self.stepper.setVelocityLimit(0,self.gvel)
+		self.stepper.setAcceleration(0,self.gacc)
+
+	def findhome(self, switch): #'switch' placeholder for actual returned boolean value of switches
+		self.stepper.setVelocityLimit(0, 4000)
+		while switch == False:
+			self.stepper.setTargetPosition(0, 99999)
+		print self.stepper.getCurrentPosition(0)
+		self.stepper.setVelocityLimit(0,0)
+		self.stepper.setAcceleration(0,200000)
+		time.sleep(0.2)
+		y = self.stepper.getCurrentPosition(0)
+		self.stepper.setCurrentPosition(0,y)
+		self.stepper.setVelocityLimit(0,self.gvel)
+		self.stepper.setAcceleration(0,self.gacc)
+		print self.stepper.getCurrentPosition(0)
+		self.stepper.setCurrentPosition(0,0)
+
+	def test2(self): #test code for findhome. rotates until it reaches 999999 steps or when enter is pressed.
+		i = 0
+		while True:
+    			os.system('cls' if os.name == 'nt' else 'clear')
+    			if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+        			line = raw_input()
+        			break
+			self.stepper.setTargetPosition(0, 999999)
+			print self.stepper.getCurrentPosition(0)
+		print self.stepper.getCurrentPosition(0)
+		self.stepper.setVelocityLimit(0,0)
+		self.stepper.setAcceleration(0,200000)
+		time.sleep(0.2)
+		y = self.stepper.getCurrentPosition(0)
+		self.stepper.setCurrentPosition(0,y)
+		self.stepper.setVelocityLimit(0,self.gvel)
+		self.stepper.setAcceleration(0,self.gacc)
+		print self.stepper.getCurrentPosition(0)
+		self.stepper.setCurrentPosition(0,0)
 
 if __name__ == "__main__":
-	p = PhidgetMotorController()
-	p.setupParm()
-	p.motorPower(True)
-	time.sleep(1)
-	p.moveMotor(30000)
-	time.sleep(1)
-	p.moveMotor(0)
+	p = filtermotor()
+	p.startup()
 	p.disconnDev()
 
