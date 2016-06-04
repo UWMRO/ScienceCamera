@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
-#Basic imports
+#==>add usage docstring
+
+
+#remove imports not used
 from ctypes import *
 import sys
 import time
@@ -18,6 +21,9 @@ from Phidgets.Phidget import PhidgetLogLevel
 
 class filtermotor(object):
 	def __init__(self):
+		"""Add docs to all functions"""
+		#==> move connection of device to separate connDev function.
+		#==> use param (which should be changed to setParam() for setting the stepper parameteres.
 		self.stepper = Stepper()
 		self.stepper.openPhidget()
 		print('attaching stepper dev ...')
@@ -30,8 +36,12 @@ class filtermotor(object):
 		self.gacc = 30000
 
 	def DisplayDeviceInfo(self):
+		#==> rename to getDeviceInfo
     		print("|- %8s -|- %30s -|- %10d -|- %8d -|" % (self.stepper.isAttached(), self.stepper.getDeviceName(), self.stepper.getSerialNum(), self.stepper.getDeviceVersion()))
     		print("Number of Motors: %i" % (self.stepper.getMotorCount()))
+
+	def connDev(self):
+		pass
 
 	def disconnDev(self):
 		time.sleep(1)
@@ -42,6 +52,7 @@ class filtermotor(object):
 		self.stepper.setEngaged(0,val)
 
 	def startup(self):
+		#==>  this shoud be the same as connDev
 		self.param(0,30000,8000,0.5)
 		self.motorpower(True)
 
@@ -57,6 +68,7 @@ class filtermotor(object):
 		print "Parameters set to: Acceleration: %d Velocity: %d Current: %d" % (self.stepper.getAcceleration(0), self.stepper.getVelocityLimit(0), self.stepper.getCurrentLimit(0))
  
 	def status(self):
+                #==> in this function you should return an array of highly useful information so that the user/tcc/evora knows what is going on.  take a look at the arctic FilterMotor.py status as example.
 		print ("Engaged: %r \nCurrent Position: %d \nAcceleration: %d \nVelocity: %d \nCurrent: %d" % (self.stepper.getEngaged(0), self.stepper.getCurrentPosition(0), self.stepper.getAcceleration(0), self.stepper.getVelocityLimit(0), self.stepper.getCurrentLimit(0))) 
 
 	def movemotor(self, pos = None):
