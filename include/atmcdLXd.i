@@ -15,6 +15,7 @@
 
 %include "typemaps.i"
 
+// apply maps a pointer argument to python return value(s).
 %apply long *OUTPUT {long *totalCameras};
 %apply long *OUTPUT {long *cameraHandle};
 %apply char *STRING {char *dir};
@@ -23,6 +24,8 @@
 %apply int *OUTPUT {int * temperature};
 %apply float *OUTPUT {float * temperature};
 %apply float *OUTPUT {float * SensorTemp, float * TargetTemp, float * AmbientTemp, float * CoolerVolts};
+%apply long *OUTPUT {long * acc, long * series};
+%apply float *OUTPUT {float * exposure, float * accumulate, float * kinetic};
 
 %{
 #define SWIG_FILE_WITH_INIT
