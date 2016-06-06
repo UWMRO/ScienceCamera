@@ -4,7 +4,10 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import sys
+sys.path.insert(0, '../include')
 import andor
+sys.path.insert(0, '../gui')
 import numpy as np
 #import ctypes
 #import pyfits
@@ -18,7 +21,9 @@ from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
 
 # For filter controls
+sys.path.insert(0, '..')
 from FilterMotor import filtermotor
+sys.path.insert(0, 'gui')
 
 #import ProtoParser
 
