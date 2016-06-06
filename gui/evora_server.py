@@ -266,7 +266,7 @@ class Evora(object):
         #retval, width, height = andor.GetDetector()
         #print retval, width, height
         expTime, accTime, kTime = 1, 0, 0
-        expTime,accTime,kTime = andor.GetAcquisitionTimings(expTime, accTime, kTime)
+        expTime,accTime,kTime = andor.GetAcquisitionTimings()
         print expTime,accTime,kTime
 
         return "timings"
