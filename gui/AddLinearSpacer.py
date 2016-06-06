@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 
 import wx # get wxPython
 from astropy.io import fits

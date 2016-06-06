@@ -1,18 +1,21 @@
-#!/usr/bin/python
+#!/usr/bin/python2
+
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
 
 import time
-import wx # get wxPython
-import AddLinearSpacer as als # get useful methods
-import numpy as np # get NumPy
-import EnhancedStatusBar # allows widgets to be inserted into wxPython status bar
-                         # probably won't work on wxPython 3.x
-import threading, thread
-import signal
-from twisted.internet import defer
-#import settings
-#import photoAcquisitionGUI as pag
+import wx  # get wxPython
+import AddLinearSpacer as als  # get useful methods
+import numpy as np  # get NumPy
 
-## Class that handles widgets related to exposure
+# allows widgets to be inserted into wxPython status bar probably won't work on wxPython 3.x
+import EnhancedStatusBar
+#import threading
+import thread
+#from FilterMotor import filtermotor
+
+#### Class that handles widgets related to exposure
 class Exposure(wx.Panel):
     """
     Creates the group of widgets that handle related exposure controls
@@ -189,7 +192,7 @@ class Exposure(wx.Panel):
                 if answer == wx.ID_OK:
                     self.seriesImageNumber = dialog.GetValue()
                     if(als.isInt(self.seriesImageNumber)):
-                        print "Number of image to be taken:", int(self.seriesImageNumber)
+                        print("Number of image to be taken:", int(self.seriesImageNumber))
                         self.expButton.Enable(False)
                         self.stopExp.Enable(True)
                         self.abort = True
@@ -267,8 +270,8 @@ class Exposure(wx.Panel):
         self.parent.parent.parent.expGauge.SetValue(0)
         self.startTimer = 0
 
-        print self.parent.parent.parent.imageOpen
-        print "opened window"
+        print(self.parent.parent.parent.imageOpen)
+        print("opened window")
 
         if(success == 1):
             # get name of image and path
@@ -278,7 +281,7 @@ class Exposure(wx.Panel):
             for i in filePath[:-1]:
                 path += i + "/"
             
-            print path, name
+            print(path, name)
 
             # get data
             data = als.getData(path+name)
@@ -287,7 +290,7 @@ class Exposure(wx.Panel):
             # change the gui with thread safety
             wx.CallAfter(self.safePlot, data, stats_list)
         else:
-            print "Successfully Aborted"
+            print("Successfully Aborted")
             pass
 
     def safePlot(self, data, stats_list):
@@ -334,7 +337,7 @@ class Exposure(wx.Panel):
 
 
     def displayRealImage_callback_thread(self, msg):
-        print "From real image callback thread:", repr(msg)
+        print("From real image callback thread:", repr(msg))
         msg = msg.rstrip()
         thread.start_new_thread(self.displayRealImage_callback, (msg,))
         
@@ -350,10 +353,10 @@ class Exposure(wx.Panel):
 
     def realCallback(self, msg):
         self.protocol.removeDeferred("realSent")
-        print "Completed real time series with exit:", msg
+        print("Completed real time series with exit:", msg)
 
     def displaySeriesImage_thread(self, msg):
-        print "From real image callback thread:", repr(msg)
+        print("From real image callback thread:", repr(msg))
         msg = msg.rstrip()
         thread.start_new_thread(self.displaySeriesImage, (msg,))
 
@@ -361,13 +364,13 @@ class Exposure(wx.Panel):
         msg = msg.split(",")
         
         imNum = int(msg[0])
-        print type(imNum)
+        print(type(imNum))
         time = float(msg[1])
         path = msg[2]
-        print "Got:", msg
+        print("Got:", msg)
         # no abort then display the image
         if(self.abort and imNum <= int(self.seriesImageNumber)):
-            print "Entered to display series image"
+            print("Entered to display series image")
             # add a new deffered object
             d = self.protocol.addDeferred("seriesSent")
             d.addCallback(self.displaySeriesImage_thread)
@@ -414,29 +417,29 @@ class Exposure(wx.Panel):
         self.startTimer = 0
 
 
-        print "Completed real time series with exit:", msg
+        print("Completed real time series with exit:", msg)
 
 
     def abort_callback(self, msg):
         self.parent.parent.parent.expGauge.SetValue(0) # redundancy to clear the exposure gauge
-        print "Aborted", msg
+        print("Aborted", msg)
 
     def openData(self, path, name):
-        print "opening"
+        print("opening")
         self.parent.parent.parent.expGauge.SetValue(0)
         
-        print self.parent.parent.parent.imageOpen
+        print(self.parent.parent.parent.imageOpen)
         # open image window 
         if(not self.parent.parent.parent.imageOpen):
             # create new window
             self.parent.parent.parent.openImage("manual open")
-        print "opened window"
+        print("opened window")
 
         self.parent.parent.parent.window.panel.clear()
         data = self.parent.parent.parent.window.panel.getData(path+name)
-        print "got data"
+        print("got data")
         self.parent.parent.parent.window.panel.plotImage(data, 6.0, 'gray')
-        print "plotted"
+        print("plotted")
         self.parent.parent.parent.window.panel.updateScreenStats()
         self.parent.parent.parent.window.panel.refresh()
 
@@ -486,7 +489,7 @@ class Exposure(wx.Panel):
         self.stopExp.Enable(False)
         self.abort = False
 
-        print "Stop Exposure"
+        print("Stop Exposure")
 
     def joinThreads(self):
         for t in self.active_threads:
@@ -542,7 +545,7 @@ class TypeSelection(wx.Panel):
         image that is exposed.n
         """
         index = self.imageType.GetSelection()
-        print self.imageType.GetStringSelection()
+        print(self.imageType.GetStringSelection())
 
     def onExposeType(self, event):
         """
@@ -550,7 +553,7 @@ class TypeSelection(wx.Panel):
         image that is exposed.
         """
         index = self.exposeType.GetSelection()
-        print self.exposeType.GetStringSelection()
+        print(self.exposeType.GetStringSelection())
 
 
 class TempControl(wx.Panel):
@@ -626,7 +629,7 @@ class TempControl(wx.Panel):
     def onCool(self, event):
         if als.isNumber(self.tempToSend):
             if(float(self.tempToSend) >= -80.0 and float(self.tempToSend) <= -10.0):
-                print float(self.tempToSend)
+                print(float(self.tempToSend))
                 if self.parent.exposureInstance.abort:
                     dialog = wx.MessageDialog(None, "Do you want to changing temperature during exposure?", "", wx.OK | wx.CANCEL|wx.ICON_QUESTION)
                     answer = dialog.ShowModal()
@@ -652,7 +655,7 @@ class TempControl(wx.Panel):
             dialog.Destroy()
 
     def cooling_callback(self, msg):
-        print "Cooling to:", msg
+        print("Cooling to:", msg)
 
     def onStopCooling(self, event):
         """
@@ -663,7 +666,7 @@ class TempControl(wx.Panel):
         d.addCallback(self.stopCooling_callback)
 
     def stopCooling_callback(self, msg):
-        print "Warmed with exit:", msg
+        print("Warmed with exit:", msg)
         
 
     def changeTemp(self, value, statusbar):
@@ -682,11 +685,6 @@ class TempControl(wx.Panel):
             d.addCallback(self.callbackTemp_thread)
             #  put thread to sleep; on wake up repeats
             time.sleep(10)
-        """
-        if self.isConnected:
-            d = self.protocol.sendCommand("temp")
-            d.addCallback(self.callbackTemp)
-        """
 
     def callbackTemp_thread(self, msg):
         thread.start_new_thread(self.callbackTemp, (msg,))
@@ -717,17 +715,6 @@ class TempControl(wx.Panel):
         
         #self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
         wx.CallAfter(self.parent.parent.parent.stats.AddWidget, bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-
-        """
-        if(self.isConnected):
-            time.sleep(5)
-            thread.start_new_thread(self.watchTemp, ())
-        else:
-            print "Done updating temperature"
-        """
-        #settings.done_ids.put(threading.current_thread().name)
-        #signal.alarm(1)
-        
  
 
 class FilterControl(wx.Panel):
@@ -735,9 +722,11 @@ class FilterControl(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
+        # global variables
+        self.protocol = None
+
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
-
 
         ### Additional Sub-sizers
         self.filterSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -745,7 +734,13 @@ class FilterControl(wx.Panel):
         self.statusVert = wx.BoxSizer(wx.VERTICAL)
 
         ## Variables
-        self.filterList = np.genfromtxt("filters.txt", dtype='str').tolist()
+        self.filterNum, self.filterName = np.genfromtxt("filters.txt", dtype='str', usecols=[0,1], unpack=True)
+        self.filterName = self.filterName.tolist()
+        self.filterNum = self.filterNum.astype(int).tolist()
+        self.filterMap = {}
+        for i in range(len(self.filterName)):
+            self.filterMap[self.filterName[i]] = self.filterNum[i]
+        print(self.filterMap)
         ##
 
         #### Widgets
@@ -756,7 +751,7 @@ class FilterControl(wx.Panel):
         self.statusBoxSizer = wx.StaticBoxSizer(self.statusBox, wx.VERTICAL)
 
         self.filterText = wx.StaticText(self, id=2042, label="Filter Type")
-        self.filterMenu = wx.ComboBox(self, id=2043, choices=["g", "r", "i", "V", "B", "Ha"], size=(50, -1), style=wx.CB_READONLY)
+        self.filterMenu = wx.ComboBox(self, id=2043, choices=self.filterName, size=(50, -1), style=wx.CB_READONLY)
         self.filterButton = wx.Button(self, id=2044, label = "Rotate To")
         self.statusBox = wx.TextCtrl(self, id=2045, style=wx.TE_READONLY|wx.TE_MULTILINE, size=(200,100))
 
@@ -785,6 +780,7 @@ class FilterControl(wx.Panel):
 
         ## Variables
         self.filterSelection = ""
+        self.currFilterNum = None
         ##
 
         ## Bindings
@@ -797,15 +793,43 @@ class FilterControl(wx.Panel):
 
     def onFilterSelection(self, event):
         self.filterSelection = self.filterMenu.GetValue()
+        try:
+            self.currFilterNum = self.filterNum[self.filterSelection]
+        except KeyError:
+            print("not a filter")
+        
 
     def onRotate(self, event):
+        """
+        This method is called when the "Rotate To" button is pressed.  It is send a command to the Evora Server
+        that will slew the filter appropriately.
+        """ 
         if self.filterSelection is "":
-            print "No filter selected"
+            print("No filter selected")
         else:
-            print self.filterSelection
+            print(type(self.filterSelection))
+            # send command to rotate to the specified position
 
     def refreshList(self):
+        """
+        When "Refresh" is clicked in the filter sub-menu of the file menu this function is called.
+        This method reads the filters.txt file and updates the GUI filter drop down menu while also resetting
+        the internal variables that are used.  It returns nothing.
+        """
+        # clear the current GUI drop down filter menu
         self.filterMenu.Clear()
-        newList = np.genfromtxt('filters.txt', dtype='str').tolist()
-        for i in newList:
+
+        # grab new filters in the assumed to be changed file
+        newNum, newName = np.genfromtxt('filters.txt', dtype='str', usecols=[0,1], unpack=True)
+
+        # update variables
+        self.filterName = newName.tolist()
+        self.filterNum = newNum.astype(int).tolist()
+        self.filterMap = {}
+        for i in range(len(newNum)):
+            self.filterMap[newName[i]] = newNum[i]
+        print(self.filterMap)
+        
+        # update GUI drop down filter menu
+        for i in newName:
             self.filterMenu.Append(i)
