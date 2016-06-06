@@ -1,4 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python2
+
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
 
 import wx
 import acquisitionClasses as ac
@@ -22,18 +26,21 @@ import thread
 
 # twisted imports
 from twisted.python import log
-from twisted.internet import wxreactor, protocol
+from twisted.internet import protocol
+from twisted.internet import wxreactor
 wxreactor.install()
 
 # always goes after wxreactor install
-from twisted.internet import reactor, defer, threads
+from twisted.internet import reactor
+from twisted.internet import defer
+from twisted.internet import threads
 from twisted.protocols import basic
 
 ## Global Variables
 app = None
 
-# getting to parents
-# three parents will get to the evora class and out of the notebook
+## Getting to parents (i.e. different classes)
+# Three parents will get to the Evora class and out of the notebook
 
 # Frame class.
 class Evora(wx.Frame):
@@ -154,6 +161,8 @@ class Evora(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onConnect, id=1130)
         self.Bind(wx.EVT_MENU, self.onDisconnect, id=1131)
         self.Bind(wx.EVT_MENU, self.onShutdown, id=1132)
+        self.Bind(wx.EVT_MENU, self.onFilterConnect, id=1110)
+        self.Bind(wx.EVT_MENU, self.onFilterListRefresh, id=1111)
         #self.Bind(wx.EVT_MENU, self.onStartup, id=1133)
         #self.Bind(wx.EVT_CLOSE, self.onClose)
 
@@ -183,7 +192,7 @@ class Evora(wx.Frame):
         dialog = wx.MessageDialog(None, "Close Evora GUI?", "Closing Evora", wx.OK | wx.CANCEL|wx.ICON_QUESTION)
         answer = dialog.ShowModal()
         dialog.Destroy()
-        #print answer
+        #print (answer)
         if answer == wx.ID_OK:
             self.quit()
             #if(self.protocol is not None):
@@ -194,20 +203,23 @@ class Evora(wx.Frame):
             #reactor.stop()
     
     def quit(self):
-        print msg
+        print (msg)
         if self.connected:
             self.connection.disconnect()
         self.Destroy()
         reactor.stop()
 
     def onHelp(self, event):
-        " Open up, ideally, markdown window (or potentially html markup) that gives indepth documentations on what is what."
-        print "Help"
+        """
+        Open up, ideally, markdown window (or potentially html markup) that gives indepth
+        documentations on what is what.
+        """
+        print("Help")
         
 
     def onRefresh(self, event):
         self.takeImage.filterInstance.refreshList()
-        print "hello"
+        print ("hello")
 
     def on1x1(self, event):
         self.binning = "1"
@@ -218,7 +230,7 @@ class Evora(wx.Frame):
         self.stats.SetStatusText("Binning Type: 2x2", 2)
 
     def onConnect(self, event):
-        print "Connecting"
+        print ("Connecting")
         #reactor.run()
         self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
         
@@ -227,7 +239,7 @@ class Evora(wx.Frame):
         #msg = args[0]
         #thread = args[1]
 
-        print msg, "Startup callback entered"
+        print (msg, "Startup callback entered")
         self.connected = True
 
         # get the number of clients
@@ -265,7 +277,7 @@ class Evora(wx.Frame):
         t.start()
         self.active_threads["temp"] = t
 
-        print "Started up"
+        print("Started up")
 
         #settings.done_ids.put(threading.current_thread().name)
         #signal.alarm(1)
@@ -274,7 +286,7 @@ class Evora(wx.Frame):
 
     
     def onDisconnect(self, event):
-        print "Disconnecting"
+        print("Disconnecting")
         self.takeImage.tempInstance.isConnected = False # closes infinite loop in watchTemp method
         
         bitmap = wx.StaticBitmap(self.stats, -1, size=(90,17))
@@ -347,13 +359,30 @@ class Evora(wx.Frame):
 
         self.takeImage.filterInstance.filterButton.Enable(boolean)
 
+    def onFilterConnect(self, event):
+        """
+        When 'Connect' is pressed in the filter sub-menu of file this will run the initialization process for the filter.
+        The server will will start the filter motor and then use the connect function
+        """
+        # send command on filter setup
+        
+        # lock the connect button up and unlock the disconnect        
+        pass
+
+    def onFilterListRefresh(self, event):
+        """
+        This will simply refresh the filter list so that the menu gets displayed correctly.  This is only used when
+        a filter the file "filter.txt" has been edited.
+        """
+        pass
+
     def joinThreads(self, threadKey, demonized=False):
         t = self.active_threads.pop(threadKey)
         if demonized:
             t.join(0)
         else:
             t.join(0)
-        print "Thread with key", threadKey, "is shutdown"
+        print("Thread with key", threadKey, "is shutdown")
 
 
 class ImageWindow(wx.Frame):
@@ -426,7 +455,7 @@ class ImageWindow(wx.Frame):
         self.panel.refresh()
 
     def onClose(self, event):
-        print "entered close"
+        print("entered close")
         self.parent.imageOpen = False
         self.panel.closeFig()
         self.Destroy()
@@ -603,7 +632,6 @@ class OtherParams(wx.Panel): # second tab; with other parameters like setting th
 
         ### Sub-sizers
 
-
         # Place items
         als.AddLinearSpacer(self.horzSizer, 20)
         self.horzSizer.Add(cc.Binning(self))
@@ -679,15 +707,15 @@ class EvoraForwarder(basic.LineReceiver):
         self._deferreds = {}
 
     def dataReceived(self, data):
-        print "Receieved:", data
+        print("Receieved:", data)
         
         gui = self.factory.gui
             
         gui.protocol = self
         gui.takeImage.exposureInstance.protocol = self
         gui.takeImage.tempInstance.protocol = self
+        gui.takeImage.filterInstance.protocol = self
         gui.scripting.scriptCommands.protocol = self
-
 
         if gui:
             val = gui.log.logInstance.logBox.GetValue()
@@ -749,7 +777,7 @@ class EvoraClient(protocol.ClientFactory):
         self.protocol = EvoraForwarder
 
     def clientConnectionLost(self, transport, reason):
-        print "connection Lost"
+        print("connection Lost")
         #reactor.stop()
 
     def clientConnectionFailed(self, transport, reason):
