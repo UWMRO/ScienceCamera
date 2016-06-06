@@ -1,6 +1,6 @@
-g
-r
-i
-V
-B
-Ha
+1 g
+2 r
+3 i
+4 V
+5 B 
+6 Ha
