@@ -162,7 +162,12 @@ def getLogString(command, prePost):
                 if(int(stats[0]) == 1):
                     return "Successfully homed..."
                 else:
-                    return "Failed to home try again"
+                    return "Failed to home, try again..."
+            if(key2 == 'move'):
+                if(int(stats[0]) == 1):
+                    return "Successfully moving filter give it a moment..."
+                else:
+                    return "Failed to move filter..."
 
     return None
 def timeStamp():
