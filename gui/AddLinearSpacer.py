@@ -1,13 +1,14 @@
 #!/usr/bin/python2
 
-import wx # get wxPython
+import wx  # get wxPython
 from astropy.io import fits
 import numpy as np
-from scipy import stats
 import threading
 import time
+from datetime import datetime
 
-def AddLinearSpacer(boxsizer, pixelSpacing) :
+
+def AddLinearSpacer(boxsizer, pixelSpacing):
     """
     A one-dimensional spacer along only the major axis for any BoxSizer
 
@@ -19,11 +20,13 @@ def AddLinearSpacer(boxsizer, pixelSpacing) :
     boxsizer.AddSpacer((..,..)) where you pass a 0 to the width or height to obtain the same
     results.
     """
+
     orientation = boxsizer.GetOrientation()
-    if   (orientation == wx.HORIZONTAL) :
-        boxsizer.Add( (pixelSpacing, 0) )
-    elif (orientation == wx.VERTICAL) :
-        boxsizer.Add( (0, pixelSpacing) )
+    if(orientation == wx.HORIZONTAL):
+        boxsizer.Add((pixelSpacing, 0))
+    elif(orientation == wx.VERTICAL):
+        boxsizer.Add((0, pixelSpacing))
+
 
 def isNumber(string):
     """
@@ -36,6 +39,7 @@ def isNumber(string):
         return True
     except ValueError:
         return False
+
 
 def isInt(string):
     """
@@ -52,29 +56,39 @@ def isInt(string):
 def getData(path):
     return fits.getdata(path)
 
+
 def calcStats(data):
     stats_list = []
     stats_list.append(min(data.flat))
     stats_list.append(max(data.flat))
     stats_list.append(np.mean(data.flat))
-    #stats_list.append(stats.mode(data.flat)[0][0])
     stats_list.append(np.median(data.flat))
-    
     return stats_list
+
+
+def timeStamp():
+    """
+    Pre: No arguments are needed to invoke this method.
+    Post: Returns a string with the current date and time.
+    """
+    time = datetime.today()
+    stamp = "[%s/%s/%s, " % (time.month, time.day, time.year)
+    stamp += "%s:%s:%s]:" % (time.hour, time.minute, time.second)
+    return stamp
+
 
 class SampleTimer(object):
     def __init__(self, timeLength):
-        self.end = timeLength + 0.24 # add an extra 0.24 for readout and shutter time
-        
-        self.tick = 10 * 10 ** -3 # tick is 10 milliseconds
+        self.end = timeLength + 0.24  # add an extra 0.24 for readout and shutter time
+        self.tick = 10 * 10 ** -3  # tick is 10 milliseconds
 
         self.stopTimer = False
 
         self.currentTick = 0
         self.totalTicks = self.end / self.tick
-        
+
         self.t = None
-        
+
     def timer(self):
         counter = 0
         while not self.stopTimer:
@@ -96,7 +110,7 @@ class SampleTimer(object):
     def stop(self):
         self.stopTimer = True
         self.t.join(0)
-                
+
     def start(self):
         self.stopTimer = False
         self.currentTick = 1

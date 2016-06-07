@@ -13,6 +13,7 @@ import numpy as np  # get NumPy
 import EnhancedStatusBar
 #import threading
 import thread
+import shutil
 #from FilterMotor import filtermotor
 
 #### Class that handles widgets related to exposure
@@ -24,20 +25,20 @@ class Exposure(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
-        self.protocol = None
-        self.parent = parent
-        self.active_threads = []
-        self.startTimer = 0
-        self.endTimer = 0
+        self.protocol = None  # gives access to the server protocol
+        self.parent = parent  # gives access to the higher classes
+        self.active_threads = []  # list of the acitve threading threads
+        self.startTimer = 0  # keeps track of the timer count in ints
+        self.endTimer = 0  # keeps track of the max timer count as an int
 
-        self.abort = False
+        self.abort = False  # tells you if the abort button is active
         self.realDeferal = None
-        self.seriesImageNumber = None # initialize a series image number
+        self.seriesImageNumber = None  # initialize a series image number
+        self.currentImage = None  # initializes to keep track of the current image name class wide
 
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
         self.horzSizer = wx.BoxSizer(wx.HORIZONTAL)
-
         #####
 
         ### Additional sub sizers
@@ -64,7 +65,6 @@ class Exposure(wx.Panel):
         #####
 
         ##### Line up smaller sub sizers
-
         als.AddLinearSpacer(self.exposeSizer, 15)
         self.exposeSizer.Add(self.expTime, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.exposeSizer, 15)
@@ -139,7 +139,7 @@ class Exposure(wx.Panel):
             dialog = wx.MessageDialog(None, "Exposure time not a number...will not expose.",
                                       "", wx.OK|wx.ICON_ERROR)
             dialog.ShowModal()
-            dialong.Destroy()
+            dialog.Destroy()
 
         if self.nameToSend is "":
             dialog = wx.MessageDialog(None,"No name was given...will not expose", "",
@@ -261,11 +261,11 @@ class Exposure(wx.Panel):
         # finish out gauge and then reset it
         self.parent.parent.parent.expGauge.SetValue(self.endTimer)
 
-        
+
         # get success;
         success = int(results[0]) # 1 for true 0 for false
         #print success
- 
+
         # at the end of the callback reset the gauge (signifies a reset for exposure)
         self.parent.parent.parent.expGauge.SetValue(0)
         self.startTimer = 0
@@ -280,7 +280,7 @@ class Exposure(wx.Panel):
             path = ""
             for i in filePath[:-1]:
                 path += i + "/"
-            
+
             print(path, name)
 
             # get data
@@ -289,6 +289,9 @@ class Exposure(wx.Panel):
 
             # change the gui with thread safety
             wx.CallAfter(self.safePlot, data, stats_list)
+
+            # copy file to different folder
+            self.copyImage(path, name)
         else:
             print("Successfully Aborted")
             pass
@@ -443,12 +446,11 @@ class Exposure(wx.Panel):
         self.parent.parent.parent.window.panel.updateScreenStats()
         self.parent.parent.parent.window.panel.refresh()
 
-
     def getAttributesToSend(self):
         # get binning type
         binning = self.parent.parent.parent.binning
 
-        # get exposure type 
+        # get exposure type
         exposeType = self.parent.typeInstance.exposeType.GetStringSelection()
         #print exposeType
         if exposeType == "Single":
@@ -463,7 +465,8 @@ class Exposure(wx.Panel):
 
         expNum = 1
 
-        name = " " + str(self.nameToSend)
+        #name = str(self.nameToSend)
+        self.currentImage = self.nameToSend
 
         #line = "expose" # this is given beforet the command is sent off
         line = str(exposeType)
@@ -473,6 +476,9 @@ class Exposure(wx.Panel):
         line += " " + str(binning)
     
         return line
+
+    def copyImage(self, path, serverImName):
+        shutil.copyfile(path + serverImName, path + self.currentImage)
 
     def onStop(self, event):
         """

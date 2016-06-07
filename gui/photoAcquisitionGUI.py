@@ -5,11 +5,6 @@ from __future__ import division
 from __future__ import absolute_import
 
 import wx
-import acquisitionClasses as ac
-import controlClasses as cc
-import scriptingClasses as sc
-import logClasses as lc
-import AddLinearSpacer as als
 import matplotlib
 matplotlib.use("WXAgg")
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
@@ -36,22 +31,30 @@ from twisted.internet import defer
 from twisted.internet import threads
 from twisted.protocols import basic
 
+import acquisitionClasses as ac
+import controlClasses as cc
+import scriptingClasses as sc
+import logClasses as lc
+import AddLinearSpacer as als
+
+
 ## Global Variables
 app = None
 
 ## Getting to parents (i.e. different classes)
 # Three parents will get to the Evora class and out of the notebook
 
+
 # Frame class.
 class Evora(wx.Frame):
 
     def __init__(self):
-        wx.Frame.__init__(self, None, -1, "Evora Acquisition GUI", size = (600, 450))
+        wx.Frame.__init__(self, None, -1, "Evora Acquisition GUI", size=(600, 450))
 
         self.protocol = None # client protocol
         self.connection = None
         self.connected = False
-        self.active_threads = {} # list of the active threads
+        self.active_threads = {}  # list of the active threads
         self.imageOpen = False # keep track of whether the image window is open
         self.window = None # holds the image window
         panel = wx.Panel(self)
@@ -94,7 +97,6 @@ class Evora(wx.Frame):
         binningSub.Append(1120, "1x1", "Set CCD readout binning", kind=wx.ITEM_RADIO)
         binningSub.Append(1121, "2x2", "Set CCD readout binning", kind=wx.ITEM_RADIO)
         binningSub.Check(id=1121, check=True)
-        
 
         cameraSub = wx.Menu()
         #cameraSub.Append(1133, "&Startup", "Start the camera")
@@ -110,7 +112,6 @@ class Evora(wx.Frame):
         fileMenu.AppendMenu(1002, "&Binning", binningSub)
         #fileMenu.AppendMenu(1003, "&Camera", cameraSub)
         fileMenu.Append(1000, "&Exit", "Quit from Evora")
-
 
         viewMenu = wx.Menu()
         viewMenu.Append(1200, "&Image", "Open Image Window")
@@ -167,7 +168,7 @@ class Evora(wx.Frame):
         #self.Bind(wx.EVT_CLOSE, self.onClose)
 
         #wx.EVT_CLOSE(self, lambda evt: reactor.stop())
-        
+
         self.disableButtons(True)
 
         # Add and set icon
@@ -177,10 +178,7 @@ class Evora(wx.Frame):
 
         panel.SetSizer(sizer)
         panel.Layout()
-
-
-
-        
+  
     ## Memory upon destruction seems to not release.  This could cause memory usage to increase
     ## with newly loaded images when using the evora camera.
     def openImage(self, event):
@@ -203,7 +201,7 @@ class Evora(wx.Frame):
             #reactor.stop()
     
     def quit(self):
-        print (msg)
+        #print (msg)
         if self.connected:
             self.connection.disconnect()
         self.Destroy()
@@ -216,7 +214,6 @@ class Evora(wx.Frame):
         """
         print("Help")
         
-
     def onRefresh(self, event):
         self.takeImage.filterInstance.refreshList()
         print ("hello")
@@ -233,8 +230,7 @@ class Evora(wx.Frame):
         print ("Connecting")
         #reactor.run()
         self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
-        
-        
+
     def onConnectCallback(self, msg):
         #msg = args[0]
         #thread = args[1]
@@ -244,11 +240,11 @@ class Evora(wx.Frame):
 
         # get the number of clients
         status = int(msg.split(",")[0])
-        
-        if(status == 20075): # camera is uninitialized
+
+        if(status == 20075):  # camera is uninitialized
             d = self.protocol.sendCommand("connect")
             d.addCallback(self.callStartup)
-        else: # if camera is already initialized then start server like regular
+        else:  # if camera is already initialized then start server like regular
             # start temperature thread
             t = threading.Thread(target=self.takeImage.tempInstance.watchTemp, args=(), name="temp thread")
             self.takeImage.tempInstance.isConnected = True # setups infinite loop in watchTemp method
@@ -289,7 +285,7 @@ class Evora(wx.Frame):
         print("Disconnecting")
         self.takeImage.tempInstance.isConnected = False # closes infinite loop in watchTemp method
         
-        bitmap = wx.StaticBitmap(self.stats, -1, size=(90,17))
+        bitmap = wx.StaticBitmap(self.stats, -1, size=(90, 17))
         self.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
         self.stats.SetStatusText("Current Temp:            ... C", 0)
         
@@ -315,9 +311,7 @@ class Evora(wx.Frame):
         d = self.protocol.sendCommand("connect")
         d.addCallback(self.callStartup)
     """
-    
-    
-    
+
     def onShutdown(self, event):
         if(self.protocol is not None):
             d = self.protocol.sendCommand("shutdown")
@@ -326,31 +320,29 @@ class Evora(wx.Frame):
 
     def callShutdown(self, msg):
         self.takeImage.tempInstance.isConnected = False
-        
-        bitmap = wx.StaticBitmap(self.stats, -1, size=(90,17))
+
+        bitmap = wx.StaticBitmap(self.stats, -1, size=(90, 17))
         self.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
         self.stats.SetStatusText("Current Temp:            ... C", 0)
-        
+
         self.joinThreads("temp", demonized=False)
         self.connection.disconnect()
         self.connected = False
         self.enableConnections(True, False, False)
 
-    
-
     def enableConnections(self, con, discon, shut):
         # get file menu
-        cameraSub = self.menuBar.GetMenu(1) # first index
+        cameraSub = self.menuBar.GetMenu(1)  # first index
         # get camera sub menu
         #cameraSub = [fileMenu.FindItemById(1130), fileMenu.FindItemById(1131)]
-        
+
         cameraSub.Enable(1130, con)
         cameraSub.Enable(1131, discon)
         cameraSub.Enable(1132, shut)
 
     def disableButtons(self, boolean):
         # Diable GUI functionality (expose, stop, cool, warmup, rotate to)
-        boolean = not boolean 
+        boolean = not boolean
         self.takeImage.exposureInstance.expButton.Enable(boolean)
         #self.takeImage.exposureInstance.stopExp.Enable(boolean)
         
