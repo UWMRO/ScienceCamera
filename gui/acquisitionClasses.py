@@ -478,7 +478,9 @@ class Exposure(wx.Panel):
         return line
 
     def copyImage(self, path, serverImName):
-        shutil.copyfile(path + serverImName, path + self.currentImage)
+        print("reached copy")
+        shutil.copyfile(path + serverImName, "/data/copydata/" + self.currentImage + ".fits")
+        print("copied to different folder")
 
     def onStop(self, event):
         """
