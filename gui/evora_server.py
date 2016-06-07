@@ -5,9 +5,9 @@ from __future__ import division
 from __future__ import absolute_import
 
 import sys
-sys.path.insert(0, '../include')
+#sys.path.insert(0, '../include')
 import andor
-sys.path.insert(0, '../gui')
+#sys.path.insert(0, '../gui')
 import numpy as np
 #import ctypes
 #import pyfits
@@ -21,9 +21,9 @@ from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
 
 # For filter controls
-sys.path.insert(0, '..')
-from FilterMotor import filtermotor
-sys.path.insert(0, 'gui')
+#sys.path.insert(0, '..')
+#from FilterMotor import filtermotor
+#sys.path.insert(0, 'gui')
 
 #import ProtoParser
 
@@ -33,6 +33,7 @@ sys.path.insert(0, 'gui')
 # Global Variables
 acquired = None
 t = None
+isAborted = None
 
 class EvoraServer(basic.LineReceiver):
     def connectionMade(self):
@@ -341,13 +342,14 @@ class Evora(object):
 
         #expTime, accTime, kTime = ctypes.c_float(), ctypes.c_float(), ctypes.c_float()
         #expTime, accTime, kTime = andor.GetAcquisitionTimings()
-        #print "Adjusted Exposure Time:", andor.GetAcquisitionTimings(expTime, accTime, kTime)
+        print("Adjusted Exposure Time:", andor.GetAcquisitionTimings())
         print('StartAcquisition:', andor.StartAcquisition())
 
         status = andor.GetStatus()
         print(status)
         while status[1] == andor.DRV_ACQUIRING:
             status = andor.GetStatus()
+            #print("Progress:", andor.GetAcquisitionProgress())
             
         print(status)
 
@@ -356,7 +358,7 @@ class Evora(object):
         print "Result of waiting:", acquired
         """
 
-        data = np.zeros(width/binning*height/binning, dtype='uint16')
+        data = np.zeros(width//binning*height//binning, dtype='uint16')
         print(data.shape)
         result = andor.GetAcquiredData16(data)
 
@@ -369,7 +371,7 @@ class Evora(object):
         print(result, 'success={}'.format(result == 20002))
         filename = None
         if success == 1:
-            data=data.reshape(width/binning,height/binning)
+            data=data.reshape(width//binning,height//binning)
             print(data.shape,data.dtype)
             hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
             filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
@@ -406,52 +408,42 @@ class Evora(object):
                 andor.SetShutter(1,2,0,0)
             print('SetExposureTime:', andor.SetExposureTime(itime)) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
             
-        data = np.zeros(width/binning*height/binning, dtype='uint16')
+        data = np.zeros(width//binning*height//binning, dtype='uint16')
         print('StartAcquisition:', andor.StartAcquisition())
 
         
         status = andor.GetStatus()
         print(status)
+        workingImNum = 1
         while(status[1]==andor.DRV_ACQUIRING):
-            #status = andor.GetStatus()
-            
-            #print status
-            #acquired = andor.WaitForAcquisitionTimeOut(int(itime))
-            #if acquired == andor.DRV_SUCCESS:
-            #    print acquired, 'success={}'.format(acquired == andor.DRV_SUCCESS)
-            #print acquired
-            acquired = andor.WaitForAcquisition()
+           
+            progress = andor.GetAcquisitionProgress()
+            currImNum = progress[2] # won't update until an acquisition is done
             status = andor.GetStatus()
-            #if(status[1] != andor.DRV_ACQUIRING):
-               #print status
-            #acquired = andor.GetAcquiredData16(data)
-            #print acquired, 'success={}'.format(acquired == andor.DRV_SUCCESS)
-            #acc, series = np.zeros((1,), dtype=np.int_), np.zeros((1,), dtype=np.int_)
-            #results = andor.GetAcquisitionProgress(acc, series)
-            #acquired = None
-            #results = andor.GetMostRecentImage16(data)
-            #if(results == andor.DRV_SUCCESS):
-            #    print results
-            if(status[1] == andor.DRV_ACQUIRING and acquired == andor.DRV_SUCCESS):
-                data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
+
+            if(status[1] == andor.DRV_ACQUIRING and currImNum == workingImNum):
+                print("Progress:", andor.GetAcquisitionProgress())
                 results = andor.GetMostRecentImage16(data) # store image data
                 print(results, 'success={}'.format(results == 20002)) # print if the results were successful
                 
                 if(results == andor.DRV_SUCCESS): # if the array filled store successfully
-                    data=data.reshape(width/binning,height/binning) # reshape into image
+                    data=data.reshape(width//binning,height//binning) # reshape into image
                     print(data.shape,data.dtype)
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
                     filename = time.strftime('/tmp/image_%Y%m%d_%H%M%S.fits') 
                     hdu.writeto(filename,clobber=True)
                     print("wrote: {}".format(filename))
-                    data = np.zeros(width/binning*height/binning, dtype='uint16')
+                    data = np.zeros(width//binning*height//binning, dtype='uint16')
 
                     protocol.sendData("realSent " + filename)
+                    workingImNum += 1
 
         return "real 1" # exits with 1 for success
         
 
     def seriesExposure(self, protocol, imType, itime, numexp=1, binning=1):
+        global isAborted
+        isAborted = False
         """
         This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
         """
@@ -475,21 +467,22 @@ class Evora(object):
             andor.SetShutter(1,0,5,5)
             print('SetExposureTime:', andor.SetExposureTime(itime)) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
 
+        data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
+
         print('StartAcquisition:', andor.StartAcquisition())
 
         status = andor.GetStatus()
-        print(status)
 
+        print(status)
         counter = 1
+        
         while(status[1]==andor.DRV_ACQUIRING and counter <= numexp):
             status = andor.GetStatus()
             
-            print(status)
-            acquired = andor.WaitForAcquisition()
+            progress = andor.GetAcquisitionProgress()
             status = andor.GetStatus()
 
-            if(status[1] == andor.DRV_ACQUIRING and acquired == andor.DRV_SUCCESS):
-                data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
+            if(status[1] == andor.DRV_ACQUIRING and progress[2] == counter):
                 results = andor.GetMostRecentImage16(data) # store image data
                 print(results, 'success={}'.format(results == 20002)) # print if the results were successful
                 
@@ -514,6 +507,8 @@ class Evora(object):
         """
         This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
         """
+        global isAborted
+        isAborted = False
         retval,width,height = andor.GetDetector()
         print('GetDetector:', retval,width,height)
 
@@ -540,26 +535,31 @@ class Evora(object):
         print('SetKineticTime:', andor.SetKineticCycleTime(accumCycleTime))
         print("SetTriggerMode:", andor.SetTriggerMode(0))
 
+        print("Timings:", andor.GetAcquisitionTimings())
+
         print('StartAcquisition:', andor.StartAcquisition())
 
         status = andor.GetStatus()
         print(status)
 
-        counter = 1
-        while(status[1]==andor.DRV_ACQUIRING and counter <= numexp):
-            status = andor.GetStatus()
-            
-            print(status)
-            acquired = andor.WaitForAcquisition()
-            status = andor.GetStatus()
+        imageAcquired = False
 
-            if(acquired == andor.DRV_SUCCESS):
-                data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
+        counter = 1
+        while(status[1] == andor.DRV_ACQUIRING):
+            status = andor.GetStatus()    
+            progress = andor.GetAcquisitionProgress()
+
+            runtime = 0
+            if(progress[2] == counter or (not isAborted and progress[2] == 0 and imageAcquired)):
+                runtime -= time.clock()
+                data = np.zeros(width//binning*height//binning, dtype='uint16') # reserve room for image
                 results = andor.GetMostRecentImage16(data) # store image data
                 print(results, 'success={}'.format(results == 20002)) # print if the results were successful
                 
+                print('image number:', progress[2])
+
                 if(results == andor.DRV_SUCCESS): # if the array filled store successfully
-                    data=data.reshape(width/binning,height/binning) # reshape into image
+                    data=data.reshape(width//binning,height//binning) # reshape into image
                     print(data.shape,data.dtype)
 
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
@@ -569,11 +569,22 @@ class Evora(object):
                     print("wrote: {}".format(filename))
                     
                     protocol.sendData("seriesSent " + str(counter)+","+str(itime)+","+filename)
-                
+                    
+                    if(counter == numexp):
+                        print("entered abort")
+                        isAborted = True
+                        
+    
+                    imageAcquired = True
                     counter += 1
-            print(andor.GetStatus())
+                runtime += time.clock()
+                print("Took %f seconds to write."%runtime)
+            #print(andor.GetStatus())
         return "series 1" # exits with 1 for success
 
+    def writeData(self):
+        pass
+        
 
     def realTimeExposure_test(self, protocol, imType, itime, binning=1): 
         """
@@ -651,7 +662,9 @@ class Evora(object):
         """
         This will abort the exposure and throw it out.
         """
-        print("Cancel Wait:", andor.CancelWait()) # if in series or real time exposure this is neccessary to release a locked thread
+        global isAborted
+        isAborted = True
+        self.isAbort = True
         print("Aborted:", andor.AbortAcquisition())
         return 'abort 1'
 	

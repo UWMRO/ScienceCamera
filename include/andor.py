@@ -313,12 +313,12 @@ def GetAcquiredFloatData(*args):
   return _andor.GetAcquiredFloatData(*args)
 GetAcquiredFloatData = _andor.GetAcquiredFloatData
 
-def GetAcquisitionProgress(*args):
-  return _andor.GetAcquisitionProgress(*args)
+def GetAcquisitionProgress():
+  return _andor.GetAcquisitionProgress()
 GetAcquisitionProgress = _andor.GetAcquisitionProgress
 
-def GetAcquisitionTimings(*args):
-  return _andor.GetAcquisitionTimings(*args)
+def GetAcquisitionTimings():
+  return _andor.GetAcquisitionTimings()
 GetAcquisitionTimings = _andor.GetAcquisitionTimings
 
 def GetAdjustedRingExposureTimes(*args):

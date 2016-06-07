@@ -26,6 +26,7 @@
 %apply float *OUTPUT {float * SensorTemp, float * TargetTemp, float * AmbientTemp, float * CoolerVolts};
 %apply long *OUTPUT {long * acc, long * series};
 %apply float *OUTPUT {float * exposure, float * accumulate, float * kinetic};
+%apply int *OUTPUT {long *acc, long *series}; // "%apply long" gives non-sense in python, this way gives good results
 
 %{
 #define SWIG_FILE_WITH_INIT
