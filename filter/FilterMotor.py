@@ -105,13 +105,16 @@ class FilterMotor(object):
 		print "Moving to filter position %d" % num
 		tpos = num*delta
 		self.moveMotor(tpos)			
-		return
+		return "move 1"
 
 	def motorStop(self):
 		self.motorPower(False)
 		return
 
 	def home(self): 
+                """
+                Return 1 for True and 0 for False
+                """
 		crossArr = [0]
 		pastHome = 0
 		previousPos = 0
@@ -157,9 +160,9 @@ class FilterMotor(object):
 		except:
 			self.dict["home"] = False
 			self.motorPower(False)
-			return False
+			return "home 0"  # returning a boolean has some issues when coming out client side
 		self.motorPower(False)
-		return True
+		return "home 1"  # returning a boolean has some issues when coming out client side
 
 if __name__ == "__main__":
 	p = FilterMotor()

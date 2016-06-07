@@ -40,6 +40,7 @@ import AddLinearSpacer as als
 
 ## Global Variables
 app = None
+port_dict = {}
 
 ## Getting to parents (i.e. different classes)
 # Three parents will get to the Evora class and out of the notebook
@@ -91,7 +92,9 @@ class Evora(wx.Frame):
         ## Sub menus
         filterSub = wx.Menu()
         filterSub.Append(1110, "&Connect", "Connect to the filter")
+        filterSub.Append(1112, "&Disconnect", "Disconnect from filter")
         filterSub.Append(1111, "&Refresh", "Refresh filter list")
+        filterSub.Enable(1112, False)
 
         binningSub = wx.Menu()
         binningSub.Append(1120, "1x1", "Set CCD readout binning", kind=wx.ITEM_RADIO)
@@ -138,16 +141,6 @@ class Evora(wx.Frame):
         self.expGauge = wx.Gauge(self.stats, id=1, range=100, size=(110, -1))
         self.stats.AddWidget(self.expGauge, pos=1, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
         
-        #self.bitmap = wx.StaticBitmap(self.stats, -1, wx.Bitmap("greenCirc.png"),size=(90, 17))
-        #self.bitmap.SetBitmap(wx.Bitmap('greenCirc.png'))
-        #tempText = wx.StaticText(self.stats, -1, label="50 C")
-        #self.stats.AddWidget(self.bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-        #self.stats.AddWidget(tempText, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN)
-
-
-
-        #self.takeImage.tempInstance.changeTemp(50, self.stats)
-
         # size panels
         sizer = wx.BoxSizer()
         sizer.Add(notebook, 1, wx.EXPAND)
@@ -164,6 +157,7 @@ class Evora(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onShutdown, id=1132)
         self.Bind(wx.EVT_MENU, self.onFilterConnect, id=1110)
         self.Bind(wx.EVT_MENU, self.onFilterListRefresh, id=1111)
+        self.Bind(wx.EVT_MENU, self.onFilterDisconnect, id=1112)
         #self.Bind(wx.EVT_MENU, self.onStartup, id=1133)
         #self.Bind(wx.EVT_CLOSE, self.onClose)
 
@@ -172,7 +166,6 @@ class Evora(wx.Frame):
         self.disableButtons(True)
 
         # Add and set icon
-        #logo = wx.StaticBitmap(None, -1, wx.Bitmap("evora_logo"))
         ico = wx.Icon("evora_logo_circ.ico", wx.BITMAP_TYPE_ICO)
         self.SetIcon(ico)
 
@@ -227,9 +220,13 @@ class Evora(wx.Frame):
         self.stats.SetStatusText("Binning Type: 2x2", 2)
 
     def onConnect(self, event):
+        global port_dict
         print ("Connecting")
         #reactor.run()
-        self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
+        #self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
+        # add filter connection
+        self.connection = port_dict['5502'] = reactor.connectTCP('localhost', 5502, EvoraClient(app.frame1))
+
 
     def onConnectCallback(self, msg):
         #msg = args[0]
@@ -277,9 +274,6 @@ class Evora(wx.Frame):
 
         #settings.done_ids.put(threading.current_thread().name)
         #signal.alarm(1)
-
-    
-
     
     def onDisconnect(self, event):
         print("Disconnecting")
@@ -349,7 +343,6 @@ class Evora(wx.Frame):
         self.takeImage.tempInstance.tempButton.Enable(boolean)
         self.takeImage.tempInstance.stopCool.Enable(boolean)
 
-        self.takeImage.filterInstance.filterButton.Enable(boolean)
 
     def onFilterConnect(self, event):
         """
@@ -357,9 +350,23 @@ class Evora(wx.Frame):
         The server will will start the filter motor and then use the connect function
         """
         # send command on filter setup
-        
-        # lock the connect button up and unlock the disconnect        
-        pass
+        port_dict['5503'] = reactor.connectTCP('192.168.1.30', 5503, FilterClient(app.frame1))
+        # lock the connect button up and unlock the disconnect
+        filterSub = self.menuBar.GetMenu(0)  # first index
+        filterSub.Enable(1110, False)
+        filterSub.Enable(1112, True)
+        self.takeImage.filterInstance.filterButton.Enable(True)
+        self.takeImage.filterInstance.homeButton.Enable(True)
+
+    def onFilterDisconnect(self, event):
+        connection = port_dict['5503']
+        connection.disconnect()
+        # lock the connect button up and unlock the disconnect
+        filterSub = self.menuBar.GetMenu(0)  # first index
+        filterSub.Enable(1110, True)
+        filterSub.Enable(1112, False)
+        self.takeImage.filterInstance.filterButton.Enable(False)
+        self.takeImage.filterInstance.homeButton.Enable(False)
 
     def onFilterListRefresh(self, event):
         """
@@ -775,6 +782,83 @@ class EvoraClient(protocol.ClientFactory):
     def clientConnectionFailed(self, transport, reason):
         reactor.stop()
 
+class FilterForwarder(basic.LineReceiver):
+    def __init__(self):
+        self.output = None
+        self._deferreds = {}
+        self.gui = None
+
+    def dataReceived(self, data):
+        print("Receieved on port 5503:", data)
+        
+            
+        self.gui.takeImage.filterInstance.protocol2 = self
+
+        if self.gui:
+            val = self.gui.log.logInstance.logBox.GetValue()
+            #print val
+            self.gui.log.logInstance.logBox.SetValue(val + data)
+            self.gui.log.logInstance.logBox.SetInsertionPointEnd()
+            #sep_data = data.split(" ")
+            #print sep_data
+        
+        # if there is more than one line that was sent and received 
+        sep_data = data.rsplit()  # split for multiple lines
+        size = len(sep_data) # size of sep_data will always be even (key followed by data pair)
+        for i in range(0, size, 2):
+            singular_sep_data = [sep_data[i], sep_data[i+1]]
+
+            #print singular_sep_data
+            if singular_sep_data[0] in self._deferreds:
+                self._deferreds.pop(singular_sep_data[0]).callback(singular_sep_data[1])
+        
+    def sendCommand(self, data):
+        self.sendLine(data)
+        d = self._deferreds[data.split(" ")[0]] = defer.Deferred()
+        return d
+
+    def connectionMade(self):
+        #self.output = self.factory.gui.log.logInstance.logBox
+        
+        ## Add a callback that will open up the rest of the gui when the camera is done setting up
+        #gui = self.factory.gui # get gui for adding the callback method
+        #d = defer.Deferred()
+        #d.addCallback(gui.onConnectCallback)
+        #self._deferreds["status"] = d
+        self.gui = self.factory.gui
+        self.gui.takeImage.filterInstance.protocol2 = self
+        print("connection made to filter")
+
+    def addDeferred(self, string):
+        """
+        This is used for creating deferred objects when expecting to receive data.
+        """
+        d = self._deferreds[string] = defer.Deferred()
+        return d
+
+    def removeDeferred(self, string):
+        """
+        Used to get rid of any trailing deferred obejcts (e.g. realSent after an abort)
+        """
+        if(string in self._deferreds):
+            self._deferreds.pop(string)
+
+    def connectionLost(self, reason):
+        ## Add a "callback" that will close down the gui functionality when camera connection is closed.
+        #gui = self.factory.gui
+        #gui.onDisconnectCallback()
+        pass
+
+class FilterClient(protocol.ClientFactory):
+    def __init__(self, gui):
+        self.gui = gui
+        self.protocol = FilterForwarder
+
+    def clientConnectionLost(self, transport, reason):
+        print("connection lost on port 5503")
+        
+    def clientConnectionFailed(self, transport, reason):
+        print("connection lost on port 5503")
 
 if __name__ == "__main__":
     #log.startLogging(sys.stdout)

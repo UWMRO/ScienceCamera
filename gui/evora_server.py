@@ -306,11 +306,6 @@ class Evora(object):
         print("GetNumberHSSpeeds:", andor.GetNumberHSSpeeds(channel, type))
         print("GetHSSpeed:", andor.GetHSSpeed(channel, type, index))
 
-    def writeData(self):
-        """
-        This will write all the necessary exposure files headers.
-        """
-        pass
 
     def abort(self):
         """
@@ -322,12 +317,38 @@ class Evora(object):
         print("Aborted:", andor.AbortAcquisition())
         return 'abort 1'
 
-    # Likely not a possibility.
-    def stop(self):
+    def getHeader(self, attributes):
         """
-        This will stop the exposure but read out where it stopped at, if possible.
+        Pre: Takes in a list of attributes: [imType, binning, itime]
+        Post: Returns an AstroPy header object to be used for writing to.
         """
-        pass
+        imType, binning, itime = attributes[0], attributes[1], attributes[2]
+        # make new fits header object
+        header = fits.Header()
+        ut_time = time.gmtime() # get UT time
+        dateObs = time.strftime("%Y-%m-%dT%H:%M:%S", ut_time)
+        ut_str = time.strftime("%H:%M:%S", ut_time)
+        header.append(card=("DATE-OBS", dateObs, "Time at start of exposure"))
+        header.append(card=("UT", ut_str, "UT time at start of exposure"))
+        header.append(card=("OBSERVAT", "mro", "per the iraf list"))
+        header.append(card=("IMAGETYP", imType))
+        header.append(card=("BINX", binning, "Horizontal Binning"))
+        header.append(card=("BINY", binning, "Vertical Binning"))
+        header.append(card=("EXPOSURE", itime, "Total exposure time"))
+        header.append(card=("ACQMODE", "Single Scan", "Acquisition mode"))
+        header.append(card=("READMODE", "Image", "Readout mode"))
+        header.append(card=("INSTRUME", "evora", "Instrument used for imaging"))
+        header.append(card=("LATITUDE", 120.744466667, "Decimal degrees of MRO latitude"))
+        header.append(card=("LONGITUD", 46.9528, "Decimal degress of MRO longitude"))
+
+        # get readout time and temp
+        temp = andor.GetTemperatureStatus()[1]
+        readTime = andor.GetAcquisitionTimings()[1] - itime
+        header.append(card=("TEMP", temp, "Temperature"))
+        header.append(card=("READTIME", readTime, "Pixel readout time"))
+
+        return header
+
 
     def expose(self, imType=None, expnum=None, itime=2, binning=1):
 
@@ -364,8 +385,11 @@ class Evora(object):
         print("Adjusted Exposure Time:", andor.GetAcquisitionTimings())
         # set Readout speeds
         #print("SetVSSpeed:", andor.SetVSSpeed(3))
-        print("SetHSSpeed:", andor.SetHSSpeed(0, 1))
+        print("SetHSSpeed:", andor.SetHSSpeed(0, 3))
 
+        attributes = [imType, binning, itime]
+        header = self.getHeader(attributes)
+        """
         # make new fits header object
         header = fits.Header()
         ut_time = time.gmtime() # get UT time
@@ -389,6 +413,7 @@ class Evora(object):
         readTime = andor.GetAcquisitionTimings()[1] - itime
         header.append(card=("TEMP", temp, "Temperature"))
         header.append(card=("READTIME", readTime, "Pixel readout time"))
+        """
 
         print('StartAcquisition:', andor.StartAcquisition())
 
@@ -428,6 +453,7 @@ class Evora(object):
         #queue.put("expose " + filename)
         return "expose " + str(success) + ","+str(filename) + "," + str(itime)
 
+
     def realTimeExposure(self, protocol, imType, itime, binning=1): 
         """
         This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
@@ -457,13 +483,15 @@ class Evora(object):
             print('SetExposureTime:', andor.SetExposureTime(itime)) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
             
         data = np.zeros(width//binning*height//binning, dtype='uint16')
-        print("SetHSSpeed:", andor.SetHSSpeed(0, 1))
+        print("SetHSSpeed:", andor.SetHSSpeed(0, 3))
         print('StartAcquisition:', andor.StartAcquisition())
 
         
         status = andor.GetStatus()
         print(status)
         workingImNum = 1
+        start = time.time()
+        end = 0
         while(status[1]==andor.DRV_ACQUIRING):
            
             progress = andor.GetAcquisitionProgress()
@@ -487,6 +515,9 @@ class Evora(object):
 
                     protocol.sendData("realSent " + filename)
                     workingImNum += 1
+                    end = time.time()
+                    print("Took %f seconds" % (end-start))
+                    start = time.time()
 
         return "real 1" # exits with 1 for success
 
@@ -588,16 +619,11 @@ class Evora(object):
 
         print("Timings:", andor.GetAcquisitionTimings())
 
-        print("SetHSSpeed:", andor.SetHSSpeed(0, 1))
+        print("SetHSSpeed:", andor.SetHSSpeed(0, 3))
 
         # write headers
-        header = fits.Header()
-        ut_time = time.gmtime() # get UT time
-        dateObs = time.strftime("%Y-%m-%dT%H:%M:%S", ut_time)
-        ut_str = time.strftime("%H:%M:%S", ut_time)
-        header.append(card=("DATE-OBS", dateObs, "Time at start of exposure"))
-        header.append(card=("UT", ut_str, "UT time at start of exposure"))
-
+        attributes = [imType, binning, itime]
+        header = self.getHeader(attributes)
 
         print('StartAcquisition:', andor.StartAcquisition())
 
@@ -608,42 +634,22 @@ class Evora(object):
 
         counter = 1
         while(status[1] == andor.DRV_ACQUIRING):
-            status = andor.GetStatus()    
+            status = andor.GetStatus()
             progress = andor.GetAcquisitionProgress()
 
             runtime = 0
             if(progress[2] == counter or (not isAborted and progress[2] == 0 and imageAcquired)):
                 runtime -= time.clock()
-                data = np.zeros(width//binning*height//binning, dtype='uint16') # reserve room for image
-                results = andor.GetMostRecentImage16(data) # store image data
-                print(results, 'success={}'.format(results == 20002)) # print if the results were successful
-                
+                data = np.zeros(width//binning*height//binning, dtype='uint16')  # reserve room for image
+                results = andor.GetMostRecentImage16(data)  # store image data
+                print(results, 'success={}'.format(results == 20002))  # print if the results were successful
                 print('image number:', progress[2])
 
-                if(results == andor.DRV_SUCCESS): # if the array filled store successfully
-                    data=data.reshape(width//binning,height//binning) # reshape into image
+                if(results == andor.DRV_SUCCESS):  # if the array filled store successfully
+                    data=data.reshape(width//binning,height//binning)  # reshape into image
                     print(data.shape,data.dtype)
                     
-                    # write static headers
-                    header.append(card=("OBSERVAT", "mro", "per the iraf list"))
-                    header.append(card=("IMAGETYP", imType))
-                    header.append(card=("BINX", binning, "Horizontal Binning"))
-                    header.append(card=("BINY", binning, "Vertical Binning"))
-                    header.append(card=("EXPOSURE", itime, "Total exposure time"))
-                    header.append(card=("ACQMODE", "Single Scan", "Acquisition mode"))
-                    header.append(card=("READMODE", "Image", "Readout mode"))
-                    header.append(card=("INSTRUME", "evora", "Instrument used for imaging"))
-                    header.append(card=("LATITUDE", 120.744466667, "Decimal degrees of MRO latitude"))
-                    header.append(card=("LONGITUD", 46.9528, "Decimal degress of MRO longitude"))
-
-                    # get readout time and temp
-                    temp = andor.GetTemperatureStatus()[1]
-                    readTime = andor.GetAcquisitionTimings()[1] - itime
-                    header.append(card=("TEMP", temp, "Temperature"))
-                    header.append(card=("READTIME", readTime, "Pixel readout time"))
-
-
-                    hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
+                    hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True, header=header)
                     filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
                     hdu.writeto(filename,clobber=True)
 
@@ -651,18 +657,12 @@ class Evora(object):
                     
                     protocol.sendData("seriesSent"+str(counter)+" "+str(counter)+","+str(itime)+","+filename)
                     # make a new header and write time to it for new exposure.
-                    header = fits.Header()
-                    ut_time = time.gmtime() # get UT time
-                    dateObs = time.strftime("%Y-%m-%dT%H:%M:%S", ut_time)
-                    ut_str = time.strftime("%H:%M:%S", ut_time)
-                    header.append(card=("DATE-OBS", dateObs, "Time at start of exposure"))
-                    header.append(card=("UT", ut_str, "UT time at start of exposure"))
+                    header = self.getHeader(attributes)
 
                     if(counter == numexp):
                         print("entered abort")
                         isAborted = True
-                        
-    
+
                     imageAcquired = True
                     counter += 1
                 runtime += time.clock()
