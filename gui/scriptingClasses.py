@@ -76,7 +76,7 @@ class ScriptCommands(wx.Panel):
 
         ## Bindings
         self.Bind(wx.EVT_TEXT, self.getCommand, id=3003)
-        self.Bind(wx.EVT_TEXT_ENTER, self.onOk, id=3003)
+        #self.Bind(wx.EVT_TEXT_ENTER, self.onOk, id=3003)
         self.Bind(wx.EVT_BUTTON, self.onOk, id=3001)
         self.Bind(wx.EVT_BUTTON, self.onUpload, id=3002)
         ##
@@ -86,6 +86,7 @@ class ScriptCommands(wx.Panel):
 
     def getCommand(self, event):
         self.command = self.commandBox.GetValue()
+        self.button.SetDefault()
 
     def onOk(self, event):
         """
@@ -272,7 +273,7 @@ class ScriptCommands(wx.Panel):
             dialog = wx.MessageDialog(None, runList, "", wx.OK | wx.ICON_ERROR)
             dialog.ShowModal()
             dialog.Destroy()
-        pass
+        self.commandBox.SetFocus()
 
 
     def parseCommand(self, command):
@@ -343,13 +344,19 @@ class ScriptCommands(wx.Panel):
                                     argDict[arg2[0]] = arg2[1]
 
                                     if(als.isInt(argDict['number'])):
-                                        # final stop; everything has been checked so now we build up the list to return
-                                        runList.append('series')
-                                        runList.append(subcommand)
-                                        runList.append(int(argDict['number']))
-                                        runList.append(argDict['basename'])
-                                        print("The specified number of exposures is", float(argDict['number']))
-                                        return runList  # [series, bias, number, basename]
+                                        if(int(argDict['number']) > 0):
+                                            if(argDict['basename'].strip() is not ""):
+                                                # final stop; everything has been checked so now we build up the list to return
+                                                runList.append('series')
+                                                runList.append(subcommand)
+                                                runList.append(int(argDict['number']))
+                                                runList.append(argDict['basename'])
+                                                print("The specified number of exposures is", float(argDict['number']))
+                                                return runList  # [series, bias, number, basename]
+                                            else:
+                                                return "ERROR: basename specified is empty..."
+                                        else:
+                                            return "ERROR: number of exposures needs to be above 0..."
                                     else:
                                         return "ERROR: specified number of exposures is not number..."
                                 else:
@@ -384,14 +391,20 @@ class ScriptCommands(wx.Panel):
 
                                     if(als.isNumber(argDict['time']) and als.isInt(argDict['number'])):
                                         # final stop; everything has been checked so now we build up the list to return
-                                        runList.append('series')
-                                        runList.append(subcommand)
-                                        runList.append(int(argDict['number']))
-                                        runList.append(float(argDict['time']))
-                                        runList.append(argDict['basename'])
-                                        print("The specified time is", float(argDict['time']))
-                                        print("The specified number of exposures is", float(argDict['number']))
-                                        return runList  # [series, dark/flat/object, number, time, basename]
+                                        if(float(argDict['time']) >= 0 or int(argDict['number']) > 0):
+                                            if(argDict['basename'].strip() is not ""):
+                                                runList.append('series')
+                                                runList.append(subcommand)
+                                                runList.append(int(argDict['number']))
+                                                runList.append(float(argDict['time']))
+                                                runList.append(argDict['basename'])
+                                                print("The specified time is", float(argDict['time']))
+                                                print("The specified number of exposures is", float(argDict['number']))
+                                                return runList  # [series, dark/flat/object, number, time, basename]
+                                            else:
+                                                return "ERROR: specified basename is empty..."
+                                        else:
+                                            return "ERROR: specified time is negative or the number of images is not 1 or more..."
 
                                     else:
                                         return "ERROR: specified time and/or number of exposures not a number..."
@@ -518,15 +531,6 @@ class ScriptCommands(wx.Panel):
                         runList.append(command)
                         runList.append(subcommand)
                         return runList
-                        """
-                        if(subcommand == 'expose'):
-                            return runList
-                        if(subcommand == 'set'):
-                            
-                            return "What are the set options?"
-                        if(subcommand == 'filter'):
-                            return "What are the filter options?"
-                        """
                     else:
                         return "ERROR: %s is not a recognized subcommand..." % subcommand
             else:

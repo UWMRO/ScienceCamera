@@ -241,7 +241,6 @@ class Exposure(wx.Panel):
     def expose_callback_thread(self, msg):
         thread.start_new_thread(self.exposeCallback, (msg,))
 
-
     def exposeCallback(self, msg):
         ### May need to thread to a different method if to slow
         results = msg.split(",")
@@ -263,7 +262,7 @@ class Exposure(wx.Panel):
 
 
         # get success;
-        success = int(results[0]) # 1 for true 0 for false
+        success = int(results[0])  # 1 for true 0 for false
         #print success
 
         # at the end of the callback reset the gauge (signifies a reset for exposure)
@@ -319,13 +318,10 @@ class Exposure(wx.Panel):
             # add a new deffered object
             d = self.protocol.addDeferred("realSent")
             d.addCallback(self.displayRealImage_thread)
-            
-            
+
             if(self.timer.IsRunning()):
                 self.timer.Stop()
-            
             self.parent.parent.parent.expGauge.SetValue(self.endTimer)
-            
 
             # get stats
             data = als.getData(path)
@@ -333,19 +329,18 @@ class Exposure(wx.Panel):
             # change the gui with thread safety
             wx.CallAfter(self.safePlot, data, stats_list)
 
-            self.parent.parent.parent.expGauge.SetValue(0) 
+            self.parent.parent.parent.expGauge.SetValue(0)
             self.startTimer = 0
 
             thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
-
 
     def displayRealImage_callback_thread(self, msg):
         print("From real image callback thread:", repr(msg))
         msg = msg.rstrip()
         thread.start_new_thread(self.displayRealImage_callback, (msg,))
-        
+
     def displayRealImage_callback(self, msg):
-        path = msg # path to image (/tmp/image_date.fits)
+        path = msg  # path to image (/tmp/image_date.fits)
 
         if(msg != "None"):
                         # get data
@@ -365,7 +360,7 @@ class Exposure(wx.Panel):
 
     def displaySeriesImage(self, msg):
         msg = msg.split(",")
-        
+
         imNum = int(msg[0])
         print(type(imNum))
         time = float(msg[1])
@@ -377,13 +372,11 @@ class Exposure(wx.Panel):
             # add a new deffered object
             d = self.protocol.addDeferred("seriesSent")
             d.addCallback(self.displaySeriesImage_thread)
-            
-            
+
             if(self.timer.IsRunning()):
                 self.timer.Stop()
-            
+
             self.parent.parent.parent.expGauge.SetValue(self.endTimer)
-            
 
             # get stats
             data = als.getData(path)
@@ -391,40 +384,44 @@ class Exposure(wx.Panel):
             # change the gui with thread safety
             wx.CallAfter(self.safePlot, data, stats_list)
 
-            self.parent.parent.parent.expGauge.SetValue(0) 
+            # copy image over (counter looks like "_XXX.fits")
+            if(self.checkForImageCounter(self.currentImage)):
+                self.currentImage += "_001"
+            else:
+                self.iterateImageCounter(self.currentImage)
+            print(self.iterateImageCounter)
+
+            self.parent.parent.parent.expGauge.SetValue(0)
             self.startTimer = 0
 
             if(self.seriesImageNumber != None):
                 if(imNum < int(self.seriesImageNumber)):
                     thread.start_new_thread(self.exposeTimer, (time,))
 
-
     def seriesCallback(self, msg):
         self.protocol.removeDeferred("seriesSent")
-        # reset series image number 
+        # reset series image number
         self.seriesImageNumber = None
-        
+
         self.abort = False
         self.expButton.Enable(True)
         if(self.stopExp.IsEnabled()):
             self.stopExp.Enable(False)
         # stop timer if running
         if(self.timer.IsRunning()):
-            self.timer.Stop()   
+            self.timer.Stop()
 
         # finish out the gauge
         self.parent.parent.parent.expGauge.SetValue(self.endTimer)
-            
+
         # restart gauge and the timer count
         self.parent.parent.parent.expGauge.SetValue(0)
         self.startTimer = 0
 
-
         print("Completed real time series with exit:", msg)
 
-
     def abort_callback(self, msg):
-        self.parent.parent.parent.expGauge.SetValue(0) # redundancy to clear the exposure gauge
+        self.parent.parent.parent.expGauge.SetValue(0)  # redundancy to clear the exposure gauge
         print("Aborted", msg)
 
     def openData(self, path, name):
@@ -474,13 +471,55 @@ class Exposure(wx.Panel):
         line += " " + str(expNum) # This is the exposure number.  Should have dialog come up for when set to series to take in the number of exposures 
         line += " " + str(self.timeToSend)
         line += " " + str(binning)
-    
+
         return line
 
     def copyImage(self, path, serverImName):
-        print("reached copy")
+        """
+        Pre: Takes in the diretory path to the original image file name as "path" as well as the 
+             name of the orignal image as serverImName as strings.
+        Post: The orignally created image is copied into a hard coded directory with the global
+              current image name.  In the case of series images this current image name will be iterated.
+              Returns nothing.
+        """
         shutil.copyfile(path + serverImName, "/data/copydata/" + self.currentImage + ".fits")
-        print("copied to different folder")
+
+    def checkForImageCounter(self, name):
+        """
+        Note: This method is only ever entered if there actually is a name as well as there will never
+              be a .fits at the end.
+        Pre: Takes in an image name as a string and sees if the standard iterator is on the end of the image
+             name.
+        Post: Returns a boolean of whether the standard iterator is on the end of the image name.  That
+              standard format follows like *_XXX.fits where XXX goes from 001 an up.
+        """
+        if("_" in name):
+            name.split("_")
+            if(als.isInt(name[-1])):
+                return True
+            else:
+                return False            
+        else:
+            return False
+
+    def iterateImageCounter(self, name):
+        """
+        Note: This method is only invoked if the current image name has been checked to have a counter.
+        Pre: Takes in an image name with a counter.
+        Post: Gets the counter and iterates it, and then edits self.currentImage to have an iterated count string 
+              in the standard format.
+        """
+        temp = name.split('_')
+        count = int(name[-1])
+        count += 1
+        if(count < 10):
+            temp[-1] = "00" + str(count)
+        elif(count < 100):
+            temp[-1] = "0" + str(count)
+        else:
+            temp[-1] = str(count)
+        self.currentImage = "_".join(join[:])
+        
 
     def onStop(self, event):
         """
