@@ -401,7 +401,7 @@ class Exposure(wx.Panel):
     def seriesCallback(self, msg):
         self.protocol.removeDeferred("seriesSent")
         # reset series image number
-        self.seriesImageNumber = None
+        #self.seriesImageNumber = None
 
         self.abort = False
         self.expButton.Enable(True)
