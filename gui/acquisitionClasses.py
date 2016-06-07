@@ -365,9 +365,16 @@ class Exposure(wx.Panel):
         print(type(imNum))
         time = float(msg[1])
         path = msg[2]
+
+        fullPath = path.split("/")
+        name = fullPath[-1].rstrip()
+        directory = ""
+        for i in fullPath[:-1]:
+            directory += i + "/"
+
         print("Got:", msg)
         # no abort then display the image
-        if(self.abort and imNum <= int(self.seriesImageNumber)):
+        if(imNum <= int(self.seriesImageNumber)):
             print("Entered to display series image")
             # add a new deffered object
             d = self.protocol.addDeferred("seriesSent")
@@ -382,14 +389,19 @@ class Exposure(wx.Panel):
             data = als.getData(path)
             stats_list = als.calcStats(data)
             # change the gui with thread safety
-            wx.CallAfter(self.safePlot, data, stats_list)
+            #wx.CallAfter(self.safePlot, data, stats_list)
 
             # copy image over (counter looks like "_XXX.fits")
-            if(self.checkForImageCounter(self.currentImage)):
+            print("current image name:", self.currentImage)
+            print(self.checkForImageCounter(self.currentImage))
+            if(not self.checkForImageCounter(self.currentImage)):
                 self.currentImage += "_001"
+                print("entered")
             else:
                 self.iterateImageCounter(self.currentImage)
-            print(self.iterateImageCounter)
+            #print(self.iterateImageCounter)
+
+            self.copyImage(directory, name)
 
             self.parent.parent.parent.expGauge.SetValue(0)
             self.startTimer = 0
@@ -518,7 +530,8 @@ class Exposure(wx.Panel):
             temp[-1] = "0" + str(count)
         else:
             temp[-1] = str(count)
-        self.currentImage = "_".join(join[:])
+        self.currentImage = "_".join(temp[:])
+        print("Iterated to: " + self.currentImage)
         
 
     def onStop(self, event):
