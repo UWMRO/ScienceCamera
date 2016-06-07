@@ -374,7 +374,7 @@ class Exposure(wx.Panel):
 
         print("Got:", msg)
         # no abort then display the image
-        if(self.abort and imNum <= int(self.seriesImageNumber)):
+        if(imNum <= int(self.seriesImageNumber)):
             print("Entered to display series image")
             # add a new deffered object
             d = self.protocol.addDeferred("seriesSent")
@@ -389,7 +389,7 @@ class Exposure(wx.Panel):
             data = als.getData(path)
             stats_list = als.calcStats(data)
             # change the gui with thread safety
-            wx.CallAfter(self.safePlot, data, stats_list)
+            #wx.CallAfter(self.safePlot, data, stats_list)
 
             # copy image over (counter looks like "_XXX.fits")
             print("current image name:", self.currentImage)
