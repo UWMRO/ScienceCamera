@@ -115,6 +115,7 @@ class ScriptCommands(wx.Panel):
         Pre: Pass in a message to be logged.
         Post: Sends log message to status box as well as logs to file.
         """
+        print("logging from scripting class") 
         self.sendToStatus(logmsg)
 
     def executeCommand(self, runList):

@@ -385,7 +385,7 @@ class Exposure(wx.Panel):
             data = als.getData(path)
             stats_list = als.calcStats(data)
             # change the gui with thread safety
-            wx.CallAfter(self.safePlot, data, stats_list)
+            #wx.CallAfter(self.safePlot, data, stats_list)
 
             # copy image over (counter looks like "_XXX.fits")
             print("current image name:", self.currentImage)
@@ -438,6 +438,8 @@ class Exposure(wx.Panel):
 
     def abort_callback(self, msg):
         self.parent.parent.parent.expGauge.SetValue(0)  # redundancy to clear the exposure gauge
+        logstr = "aborted acquisitioning"
+        self.log(self.logFunction, logstr)
         print("Aborted", msg)
 
     def openData(self, path, name):
@@ -490,7 +492,8 @@ class Exposure(wx.Panel):
 
         return line
 
-    def log(logfunc, logmsg):
+    def log(self, logfunc, logmsg):
+        print("entered log")
         logfunc(logmsg)
 
     def copyImage(self, path, serverImName):
