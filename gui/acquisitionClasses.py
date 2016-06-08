@@ -412,10 +412,16 @@ class Exposure(wx.Panel):
                     thread.start_new_thread(self.exposeTimer, (time,))
 
     def seriesCallback(self, msg):
-        self.protocol.removeDeferred("seriesSent")
+        msg = msg.split(",")
+        exitNumber = int(msg[1])  # server will send which count the series loop ended on
+        if(exitNumber == int(self.seriesImageNumber)):
+            for i in range(exitNumber, int(self.seriesImageNumber) + 1):
+                key = "seriesSent" + str(i)
+                self.protocol.removeDeferred(key)
         # reset series image number
         #self.seriesImageNumber = None
-
+        print(self.protocol._deferreds)
+        
         self.abort = False
         self.expButton.Enable(True)
         if(self.stopExp.IsEnabled()):

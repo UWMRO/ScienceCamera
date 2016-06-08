@@ -185,84 +185,83 @@ class Evora(object):
         print('Status:', state)
 
         print('SetAcquisitionMode:', andor.SetAcquisitionMode(1))
-        
+
         print('SetShutter:', andor.SetShutter(1,0,50,50))
 
         # make sure cooling is off when it first starts
         print('SetTemperature:', andor.SetTemperature(0))
-	print('SetFan', andor.SetFanMode(0))
-	print('SetCooler', andor.CoolerOFF())
+        print('SetFan', andor.SetFanMode(0))
+        print('SetCooler', andor.CoolerOFF())
 
-	
-	return "connect " + str(init)
+        return "connect " + str(init)
 
     def getTEC(self):
         # index on [result[0] - andor.DRV_TEMPERATURE_OFF]
         coolerStatusNames = ('Off', 'NotStabilized', 'Stabilized',
-                         'NotReached', 'OutOfRange', 'NotSupported',
-                         'WasStableNowDrifting')
+                             'NotReached', 'OutOfRange', 'NotSupported',
+                             'WasStableNowDrifting')
 
         # 20037 is NotReached
         # 20035 is NotStabalized
         # 20036 is Stabalized
-        # 20034 is Off  
+        # 20034 is Off
 
-        result = andor.GetTemperatureF() 
-	res = coolerStatusNames[result[0] - andor.DRV_TEMPERATURE_OFF]
+        result = andor.GetTemperatureF()
+        res = coolerStatusNames[result[0] - andor.DRV_TEMPERATURE_OFF]
         print(coolerStatusNames[result[0] - andor.DRV_TEMPERATURE_OFF], result[1])
         return_res = "getTEC " + str(result[0]) + "," + str(result[1])
         return return_res
 
-    def setTEC(self,setPoint=None):
+    def setTEC(self, setPoint=None):
         result = self.getTEC().split(" ")[1].split(",")
         result = [int(result[0]), float(result[1])]
         print(result)
 
-	print(setPoint)
+        print(setPoint)
 
         if setPoint is not None:
             if result[0] == andor.DRV_TEMPERATURE_OFF:
                 andor.CoolerON()
             print(andor.SetTemperature(int(setPoint)))
             self.getTEC()
-	return "setTEC " + str(setPoint)
+        return "setTEC " + str(setPoint)
 
     def warmup(self):
 	"""
-	Pre: Used to warmup camera.
-	Post: Sets the temperature to 0 and turns the fan to 0 then turns the cooler off and 
-	returns 1 that everything worked.
-	"""
+        Pre: Used to warmup camera.
+        Post: Sets the temperature to 0 and turns the fan to 0 then turns the cooler off and
+        returns 1 that everything worked.
+        """
         setTemp = andor.SetTemperature(0)
-	setFan = andor.SetFanMode(0)
-	setCooler = andor.CoolerOFF()
-        
+        setFan = andor.SetFanMode(0)
+        setCooler = andor.CoolerOFF()
+
         results = 1
         if(setFan != andor.DRV_SUCCESS or setCooler != andor.DRV_SUCCESS):
             results = 0
-	return "warmup " + str(results)
+        return "warmup " + str(results)
 
     def getTemp(self):
         # 20037 is NotReached
         # 20035 is NotStabalized
         # 20036 is Stabalized
-        # 20034 is Off  
+        # 20034 is Off
         result = andor.GetTemperatureStatus()
         mode = andor.GetTemperatureF()
         txt = "" + str(mode[0])
-	print(result)
-	for e in result:
-		txt = txt+","+str(e)
+        print(result)
+        for e in result:
+            txt = txt+","+str(e)
         return "temp " + txt
 
     def shutdown(self):
-	self.warmup()
-	res = self.getTemp()
-	while res[1] < int(0):
-		time.sleep(5)
-		res = self.getTemp()
-		print('waiting: %s' % str(res[1]))
-	print('closing down camera connection')
+        self.warmup()
+        res = self.getTemp()
+        while res[1] < int(0):
+            time.sleep(5)
+            res = self.getTemp()
+            print('waiting: %s' % str(res[1]))
+        print('closing down camera connection')
         andor.ShutDown()
         return "shutdown 1"
 
@@ -286,12 +285,35 @@ class Evora(object):
     def getTimings(self):
         #retval, width, height = andor.GetDetector()
         #print retval, width, height
-        expTime, accTime, kTime = 1, 0, 0
-        expTime,accTime,kTime = andor.GetAcquisitionTimings()
-        print(expTime,accTime,kTime)
+        expTime, accTime, kTime = andor.GetAcquisitionTimings()
+        print(expTime, accTime, kTime)
 
         return "timings"
-            
+
+
+    def writeData(self):
+        """
+        This will write all the necessary exposure files headers.
+        """
+        pass
+
+    def abort(self):
+        """
+        This will abort the exposure and throw it out.
+        """
+        global isAborted
+        isAborted = True
+        self.isAbort = True
+        print("Aborted:", andor.AbortAcquisition())
+        return 'abort 1'
+
+    # Likely not a possibility.
+    def stop(self):
+        """
+        This will stop the exposure but read out where it stopped at, if possible.
+        """
+        pass
+
     def expose(self, imType=None, expnum=None, itime=2, binning=1):
 
         if expnum is None:
@@ -303,7 +325,7 @@ class Evora(object):
         if imType is None: # if the image type is not specified it defaults to object
             imType = "object"
 
-        retval,width,height = andor.GetDetector()
+        retval, width, height = andor.GetDetector()
         print('GetDetector:', retval,width,height)
         # print 'SetImage:', andor.SetImage(1,1,1,width,1,height)
         print('SetReadMode:', andor.SetReadMode(4))
@@ -360,7 +382,7 @@ class Evora(object):
             hdu.writeto(filename,clobber=True)
             print("wrote: {}".format(filename))
         #queue.put("expose " + filename)
-	return "expose " + str(success) + ","+str(filename)
+        return "expose " + str(success) + ","+str(filename)
 
     def realTimeExposure(self, protocol, imType, itime, binning=1): 
         """
@@ -422,7 +444,6 @@ class Evora(object):
 
         return "real 1" # exits with 1 for success
         
-
     def seriesExposure(self, protocol, imType, itime, numexp=1, binning=1):
         global isAborted
         isAborted = False
@@ -482,7 +503,7 @@ class Evora(object):
 
                 counter += 1
         print("Aborting", andor.AbortAcquisition())
-        return "series 1" # exits with 1 for success
+        return "series 1,"+str(counter) # exits with 1 for success
 
 
     def kseriesExposure(self, protocol, imType, itime, numexp=1, binning=1, numAccum=1, accumCycleTime=0, kCycleTime=0):
@@ -562,106 +583,10 @@ class Evora(object):
                 runtime += time.clock()
                 print("Took %f seconds to write."%runtime)
             #print(andor.GetStatus())
-        return "series 1" # exits with 1 for success
-
-    def writeData(self):
-        pass
-        
-
-    def realTimeExposure_test(self, protocol, imType, itime, binning=1): 
-        """
-        This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
-        """
-      
-        retval,width,height = andor.GetDetector()
-        print('GetDetector:', retval,width,height)
-
-        print("SetAcquisitionMode:", andor.SetAcquisitionMode(5))
-        print('SetReadMode:', andor.SetReadMode(4))
-
-        print('SetImage:', andor.SetImage(binning,binning,1,width,1,height))
-        print('GetDetector (again):', andor.GetDetector())
-
-        print('SetExposureTime:', andor.SetExposureTime(itime))
-        print('SetKineticTime:', andor.SetKineticCycleTime(0))
+        return "series 1,"+str(counter) # exits with 1 for success
 
 
-        if(imType == "bias"):
-            andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
-            print('SetExposureTime:', andor.SetExposureTime(0))
-        else:
-            andor.SetShutter(1,0,5,5)
-            print('SetExposureTime:', andor.SetExposureTime(itime)) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
-        #trigger = andor.SetTriggerMode(10)
-        #print "SetTriggerMode:", trigger
-        print("DRV_SUCCESS:", andor.DRV_SUCCESS)
-        print("DRV_ACQUIRING:", andor.DRV_ACQUIRING)
-        print("DRV_NOT_INITIALIZED:", andor.DRV_NOT_INITIALIZED)
-        print("DRV_P1INVALID:", andor.DRV_P1INVALID)
-        triggerCap = andor.IsTriggerModeAvailable(10)
-        print("Is Available:", triggerCap)
-        print("DRV_INVALID_MODE:", andor.DRV_INVALID_MODE)
-        if(triggerCap == andor.DRV_SUCCESS):
-            print("TriggerModeAvailable:", "success={}".format(triggerCap==andor.DRV_SUCCESS))
-        print('StartAcquisition:', andor.StartAcquisition())
-
-    
-        status = andor.GetStatus()
-        print(status)
-        data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
-        print("Acquired:", andor.GetMostRecentImage16(data))
-        print("DRV_NO_NEW_DATA:", andor.DRV_NO_NEW_DATA)
-        while(status[1] == andor.DRV_ACQUIRING):
-            acquired = andor.GetMostRecentImage16(data)
-            status = andor.GetStatus()
-            if(acquired == andor.DRV_SUCCESS):
-                print("Successfully acquired the data")
-                data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
-        
-        """
-        while(status[1]==andor.DRV_ACQUIRING):
-            acquired = andor.WaitForAcquisition()
-            status = andor.GetStatus()
-            if(status[1] == andor.DRV_ACQUIRING and acquired == andor.DRV_SUCCESS):
-                data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
-                results = andor.GetMostRecentImage16(data) # store image data
-                print(results, 'success={}'.format(results == 20002)) # print if the results were successful                
-                if(results == andor.DRV_SUCCESS): # if the array filled store successfully
-                    data=data.reshape(width/binning,height/binning) # reshape into image
-                    print(data.shape,data.dtype)
-                    hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
-                    filename = time.strftime('/tmp/image_%Y%m%d_%H%M%S.fits') 
-                    hdu.writeto(filename,clobber=True)
-                    print("wrote: {}".format(filename))
-
-                    protocol.sendData("realSent " + filename)
-        """
-        return "real 1" # exits with 1 for success
-
-
-
-    def abort(self):
-        """
-        This will abort the exposure and throw it out.
-        """
-        global isAborted
-        isAborted = True
-        self.isAbort = True
-        print("Aborted:", andor.AbortAcquisition())
-        return 'abort 1'
-	
-    def stop(self):
-        """
-        This will stop the exposure but read out where it stopped at, if possible.
-        """
-        pass
-
-        
-
-
-
-
-if __name__=="__main__":
+if __name__ == "__main__":
     #ep = Evora()
     #ep.startup()
     reactor.suggestThreadPoolSize(30)
