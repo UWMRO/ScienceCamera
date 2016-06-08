@@ -198,7 +198,7 @@ class Exposure(wx.Panel):
                         line = " ".join(line[1:])
                         
                         # set up all callbacks for series
-                        for i in range(self.seriesImageNumber):
+                        for i in range(int(self.seriesImageNumber)):
                             d = self.protocol.addDeferred("seriesSent" + str(i+1))
                             d.addCallback(self.displaySeriesImage_thread)
                         #d = self.protocol.addDeferred("seriesSent")
@@ -260,7 +260,6 @@ class Exposure(wx.Panel):
         
         # finish out gauge and then reset it
         self.parent.parent.parent.expGauge.SetValue(self.endTimer)
-
 
         # get success;
         success = int(results[0])  # 1 for true 0 for false
