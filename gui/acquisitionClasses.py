@@ -35,6 +35,7 @@ class Exposure(wx.Panel):
         self.realDeferal = None
         self.seriesImageNumber = None  # initialize a series image number
         self.currentImage = None  # initializes to keep track of the current image name class wide
+        self.logFunction = None  # keeps an instance of the function that will be used to log the status
 
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
@@ -201,8 +202,6 @@ class Exposure(wx.Panel):
                         for i in range(int(self.seriesImageNumber)):
                             d = self.protocol.addDeferred("seriesSent" + str(i+1))
                             d.addCallback(self.displaySeriesImage_thread)
-                        #d = self.protocol.addDeferred("seriesSent")
-                        #d.addCallback(self.displaySeriesImage_thread)
 
                         d = self.protocol.sendCommand("series " + str(line))
                         d.addCallback(self.seriesCallback)
@@ -376,9 +375,6 @@ class Exposure(wx.Panel):
         # no abort then display the image
         if(imNum <= int(self.seriesImageNumber)):
             print("Entered to display series image")
-            # add a new deffered object
-            #d = self.protocol.addDeferred("seriesSent")
-            #d.addCallback(self.displaySeriesImage_thread)
 
             if(self.timer.IsRunning()):
                 self.timer.Stop()
@@ -402,11 +398,13 @@ class Exposure(wx.Panel):
             #print(self.iterateImageCounter)
 
             self.copyImage(directory, name)
+            logstr = self.currentImage + "exposed with %f sec" % time
+            self.log(self.logFunction, logstr)
 
             self.parent.parent.parent.expGauge.SetValue(0)
             self.startTimer = 0
 
-            if(self.seriesImageNumber != None):
+            if(self.seriesImageNumber is not None):
                 if(imNum < int(self.seriesImageNumber)):
                     thread.start_new_thread(self.exposeTimer, (time,))
 
@@ -492,6 +490,9 @@ class Exposure(wx.Panel):
 
         return line
 
+    def log(logfunc, logmsg):
+        logfunc(logmsg)
+
     def copyImage(self, path, serverImName):
         """
         Pre: Takes in the diretory path to the original image file name as "path" as well as the 
@@ -516,7 +517,7 @@ class Exposure(wx.Panel):
             if(als.isInt(name[-1])):
                 return True
             else:
-                return False            
+                return False
         else:
             return False
 

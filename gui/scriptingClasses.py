@@ -110,6 +110,13 @@ class ScriptCommands(wx.Panel):
         self.parent.scriptStatus.activityText.SetValue(val + send + "\n")
         self.parent.scriptStatus.activityText.SetInsertionPointEnd()
 
+    def logScript(self, logmsg):
+        """
+        Pre: Pass in a message to be logged.
+        Post: Sends log message to status box as well as logs to file.
+        """
+        self.sendToStatus(logmsg)
+
     def executeCommand(self, runList):
         """
         This will take the known order of runList from the command and then send it to the server
@@ -136,6 +143,7 @@ class ScriptCommands(wx.Panel):
 
                 exposeClass = self.parent.parent.parent.takeImage.exposureInstance
                 exposeClass.seriesImageNumber = int(number)
+                exposeClass.logFunction = self.logScript
 
                 # example runList (['series', 'bias', int(number), 'basename'])
                 if(imtype == 'bias'):
@@ -162,8 +170,9 @@ class ScriptCommands(wx.Panel):
                     basename = str(runList[4])
                     exposeClass.currentImage = basename
 
-                    d = self.protocol.addDeferred("seriesSent")
-                    d.addCallback(exposeClass.displaySeriesImage_thread)
+                    for i in range(int(number)):
+                        d = self.protocol.addDeferred("seriesSent" + str(i+1))
+                        d.addCallback(exposeClass.displaySeriesImage_thread)
 
                     d = self.protocol.sendCommand(sendCommand + " " + imtype + " " + number + " " + itime + " " +
                                                   str(self.parent.parent.parent.binning))
