@@ -389,7 +389,7 @@ class Exposure(wx.Panel):
             data = als.getData(path)
             stats_list = als.calcStats(data)
             # change the gui with thread safety
-            #wx.CallAfter(self.safePlot, data, stats_list)
+            wx.CallAfter(self.safePlot, data, stats_list)
 
             # copy image over (counter looks like "_XXX.fits")
             print("current image name:", self.currentImage)
@@ -413,7 +413,7 @@ class Exposure(wx.Panel):
     def seriesCallback(self, msg):
         msg = msg.split(",")
         exitNumber = int(msg[1])  # server will send which count the series loop ended on
-        if(exitNumber == int(self.seriesImageNumber)):
+        if(exitNumber <= int(self.seriesImageNumber)):
             for i in range(exitNumber, int(self.seriesImageNumber) + 1):
                 key = "seriesSent" + str(i)
                 self.protocol.removeDeferred(key)
