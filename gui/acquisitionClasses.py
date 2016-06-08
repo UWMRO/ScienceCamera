@@ -42,9 +42,9 @@ class Exposure(wx.Panel):
         #####
 
         ### Additional sub sizers
-        self.exposeSizer = wx.BoxSizer(wx.HORIZONTAL) # used for spacing expTime and expValue
-        self.buttonSizer = wx.BoxSizer(wx.HORIZONTAL) # used for spacing expose and stop buttons
-        self.nameSizer = wx.BoxSizer(wx.VERTICAL) # use for spacing name text and text ctrl
+        self.exposeSizer = wx.BoxSizer(wx.HORIZONTAL)  # used for spacing expTime and expValue
+        self.buttonSizer = wx.BoxSizer(wx.HORIZONTAL)  # used for spacing expose and stop buttons
+        self.nameSizer = wx.BoxSizer(wx.VERTICAL)  # use for spacing name text and text ctrl
         #####
 
         #### Widgets
@@ -54,10 +54,10 @@ class Exposure(wx.Panel):
 
         self.expValue = wx.TextCtrl(self, id=2003, size=(45, -1))
         self.expButton = wx.Button(self, id=2004, label="Expose", size=(60, -1))
-        self.stopExp = wx.Button(self, id=2005, label="Abort", size=(60,-1))
+        self.stopExp = wx.Button(self, id=2005, label="Abort", size=(60, -1))
         self.stopExp.Enable(False)
 
-        self.expBox = wx.StaticBox(self, id=2006, label = "Exposure Controls", size=(100,100), style=wx.ALIGN_CENTER)
+        self.expBox = wx.StaticBox(self, id=2006, label="Exposure Controls", size=(100, 100), style=wx.ALIGN_CENTER)
         self.expBoxSizer = wx.StaticBoxSizer(self.expBox, wx.VERTICAL)
         self.timer = wx.Timer(self, id=2007)
         self.sampleTimer = wx.Timer(self, id=2008)
@@ -90,7 +90,6 @@ class Exposure(wx.Panel):
         als.AddLinearSpacer(self.expBoxSizer, 5)
 
         self.vertSizer.Add(self.expBoxSizer, flag=wx.ALIGN_CENTER)
-
         ####
 
         ### Global variables
@@ -98,10 +97,10 @@ class Exposure(wx.Panel):
         self.nameToSend = ""
 
         ### Bindings
-        self.Bind(wx.EVT_TEXT, self.nameText, id=2002) # bind self.nameField
-        self.Bind(wx.EVT_TEXT, self.onExpTime, id=2003) # bind self.expValue
-        self.Bind(wx.EVT_BUTTON, self.onExpose, id=2004) # bind self.expButton
-        self.Bind(wx.EVT_BUTTON, self.onStop, id=2005) # bind self.stopExp
+        self.Bind(wx.EVT_TEXT, self.nameText, id=2002)  # bind self.nameField
+        self.Bind(wx.EVT_TEXT, self.onExpTime, id=2003)  # bind self.expValue
+        self.Bind(wx.EVT_BUTTON, self.onExpose, id=2004)  # bind self.expButton
+        self.Bind(wx.EVT_BUTTON, self.onStop, id=2005)  # bind self.stopExp
         self.Bind(wx.EVT_TIMER, self.onExposeTimer, id=2007)
         ###
 
@@ -131,46 +130,44 @@ class Exposure(wx.Panel):
         """
         if als.isNumber(self.timeToSend):
             if(float(self.timeToSend) < 0):
-                dialog = wx.MessageDialog(None, "Exposure time can not be less than 0...will not expose", "", wx.OK|wx.ICON_ERROR)
+                dialog = wx.MessageDialog(None, "Exposure time can not be less than 0...will not expose", "", wx.OK | wx.ICON_ERROR)
                 dialog.ShowModal()
                 dialog.Destroy()
 
         else:
             dialog = wx.MessageDialog(None, "Exposure time not a number...will not expose.",
-                                      "", wx.OK|wx.ICON_ERROR)
+                                      "", wx.OK | wx.ICON_ERROR)
             dialog.ShowModal()
             dialog.Destroy()
 
         if self.nameToSend is "":
-            dialog = wx.MessageDialog(None,"No name was given...will not expose", "",
-                                      wx.OK|wx.ICON_ERROR)
+            dialog = wx.MessageDialog(None, "No name was given...will not expose", "",
+                                      wx.OK | wx.ICON_ERROR)
             dialog.ShowModal()
             dialog.Destroy()
         else:
             pass
 
-
-
         if als.isNumber(self.timeToSend) and self.nameToSend is not "":
             #self.protocol.sendLine("Exposing with name " + str(self.nameToSend) + " and time " + str(self.timeToSend) + " s")
             
             line = self.getAttributesToSend().split()
-        
-            # get image type 
+
+            # get image type
             imType = int(line[0])
             itime = float(line[3])
-        
+
             #self.expButton.SetLabel("Abort")
-            if(imType == 1): # single exposure
+            if(imType == 1):  # single exposure
                 self.expButton.Enable(False)
                 self.stopExp.Enable(True)
                 self.abort = True
-                line = " ".join(line[1:]) # bring all the parameters together
+                line = " ".join(line[1:])  # bring all the parameters together
                 d = self.protocol.sendCommand("expose " + line)
                 d.addCallback(self.expose_callback_thread)
                 thread.start_new_thread(self.exposeTimer, (itime,))
 
-            if(imType == 2): # real time exposure
+            if(imType == 2):  # real time exposure
                 self.expButton.Enable(False)
                 self.stopExp.Enable(True)
                 self.abort = True
@@ -180,12 +177,12 @@ class Exposure(wx.Panel):
                 d.addCallback(self.displayRealImage_thread)
 
                 d = self.protocol.sendCommand("real " + line)
-                d.addCallback(self.realCallback) # this will clear the image path queue
+                d.addCallback(self.realCallback)  # this will clear the image path queue
 
                 # start timer
                 thread.start_new_thread(self.exposeTimer, (itime,))
 
-            if(imType == 3): # series exposure
+            if(imType == 3):  # series exposure
                 dialog = wx.TextEntryDialog(None, "How many exposure?", "Entry", "1", wx.OK | wx.CANCEL)
                 answer = dialog.ShowModal()
                 dialog.Destroy()
@@ -200,8 +197,12 @@ class Exposure(wx.Panel):
                         line[2] = self.seriesImageNumber
                         line = " ".join(line[1:])
                         
-                        d = self.protocol.addDeferred("seriesSent")
-                        d.addCallback(self.displaySeriesImage_thread)
+                        # set up all callbacks for series
+                        for i in range(self.seriesImageNumber):
+                            d = self.protocol.addDeferred("seriesSent" + str(i+1))
+                            d.addCallback(self.displaySeriesImage_thread)
+                        #d = self.protocol.addDeferred("seriesSent")
+                        #d.addCallback(self.displaySeriesImage_thread)
 
                         d = self.protocol.sendCommand("series " + str(line))
                         d.addCallback(self.seriesCallback)
@@ -377,8 +378,8 @@ class Exposure(wx.Panel):
         if(imNum <= int(self.seriesImageNumber)):
             print("Entered to display series image")
             # add a new deffered object
-            d = self.protocol.addDeferred("seriesSent")
-            d.addCallback(self.displaySeriesImage_thread)
+            #d = self.protocol.addDeferred("seriesSent")
+            #d.addCallback(self.displaySeriesImage_thread)
 
             if(self.timer.IsRunning()):
                 self.timer.Stop()

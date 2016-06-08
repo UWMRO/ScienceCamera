@@ -5,12 +5,8 @@ from __future__ import division
 from __future__ import absolute_import
 
 import sys
-#sys.path.insert(0, '../include')
 import andor
-#sys.path.insert(0, '../gui')
 import numpy as np
-#import ctypes
-#import pyfits
 from astropy.io import fits
 import time
 import Queue
@@ -21,19 +17,16 @@ from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
 
 # For filter controls
-#sys.path.insert(0, '..')
 #from FilterMotor import filtermotor
-#sys.path.insert(0, 'gui')
-
-#import ProtoParser
 
 # port for evora is 5502
-
 
 # Global Variables
 acquired = None
 t = None
-isAborted = None
+isAborted = None  # tracks globally when the abort has been called.  Every call to the parser
+                  # is an new instance
+
 
 class EvoraServer(basic.LineReceiver):
     def connectionMade(self):
@@ -46,32 +39,24 @@ class EvoraServer(basic.LineReceiver):
         ep = EvoraParser(self)
         command = ep.parse("status") 
         self.sendMessage(str(command)) # activate the callback to give full control to the camera.
-        
 
     def connectionLost(self, reason):
         #self.sendLine("Connection Lost")
         #if len(self.factory.clients) is 1:
         #    ep = EvoraParser()
         #    command = ep.parse("shutdown")
-            #self.sendMessage(command)
-        
-        self.factory.clients.remove(self)            
+            #self.sendMessage(command)        
+        self.factory.clients.remove(self)
 
     def lineReceived(self, line):
         print("received", line)
         ep = EvoraParser(self)
-        #command = ep.parse(line)
         d = threads.deferToThread(ep.parse, line)
         d.addCallback(self.sendData)
-        #print "done"
-        #if command != None:
-        #    self.sendMessage(str(command))
-    
+
     def sendData(self, data):
-        #print "Sending", data, "from server."
-        if data != None:
+        if data is not None:
             self.sendMessage(str(data))
-           
 
     def sendMessage(self, message):
         for client in self.factory.clients:
@@ -88,7 +73,7 @@ class EvoraParser(object):
         self.e = Evora()
         self.protocol = protocol
 
-    def parse(self, input = None):
+    def parse(self, input=None):
         print(input)
         input = input.split()
         if input[0] == 'connect':
@@ -116,42 +101,27 @@ class EvoraParser(object):
         if input[0] == 'filterHome':
             # simply slews the filter to home
             pass
-            
         if input[0] == "abort":
             return self.e.abort()
         if input[0] == 'expose':
-            # expose flat 1 10 2
+            # command expose flat 1 10 2
             # get the type of exposure (i.e. bias, flat, object)
-            #exposureSetting = int(input[1]) # this will be 1:singe, 2:real, or 3:series
             imType = input[1]
             print(imType)
             # exposure attributes
             expnum = int(input[2])
-            itime = float(input[3]) # why int?
+            itime = float(input[3])  # why int?
             binning = int(input[4])
             return self.e.expose(imType, expnum, itime, binning)
-
         if input[0] == 'real':
-            #exposureSetting = int(input[1]) 
+            # command real flat 1 10 2
             imType = input[1]
             print(imType)
             # exposure attributes
-            expnum = int(input[2]) # don't need this
+            expnum = int(input[2])  # don't need this
             itime = float(input[3])
             binning = int(input[4])
             return self.e.realTimeExposure(self.protocol, imType, itime, binning)
-
-        if input[0] == 'realTest':
-            #exposureSetting = int(input[1]) 
-            imType = input[1]
-            print(imType)
-            # exposure attributes
-            expnum = int(input[2]) # don't need this
-            itime = float(input[3])
-            binning = int(input[4])
-            return self.e.realTimeExposure_test(self.protocol, imType, itime, binning)
-
-
         if input[0] == 'series':
             # series bias 1 10 2
             imType = input[1]
@@ -161,11 +131,21 @@ class EvoraParser(object):
             itime = float(input[3])
             binning = int(input[4])
             return self.e.kseriesExposure(self.protocol, imType, itime, numexp=expnum, binning=binning)
+        """
+        if input[0] == 'realTest':
+            #exposureSetting = int(input[1])
+            imType = input[1]
+            print(imType)
+            # exposure attributes
+            expnum = int(input[2]) # don't need this
+            itime = float(input[3])
+            binning = int(input[4])
+            return self.e.realTimeExposure_test(self.protocol, imType, itime, binning)
 
         # This is a deprecated function for series exposure.  It utilizes run till abort, e.g. real time, and will
         # self abort when a counter has reached the user specified number of exposures.
         if input[0] == 'series_tillAbort':
-            #exposureSetting = int(input[1]) 
+            #exposureSetting = int(input[1])
             imType = input[1]
             print(imType)
             # exposure attributes
@@ -173,6 +153,8 @@ class EvoraParser(object):
             itime = float(input[3])
             binning = int(input[4])
             return self.e.seriesExposure(self.protocol, imType, itime, expnum, binning)
+        """
+
 
 class Evora(object):
 
@@ -187,21 +169,21 @@ class Evora(object):
 
     def startup(self):
 	"""
-	20002 is the magic number.  Any different number and it didn't work.
-	"""
+        20002 is the magic number.  Any different number and it didn't work.
+        """
         print(andor.GetAvailableCameras())
         camHandle = andor.GetCameraHandle(0)
         print(camHandle)
         print('set camera:', andor.SetCurrentCamera(camHandle[1]))
-	
-	init = andor.Initialize("/usr/local/etc/andor")	
+
+        init = andor.Initialize("/usr/local/etc/andor")
 
         print('Init:', init)
 
-	state = andor.GetStatus()        
+        state = andor.GetStatus()
 
         print('Status:', state)
-        
+
         print('SetAcquisitionMode:', andor.SetAcquisitionMode(1))
         
         print('SetShutter:', andor.SetShutter(1,0,50,50))
@@ -496,7 +478,7 @@ class Evora(object):
 
                     print("wrote: {}".format(filename))
                     
-                    protocol.sendData("seriesSent " + str(counter)+","+itime+","+filename)
+                    protocol.sendData("seriesSent"+str(counter)+" "+str(counter)+","+itime+","+filename)
 
                 counter += 1
         print("Aborting", andor.AbortAcquisition())
@@ -568,7 +550,7 @@ class Evora(object):
 
                     print("wrote: {}".format(filename))
                     
-                    protocol.sendData("seriesSent " + str(counter)+","+str(itime)+","+filename)
+                    protocol.sendData("seriesSent"+str(counter)+" "+str(counter)+","+str(itime)+","+filename)
                     
                     if(counter == numexp):
                         print("entered abort")

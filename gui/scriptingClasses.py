@@ -141,6 +141,7 @@ class ScriptCommands(wx.Panel):
                 if(imtype == 'bias'):
 
                     basename = str(runList[3])
+                    exposeClass.currentImage = basename
 
                     d = self.protocol.addDeferred("seriesSent")
                     d.addCallback(exposeClass.displaySeriesImage_thread)
@@ -159,6 +160,7 @@ class ScriptCommands(wx.Panel):
 
                     itime = str(runList[3])
                     basename = str(runList[4])
+                    exposeClass.currentImage = basename
 
                     d = self.protocol.addDeferred("seriesSent")
                     d.addCallback(exposeClass.displaySeriesImage_thread)
@@ -274,7 +276,6 @@ class ScriptCommands(wx.Panel):
             dialog.ShowModal()
             dialog.Destroy()
         self.commandBox.SetFocus()
-
 
     def parseCommand(self, command):
         """
