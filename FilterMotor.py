@@ -41,7 +41,17 @@ class filtermotor(object):
     		print("Number of Motors: %i" % (self.stepper.getMotorCount()))
 
 	def connDev(self):
-		pass
+		"""connect to device and open serial connection to arduino"""
+		self.stepper = Stepper()
+                self.stepper.openPhidget()
+                print('attaching stepper dev ...')
+                self.stepper.waitForAttach(10000)
+                self.DisplayDeviceInfo()
+                self.stepper.setAcceleration(0,30000)
+                self.stepper.setVelocityLimit(0,8000)
+                self.stepper.setCurrentLimit(0,0.5)
+                self.gvel = 8000
+                self.gacc = 30000
 
 	def disconnDev(self):
 		time.sleep(1)
@@ -53,7 +63,7 @@ class filtermotor(object):
 
 	def startup(self):
 		#==>  this shoud be the same as connDev
-		self.param(0,30000,8000,0.5)
+		self.param(0,20000,6000,0.75)
 		self.motorpower(True)
 
 	def param(self, pos, acc, vel, cur):
@@ -61,9 +71,9 @@ class filtermotor(object):
 	    	self.stepper.setVelocityLimit(0, vel)
 		self.gvel = vel
 		self.gacc = acc
-		if cur>1.6:				
-	    		self.stepper.setCurrentLimit(0, 0.5)
+		if cur>1.4:				
 			print "Cannot set current above 1.5. Current set to 0.5"
+			return
 		self.stepper.setCurrentPosition(0, pos)
 		print "Parameters set to: Acceleration: %d Velocity: %d Current: %d" % (self.stepper.getAcceleration(0), self.stepper.getVelocityLimit(0), self.stepper.getCurrentLimit(0))
  
@@ -166,5 +176,6 @@ class filtermotor(object):
 if __name__ == "__main__":
 	p = filtermotor()
 	p.startup()
+	p.movemotor(1000)
 	p.disconnDev()
 
