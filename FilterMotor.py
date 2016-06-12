@@ -1,39 +1,29 @@
 #!/usr/bin/env python
 
 #==>add usage docstring
-
-
-#remove imports not used
-from ctypes import *
-import sys
-import time
-import os
-import select
-#Phidget specific imports
-from Phidgets.PhidgetException import PhidgetErrorCodes, PhidgetException
-from Phidgets.Events.Events import AttachEventArgs, DetachEventArgs, ErrorEventArgs, InputChangeEventArgs, CurrentChangeEventArgs, StepperPositionChangeEventArgs, VelocityChangeEventArgs
-from Phidgets.Devices.Stepper import Stepper
-from Phidgets.Phidget import PhidgetLogLevel
+"""
 #install for raspberrypi
 #libusb via aptget
 #phidgetlib from phidget website
 #pip install phidgets
 
-class filtermotor(object):
+
+"""
+
+import time
+import os
+from Phidgets.PhidgetException import PhidgetErrorCodes, PhidgetException
+from Phidgets.Events.Events import AttachEventArgs, DetachEventArgs, ErrorEventArgs, InputChangeEventArgs, CurrentChangeEventArgs, StepperPositionChangeEventArgs, VelocityChangeEventArgs
+from Phidgets.Devices.Stepper import Stepper
+from Phidgets.Phidget import PhidgetLogLevel
+import fw_io
+
+
+class FilterMotor(object):
 	def __init__(self):
 		"""Add docs to all functions"""
-		#==> move connection of device to separate connDev function.
-		#==> use param (which should be changed to setParam() for setting the stepper parameteres.
-		self.stepper = Stepper()
-		self.stepper.openPhidget()
-		print('attaching stepper dev ...')
-		self.stepper.waitForAttach(10000)
-		self.DisplayDeviceInfo()
-		self.stepper.setAcceleration(0,30000)
-		self.stepper.setVelocityLimit(0,8000)
-		self.stepper.setCurrentLimit(0,0.5)
-		self.gvel = 8000
-		self.gacc = 30000
+		self.stepper = None
+		self.fw = fw_io.FWIO()
 
 	def DisplayDeviceInfo(self):
 		#==> rename to getDeviceInfo
@@ -44,14 +34,11 @@ class filtermotor(object):
 		"""connect to device and open serial connection to arduino"""
 		self.stepper = Stepper()
                 self.stepper.openPhidget()
-                print('attaching stepper dev ...')
                 self.stepper.waitForAttach(10000)
-                self.DisplayDeviceInfo()
-                self.stepper.setAcceleration(0,30000)
-                self.stepper.setVelocityLimit(0,8000)
-                self.stepper.setCurrentLimit(0,0.5)
-                self.gvel = 8000
-                self.gacc = 30000
+
+		self.param(20000,6000,0.75)
+
+		self.fw.openPort()
 
 	def disconnDev(self):
 		time.sleep(1)
@@ -61,27 +48,30 @@ class filtermotor(object):
 	def motorpower(self, val = False):
 		self.stepper.setEngaged(0,val)
 
-	def startup(self):
-		#==>  this shoud be the same as connDev
 		self.param(0,20000,6000,0.75)
 		self.motorpower(True)
 
-	def param(self, pos, acc, vel, cur):
+	def setParm(self, acc, vel, cur):
 		self.stepper.setAcceleration(0, acc) 
 	    	self.stepper.setVelocityLimit(0, vel)
-		self.gvel = vel
-		self.gacc = acc
 		if cur>1.4:				
 			print "Cannot set current above 1.5. Current set to 0.5"
 			return
-		self.stepper.setCurrentPosition(0, pos)
-		print "Parameters set to: Acceleration: %d Velocity: %d Current: %d" % (self.stepper.getAcceleration(0), self.stepper.getVelocityLimit(0), self.stepper.getCurrentLimit(0))
  
 	def status(self):
-                #==> in this function you should return an array of highly useful information so that the user/tcc/evora knows what is going on.  take a look at the arctic FilterMotor.py status as example.
-		print ("Engaged: %r \nCurrent Position: %d \nAcceleration: %d \nVelocity: %d \nCurrent: %d" % (self.stepper.getEngaged(0), self.stepper.getCurrentPosition(0), self.stepper.getAcceleration(0), self.stepper.getVelocityLimit(0), self.stepper.getCurrentLimit(0))) 
+		dict = {"velocity":None, "amp":None, "acceleration":None, "position":None, "power":None, "hall":None}
+		dict['power'] = self.stepper.getEngaged(0)
+		dict['position'] = self.stepper.getCurrentPosition(0)
+		dict['acceleration'] =self.stepper.getAcceleration(0)
+		dict['velocity'] = self.stepper.getVelocityLimit(0)
+		dict['amp'] = self.stepper.getCurrentLimit(0)
+		dict['hall'] = FWIO.status()
+		return dict
 
-	def movemotor(self, pos = None):
+	def setPos(self, pos = None):
+		self.stepper.setCurrentPosition(0, pos)	
+
+	def moveMotor(self, pos = None):
 		self.stepper.setTargetPosition(0, int(pos))
 
 	def nudge(self, mov):
@@ -174,8 +164,9 @@ class filtermotor(object):
 		self.stepper.setCurrentPosition(0,0)
 
 if __name__ == "__main__":
-	p = filtermotor()
-	p.startup()
-	p.movemotor(1000)
+	p = FilterMotor()
+	p.connDev()
+	p.status()
+	time.sleep(1)
 	p.disconnDev()
 
