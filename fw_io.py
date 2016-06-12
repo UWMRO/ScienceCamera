@@ -46,7 +46,7 @@ class FWIO():
 
     def openPort(self):
 	""" open the serial port for communication with the arduino"""
-        self.ser=serial.Serial(self.serPort, 9600)
+        self.ser=serial.Serial(self.serPort, 9600, timeout = 2)
         return
 
     def closePort(self):
