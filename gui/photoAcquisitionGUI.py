@@ -31,11 +31,11 @@ from twisted.internet import defer
 from twisted.internet import threads
 from twisted.protocols import basic
 
-import acquisitionClasses as ac
-import controlClasses as cc
-import scriptingClasses as sc
-import logClasses as lc
-import AddLinearSpacer as als
+from . import acquisitionClasses as ac
+from . import controlClasses as cc
+from . import scriptingClasses as sc
+from . import logClasses as lc
+from . import AddLinearSpacer as als
 
 
 ## Global Variables
