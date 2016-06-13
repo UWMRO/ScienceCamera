@@ -27,15 +27,10 @@
 %apply long *OUTPUT {long * acc, long * series};
 %apply float *OUTPUT {float * exposure, float * accumulate, float * kinetic};
 %apply int *OUTPUT {long *acc, long *series}; // "%apply long" gives non-sense in python, this way gives good results
-<<<<<<< HEAD
 %apply int *OUTPUT {int *speeds}; // For GetNumberVSSpeeds
 %apply int *OUTPUT {int *number}; // For GetNumberVSAmplitudes
 %apply float *OUTPUT {int *index, float *speeds};
-=======
-%apply int *OUTPUT {int *speeds} // For GetNumberVSSpeeds and 
-%apply int *OUTPUT {int *number} // For GetNumberVSAmplitudes
-%apply float *OUTPUT {int index, float *speeds}
->>>>>>> 1b7b506a6f0287445c9379db732cbc9c788e6acf
+
 
 %{
 #define SWIG_FILE_WITH_INIT
