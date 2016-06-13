@@ -643,7 +643,7 @@ class Evora(object):
                     header.append(card=("READTIME", readTime, "Pixel readout time"))
 
 
-                    hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
+                    hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True, header=header)
                     filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
                     hdu.writeto(filename,clobber=True)
 
