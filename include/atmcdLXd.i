@@ -29,12 +29,8 @@
 %apply int *OUTPUT {long *acc, long *series}; // "%apply long" gives non-sense in python, this way gives good results
 %apply int *OUTPUT {int *speeds}; // For GetNumberVSSpeeds
 %apply int *OUTPUT {int *number}; // For GetNumberVSAmplitudes
-<<<<<<< HEAD
 %apply float *OUTPUT {float *speed}; // For GetVSSpeed()
-=======
-%apply float *OUTPUT {float *speed}; // For GetVSSpeeds
->>>>>>> bb2ee2dabed2efdda20cee9d9b29af0ae2fb58d9
-
+%apply float *OUTPUT {int *index, float *speed} // For GetFastestRecommendedVSSpeed()
 
 %{
 #define SWIG_FILE_WITH_INIT

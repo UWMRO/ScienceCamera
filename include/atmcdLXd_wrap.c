@@ -7678,22 +7678,23 @@ SWIGINTERN PyObject *_wrap_GetFastestRecommendedVSSpeed(PyObject *SWIGUNUSEDPARM
   PyObject *resultobj = 0;
   int *arg1 = (int *) 0 ;
   float *arg2 = (float *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
+  int temp1 ;
+  int res1 = SWIG_TMPOBJ ;
   float temp2 ;
   int res2 = SWIG_TMPOBJ ;
-  PyObject * obj0 = 0 ;
   unsigned int result;
   
+  arg1 = &temp1;
   arg2 = &temp2;
-  if (!PyArg_ParseTuple(args,(char *)"O:GetFastestRecommendedVSSpeed",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_int, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GetFastestRecommendedVSSpeed" "', argument " "1"" of type '" "int *""'"); 
-  }
-  arg1 = (int *)(argp1);
+  if (!PyArg_ParseTuple(args,(char *)":GetFastestRecommendedVSSpeed")) SWIG_fail;
   result = (unsigned int)GetFastestRecommendedVSSpeed(arg1,arg2);
   resultobj = SWIG_From_unsigned_SS_int((unsigned int)(result));
+  if (SWIG_IsTmpObj(res1)) {
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_From_float((*arg1)));
+  } else {
+    int new_flags = SWIG_IsNewObj(res1) ? (SWIG_POINTER_OWN |  0 ) :  0 ;
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj((void*)(arg1), SWIGTYPE_p_int, new_flags));
+  }
   if (SWIG_IsTmpObj(res2)) {
     resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_From_float((*arg2)));
   } else {
@@ -10519,25 +10520,26 @@ SWIGINTERN PyObject *_wrap_GetVSAmplitudeFromString(PyObject *SWIGUNUSEDPARM(sel
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
+  int temp2 ;
+  int res2 = SWIG_TMPOBJ ;
   PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
   unsigned int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:GetVSAmplitudeFromString",&obj0,&obj1)) SWIG_fail;
+  arg2 = &temp2;
+  if (!PyArg_ParseTuple(args,(char *)"O:GetVSAmplitudeFromString",&obj0)) SWIG_fail;
   res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GetVSAmplitudeFromString" "', argument " "1"" of type '" "char *""'");
   }
   arg1 = (char *)(buf1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GetVSAmplitudeFromString" "', argument " "2"" of type '" "int *""'"); 
-  }
-  arg2 = (int *)(argp2);
   result = (unsigned int)GetVSAmplitudeFromString(arg1,arg2);
   resultobj = SWIG_From_unsigned_SS_int((unsigned int)(result));
+  if (SWIG_IsTmpObj(res2)) {
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_From_float((*arg2)));
+  } else {
+    int new_flags = SWIG_IsNewObj(res2) ? (SWIG_POINTER_OWN |  0 ) :  0 ;
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj((void*)(arg2), SWIGTYPE_p_int, new_flags));
+  }
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return resultobj;
 fail:

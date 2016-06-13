@@ -517,8 +517,8 @@ def GetExternalTriggerTermination(*args):
   return _andor.GetExternalTriggerTermination(*args)
 GetExternalTriggerTermination = _andor.GetExternalTriggerTermination
 
-def GetFastestRecommendedVSSpeed(*args):
-  return _andor.GetFastestRecommendedVSSpeed(*args)
+def GetFastestRecommendedVSSpeed():
+  return _andor.GetFastestRecommendedVSSpeed()
 GetFastestRecommendedVSSpeed = _andor.GetFastestRecommendedVSSpeed
 
 def GetFIFOUsage(*args):
