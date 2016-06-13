@@ -148,15 +148,23 @@ class Exposure(wx.Panel):
             dialog.Destroy()
         else:
             pass
-
+        
+        
         if als.isNumber(self.timeToSend) and self.nameToSend is not "":
             #self.protocol.sendLine("Exposing with name " + str(self.nameToSend) + " and time " + str(self.timeToSend) + " s")
             
             line = self.getAttributesToSend().split()
 
+            # Set the correct log function that only prints to the log tab
+            self.logFunction = self.logExposure
+            
             # get image type
             imType = int(line[0])
             itime = float(line[3])
+            """
+            overwrite = True
+            if(als.checkForFile("/data/copyfile/" + self.currentImage)):
+            """
 
             #self.expButton.SetLabel("Abort")
             if(imType == 1):  # single exposure
@@ -278,7 +286,9 @@ class Exposure(wx.Panel):
             path = ""
             for i in filePath[:-1]:
                 path += i + "/"
-
+            # get time sent to server
+            time = float(results[2])
+                
             print(path, name)
 
             # get data
@@ -290,6 +300,10 @@ class Exposure(wx.Panel):
 
             # copy file to different folder
             self.copyImage(path, name)
+
+            # log the status
+            logstr = self.currentImage + "exposed with %.2f sec" % time
+            self.log(self.logFunction, logstr)
         else:
             print("Successfully Aborted")
             pass
@@ -385,8 +399,8 @@ class Exposure(wx.Panel):
             data = als.getData(path)
             stats_list = als.calcStats(data)
             # change the gui with thread safety
-            #wx.CallAfter(self.safePlot, data, stats_list)
-
+            wx.CallAfter(self.safePlot, data, stats_list)
+            
             # copy image over (counter looks like "_XXX.fits")
             print("current image name:", self.currentImage)
             print(self.checkForImageCounter(self.currentImage))
@@ -396,9 +410,9 @@ class Exposure(wx.Panel):
             else:
                 self.iterateImageCounter(self.currentImage)
             #print(self.iterateImageCounter)
-
             self.copyImage(directory, name)
-            logstr = self.currentImage + "exposed with %f sec" % time
+
+            logstr = self.currentImage + "exposed with %.2f sec" % time
             self.log(self.logFunction, logstr)
 
             self.parent.parent.parent.expGauge.SetValue(0)
@@ -479,7 +493,8 @@ class Exposure(wx.Panel):
         imageType = self.parent.typeInstance.imageType.GetStringSelection()
 
         expNum = 1
-
+        
+        # set the global current image name
         #name = str(self.nameToSend)
         self.currentImage = self.nameToSend
 
@@ -492,9 +507,23 @@ class Exposure(wx.Panel):
 
         return line
 
+    def logExposure(self, logmsg):
+        print("logging from exposure class")
+        logInstance = self.parent.parent.parent.log.logInstance
+        wx.CallAfter(logInstance.threadSafeLogStatus, logmsg)
+
     def log(self, logfunc, logmsg):
+        """
+        Pre: Before an exposure is set the correct log function to call is set to self.logFunction.
+        For example, setting self.logFunction to self.logScript will log on the scripting status
+        and the log tab versus self.logExposure.  Also passed in is the logmsg that you want to 
+        print.
+        Post: This method will run the logfunc to print the log message to the correct status
+        boxes; it returns nothing.
+        """
         print("entered log")
         logfunc(logmsg)
+
 
     def copyImage(self, path, serverImName):
         """
@@ -532,7 +561,7 @@ class Exposure(wx.Panel):
               in the standard format.
         """
         temp = name.split('_')
-        count = int(name[-1])
+        count = int(temp[-1])
         count += 1
         if(count < 10):
             temp[-1] = "00" + str(count)
@@ -765,6 +794,7 @@ class TempControl(wx.Panel):
         temp = msg.split(",")[2]  #  parser sends stats on temperture where I grab that temp
         temp = str(int(round(float(temp))))
         mode = int(msg.split(",")[0])
+        targetTemp = msg.split(",")[3]
         
         #self.parent.parent.parent.stats.SetStatusText("Current Temp:            " + temp + " C", 0)
         wx.CallAfter(self.parent.parent.parent.stats.SetStatusText, "Current Temp:            " + temp + " C", 0)
@@ -774,6 +804,9 @@ class TempControl(wx.Panel):
         # 20035 is NotStabalized
         # 20036 is Stabalized
         # 20034 is Off  
+        if(mode != 20034 and not self.stopCool.IsEnabled()):
+            self.stopCool.Enable(True)
+
         if(mode == 20034 and float(temp) >= 0):
             bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('greenCirc.png'), size=(90,17))
         if(mode == 20037 or (mode == 20034 and float(temp) < 0)):

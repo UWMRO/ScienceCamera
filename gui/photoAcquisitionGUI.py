@@ -347,7 +347,7 @@ class Evora(wx.Frame):
         #self.takeImage.exposureInstance.stopExp.Enable(boolean)
         
         self.takeImage.tempInstance.tempButton.Enable(boolean)
-        #self.takeImage.tempInstance.stopExp.Enable(boolean)
+        self.takeImage.tempInstance.stopCool.Enable(boolean)
 
         self.takeImage.filterInstance.filterButton.Enable(boolean)
 

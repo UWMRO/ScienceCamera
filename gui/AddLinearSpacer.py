@@ -5,8 +5,8 @@ from astropy.io import fits
 import numpy as np
 import threading
 import time
+import sys
 from datetime import datetime
-
 
 def AddLinearSpacer(boxsizer, pixelSpacing):
     """
@@ -72,9 +72,73 @@ def timeStamp():
     Post: Returns a string with the current date and time.
     """
     time = datetime.today()
-    stamp = "[%s/%s/%s, " % (time.month, time.day, time.year)
-    stamp += "%s:%s:%s]:" % (time.hour, time.minute, time.second)
+    #stamp = "[%s/%s/%s, " % (time.month, time.day, time.year)
+    stamp = "[%s:%s:%s]" % (time.hour, time.minute, time.second)
     return stamp
+
+def checkForFile(path):
+    boolean = os.path.isfile(path)
+    return boolean
+        
+def getImagePath():
+    """
+    Pre: No inputs.
+    Post: Returns the file path /data/forTCC/ plus an image name with a time stamp
+          with accuracy of milliseconds.
+    """
+    time = datetime.today()
+    fileName = "image_%s%s%s_%s%s%s_%s.fits" % (time.year, time.month, time.day, time.hour, time.minute, time.second, time.microsecond)
+    return "/data/forTCC/" + fileName
+
+def testNaming(name):
+    print("current image name:", name)
+    for i in range(100):
+        print(checkForImageCounter(name))
+        if(not checkForImageCounter(name)):
+            name += "_001"
+            print(name)
+            print("entered first bit")
+        else:
+            name = iterateImageCounter(name)
+        print("count at:", i)
+def checkForImageCounter(name):
+    """
+    Note: This method is only ever entered if there actually is a name as well as there will never
+    be a .fits at the end.
+    Pre: Takes in an image name as a string and sees if the standard iterator is on the end of the image
+    name.
+    Post: Returns a boolean of whether the standard iterator is on the end of the image name.  That
+              standard format follows like *_XXX.fits where XXX goes from 001 an up.
+    """
+    if("_" in name):
+        name.split("_")
+        if(isInt(name[-1])):
+            return True
+        else:
+            return False
+    else:
+        return False
+
+def iterateImageCounter(name):
+    """
+    Note: This method is only invoked if the current image name has been checked to have a counter.
+    Pre: Takes in an image name with a counter.
+    Post: Gets the counter and iterates it, and then edits self.currentImage to have an iterated count string 
+    in the standard format.
+    """
+    temp = name.split('_')
+    count = int(temp[-1])
+    print(count)
+    count += 1
+    if(count < 10):
+        temp[-1] = "00" + str(count)
+    elif(count < 100):
+        temp[-1] = "0" + str(count)
+    else:
+        temp[-1] = str(count)
+    name = "_".join(temp[:])
+    print("Iterated to: " + name)
+    return name
 
 
 class SampleTimer(object):
