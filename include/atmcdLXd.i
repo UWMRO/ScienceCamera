@@ -30,7 +30,7 @@
 %apply int *OUTPUT {int *speeds}; // For GetNumberVSSpeeds
 %apply int *OUTPUT {int *number}; // For GetNumberVSAmplitudes
 %apply float *OUTPUT {float *speed}; // For GetVSSpeeds
-%apply float *OUTPUT {int *index, float *speed} // For GetFastestRecommendedVSSpeed()
+%apply float *OUTPUT {int *index, float *speed}; // For GetFastestRecommendedVSSpeed()
 
 %{
 #define SWIG_FILE_WITH_INIT
