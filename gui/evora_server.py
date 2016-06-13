@@ -364,7 +364,7 @@ class Evora(object):
         print("Adjusted Exposure Time:", andor.GetAcquisitionTimings())
         # set Readout speeds
         #print("SetVSSpeed:", andor.SetVSSpeed(3))
-        print("SetHSSpeed:", andor.SetHSSpeed(0, 1))
+        print("SetHSSpeed:", andor.SetHSSpeed(0, 3))
 
         # make new fits header object
         header = fits.Header()
@@ -457,7 +457,7 @@ class Evora(object):
             print('SetExposureTime:', andor.SetExposureTime(itime)) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
             
         data = np.zeros(width//binning*height//binning, dtype='uint16')
-        print("SetHSSpeed:", andor.SetHSSpeed(0, 1))
+        print("SetHSSpeed:", andor.SetHSSpeed(0, 3))
         print('StartAcquisition:', andor.StartAcquisition())
 
         
@@ -588,7 +588,7 @@ class Evora(object):
 
         print("Timings:", andor.GetAcquisitionTimings())
 
-        print("SetHSSpeed:", andor.SetHSSpeed(0, 1))
+        print("SetHSSpeed:", andor.SetHSSpeed(0, 3))
 
         # write headers
         header = fits.Header()

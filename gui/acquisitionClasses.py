@@ -231,11 +231,11 @@ class Exposure(wx.Panel):
                                 d = self.protocol.addDeferred("seriesSent" + str(i+1))
                                 d.addCallback(self.displaySeriesImage_thread)
 
-                                d = self.protocol.sendCommand("series " + str(line))
-                                d.addCallback(self.seriesCallback)
+                            d = self.protocol.sendCommand("series " + str(line))
+                            d.addCallback(self.seriesCallback)
                         
-                                # start timer
-                                thread.start_new_thread(self.exposeTimer, (itime,))
+                            # start timer
+                            thread.start_new_thread(self.exposeTimer, (itime,))
                         else:
                             self.abort = False
                             self.expButton.Enable(True)
@@ -851,7 +851,7 @@ class FilterControl(wx.Panel):
         wx.Panel.__init__(self, parent)
 
         # global variables
-        self.protocol = None
+        self.protocol2 = None
 
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
@@ -921,8 +921,17 @@ class FilterControl(wx.Panel):
 
     def onFilterSelection(self, event):
         self.filterSelection = self.filterMenu.GetValue()
+        print("selection:", self.filterSelection)
+        # find position
+        pos = None
+        for i in range(len(self.filterName)):
+            if(str(self.filterSelection) == self.filterName[i]):
+                pos = self.filterNum[i]
         try:
-            self.currFilterNum = self.filterNum[self.filterSelection]
+            print("index:", pos)
+            #self.currFilterNum = self.filterNum[pos]
+            #print("Filter number:", self.currFilterNum, type(self.currFilterNum))
+            d = self.protocol2.sendCommand("move " + str(pos - 1))
         except KeyError:
             print("not a filter")
         

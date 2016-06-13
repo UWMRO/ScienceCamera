@@ -234,7 +234,7 @@ class Evora(wx.Frame):
         #self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
         # add filter connection
         self.connection = port_dict['5502'] = reactor.connectTCP('localhost', 5502, EvoraClient(app.frame1))
-        port_dict['5503'] = reactor.connectTCP('localhost', 5503, FilterClient(app.frame1))
+        port_dict['5503'] = reactor.connectTCP('192.168.1.30', 5503, FilterClient(app.frame1))
 
     def onConnectCallback(self, msg):
         #msg = args[0]
@@ -784,19 +784,19 @@ class FilterForwarder(basic.LineReceiver):
     def __init__(self):
         self.output = None
         self._deferreds = {}
+        self.gui = None
 
     def dataReceived(self, data):
         print("Receieved:", data)
         
-        gui = self.factory.gui
             
-        gui.takeImage.filterInstance.protocol = self
+        self.gui.takeImage.filterInstance.protocol2 = self
 
         if gui:
-            val = gui.log.logInstance.logBox.GetValue()
+            val = self.gui.log.logInstance.logBox.GetValue()
             #print val
-            gui.log.logInstance.logBox.SetValue(val + data)
-            gui.log.logInstance.logBox.SetInsertionPointEnd()
+            self.gui.log.logInstance.logBox.SetValue(val + data)
+            self.gui.log.logInstance.logBox.SetInsertionPointEnd()
             #sep_data = data.split(" ")
             #print sep_data
         
@@ -823,6 +823,8 @@ class FilterForwarder(basic.LineReceiver):
         #d = defer.Deferred()
         #d.addCallback(gui.onConnectCallback)
         #self._deferreds["status"] = d
+        self.gui = self.factory.gui
+        self.gui.takeImage.filterInstance.protocol2 = self
         print("connection made to filter")
 
     def addDeferred(self, string):
