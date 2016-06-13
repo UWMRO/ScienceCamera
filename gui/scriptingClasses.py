@@ -156,16 +156,22 @@ class ScriptCommands(wx.Panel):
 
                     basename = str(runList[3])
                     exposeClass.currentImage = basename
+                    overwrite = None
+                    if(als.checkForFile("/data/copyfile/" + self.currentImage + "_001.fits")):
+                        dialog = wx.MessageDialog(None, "Do you want to change temperature during exposure?", "", wx.OK | wx.CANCEL|wx.ICON_QUESTION)
+                        overwrite = dialog.ShowModal()
+                        dialog.Destroy()
 
-                    d = self.protocol.addDeferred("seriesSent")
-                    d.addCallback(exposeClass.displaySeriesImage_thread)
+                    if(overwrite is not None or overwrite == wx.ID_OK):
+                        d = self.protocol.addDeferred("seriesSent")
+                        d.addCallback(exposeClass.displaySeriesImage_thread)
 
-                    d = self.protocol.sendCommand(sendCommand + " " + imtype + " " + number +
-                                                  " 0 " + str(self.parent.parent.parent.binning))
-                    d.addCallback(exposeClass.seriesCallback)
+                        d = self.protocol.sendCommand(sendCommand + " " + imtype + " " + number +
+                                                      " 0 " + str(self.parent.parent.parent.binning))
+                        d.addCallback(exposeClass.seriesCallback)
 
-                    # start timer
-                    thread.start_new_thread(exposeClass.exposeTimer, (0,))
+                        # start timer
+                        thread.start_new_thread(exposeClass.exposeTimer, (0,))
 
                 if(imtype in ['flat', 'object', 'dark']):
                     exposeClass.expButton.Enable(False)
@@ -176,14 +182,21 @@ class ScriptCommands(wx.Panel):
                     basename = str(runList[4])
                     exposeClass.currentImage = basename
 
-                    for i in range(int(number)):
-                        d = self.protocol.addDeferred("seriesSent" + str(i+1))
-                        d.addCallback(exposeClass.displaySeriesImage_thread)
+                    overwrite = None
+                    if(als.checkForFile("/data/copyfile/" + self.currentImage + "_001.fits")):
+                        dialog = wx.MessageDialog(None, "Do you want to change temperature during exposure?", "", wx.OK | wx.CANCEL|wx.ICON_QUESTION)
+                        overwrite = dialog.ShowModal()
+                        dialog.Destroy()
 
-                    d = self.protocol.sendCommand(sendCommand + " " + imtype + " " + number + " " + itime + " " + str(self.parent.parent.parent.binning))
-                    d.addCallback(exposeClass.seriesCallback)
-                    # start timer
-                    thread.start_new_thread(exposeClass.exposeTimer, (float(itime),))
+                    if(overwrite is not None or overwrite == wx.ID_OK):
+                        for i in range(int(number)):
+                            d = self.protocol.addDeferred("seriesSent" + str(i+1))
+                            d.addCallback(exposeClass.displaySeriesImage_thread)
+
+                        d = self.protocol.sendCommand(sendCommand + " " + imtype + " " + number + " " + itime + " " + str(self.parent.parent.parent.binning))
+                        d.addCallback(exposeClass.seriesCallback)
+                        # start timer
+                        thread.start_new_thread(exposeClass.exposeTimer, (float(itime),))
 
             if(sendCommand == 'abort'):
                 exposeClass = self.parent.parent.parent.takeImage.exposureInstance

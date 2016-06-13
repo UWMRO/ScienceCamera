@@ -5,7 +5,7 @@ from astropy.io import fits
 import numpy as np
 import threading
 import time
-import sys
+import os
 from datetime import datetime
 
 def AddLinearSpacer(boxsizer, pixelSpacing):
@@ -101,6 +101,7 @@ def testNaming(name):
         else:
             name = iterateImageCounter(name)
         print("count at:", i)
+
 def checkForImageCounter(name):
     """
     Note: This method is only ever entered if there actually is a name as well as there will never

@@ -161,67 +161,70 @@ class Exposure(wx.Panel):
             # get image type
             imType = int(line[0])
             itime = float(line[3])
-            """
-            overwrite = True
-            if(als.checkForFile("/data/copyfile/" + self.currentImage)):
-            """
-
-            #self.expButton.SetLabel("Abort")
-            if(imType == 1):  # single exposure
-                self.expButton.Enable(False)
-                self.stopExp.Enable(True)
-                self.abort = True
-                line = " ".join(line[1:])  # bring all the parameters together
-                d = self.protocol.sendCommand("expose " + line)
-                d.addCallback(self.expose_callback_thread)
-                thread.start_new_thread(self.exposeTimer, (itime,))
-
-            if(imType == 2):  # real time exposure
-                self.expButton.Enable(False)
-                self.stopExp.Enable(True)
-                self.abort = True
-                line = " ".join(line[1:])
-                # start callback that looks for a path leading to a real image
-                d = self.protocol.addDeferred("realSent")
-                d.addCallback(self.displayRealImage_thread)
-
-                d = self.protocol.sendCommand("real " + line)
-                d.addCallback(self.realCallback)  # this will clear the image path queue
-
-                # start timer
-                thread.start_new_thread(self.exposeTimer, (itime,))
-
-            if(imType == 3):  # series exposure
-                dialog = wx.TextEntryDialog(None, "How many exposure?", "Entry", "1", wx.OK | wx.CANCEL)
-                answer = dialog.ShowModal()
-                dialog.Destroy()
-                if answer == wx.ID_OK:
-                    self.seriesImageNumber = dialog.GetValue()
-                    if(als.isInt(self.seriesImageNumber)):
-                        print("Number of image to be taken:", int(self.seriesImageNumber))
-                        self.expButton.Enable(False)
-                        self.stopExp.Enable(True)
-                        self.abort = True
-
-                        line[2] = self.seriesImageNumber
-                        line = " ".join(line[1:])
-                        
-                        # set up all callbacks for series
-                        for i in range(int(self.seriesImageNumber)):
-                            d = self.protocol.addDeferred("seriesSent" + str(i+1))
-                            d.addCallback(self.displaySeriesImage_thread)
-
-                        d = self.protocol.sendCommand("series " + str(line))
-                        d.addCallback(self.seriesCallback)
-                        
-                        # start timer
-                        thread.start_new_thread(self.exposeTimer, (itime,))
-
-                    else:
-                        dialog = wx.MessageDialog(None, "Entry was not a valid integer!", "", wx.OK | wx.ICON_ERROR)
-                        dialog.ShowModal()
-                        dialog.Destroy()
             
+            overwrite = None
+            if(als.checkForFile("/data/copyfile/" + self.currentImage)):
+                dialog = wx.MessageDialog(None, "Do you want to change temperature during exposure?", "", wx.OK | wx.CANCEL|wx.ICON_QUESTION)
+                overwrite = dialog.ShowModal()
+                dialog.Destroy()
+
+            if(overwrite is not None or overwrite == wx.ID_OK):
+                #self.expButton.SetLabel("Abort")
+                if(imType == 1):  # single exposure
+                    self.expButton.Enable(False)
+                    self.stopExp.Enable(True)
+                    self.abort = True
+                    line = " ".join(line[1:])  # bring all the parameters together
+                    d = self.protocol.sendCommand("expose " + line)
+                    d.addCallback(self.expose_callback_thread)
+                    thread.start_new_thread(self.exposeTimer, (itime,))
+
+                if(imType == 2):  # real time exposure
+                    self.expButton.Enable(False)
+                    self.stopExp.Enable(True)
+                    self.abort = True
+                    line = " ".join(line[1:])
+                    # start callback that looks for a path leading to a real image
+                    d = self.protocol.addDeferred("realSent")
+                    d.addCallback(self.displayRealImage_thread)
+
+                    d = self.protocol.sendCommand("real " + line)
+                    d.addCallback(self.realCallback)  # this will clear the image path queue
+
+                    # start timer
+                    thread.start_new_thread(self.exposeTimer, (itime,))
+
+                if(imType == 3):  # series exposure
+                    dialog = wx.TextEntryDialog(None, "How many exposure?", "Entry", "1", wx.OK | wx.CANCEL)
+                    answer = dialog.ShowModal()
+                    dialog.Destroy()
+                    if answer == wx.ID_OK:
+                        self.seriesImageNumber = dialog.GetValue()
+                        if(als.isInt(self.seriesImageNumber)):
+                            print("Number of image to be taken:", int(self.seriesImageNumber))
+                            self.expButton.Enable(False)
+                            self.stopExp.Enable(True)
+                            self.abort = True
+
+                            line[2] = self.seriesImageNumber
+                            line = " ".join(line[1:])
+                        
+                            # set up all callbacks for series
+                            for i in range(int(self.seriesImageNumber)):
+                                d = self.protocol.addDeferred("seriesSent" + str(i+1))
+                                d.addCallback(self.displaySeriesImage_thread)
+
+                            d = self.protocol.sendCommand("series " + str(line))
+                            d.addCallback(self.seriesCallback)
+                        
+                            # start timer
+                            thread.start_new_thread(self.exposeTimer, (itime,))
+
+                        else:
+                            dialog = wx.MessageDialog(None, "Entry was not a valid integer!", "", wx.OK | wx.ICON_ERROR)
+                            dialog.ShowModal()
+                            dialog.Destroy()
+                        
 
     def exposeTimer(self, time):
         # get exposure time 
@@ -730,7 +733,7 @@ class TempControl(wx.Panel):
             if(float(self.tempToSend) >= -80.0 and float(self.tempToSend) <= -10.0):
                 print(float(self.tempToSend))
                 if self.parent.exposureInstance.abort:
-                    dialog = wx.MessageDialog(None, "Do you want to changing temperature during exposure?", "", wx.OK | wx.CANCEL|wx.ICON_QUESTION)
+                    dialog = wx.MessageDialog(None, "Do you want to change temperature during exposure?", "", wx.OK | wx.CANCEL|wx.ICON_QUESTION)
                     answer = dialog.ShowModal()
                     dialog.Destroy()
 
