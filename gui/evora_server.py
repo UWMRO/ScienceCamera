@@ -95,7 +95,7 @@ class EvoraParser(object):
         if input[0] == "timings":
             return self.e.getTimings()
         if input[0] == "vertStats":
-            return self.e.verticalSpeedStats()
+            return self.e.verticalSpeedStats(int(input[1]))
         if input[0] == 'filterConnect':
             pass
         if input[0] == 'filterSlew':
@@ -294,10 +294,10 @@ class Evora(object):
 
         return "timings"
 
-    def verticalSpeedStats(self):
+    def verticalSpeedStats(self, index):
         print("GetNumberVSSpeeds:", andor.GetNumberVSSpeeds())
         print("GetNumberVSAmplitudes:", andor.GetNumberVSAmplitudes())
-        print("GetVSSpeed:", andor.GetVSSpeed())
+        print("GetVSSpeed:", andor.GetVSSpeed(index))
 
     def writeData(self):
         """
@@ -355,6 +355,8 @@ class Evora(object):
         #expTime, accTime, kTime = ctypes.c_float(), ctypes.c_float(), ctypes.c_float()
         #expTime, accTime, kTime = andor.GetAcquisitionTimings()
         print("Adjusted Exposure Time:", andor.GetAcquisitionTimings())
+        # set VSSpeeds
+        print("SetVSSpeed:", andor.SetVSSpeed(5))
         print('StartAcquisition:', andor.StartAcquisition())
 
         status = andor.GetStatus()
