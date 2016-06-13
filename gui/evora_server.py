@@ -334,7 +334,7 @@ class Evora(object):
         print('SetAcquisitionMode:', andor.SetAcquisitionMode(1))
         print('SetImage:', andor.SetImage(binning,binning,1,width,1,height))
         print('GetDetector (again):', andor.GetDetector())
-    
+
         if(imType == "bias"):
             andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             print('SetExposureTime:', andor.SetExposureTime(0))
