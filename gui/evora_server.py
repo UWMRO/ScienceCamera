@@ -357,7 +357,7 @@ class Evora(object):
         #expTime, accTime, kTime = andor.GetAcquisitionTimings()
         print("Adjusted Exposure Time:", andor.GetAcquisitionTimings())
         # set VSSpeeds
-        print("SetVSSpeed:", andor.SetVSSpeed(5))
+        print("SetVSSpeed:", andor.SetVSSpeed(3))
         print('StartAcquisition:', andor.StartAcquisition())
 
         status = andor.GetStatus()
