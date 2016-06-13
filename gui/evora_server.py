@@ -12,6 +12,8 @@ import time
 import Queue
 import thread
 import threading
+import AddLinearSpacer as als
+
 
 from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
@@ -378,11 +380,12 @@ class Evora(object):
             data=data.reshape(width//binning,height//binning)
             print(data.shape,data.dtype)
             hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
-            filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
+            #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
+            filename = als.getImagePath()
             hdu.writeto(filename,clobber=True)
             print("wrote: {}".format(filename))
         #queue.put("expose " + filename)
-        return "expose " + str(success) + ","+str(filename)
+        return "expose " + str(success) + ","+str(filename) + "," + str(itime)
 
     def realTimeExposure(self, protocol, imType, itime, binning=1): 
         """
@@ -434,7 +437,8 @@ class Evora(object):
                     data=data.reshape(width//binning,height//binning) # reshape into image
                     print(data.shape,data.dtype)
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
-                    filename = time.strftime('/tmp/image_%Y%m%d_%H%M%S.fits') 
+                    #filename = time.strftime('/tmp/image_%Y%m%d_%H%M%S.fits') 
+                    filename = als.getImagePath()
                     hdu.writeto(filename,clobber=True)
                     print("wrote: {}".format(filename))
                     data = np.zeros(width//binning*height//binning, dtype='uint16')
@@ -494,7 +498,8 @@ class Evora(object):
                     print(data.shape,data.dtype)
 
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
-                    filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
+                    #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
+                    filename = als.getImagePath()
                     hdu.writeto(filename,clobber=True)
 
                     print("wrote: {}".format(filename))

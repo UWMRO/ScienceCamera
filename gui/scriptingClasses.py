@@ -106,8 +106,11 @@ class ScriptCommands(wx.Panel):
     def sendToStatus(self, string):
         send = als.timeStamp()
         send += " " + string
+        wx.CallAfter(self.threadSafeScriptingStatus, send)
+
+    def threadSafeScriptingStatus(self, string):
         val = self.parent.scriptStatus.activityText.GetValue()
-        self.parent.scriptStatus.activityText.SetValue(val + send + "\n")
+        self.parent.scriptStatus.activityText.SetValue(val + string + "\n")
         self.parent.scriptStatus.activityText.SetInsertionPointEnd()
 
     def logScript(self, logmsg):
@@ -117,6 +120,8 @@ class ScriptCommands(wx.Panel):
         """
         print("logging from scripting class") 
         self.sendToStatus(logmsg)
+        logInstance = self.parent.parent.parent.log.logInstance
+        wx.CallAfter(logInstance.threadSafeLogStatus, logmsg)
 
     def executeCommand(self, runList):
         """
@@ -144,7 +149,7 @@ class ScriptCommands(wx.Panel):
 
                 exposeClass = self.parent.parent.parent.takeImage.exposureInstance
                 exposeClass.seriesImageNumber = int(number)
-                exposeClass.logFunction = self.logScript
+                exposeClass.logFunction = self.logScript # point to the correct log function that prints to log tab and script status
 
                 # example runList (['series', 'bias', int(number), 'basename'])
                 if(imtype == 'bias'):
@@ -175,8 +180,7 @@ class ScriptCommands(wx.Panel):
                         d = self.protocol.addDeferred("seriesSent" + str(i+1))
                         d.addCallback(exposeClass.displaySeriesImage_thread)
 
-                    d = self.protocol.sendCommand(sendCommand + " " + imtype + " " + number + " " + itime + " " +
-                                                  str(self.parent.parent.parent.binning))
+                    d = self.protocol.sendCommand(sendCommand + " " + imtype + " " + number + " " + itime + " " + str(self.parent.parent.parent.binning))
                     d.addCallback(exposeClass.seriesCallback)
                     # start timer
                     thread.start_new_thread(exposeClass.exposeTimer, (float(itime),))
