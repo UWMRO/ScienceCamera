@@ -669,8 +669,8 @@ def GetNewFloatData(*args):
   return _andor.GetNewFloatData(*args)
 GetNewFloatData = _andor.GetNewFloatData
 
-def GetNumberADChannels(*args):
-  return _andor.GetNumberADChannels(*args)
+def GetNumberADChannels():
+  return _andor.GetNumberADChannels()
 GetNumberADChannels = _andor.GetNumberADChannels
 
 def GetNumberAmp(*args):

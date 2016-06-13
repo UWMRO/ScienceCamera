@@ -27,10 +27,13 @@
 %apply long *OUTPUT {long * acc, long * series};
 %apply float *OUTPUT {float * exposure, float * accumulate, float * kinetic};
 %apply int *OUTPUT {long *acc, long *series}; // "%apply long" gives non-sense in python, this way gives good results
-%apply int *OUTPUT {int *speeds}; // For GetNumberVSSpeeds
+%apply int *OUTPUT {int *speeds}; // For GetNumberVSSpeeds and GetNumberHSSpeeds()
 %apply int *OUTPUT {int *number}; // For GetNumberVSAmplitudes
-%apply float *OUTPUT {float *speed}; // For GetVSSpeeds
+%apply float *OUTPUT {float *speed}; // For GetVSSpeeds and GetHSSpeeds
 %apply float *OUTPUT {int *index, float *speed}; // For GetFastestRecommendedVSSpeed()
+%apply int *OUTPUT {int *channels}; // For GetNumberADChannels
+
+
 
 %{
 #define SWIG_FILE_WITH_INIT

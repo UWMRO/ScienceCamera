@@ -8858,19 +8858,20 @@ fail:
 SWIGINTERN PyObject *_wrap_GetNumberADChannels(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   int *arg1 = (int *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
+  int temp1 ;
+  int res1 = SWIG_TMPOBJ ;
   unsigned int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:GetNumberADChannels",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_int, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GetNumberADChannels" "', argument " "1"" of type '" "int *""'"); 
-  }
-  arg1 = (int *)(argp1);
+  arg1 = &temp1;
+  if (!PyArg_ParseTuple(args,(char *)":GetNumberADChannels")) SWIG_fail;
   result = (unsigned int)GetNumberADChannels(arg1);
   resultobj = SWIG_From_unsigned_SS_int((unsigned int)(result));
+  if (SWIG_IsTmpObj(res1)) {
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_From_int((*arg1)));
+  } else {
+    int new_flags = SWIG_IsNewObj(res1) ? (SWIG_POINTER_OWN |  0 ) :  0 ;
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj((void*)(arg1), SWIGTYPE_p_int, new_flags));
+  }
   return resultobj;
 fail:
   return NULL;
