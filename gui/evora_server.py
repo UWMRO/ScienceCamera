@@ -94,6 +94,8 @@ class EvoraParser(object):
             return self.e.getStatus()
         if input[0] == "timings":
             return self.e.getTimings()
+        if input[0] == "vertStats":
+            return self.e.verticalSpeedStats()
         if input[0] == 'filterConnect':
             pass
         if input[0] == 'filterSlew':
