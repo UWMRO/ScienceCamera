@@ -29,7 +29,7 @@
 %apply int *OUTPUT {long *acc, long *series}; // "%apply long" gives non-sense in python, this way gives good results
 %apply int *OUTPUT {int *speeds}; // For GetNumberVSSpeeds
 %apply int *OUTPUT {int *number}; // For GetNumberVSAmplitudes
-%apply float *OUTPUT {int *index, float *speeds};
+%apply float *OUTPUT {float *speed}; // For GetVSSpeed()
 
 
 %{
