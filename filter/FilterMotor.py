@@ -137,8 +137,6 @@ class FilterMotor(object):
 							self.setPos(int(100))
 							time.sleep(2)
 							print self.status()
-							if self.dict['currentPos'] == self.dict['commandedPos']:
-								raise Exception
 							break
 		
 					if self.dict['currentPos'] - previousPos >  3000:
@@ -146,6 +144,9 @@ class FilterMotor(object):
 						crossArr.append(self.dict['currentPos'] - previousPos)
 						#print self.status(), crossArr
 						previousPos = self.dict['currentPos']
+				if self.dict['currentPos'] == self.dict['commandedPos']:
+                                	raise Exception
+
 			del crossArr[0]
 			del crossArr[0]
 			self.dict['filterDelta'] = int(np.mean(crossArr))
@@ -155,18 +156,16 @@ class FilterMotor(object):
 			self.dict["home"] = True
 		except:
 			self.dict["home"] = False
+			self.motorPower(False)
+			return False
 		self.motorPower(False)
-		return
+		return True
 
 if __name__ == "__main__":
 	p = FilterMotor()
 	p.connDev()
 	time.sleep(.5)
-	p.home()
+	print p.home()
 	time.sleep(.5)
-	p.filterSelect(1)
-	time.sleep(5)
-	p.filterSelect(3)
-	time.sleep(5)
 	p.disconnDev()
 
