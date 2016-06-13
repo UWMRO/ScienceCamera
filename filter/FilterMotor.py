@@ -17,6 +17,7 @@ from Phidgets.Events.Events import AttachEventArgs, DetachEventArgs, ErrorEventA
 from Phidgets.Devices.Stepper import Stepper
 from Phidgets.Phidget import PhidgetLogLevel
 import fw_io
+import numpy as np
 
 
 class FilterMotor(object):
@@ -24,11 +25,13 @@ class FilterMotor(object):
 		"""Add docs to all functions"""
 		self.stepper = None
 		self.fw = fw_io.FWIO()
+		self.dict = {"velocity":None, "amp":None, "acceleration":None, "position":None, "power":None, "hall":None, "commanded":None, "filterDelta":6860, "ID":None, "home":False}
 
 	def DisplayDeviceInfo(self):
 		#==> rename to getDeviceInfo
     		print("|- %8s -|- %30s -|- %10d -|- %8d -|" % (self.stepper.isAttached(), self.stepper.getDeviceName(), self.stepper.getSerialNum(), self.stepper.getDeviceVersion()))
     		print("Number of Motors: %i" % (self.stepper.getMotorCount()))
+		return
 
 	def connDev(self):
 		"""connect to device and open serial connection to arduino"""
@@ -36,49 +39,56 @@ class FilterMotor(object):
                 self.stepper.openPhidget()
                 self.stepper.waitForAttach(10000)
 
-		self.param(20000,6000,0.75)
+		self.setParm(20000,6000,0.75)
 
 		self.fw.openPort()
+		time.sleep(2)
+		return
 
 	def disconnDev(self):
 		time.sleep(1)
-		self.motorpower(False)
+		self.motorPower(False)
 		self.stepper.closePhidget()
+		return
 
-	def motorpower(self, val = False):
+	def motorPower(self, val = False):
 		self.stepper.setEngaged(0,val)
-
-		self.param(0,20000,6000,0.75)
-		self.motorpower(True)
+		return
 
 	def setParm(self, acc, vel, cur):
 		self.stepper.setAcceleration(0, acc) 
 	    	self.stepper.setVelocityLimit(0, vel)
+		self.stepper.setCurrentLimit(0,cur)
 		if cur>1.4:				
 			print "Cannot set current above 1.5. Current set to 0.5"
 			return
+		return
  
 	def status(self):
-		dict = {"velocity":None, "amp":None, "acceleration":None, "position":None, "power":None, "hall":None}
-		dict['power'] = self.stepper.getEngaged(0)
-		dict['position'] = self.stepper.getCurrentPosition(0)
-		dict['acceleration'] =self.stepper.getAcceleration(0)
-		dict['velocity'] = self.stepper.getVelocityLimit(0)
-		dict['amp'] = self.stepper.getCurrentLimit(0)
-		dict['hall'] = FWIO.status()
-		return dict
+		self.dict['power'] = self.stepper.getEngaged(0)
+		self.dict['position'] = int(self.stepper.getCurrentPosition(0))
+		self.dict['acceleration'] =self.stepper.getAcceleration(0)
+		self.dict['velocity'] = self.stepper.getVelocityLimit(0)
+		self.dict['amp'] = self.stepper.getCurrentLimit(0)
+		self.dict['hall'] = self.fw.getStatus()
+		return self.dict
 
 	def setPos(self, pos = None):
-		self.stepper.setCurrentPosition(0, pos)	
+		self.stepper.setCurrentPosition(0, int(pos))	
+		return
 
 	def moveMotor(self, pos = None):
+		self.motorPower(True)
 		self.stepper.setTargetPosition(0, int(pos))
+		self.dict["commanded"] = pos
+		return
 
 	def nudge(self, mov):
 		x = self.stepper.getCurrentPosition(0) + mov 
 		self.movemotor(x)
 		time.sleep(0.5)
 		print "New Position:", self.stepper.getCurrentPosition(0)
+		return
 
 	def test3(self):
 		x = 0
@@ -86,28 +96,12 @@ class FilterMotor(object):
 			continue
 		print "hi" 
 
-	def filterselect(self, num = None):
+	def filterSelect(self, num = None):
+		delta = int(self.dict['filterDelta'])
 		print "Moving to filter position %d" % num
-		if int(num)<= 6 and int(num)>=0:
-			self.movemotor(int(num)*7050)
-			tpos = num*7050
-			while self.getCurrentPosition() != tpos:
-				continue
-			while switch == false:
-				self.movemotor(tpos+1000)
-				if switch == True:
-					self.motorstop()
-					self.setCurrentPosition(0,tpos)
-				else: 
-					self.movemotor(tpos-1000)
-					if switch == True:
-						self.motorstop()
-						self.setCurrentPosition(0,tpos)
-			
-		elif int(num)>6:
-			print "Not Valid Filter Number"
-		elif int(num)<0:
-			print "Not Valid Filter Number"
+		tpos = num*delta
+		self.moveMotor(tpos)			
+		return
 
 	def test(self, x): #test for drifting
 		n=0		
@@ -119,54 +113,66 @@ class FilterMotor(object):
 			self.filterselect(0)
 			time.sleep(8)	
 
-	def motorstop(self):
-		self.stepper.setAcceleration(0,200000)
-		self.stepper.setVelocityLimit(0,0)
-		time.sleep(0.2)
-		y = self.stepper.getCurrentPosition(0)
-		self.stepper.setCurrentPosition(0,y)
-		self.stepper.setVelocityLimit(0,self.gvel)
-		self.stepper.setAcceleration(0,self.gacc)
+	def motorStop(self):
+		self.motorPower(False)
+		return
 
-	def findhome(self, switch): #'switch' placeholder for actual returned boolean value of switches
-		self.stepper.setVelocityLimit(0, 4000)
-		while switch == False:
-			self.stepper.setTargetPosition(0, 99999)
-		print self.stepper.getCurrentPosition(0)
-		self.stepper.setVelocityLimit(0,0)
-		self.stepper.setAcceleration(0,200000)
-		time.sleep(0.2)
-		y = self.stepper.getCurrentPosition(0)
-		self.stepper.setCurrentPosition(0,y)
-		self.stepper.setVelocityLimit(0,self.gvel)
-		self.stepper.setAcceleration(0,self.gacc)
-		print self.stepper.getCurrentPosition(0)
-		self.stepper.setCurrentPosition(0,0)
-
-	def test2(self): #test code for findhome. rotates until it reaches 999999 steps or when enter is pressed.
-		i = 0
-		while True:
-    			os.system('cls' if os.name == 'nt' else 'clear')
-    			if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
-        			line = raw_input()
-        			break
-			self.stepper.setTargetPosition(0, 999999)
-			print self.stepper.getCurrentPosition(0)
-		print self.stepper.getCurrentPosition(0)
-		self.stepper.setVelocityLimit(0,0)
-		self.stepper.setAcceleration(0,200000)
-		time.sleep(0.2)
-		y = self.stepper.getCurrentPosition(0)
-		self.stepper.setCurrentPosition(0,y)
-		self.stepper.setVelocityLimit(0,self.gvel)
-		self.stepper.setAcceleration(0,self.gacc)
-		print self.stepper.getCurrentPosition(0)
-		self.stepper.setCurrentPosition(0,0)
+	def home(self): 
+		crossArr = [0]
+		pastHome = 0
+		previousPos = 0
+		try:
+			print "starting home sequence"
+			self.setPos(0)
+			self.moveMotor(100000)
+			time.sleep(.2)
+			self.status()
+			while int(self.dict['position']) < int(self.dict['commanded']):
+				self.status()
+				if self.dict['hall'][0] == '0':
+					if self.dict['hall'][0] == '0' and self.dict['hall'][1] == '0':
+						if pastHome == 0: 
+							pastHome = pastHome + 1
+							print 'first home', self.status()
+							previousPos = self.dict['position']
+						if  self.dict['position'] - previousPos >  3000:
+							pastHome = pastHome + 1
+							print 'second home', self.status()
+						if pastHome == 2:
+							self.motorStop()
+							self.setPos(int(100))
+							time.sleep(2)
+							print self.status()
+							if self.dict['position'] == self.dict['commanded']:
+								raise Exception
+							break
+		
+					if self.dict['position'] - previousPos >  3000:
+						#print self.dict['position'] - previousPos
+						crossArr.append(self.dict['position'] - previousPos)
+						#print self.status(), crossArr
+						previousPos = self.dict['position']
+			del crossArr[0]
+			del crossArr[0]
+			self.dict['filterDelta'] = int(np.mean(crossArr))
+			print "homed", self.status()
+			self.moveMotor(0)
+			time.sleep(1)
+			self.dict["home"] = True
+		except:
+			self.dict["home"] = False
+		self.motorPower(False)
+		return
 
 if __name__ == "__main__":
 	p = FilterMotor()
 	p.connDev()
-	p.status()
-	time.sleep(1)
+	time.sleep(.5)
+	p.home()
+	time.sleep(.5)
+	p.filterSelect(1)
+	time.sleep(5)
+	p.filterSelect(3)
+	time.sleep(5)
 	p.disconnDev()
 
