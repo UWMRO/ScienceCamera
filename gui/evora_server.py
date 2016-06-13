@@ -298,6 +298,7 @@ class Evora(object):
         print("GetNumberVSSpeeds:", andor.GetNumberVSSpeeds())
         print("GetNumberVSAmplitudes:", andor.GetNumberVSAmplitudes())
         print("GetVSSpeed:", andor.GetVSSpeed(index))
+        print("GetFastestRecommendedVSSpeed:", andor.GetFastestRecommendedVSSpeed())
 
     def writeData(self):
         """
