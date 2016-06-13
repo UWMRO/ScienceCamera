@@ -96,6 +96,8 @@ class EvoraParser(object):
             return self.e.getTimings()
         if input[0] == "vertStats":
             return self.e.verticalSpeedStats(int(input[1]))
+        if input[0] == "horzStats":
+            return self.e.horizontalSpeedStats(int(input[1]), int(input[2]), int(input[3]))
         if input[0] == 'filterConnect':
             pass
         if input[0] == 'filterSlew':
@@ -300,6 +302,10 @@ class Evora(object):
         print("GetVSSpeed:", andor.GetVSSpeed(index))
         print("GetFastestRecommendedVSSpeed:", andor.GetFastestRecommendedVSSpeed())
 
+    def horizontalSpeedStats(self, channel, type, index):
+        print("GetNumberHSSpeeds:", andor.GetNumberHSSpeeds(channel, type))
+        print("GetHSSpeed:", andor.GetHSSpeed(channel, type, index))
+
     def writeData(self):
         """
         This will write all the necessary exposure files headers.
@@ -357,7 +363,8 @@ class Evora(object):
         #expTime, accTime, kTime = andor.GetAcquisitionTimings()
         print("Adjusted Exposure Time:", andor.GetAcquisitionTimings())
         # set VSSpeeds
-        print("SetVSSpeed:", andor.SetVSSpeed(3))
+        #print("SetVSSpeed:", andor.SetVSSpeed(3))
+        print("SetHSSpeed:", andor.SetHSSpeed(0, 1))
         print('StartAcquisition:', andor.StartAcquisition())
 
         status = andor.GetStatus()
@@ -425,6 +432,7 @@ class Evora(object):
             print('SetExposureTime:', andor.SetExposureTime(itime)) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
             
         data = np.zeros(width//binning*height//binning, dtype='uint16')
+        print("SetHSSpeed:", andor.SetHSSpeed(0, 1))
         print('StartAcquisition:', andor.StartAcquisition())
 
         
@@ -554,6 +562,7 @@ class Evora(object):
 
         print("Timings:", andor.GetAcquisitionTimings())
 
+        print("SetHSSpeed:", andor.SetHSSpeed(0, 1))
         print('StartAcquisition:', andor.StartAcquisition())
 
         status = andor.GetStatus()
