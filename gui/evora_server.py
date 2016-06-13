@@ -292,6 +292,10 @@ class Evora(object):
 
         return "timings"
 
+    def verticalSpeedStats(self):
+        print("GetNumberVSSpeeds:", andor.GetNumberVSSpeeds())
+        print("GetNumberVSAmplitudes:", andor.GetNumberVSAmplitudes())
+        print("GetVSSpeed:", andor.GetVSSpeed())
 
     def writeData(self):
         """
