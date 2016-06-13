@@ -40,6 +40,7 @@ import AddLinearSpacer as als
 
 ## Global Variables
 app = None
+port_dict = {}
 
 ## Getting to parents (i.e. different classes)
 # Three parents will get to the Evora class and out of the notebook
@@ -227,9 +228,13 @@ class Evora(wx.Frame):
         self.stats.SetStatusText("Binning Type: 2x2", 2)
 
     def onConnect(self, event):
+        global port_dict
         print ("Connecting")
         #reactor.run()
-        self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
+        #self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
+        # add filter connection
+        self.connection = port_dict['5502'] = reactor.connectTCP('localhost', 5502, EvoraClient(app.frame1))
+        port_dict['5503'] = reactor.connectTCP('localhost', 5503, FilterClient(app.frame1))
 
     def onConnectCallback(self, msg):
         #msg = args[0]
@@ -775,6 +780,81 @@ class EvoraClient(protocol.ClientFactory):
     def clientConnectionFailed(self, transport, reason):
         reactor.stop()
 
+class FilterForwarder(basic.LineReceiver):
+    def __init__(self):
+        self.output = None
+        self._deferreds = {}
+
+    def dataReceived(self, data):
+        print("Receieved:", data)
+        
+        gui = self.factory.gui
+            
+        gui.takeImage.filterInstance.protocol = self
+
+        if gui:
+            val = gui.log.logInstance.logBox.GetValue()
+            #print val
+            gui.log.logInstance.logBox.SetValue(val + data)
+            gui.log.logInstance.logBox.SetInsertionPointEnd()
+            #sep_data = data.split(" ")
+            #print sep_data
+        
+        # if there is more than one line that was sent and received 
+        sep_data = data.rsplit() # split for multiple lines
+        size = len(sep_data) # size of sep_data will always be even (key followed by data pair)
+        for i in range(0, size, 2):
+            singular_sep_data = [sep_data[i], sep_data[i+1]]
+
+            #print singular_sep_data
+            if singular_sep_data[0] in self._deferreds:
+                self._deferreds.pop(singular_sep_data[0]).callback(singular_sep_data[1])
+        
+    def sendCommand(self, data):
+        self.sendLine(data)
+        d = self._deferreds[data.split(" ")[0]] = defer.Deferred()
+        return d
+
+    def connectionMade(self):
+        #self.output = self.factory.gui.log.logInstance.logBox
+        
+        ## Add a callback that will open up the rest of the gui when the camera is done setting up
+        #gui = self.factory.gui # get gui for adding the callback method
+        #d = defer.Deferred()
+        #d.addCallback(gui.onConnectCallback)
+        #self._deferreds["status"] = d
+        print("connection made to filter")
+
+    def addDeferred(self, string):
+        """
+        This is used for creating deferred objects when expecting to receive data.
+        """
+        d = self._deferreds[string] = defer.Deferred()
+        return d
+
+    def removeDeferred(self, string):
+        """
+        Used to get rid of any trailing deferred obejcts (e.g. realSent after an abort)
+        """
+        if(string in self._deferreds):
+            self._deferreds.pop(string)
+
+    def connectionLost(self, reason):
+        ## Add a "callback" that will close down the gui functionality when camera connection is closed.
+        #gui = self.factory.gui
+        #gui.onDisconnectCallback()
+        pass
+
+class FilterClient(protocol.ClientFactory):
+    def __init__(self, gui):
+        self.gui = gui
+        self.protocol = FilterForwarder
+
+    def clientConnectionLost(self, transport, reason):
+        print("connection lost on port 5503")
+        
+    def clientConnectionFailed(self, transport, reason):
+        print("connection lost on port 5503")
 
 if __name__ == "__main__":
     #log.startLogging(sys.stdout)
