@@ -366,7 +366,6 @@ class Evora(wx.Frame):
         filterSub.Enable(1112, False)
 
 
-
     def onFilterListRefresh(self, event):
         """
         This will simply refresh the filter list so that the menu gets displayed correctly.  This is only used when
