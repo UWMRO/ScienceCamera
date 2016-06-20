@@ -66,6 +66,92 @@ def calcStats(data):
     return stats_list
 
 
+def getLogString(command, prePost):
+    """
+    Pre: Takes in command that is either sent to or from the server.  Parses that command and constructs
+         a string for reporting in any particular status box.  Must pass in as prePost whether the command
+         is pre-server exectution or post server exection.
+    Post: Returns a string that is used to report in a status box through the GUI, e.g. the log box in the
+          log tab.  If string is not made then it returns None.
+    """
+    command = command.split(" ")
+    if(prePost == 'pre'):  # command is split with by white space
+        key = command[0]
+
+        if(key == 'expose'):
+            itime = command[3]
+            return "Exposing for time %.2f sec" % itime
+        if(key == 'real'):
+            itime = command[3]
+            return "Starting real time expsoures with %.2f sec" % itime
+        if(key == 'series'):
+            itime = command[3]
+            number = command[2]
+            return "Exposing for %d images with time %.2f sec" % itime
+        if(key == 'setTEC'):
+            temp = command[1]
+            return "Setting temperature to %.1f C" % temp
+        if(key == 'warmup'):
+            return "Turning off cooler"
+        if(key == 'filter'):
+            pass
+
+    if(prePost == 'post'):  # command has a key then is followed by relavent information delimited with commas
+        key = command[0]
+        stats = command[1].split(",")
+        print("Stats in log:", stats)
+        if(key == 'status'):
+            if(stats[0] == 20002):  # 20002 is "success" to Evora
+                return "Camera already initialized connecting..."
+            else:
+                return "Camera uninitialized this will take a few..."
+        if(key == 'expose'):
+            # at the end of stats is the image name
+            name = stats[-1]
+            itime = stats[2]
+            results = int(stats[0])
+            if(results == 1):  # 1 for successful exposure
+                return "%s completed with time %.2f" % (name, itime)
+            else:
+                return "%s failed to expose..." % name
+        if(key == 'real'):
+            results = stats[0]
+            return "Real time exposure successfully done..."
+        if(key == 'series'):
+            results = stats[0]
+            return "Done take series images..."
+        if(key[:-1] == 'seriesSent'):
+            name = stats[-1]
+            itime = stats[1]
+            return "%s completed with time %.2f" % (name, itime)
+        if(key == 'connect'):
+            if(stats[0] == 20002):  # 20002 is "success" Evora
+                return "Initialization completed..."
+            else:
+                return "Initialization failed..."
+        if(key == 'getTEC'):
+            pass
+        if(key == 'setTEC'):
+            temp = stats[0]
+            return "Successfully set cooler to %.1f C" % temp
+        if(key == 'warmup'):
+            return "Successfully warming up..."
+        if(key == 'temp'):
+            results = stats[0]  # 1 for success 0 for failure
+            if(results == 1):
+                return "Successfully shutdown cooler..."
+            else:
+                return "Failure in setting cooler down..."
+        if(key == 'shutdown'):
+            results = stats[0]
+            return "Successfully shutdown camera..."
+        if(key == 'abort'):
+            results = stats[0]
+            return "Successfully aborted exposure..."
+        if(key == 'filter'):
+            pass
+
+    return None
 def timeStamp():
     """
     Pre: No arguments are needed to invoke this method.
@@ -76,10 +162,12 @@ def timeStamp():
     stamp = "[%s:%s:%s]" % (time.hour, time.minute, time.second)
     return stamp
 
+
 def checkForFile(path):
     boolean = os.path.isfile(path)
     return boolean
-        
+
+
 def getImagePath():
     """
     Pre: No inputs.
@@ -90,17 +178,6 @@ def getImagePath():
     fileName = "image_%s%s%s_%s%s%s_%s.fits" % (time.year, time.month, time.day, time.hour, time.minute, time.second, time.microsecond)
     return "/data/forTCC/" + fileName
 
-def testNaming(name):
-    print("current image name:", name)
-    for i in range(100):
-        print(checkForImageCounter(name))
-        if(not checkForImageCounter(name)):
-            name += "_001"
-            print(name)
-            print("entered first bit")
-        else:
-            name = iterateImageCounter(name)
-        print("count at:", i)
 
 def checkForImageCounter(name):
     """
@@ -120,12 +197,13 @@ def checkForImageCounter(name):
     else:
         return False
 
+
 def iterateImageCounter(name):
     """
     Note: This method is only invoked if the current image name has been checked to have a counter.
     Pre: Takes in an image name with a counter.
-    Post: Gets the counter and iterates it, and then edits self.currentImage to have an iterated count string 
-    in the standard format.
+    Post: Gets the counter and iterates it, and then edits self.currentImage to have an iterated count string
+          in the standard format.
     """
     temp = name.split('_')
     count = int(temp[-1])

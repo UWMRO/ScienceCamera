@@ -92,6 +92,7 @@ class Evora(wx.Frame):
         ## Sub menus
         filterSub = wx.Menu()
         filterSub.Append(1110, "&Connect", "Connect to the filter")
+        filterSub.Append(1112, "&Disconnect", "Disconnect from filter")
         filterSub.Append(1111, "&Refresh", "Refresh filter list")
 
         binningSub = wx.Menu()
@@ -139,16 +140,6 @@ class Evora(wx.Frame):
         self.expGauge = wx.Gauge(self.stats, id=1, range=100, size=(110, -1))
         self.stats.AddWidget(self.expGauge, pos=1, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
         
-        #self.bitmap = wx.StaticBitmap(self.stats, -1, wx.Bitmap("greenCirc.png"),size=(90, 17))
-        #self.bitmap.SetBitmap(wx.Bitmap('greenCirc.png'))
-        #tempText = wx.StaticText(self.stats, -1, label="50 C")
-        #self.stats.AddWidget(self.bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-        #self.stats.AddWidget(tempText, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN)
-
-
-
-        #self.takeImage.tempInstance.changeTemp(50, self.stats)
-
         # size panels
         sizer = wx.BoxSizer()
         sizer.Add(notebook, 1, wx.EXPAND)
@@ -165,6 +156,7 @@ class Evora(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onShutdown, id=1132)
         self.Bind(wx.EVT_MENU, self.onFilterConnect, id=1110)
         self.Bind(wx.EVT_MENU, self.onFilterListRefresh, id=1111)
+        self.Bind(wx.EVT_MENU, self.onFilterDisconnect, id=1112)
         #self.Bind(wx.EVT_MENU, self.onStartup, id=1133)
         #self.Bind(wx.EVT_CLOSE, self.onClose)
 
@@ -173,7 +165,6 @@ class Evora(wx.Frame):
         self.disableButtons(True)
 
         # Add and set icon
-        #logo = wx.StaticBitmap(None, -1, wx.Bitmap("evora_logo"))
         ico = wx.Icon("evora_logo_circ.ico", wx.BITMAP_TYPE_ICO)
         self.SetIcon(ico)
 
@@ -234,7 +225,7 @@ class Evora(wx.Frame):
         #self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
         # add filter connection
         self.connection = port_dict['5502'] = reactor.connectTCP('localhost', 5502, EvoraClient(app.frame1))
-        port_dict['5503'] = reactor.connectTCP('192.168.1.30', 5503, FilterClient(app.frame1))
+
 
     def onConnectCallback(self, msg):
         #msg = args[0]
@@ -282,9 +273,6 @@ class Evora(wx.Frame):
 
         #settings.done_ids.put(threading.current_thread().name)
         #signal.alarm(1)
-
-    
-
     
     def onDisconnect(self, event):
         print("Disconnecting")
@@ -362,9 +350,22 @@ class Evora(wx.Frame):
         The server will will start the filter motor and then use the connect function
         """
         # send command on filter setup
-        
-        # lock the connect button up and unlock the disconnect        
-        pass
+        port_dict['5503'] = reactor.connectTCP('192.168.1.30', 5503, FilterClient(app.frame1))
+        # lock the connect button up and unlock the disconnect
+        filterSub = self.menuBar.GetMenu(0)  # first index
+        filterSub.Enable(1110, False)
+        filterSub.Enable(1112, True)
+
+
+    def onFilterDisconnect(self, event):
+        connection = port_dict['5503']
+        connection.disconnect()
+        # lock the connect button up and unlock the disconnect
+        filterSub = self.menuBar.GetMenu(0)  # first index
+        filterSub.Enable(1110, True)
+        filterSub.Enable(1112, False)
+
+
 
     def onFilterListRefresh(self, event):
         """
@@ -792,7 +793,7 @@ class FilterForwarder(basic.LineReceiver):
             
         self.gui.takeImage.filterInstance.protocol2 = self
 
-        if gui:
+        if self.gui:
             val = self.gui.log.logInstance.logBox.GetValue()
             #print val
             self.gui.log.logInstance.logBox.SetValue(val + data)
@@ -801,7 +802,7 @@ class FilterForwarder(basic.LineReceiver):
             #print sep_data
         
         # if there is more than one line that was sent and received 
-        sep_data = data.rsplit() # split for multiple lines
+        sep_data = data.rsplit()  # split for multiple lines
         size = len(sep_data) # size of sep_data will always be even (key followed by data pair)
         for i in range(0, size, 2):
             singular_sep_data = [sep_data[i], sep_data[i+1]]
