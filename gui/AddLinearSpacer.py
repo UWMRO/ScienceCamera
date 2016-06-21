@@ -107,6 +107,7 @@ def getLogString(command, prePost):
 
     if(prePost == 'post'):  # command has a key then is followed by relavent information delimited with commas
         key = command[0]
+        print("key from post:", key)
         stats = command[1].split(",")
         print("Stats in log:", stats)
         if(key == 'status'):
@@ -129,7 +130,8 @@ def getLogString(command, prePost):
         if(key == 'series'):
             results = stats[0]
             return "Done take series images..."
-        if(key[:-1] == 'seriesSent'):
+        if(key == 'seriesSent'):
+            
             name = stats[-1]
             itime = float(stats[1])
             return "\"%s\" completed with time %.2f sec" % (name, itime)

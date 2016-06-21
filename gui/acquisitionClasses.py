@@ -240,7 +240,7 @@ class Exposure(wx.Panel):
                                 d = self.protocol.addDeferred("seriesSent" + str(i+1))
                                 d.addCallback(self.displaySeriesImage_thread)
 
-                            command = "series " + line
+                            command = "series " + str(line)
                             logString = als.getLogString(command, 'pre')
                             self.log(self.logFunction, logString)
 
@@ -451,7 +451,8 @@ class Exposure(wx.Panel):
             self.copyImage(directory, name)
 
             self.logFunction = self.logExposure
-            logString = als.getLogString("seriesSent " + msg + "," + self.currentImage, 'post')
+            dataMsg = ",".join(msg)
+            logString = als.getLogString("seriesSent " + dataMsg + "," + self.currentImage, 'post')
             self.log(self.logFunction, logString)
 
             self.parent.parent.parent.expGauge.SetValue(0)
@@ -487,8 +488,9 @@ class Exposure(wx.Panel):
         self.parent.parent.parent.expGauge.SetValue(0)
         self.startTimer = 0
 
+        dataMsg = ",".join(msg)
         self.logFunction = self.logExposure
-        logString = als.getLogString("series " + msg, 'post')
+        logString = als.getLogString("series " + dataMsg, 'post')
         self.log(self.logFunction, logString)
         print("Completed real time series with exit:", msg)
 
@@ -537,6 +539,10 @@ class Exposure(wx.Panel):
 
         expNum = 1
         
+        filterInstance = self.parent.filterInstance
+        filter = str(filterInstance.filterSelection)
+        print("from attributes filter is:", filter)
+
         # set the global current image name
         #name = str(self.nameToSend)
         self.currentImage = self.nameToSend
@@ -547,7 +553,7 @@ class Exposure(wx.Panel):
         line += " " + str(expNum) # This is the exposure number.  Should have dialog come up for when set to series to take in the number of exposures 
         line += " " + str(self.timeToSend)
         line += " " + str(binning)
-
+        line += " " + filter
         return line
 
     def logExposure(self, logmsg):
@@ -1105,6 +1111,7 @@ class FilterControl(wx.Panel):
             logString = als.getLogString("filter getFilter set " + filter + "," + str(pos), 'post')
             self.log(self.logFunction, logString)
             self.filterMenu.SetSelection(pos)
+            self.filterSelection = str(self.filterMenu.GetValue())
             self.targetFilter = None
         print("Filter position is", filter)
 

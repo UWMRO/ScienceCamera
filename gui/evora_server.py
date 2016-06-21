@@ -118,7 +118,8 @@ class EvoraParser(object):
             expnum = int(input[2])
             itime = float(input[3])  # why int?
             binning = int(input[4])
-            return self.e.expose(imType, expnum, itime, binning)
+            filter = str(input[5])
+            return self.e.expose(imType, expnum, itime, binning, filter)
         if input[0] == 'real':
             # command real flat 1 10 2
             imType = input[1]
@@ -136,7 +137,8 @@ class EvoraParser(object):
             expnum = int(input[2])
             itime = float(input[3])
             binning = int(input[4])
-            return self.e.kseriesExposure(self.protocol, imType, itime, numexp=expnum, binning=binning)
+            filter = str(input[5])
+            return self.e.kseriesExposure(self.protocol, imType, itime, filter=filter, numexp=expnum, binning=binning)
         """
         if input[0] == 'realTest':
             #exposureSetting = int(input[1])
@@ -322,7 +324,7 @@ class Evora(object):
         Pre: Takes in a list of attributes: [imType, binning, itime]
         Post: Returns an AstroPy header object to be used for writing to.
         """
-        imType, binning, itime = attributes[0], attributes[1], attributes[2]
+        imType, binning, itime, filter = attributes[0], attributes[1], attributes[2], attributes[3]
         # make new fits header object
         header = fits.Header()
         ut_time = time.gmtime() # get UT time
@@ -332,6 +334,7 @@ class Evora(object):
         header.append(card=("UT", ut_str, "UT time at start of exposure"))
         header.append(card=("OBSERVAT", "mro", "per the iraf list"))
         header.append(card=("IMAGETYP", imType))
+        header.append(card=("FILTER", filter))
         header.append(card=("BINX", binning, "Horizontal Binning"))
         header.append(card=("BINY", binning, "Vertical Binning"))
         header.append(card=("EXPOSURE", itime, "Total exposure time"))
@@ -350,7 +353,7 @@ class Evora(object):
         return header
 
 
-    def expose(self, imType=None, expnum=None, itime=2, binning=1):
+    def expose(self, imType=None, expnum=None, itime=2, binning=1, filter=""):
 
         if expnum is None:
             self.num += 1
@@ -387,7 +390,7 @@ class Evora(object):
         #print("SetVSSpeed:", andor.SetVSSpeed(3))
         print("SetHSSpeed:", andor.SetHSSpeed(0, 3))
 
-        attributes = [imType, binning, itime]
+        attributes = [imType, binning, itime, filter]
         header = self.getHeader(attributes)
         """
         # make new fits header object
@@ -585,7 +588,7 @@ class Evora(object):
         return "series 1,"+str(counter) # exits with 1 for success
 
 
-    def kseriesExposure(self, protocol, imType, itime, numexp=1, binning=1, numAccum=1, accumCycleTime=0, kCycleTime=0):
+    def kseriesExposure(self, protocol, imType, itime, filter="", numexp=1, binning=1, numAccum=1, accumCycleTime=0, kCycleTime=0):
         """
         This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
         """
@@ -622,7 +625,7 @@ class Evora(object):
         print("SetHSSpeed:", andor.SetHSSpeed(0, 3))
 
         # write headers
-        attributes = [imType, binning, itime]
+        attributes = [imType, binning, itime, filter]
         header = self.getHeader(attributes)
 
         print('StartAcquisition:', andor.StartAcquisition())
