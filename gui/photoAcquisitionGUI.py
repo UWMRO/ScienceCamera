@@ -111,7 +111,7 @@ class Evora(wx.Frame):
 
         # create main menus
         fileMenu = wx.Menu()
-        fileMenu.AppendMenu(1001, "&Filter", filterSub)
+        #fileMenu.AppendMenu(1001, "&Filter", filterSub)
         fileMenu.AppendMenu(1002, "&Binning", binningSub)
         #fileMenu.AppendMenu(1003, "&Camera", cameraSub)
         fileMenu.Append(1000, "&Exit", "Quit from Evora")
@@ -125,6 +125,7 @@ class Evora(wx.Frame):
         # add to menu bar
         self.menuBar.Append(fileMenu, "&File")
         self.menuBar.Append(cameraSub, "&Camera")
+        self.menuBar.Append(filterSub, "F&ilter")
         self.menuBar.Append(viewMenu, "&View")
         self.menuBar.Append(helpMenu, "&Help")
         # instantiate menubar
@@ -352,7 +353,7 @@ class Evora(wx.Frame):
         # send command on filter setup
         port_dict['5503'] = reactor.connectTCP('192.168.1.30', 5503, FilterClient(app.frame1))
         # lock the connect button up and unlock the disconnect
-        filterSub = self.menuBar.GetMenu(0)  # first index
+        filterSub = self.menuBar.GetMenu(2)  # second index
         filterSub.Enable(1110, False)
         filterSub.Enable(1112, True)
         self.takeImage.filterInstance.filterButton.Enable(True)
@@ -363,7 +364,7 @@ class Evora(wx.Frame):
         connection = port_dict['5503']
         connection.disconnect()
         # lock the connect button up and unlock the disconnect
-        filterSub = self.menuBar.GetMenu(0)  # first index
+        filterSub = self.menuBar.GetMenu(2)  # first index
         filterSub.Enable(1110, True)
         filterSub.Enable(1112, False)
         self.takeImage.filterInstance.filterButton.Enable(False)

@@ -343,14 +343,14 @@ class Evora(object):
 
         # get readout time and temp
         temp = andor.GetTemperatureStatus()[1]
-        readTime = andor.GetAcquisitionTimings()[1] - itime
+        readTime = andor.GetAcquisitionTimings()[3] - itime
         header.append(card=("TEMP", temp, "Temperature"))
         header.append(card=("READTIME", readTime, "Pixel readout time"))
 
         return header
 
 
-    def expose(self, imType=None, expnum=None, itime=2, binning=1):
+    def expose(self, imType=None, expnum=None, itime=2, binning=1, readTime=3):
 
         if expnum is None:
             self.num += 1
@@ -377,43 +377,17 @@ class Evora(object):
                 andor.SetShutter(1,0,5,5)
             else:
                 andor.SetShutter(1,2,0,0)
-            print('SetExposureTime:', andor.SetExposureTime(itime)) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
+            print('SetExposureTime:', andor.SetExposureTime(itime))  # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
 
-
-        #expTime, accTime, kTime = ctypes.c_float(), ctypes.c_float(), ctypes.c_float()
-        #expTime, accTime, kTime = andor.GetAcquisitionTimings()
-        print("Adjusted Exposure Time:", andor.GetAcquisitionTimings())
-        # set Readout speeds
+        # set Readout speeds 0, 1, 2, or 3
         #print("SetVSSpeed:", andor.SetVSSpeed(3))
-        print("SetHSSpeed:", andor.SetHSSpeed(0, 3))
+        print("SetHSSpeed:", andor.SetHSSpeed(0, readTime))  # default readTime is index 3 which is 0.5 MHz or ~6 sec
+
+        results, expTime, accTime, kTime = andor.GetAcquisitionTimings()
+        print("Adjusted Exposure Time:", [results, expTime, accTime, kTime])
 
         attributes = [imType, binning, itime]
         header = self.getHeader(attributes)
-        """
-        # make new fits header object
-        header = fits.Header()
-        ut_time = time.gmtime() # get UT time
-        dateObs = time.strftime("%Y-%m-%dT%H:%M:%S", ut_time)
-        ut_str = time.strftime("%H:%M:%S", ut_time)
-        header.append(card=("DATE-OBS", dateObs, "Time at start of exposure"))
-        header.append(card=("UT", ut_str, "UT time at start of exposure"))
-        header.append(card=("OBSERVAT", "mro", "per the iraf list"))
-        header.append(card=("IMAGETYP", imType))
-        header.append(card=("BINX", binning, "Horizontal Binning"))
-        header.append(card=("BINY", binning, "Vertical Binning"))
-        header.append(card=("EXPOSURE", itime, "Total exposure time"))
-        header.append(card=("ACQMODE", "Single Scan", "Acquisition mode"))
-        header.append(card=("READMODE", "Image", "Readout mode"))
-        header.append(card=("INSTRUME", "evora", "Instrument used for imaging"))
-        header.append(card=("LATITUDE", 120.744466667, "Decimal degrees of MRO latitude"))
-        header.append(card=("LONGITUD", 46.9528, "Decimal degress of MRO longitude"))
-
-        # get readout time and temp
-        temp = andor.GetTemperatureStatus()[1]
-        readTime = andor.GetAcquisitionTimings()[1] - itime
-        header.append(card=("TEMP", temp, "Temperature"))
-        header.append(card=("READTIME", readTime, "Pixel readout time"))
-        """
 
         print('StartAcquisition:', andor.StartAcquisition())
 
@@ -483,7 +457,7 @@ class Evora(object):
             print('SetExposureTime:', andor.SetExposureTime(itime)) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
             
         data = np.zeros(width//binning*height//binning, dtype='uint16')
-        print("SetHSSpeed:", andor.SetHSSpeed(0, 3))
+        print("SetHSSpeed:", andor.SetHSSpeed(0, 1))  # read time on real is fast because they aren't science images
         print('StartAcquisition:', andor.StartAcquisition())
 
         
@@ -585,7 +559,7 @@ class Evora(object):
         return "series 1,"+str(counter) # exits with 1 for success
 
 
-    def kseriesExposure(self, protocol, imType, itime, numexp=1, binning=1, numAccum=1, accumCycleTime=0, kCycleTime=0):
+    def kseriesExposure(self, protocol, imType, itime, numexp=1, binning=1, readTime=3, numAccum=1, accumCycleTime=0, kCycleTime=0):
         """
         This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
         """
@@ -619,7 +593,7 @@ class Evora(object):
 
         print("Timings:", andor.GetAcquisitionTimings())
 
-        print("SetHSSpeed:", andor.SetHSSpeed(0, 3))
+        print("SetHSSpeed:", andor.SetHSSpeed(0, readTime))  # default readTime is index 3 which is 0.5 MHz or ~6 sec
 
         # write headers
         attributes = [imType, binning, itime]
