@@ -109,10 +109,17 @@ class Evora(wx.Frame):
         cameraSub.Enable(1131, False)
         cameraSub.Enable(1132, False)
 
+        readoutSub = wx.Menu()
+        readoutSub.Append(1141, "0.5 MHz", "6 seconds", kind=wx.ITEM_RADIO)
+        readoutSub.Append(1142, "1.0 MHz", "X seconds", kind=wx.ITEM_RADIO)
+        readoutSub.Append(1143, "3.0 MHz", "X seconds", kind=wx.ITEM_RADIO)
+        readoutSub.Append(1144, "5.0 MHz", "X seconds", kind=wx.ITEM_RADIO)
+
         # create main menus
         fileMenu = wx.Menu()
         #fileMenu.AppendMenu(1001, "&Filter", filterSub)
         fileMenu.AppendMenu(1002, "&Binning", binningSub)
+        fileMenu.AppendMenu(1004, "&Readout", readoutSub)
         #fileMenu.AppendMenu(1003, "&Camera", cameraSub)
         fileMenu.Append(1000, "&Exit", "Quit from Evora")
 
