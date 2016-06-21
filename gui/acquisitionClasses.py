@@ -31,7 +31,7 @@ class Exposure(wx.Panel):
         self.active_threads = []  # list of the acitve threading threads
         self.startTimer = 0  # keeps track of the timer count in ints
         self.endTimer = 0  # keeps track of the max timer count as an int
-        self.saveDir = "/home/tristan/data/raw/"
+        self.saveDir = "/home/mro/data/raw/"
 
         self.abort = False  # tells you if the abort button is active
         self.realDeferal = None
