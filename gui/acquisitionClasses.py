@@ -77,11 +77,11 @@ class Exposure(wx.Panel):
         self.exposeSizer.Add(self.expValue, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.exposeSizer, 15)
 
+        self.buttonSizer.Add(self.setDirButton, flag=wx.ALIGN_CENTER)
+        als.AddLinearSpacer(self.buttonSizer, 10)
         self.buttonSizer.Add(self.expButton, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.buttonSizer, 10)
         self.buttonSizer.Add(self.stopExp, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.buttonSizer, 10)
-        self.buttonSizer.Add(self.setDirButton, flag=wx.ALIGN_CENTER)
 
         self.nameSizer.Add(self.name, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.nameSizer, 8)
@@ -225,7 +225,8 @@ class Exposure(wx.Panel):
                         
                         # check for overwrite
                         overwrite = None
-                        if((self.checkForImageCounter(self.currentImage) and als.checkForFile(self.saveDir + self.currentImage + ".fits")) or (not self.checkForImageCounter(self.currentImage) and als.checkForFile(self.saveDir + self.currentImage + "_001.fits"))):
+                        if((self.checkForImageCounter(self.currentImage) and als.checkForFile(self.saveDir + self.currentImage + ".fits"))
+                           or (not self.checkForImageCounter(self.currentImage) and als.checkForFile(self.saveDir + self.currentImage + "_001.fits"))):
                             
                             dialog = wx.MessageDialog(None, "File already exists do you want to overwrite?", "", wx.OK | wx.CANCEL|wx.ICON_QUESTION)
                             overwrite = dialog.ShowModal()
@@ -257,8 +258,13 @@ class Exposure(wx.Panel):
                         
 
     def exposeTimer(self, time):
-        # get exposure time 
-        expTime = float(time) + 5.8  # trailing digit is readout time
+        # get exposure time
+        
+        exposeTimes = [0.0886, 0.154, 0.343, 5.8]  # exposure times in seconds
+        if(self.parent.typeInstance.exposeType.GetSelection() != 1):
+            expTime = float(time) + exposeTimes[self.parent.parent.parent.readoutIndex]  # trailing digit is readout time
+        else:  # real time has a set read time
+            expTime = float(time) + exposeTimes[1]  # trailing digit is readout time
         
         # get the max range for progress bar
         self.endTimer = int(expTime / (10.0*10**-3)) # timer will update every 10 ms
@@ -446,7 +452,8 @@ class Exposure(wx.Panel):
                 self.currentImage += "_001"
                 print("entered")
             else:
-                self.iterateImageCounter(self.currentImage)
+                if(imNum > 1): 
+                    self.iterateImageCounter(self.currentImage)
             #print(self.iterateImageCounter)
             self.copyImage(directory, name)
 
@@ -523,6 +530,7 @@ class Exposure(wx.Panel):
     def getAttributesToSend(self):
         # get binning type
         binning = self.parent.parent.parent.binning
+        readoutIndex = self.parent.parent.parent.readoutIndex
 
         # get exposure type
         exposeType = self.parent.typeInstance.exposeType.GetStringSelection()
@@ -553,6 +561,7 @@ class Exposure(wx.Panel):
         line += " " + str(expNum) # This is the exposure number.  Should have dialog come up for when set to series to take in the number of exposures 
         line += " " + str(self.timeToSend)
         line += " " + str(binning)
+        line += " " + str(readoutIndex)
         line += " " + filter
         return line
 
@@ -633,6 +642,9 @@ class Exposure(wx.Panel):
                 dialog.ShowModal()
                 dialog.Destroy()
                 self.saveDir = setTo
+                if(self.saveDir[-1] != '/'):
+                    self.saveDir += "/"
+                print("Directory:",self.saveDir)
             else:
                 dialog = wx.MessageDialog(None, "Directory not found please take a moment to create it and try again.",
                                           "", wx.OK | wx.ICON_INFORMATION)
@@ -646,6 +658,7 @@ class Exposure(wx.Panel):
         self.logFunction = self.logExposure
         logString = als.getLogString("abort", 'pre')
         self.log(self.logFunction, logString)
+
         d = self.protocol.sendCommand("abort")
         d.addCallback(self.abort_callback)
         
@@ -731,6 +744,12 @@ class TypeSelection(wx.Panel):
         image that is exposed.
         """
         index = self.exposeType.GetSelection()
+        if(index == 1):
+            self.exposeClass.nameField.SetWindowStyle(wx.TE_READONLY)
+            self.exposeClass.nameField.SetValue("No name needed")
+        else:
+            self.exposeClass.nameField.SetWindowStyle(wx.TE_RICH)
+            self.exposeClass.nameField.SetValue("")
         print(self.exposeType.GetStringSelection())
 
 
@@ -971,7 +990,6 @@ class FilterControl(wx.Panel):
         self.filterMap = {}
         for i in range(len(self.filterName)):
             self.filterMap[self.filterName[i]] = self.filterNum[i]
-        print(self.filterMap)
         ##
 
         #### Widgets
@@ -1182,4 +1200,3 @@ class FilterControl(wx.Panel):
         """
         print("entered log")
         logfunc(logmsg)
-

@@ -30,6 +30,7 @@ isAborted = None  # tracks globally when the abort has been called.  Every call 
                   # is an new instance
 
 
+
 class EvoraServer(basic.LineReceiver):
     def connectionMade(self):
         """
@@ -101,7 +102,7 @@ class EvoraParser(object):
         if input[0] == 'filterConnect':
             pass
         if input[0] == 'filterSlew':
-            # pos can be a number 1-6
+            # pos can be a number 0-5
             pos = input[1]
             pass
         if input[0] == 'filterHome':
@@ -118,8 +119,13 @@ class EvoraParser(object):
             expnum = int(input[2])
             itime = float(input[3])  # why int?
             binning = int(input[4])
-            filter = str(input[5])
-            return self.e.expose(imType, expnum, itime, binning, filter)
+            readoutIndex = int(input[5])
+            filter = ""
+            try:
+                filter = str(input[6])
+            except IndexError:
+                pass
+            return self.e.expose(imType, expnum, itime, binning, readTime=readoutIndex, filter=filter)
         if input[0] == 'real':
             # command real flat 1 10 2
             imType = input[1]
@@ -137,8 +143,13 @@ class EvoraParser(object):
             expnum = int(input[2])
             itime = float(input[3])
             binning = int(input[4])
-            filter = str(input[5])
-            return self.e.kseriesExposure(self.protocol, imType, itime, filter=filter, numexp=expnum, binning=binning)
+            readoutIndex = int(input[5])
+            filter = ""
+            try:
+                filter = str(input[6])
+            except IndexError:
+                pass
+            return self.e.kseriesExposure(self.protocol, imType, itime, readTime=readoutIndex, filter=filter, numexp=expnum, binning=binning)
         """
         if input[0] == 'realTest':
             #exposureSetting = int(input[1])
@@ -352,13 +363,7 @@ class Evora(object):
 
         return header
 
-
-<<<<<<< HEAD
-    def expose(self, imType=None, expnum=None, itime=2, binning=1, filter=""):
-=======
-    def expose(self, imType=None, expnum=None, itime=2, binning=1, readTime=3):
->>>>>>> f4f929003240b28bf8bc955e13f451950ee5f4d6
-
+    def expose(self, imType=None, expnum=None, itime=2, binning=1, filter="", readTime=3):
         if expnum is None:
             self.num += 1
             expnum = self.num
@@ -428,7 +433,7 @@ class Evora(object):
             print(data.shape,data.dtype)
             hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True, header=header)
             #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
-            filename = als.getImagePath()
+            filename = als.getImagePath('expose')
             hdu.writeto(filename,clobber=True)
             print("wrote: {}".format(filename))
         #queue.put("expose " + filename)
@@ -489,7 +494,7 @@ class Evora(object):
                     print(data.shape,data.dtype)
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
                     #filename = time.strftime('/tmp/image_%Y%m%d_%H%M%S.fits') 
-                    filename = als.getImagePath()
+                    filename = als.getImagePath('real')
                     hdu.writeto(filename,clobber=True)
                     print("wrote: {}".format(filename))
                     data = np.zeros(width//binning*height//binning, dtype='uint16')
@@ -554,7 +559,7 @@ class Evora(object):
 
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
                     #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
-                    filename = als.getImagePath()
+                    filename = als.getImagePath('series')
                     hdu.writeto(filename,clobber=True)
 
                     print("wrote: {}".format(filename))
@@ -566,11 +571,7 @@ class Evora(object):
         return "series 1,"+str(counter) # exits with 1 for success
 
 
-<<<<<<< HEAD
-    def kseriesExposure(self, protocol, imType, itime, filter="", numexp=1, binning=1, numAccum=1, accumCycleTime=0, kCycleTime=0):
-=======
-    def kseriesExposure(self, protocol, imType, itime, numexp=1, binning=1, readTime=3, numAccum=1, accumCycleTime=0, kCycleTime=0):
->>>>>>> f4f929003240b28bf8bc955e13f451950ee5f4d6
+    def kseriesExposure(self, protocol, imType, itime, filter="", readTime=3, numexp=1, binning=1, numAccum=1, accumCycleTime=0, kCycleTime=0):
         """
         This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
         """
@@ -635,7 +636,8 @@ class Evora(object):
                     print(data.shape,data.dtype)
                     
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True, header=header)
-                    filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
+                    #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
+                    filename = als.getImagePath('series')
                     hdu.writeto(filename,clobber=True)
 
                     print("wrote: {}".format(filename))

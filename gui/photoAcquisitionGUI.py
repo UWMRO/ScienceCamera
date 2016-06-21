@@ -54,7 +54,7 @@ class Evora(wx.Frame):
 
         self.protocol = None # client protocol
         self.connection = None
-        self.connected = False
+        self.connected = False  # keeps track of whether the gui is connect to camera
         self.active_threads = {}  # list of the active threads
         self.imageOpen = False # keep track of whether the image window is open
         self.window = None # holds the image window
@@ -85,6 +85,7 @@ class Evora(wx.Frame):
 
         #
         self.binning = "2" # starts in 2x2 binning
+        self.readoutIndex = 3  # default readout speed is 3 or 0.5 MHz
 
         ## Menu
         self.menuBar = wx.MenuBar()
@@ -110,10 +111,10 @@ class Evora(wx.Frame):
         cameraSub.Enable(1132, False)
 
         readoutSub = wx.Menu()
-        readoutSub.Append(1141, "0.5 MHz", "6 seconds", kind=wx.ITEM_RADIO)
-        readoutSub.Append(1142, "1.0 MHz", "X seconds", kind=wx.ITEM_RADIO)
-        readoutSub.Append(1143, "3.0 MHz", "X seconds", kind=wx.ITEM_RADIO)
-        readoutSub.Append(1144, "5.0 MHz", "X seconds", kind=wx.ITEM_RADIO)
+        readoutSub.Append(1140, "0.5 MHz", "6 seconds", kind=wx.ITEM_RADIO)
+        readoutSub.Append(1141, "1.0 MHz", "X seconds", kind=wx.ITEM_RADIO)
+        readoutSub.Append(1142, "3.0 MHz", "X seconds", kind=wx.ITEM_RADIO)
+        readoutSub.Append(1143, "5.0 MHz", "X seconds", kind=wx.ITEM_RADIO)
 
         # create main menus
         fileMenu = wx.Menu()
@@ -160,11 +161,15 @@ class Evora(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onRefresh, id=1111)
         self.Bind(wx.EVT_MENU, self.on1x1, id=1120)
         self.Bind(wx.EVT_MENU, self.on2x2, id=1121)
+        self.Bind(wx.EVT_MENU, self.onReadTimeSelect, id=1140)
+        self.Bind(wx.EVT_MENU, self.onReadTimeSelect, id=1141)
+        self.Bind(wx.EVT_MENU, self.onReadTimeSelect, id=1142)
+        self.Bind(wx.EVT_MENU, self.onReadTimeSelect, id=1143)
         self.Bind(wx.EVT_MENU, self.onConnect, id=1130)
         self.Bind(wx.EVT_MENU, self.onDisconnect, id=1131)
         self.Bind(wx.EVT_MENU, self.onShutdown, id=1132)
         self.Bind(wx.EVT_MENU, self.onFilterConnect, id=1110)
-        self.Bind(wx.EVT_MENU, self.onFilterListRefresh, id=1111)
+        self.Bind(wx.EVT_MENU, self.onRefresh, id=1111)
         self.Bind(wx.EVT_MENU, self.onFilterDisconnect, id=1112)
         #self.Bind(wx.EVT_MENU, self.onStartup, id=1133)
         #self.Bind(wx.EVT_CLOSE, self.onClose)
@@ -205,7 +210,18 @@ class Evora(wx.Frame):
         #print (msg)
         if self.connected:
             self.connection.disconnect()
+        """
+        filterInstance = self.takeImage.filterInstance
+        if(filterInstance.filterConnection):
+            port_dict.pop('5503').disconnect()
+
+        if(self.imageOpen):
+            self.imageOpen = False
+            self.window.panel.closeFig()
+            self.window.Destroy()
+        """
         self.Destroy()
+        self.Close()
         reactor.stop()
 
     def onHelp(self, event):
@@ -216,6 +232,11 @@ class Evora(wx.Frame):
         print("Help")
         
     def onRefresh(self, event):
+        """
+        This will simply refresh the filter list so that the menu gets displayed correctly.  
+        This is should only be used when the file "filter.txt" has been edited.
+        """
+
         self.takeImage.filterInstance.refreshList()
         print ("hello")
 
@@ -226,6 +247,17 @@ class Evora(wx.Frame):
     def on2x2(self, event):
         self.binning = "2"
         self.stats.SetStatusText("Binning Type: 2x2", 2)
+        
+    def onReadTimeSelect(self, event):
+        id = event.GetId()
+        if(id == 1140):
+            self.readoutIndex = 3
+        if(id == 1141):
+            self.readoutIndex = 2
+        if(id == 1142):
+            self.readoutIndex = 1
+        if(id == 1143):
+            self.readoutIndex = 0
 
     def onConnect(self, event):
         global port_dict
@@ -376,13 +408,6 @@ class Evora(wx.Frame):
         filterSub.Enable(1112, False)
         self.takeImage.filterInstance.filterButton.Enable(False)
         self.takeImage.filterInstance.homeButton.Enable(False)
-
-    def onFilterListRefresh(self, event):
-        """
-        This will simply refresh the filter list so that the menu gets displayed correctly.  This is only used when
-        a filter the file "filter.txt" has been edited.
-        """
-        pass
 
     def joinThreads(self, threadKey, demonized=False):
         t = self.active_threads.pop(threadKey)
@@ -725,6 +750,7 @@ class EvoraForwarder(basic.LineReceiver):
         gui.takeImage.filterInstance.protocol = self
         gui.scripting.scriptCommands.protocol = self
 
+        """
         if gui:
             val = gui.log.logInstance.logBox.GetValue()
             #print val
@@ -732,7 +758,8 @@ class EvoraForwarder(basic.LineReceiver):
             gui.log.logInstance.logBox.SetInsertionPointEnd()
             #sep_data = data.split(" ")
             #print sep_data
-        
+        """
+
         # if there is more than one line that was sent and received 
         sep_data = data.rsplit() # split for multiple lines
         size = len(sep_data) # size of sep_data will always be even (key followed by data pair)
@@ -803,7 +830,8 @@ class FilterForwarder(basic.LineReceiver):
         
             
         self.gui.takeImage.filterInstance.protocol2 = self
-
+        
+        """
         if self.gui:
             val = self.gui.log.logInstance.logBox.GetValue()
             #print val
@@ -811,7 +839,7 @@ class FilterForwarder(basic.LineReceiver):
             self.gui.log.logInstance.logBox.SetInsertionPointEnd()
             #sep_data = data.split(" ")
             #print sep_data
-        
+        """
         # if there is more than one line that was sent and received 
         sep_data = data.rsplit()  # split for multiple lines
         size = len(sep_data) # size of sep_data will always be even (key followed by data pair)
@@ -846,15 +874,16 @@ class FilterForwarder(basic.LineReceiver):
         #self.filterWatchThread.daemon = True
 
         filterInstance.logFunction = filterInstance.logFilter
+        logString = als.getLogString('filter connect', 'pre')
+        filterInstance.log(filterInstance.logFunction, logString)
+
         logString = als.getLogString('filter getFilter', 'pre')
         filterInstance.log(filterInstance.logFunction, logString)
 
         d = self.sendCommand('getFilter')
         d.addCallback(filterInstance.getFilterCallback)
 
-        #self.filterWatchThread.start()
         
-
     def addDeferred(self, string):
         """
         This is used for creating deferred objects when expecting to receive data.

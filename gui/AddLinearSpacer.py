@@ -104,6 +104,8 @@ def getLogString(command, prePost):
                 return "Moving to filter %s" % filter
             if(key2 == 'getFilter'):
                 return "Getting filter position..."
+            if(key2 == 'connect'):
+                return "Please home filter..."
 
     if(prePost == 'post'):  # command has a key then is followed by relavent information delimited with commas
         key = command[0]
@@ -200,15 +202,19 @@ def checkForFile(path):
     return boolean
 
 
-def getImagePath():
+def getImagePath(type):
     """
     Pre: No inputs.
     Post: Returns the file path /data/forTCC/ plus an image name with a time stamp
           with accuracy of milliseconds.
     """
+    saveDirectory = "/home/mro/data/evora_server/raw/"
     time = datetime.today()
     fileName = "image_%s%s%s_%s%s%s_%s.fits" % (time.year, time.month, time.day, time.hour, time.minute, time.second, time.microsecond)
-    return "/data/forTCC/" + fileName
+    if(type == 'real'):
+        return "/tmp/" + fileName
+    else:
+        return saveDirectory + fileName
 
 
 def checkForImageCounter(name):
