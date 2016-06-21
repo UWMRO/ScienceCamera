@@ -632,7 +632,7 @@ class Exposure(wx.Panel):
         
     def onSetDir(self, event):
         dialog = wx.TextEntryDialog(None, "Point to new directory.  Currently set to %s" % self.saveDir,
-                                    "Set Save Directory", "", wx.OK | wx.CANCEL)
+                                    "Set Save Directory", "%s" % self.saveDir, wx.OK | wx.CANCEL)
         answer = dialog.ShowModal()
         dialog.Destroy()
         if(answer == wx.ID_OK):
