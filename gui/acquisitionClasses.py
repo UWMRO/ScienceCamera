@@ -1072,6 +1072,7 @@ class FilterControl(wx.Panel):
 
     def getFilterCallback(self, msg):
         pos = int(msg)
+        print("position:", pos)
         filter = self.filterName[pos]
         # set drop down menu to the correct filter
         self.filterMenu.SetSelection(pos)

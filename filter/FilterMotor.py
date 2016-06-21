@@ -117,7 +117,7 @@ class FilterMotor(object):
                       be parsed.
                 """
                 dict = self.status()
-                filter = dict['currentPos']
+                filter = dict['filterPos']
                 return "getFilter " + str(filter) 
 
 	def motorStop(self):
