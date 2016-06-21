@@ -107,6 +107,19 @@ class FilterMotor(object):
 		self.moveMotor(tpos)			
 		return "move 1"
 
+        def getFilterPosition(self):
+                """
+                Note: Evora Gui cannot handle a dictionary that is returned in string 
+                      format so instead of calling status and getting filter position
+                      from there this is called instead.
+                Pre:  Takes in nothing.
+                Post: Returns the filter position as an integer between 0 and 5 that will
+                      be parsed.
+                """
+                dict = self.status()
+                filter = dict['currentPos']
+                return "getFilter " + str(filter) 
+
 	def motorStop(self):
 		self.motorPower(False)
 		return

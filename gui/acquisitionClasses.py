@@ -1048,7 +1048,9 @@ class FilterControl(wx.Panel):
 
     def rotateCallback(self, msg):
         self.logFunction = self.logFilter
+        print(msg)
         logString = als.getLogString("filter move " + msg, 'post')
+        print("in rotate callback", logString)
         self.log(self.logFunction, logString)
         print("Completed rotation...")
 
@@ -1067,6 +1069,13 @@ class FilterControl(wx.Panel):
         self.log(self.logFunction, logString)
 
         print("Done homing:", msg)
+
+    def getFilterCallback(self, msg):
+        pos = int(msg)
+        filter = self.filterName[pos]
+        # set drop down menu to the correct filter
+        self.filterMenu.SetSelection(pos)
+        print("Filter position is", filter)
 
     def refreshList(self):
         """

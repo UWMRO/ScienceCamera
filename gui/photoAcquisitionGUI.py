@@ -357,6 +357,7 @@ class Evora(wx.Frame):
         filterSub.Enable(1112, True)
         self.takeImage.filterInstance.filterButton.Enable(True)
         self.takeImage.filterInstance.homeButton.Enable(True)
+        
 
     def onFilterDisconnect(self, event):
         connection = port_dict['5503']
@@ -828,6 +829,8 @@ class FilterForwarder(basic.LineReceiver):
         self.gui = self.factory.gui
         self.gui.takeImage.filterInstance.protocol2 = self
         print("connection made to filter")
+        d = self.sendCommand('getFilter')
+        d.addCallback(self.gui.takeImage.filterInstance.getFilterCallback)
 
     def addDeferred(self, string):
         """

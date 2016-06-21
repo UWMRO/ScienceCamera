@@ -64,8 +64,10 @@ class FilterWheelParser(object):
         input = input.split()
         if input[0] == 'disconnect':
             return self.f.disconnDev()
-        if input[0] == 'status':        
+        if input[0] == 'status':
             return self.f.status()
+        if input[0] == 'getFilter':
+            return self.f.getFilterPosition()
 	if input[0] == 'power':
 	    return self.f.motorPower(bool(input[1]))
 	if input[0] == 'move':
