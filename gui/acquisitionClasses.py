@@ -329,7 +329,7 @@ class Exposure(wx.Panel):
             stats_list = als.calcStats(data)
 
             # change the gui with thread safety
-            #wx.CallAfter(self.safePlot, data, stats_list)
+            wx.CallAfter(self.safePlot, data, stats_list)
 
             # copy file to different folder
             self.copyImage(path, name)
@@ -374,7 +374,7 @@ class Exposure(wx.Panel):
             data = als.getData(path)
             stats_list = als.calcStats(data)
             # change the gui with thread safety
-            #wx.CallAfter(self.safePlot, data, stats_list)
+            wx.CallAfter(self.safePlot, data, stats_list)
 
             self.parent.parent.parent.expGauge.SetValue(0)
             self.startTimer = 0
@@ -394,7 +394,7 @@ class Exposure(wx.Panel):
             data = als.getData(path)
             stats_list = als.calcStats(data)
             # change the gui with thread safety
-            #wx.CallAfter(self.safePlot, data, stats_list)
+            wx.CallAfter(self.safePlot, data, stats_list)
 
     def realCallback(self, msg):
         self.protocol.removeDeferred("realSent")
@@ -437,7 +437,7 @@ class Exposure(wx.Panel):
             data = als.getData(path)
             stats_list = als.calcStats(data)
             # change the gui with thread safety
-            #wx.CallAfter(self.safePlot, data, stats_list)
+            wx.CallAfter(self.safePlot, data, stats_list)
             
             # copy image over (counter looks like "_XXX.fits")
             print("current image name:", self.currentImage)
@@ -942,6 +942,12 @@ class FilterControl(wx.Panel):
         self.parent = parent
         self.protocol2 = None
         self.logFunction = None
+        self.filterConnection = False
+        self.watch = False
+
+        self.watchFilterTime = 10  # default is every minute but changes to every
+                                   # second when moving filter position
+        self.targetFilter = None  # keep track globally of the target filter
 
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
@@ -971,7 +977,7 @@ class FilterControl(wx.Panel):
 
         self.filterText = wx.StaticText(self, id=2042, label="Filter Type")
         self.filterMenu = wx.ComboBox(self, id=2043, choices=self.filterName, size=(50, -1), style=wx.CB_READONLY)
-        self.filterButton = wx.Button(self, id=2044, label="Rotate To", size=(70, -1))
+        self.filterButton = wx.Button(self, id=2044, label="Rotate", size=(70, -1))
         self.homeButton = wx.Button(self, id=2046, label="Home", size=(70,-1))
         self.statusBox = wx.TextCtrl(self, id=2045, style=wx.TE_READONLY|wx.TE_MULTILINE, size=(200,100))
         self.filterButton.Enable(False)
@@ -1039,12 +1045,18 @@ class FilterControl(wx.Panel):
                     pos = self.filterNum[i]
             print("index:", pos)
 
+            self.targetFilter = pos
+            self.watchFilterTime = 1 # set to one seconds
+            self.watch = True
+
             self.logFunction = self.logFilter
             logString = als.getLogString("filter move " + str(self.filterName[pos]), 'pre')
             self.log(self.logFunction, logString)
 
+
             d = self.protocol2.sendCommand("move " + str(pos))
             d.addCallback(self.rotateCallback)
+            thread.start_new_thread(self.filterWatch, ())
 
     def rotateCallback(self, msg):
         self.logFunction = self.logFilter
@@ -1070,13 +1082,47 @@ class FilterControl(wx.Panel):
 
         print("Done homing:", msg)
 
+        self.logFunction = self.logFilter
+        logString = als.getLogString("filter getFilter", 'pre')
+        self.log(self.logFunction, logString)
+
+        d = self.protocol2.sendCommand("getFilter")
+        d.addCallback(self.getFilterCallback)
+
     def getFilterCallback(self, msg):
         pos = int(msg)
         print("position:", pos)
         filter = self.filterName[pos]
+
+        self.logFunction = self.logFilter
+        if(self.targetFilter is not None and self.targetFilter != pos):
+            logString = als.getLogString("filter getFilter report " + filter, 'post')
+            self.log(self.logFunction, logString)
         # set drop down menu to the correct filter
-        self.filterMenu.SetSelection(pos)
+        else:
+            self.watch = False
+            self.logFunction = self.logFilter
+            logString = als.getLogString("filter getFilter set " + filter + "," + str(pos), 'post')
+            self.log(self.logFunction, logString)
+            self.filterMenu.SetSelection(pos)
+            self.targetFilter = None
         print("Filter position is", filter)
+
+    def getFilterCallback_thread(self, msg):
+        """
+        This is to release the main thread from completing the callback chain.
+        """
+        thread.start_new_thread(self.getFilterCallback, (msg,))
+
+    def filterWatch(self):
+        """
+        Pre: No input.
+        Post: Updates filter position every so often and displays in status box.
+        """
+        while self.watch:
+            d = self.protocol2.sendCommand("getFilter")
+            d.addCallback(self.getFilterCallback_thread)
+            time.sleep(self.watchFilterTime)
 
     def refreshList(self):
         """

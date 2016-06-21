@@ -43,7 +43,7 @@ class logBox(wx.Panel):
         Pre: Takes in a string.
         Post: Displays that string in the log status box in the log tab of the gui.
         """
-        msg = als.timeStamp() + string
+        msg = als.timeStamp() + " " + string
         val = self.logBox.GetValue()
         self.logBox.SetValue(val + msg + "\n")
         self.logBox.SetInsertionPointEnd()

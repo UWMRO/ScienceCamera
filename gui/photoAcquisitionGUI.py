@@ -775,6 +775,7 @@ class EvoraClient(protocol.ClientFactory):
     def __init__(self, gui):
         self.gui = gui
         self.protocol = EvoraForwarder
+        self.filterWatchThread = None
 
     def clientConnectionLost(self, transport, reason):
         print("connection Lost")
@@ -829,8 +830,22 @@ class FilterForwarder(basic.LineReceiver):
         self.gui = self.factory.gui
         self.gui.takeImage.filterInstance.protocol2 = self
         print("connection made to filter")
+
+        filterInstance = self.gui.takeImage.filterInstance
+
+        filterInstance.filterConnection = True
+        #self.filterWatchThread = threading.Thread(target=filterInstance.filterWatch, args=())
+        #self.filterWatchThread.daemon = True
+
+        filterInstance.logFunction = filterInstance.logFilter
+        logString = als.getLogString('filter getFilter', 'pre')
+        filterInstance.log(filterInstance.logFunction, logString)
+
         d = self.sendCommand('getFilter')
-        d.addCallback(self.gui.takeImage.filterInstance.getFilterCallback)
+        d.addCallback(filterInstance.getFilterCallback)
+
+        #self.filterWatchThread.start()
+        
 
     def addDeferred(self, string):
         """
@@ -848,9 +863,11 @@ class FilterForwarder(basic.LineReceiver):
 
     def connectionLost(self, reason):
         ## Add a "callback" that will close down the gui functionality when camera connection is closed.
-        #gui = self.factory.gui
-        #gui.onDisconnectCallback()
-        pass
+        filterInstance = self.gui.takeImage.filterInstance
+        filterInstance.filterConnection = False
+
+        #self.filterWatchThread.join(0)  # timeout write away
+
 
 class FilterClient(protocol.ClientFactory):
     def __init__(self, gui):

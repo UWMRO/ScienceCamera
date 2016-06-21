@@ -102,6 +102,8 @@ def getLogString(command, prePost):
             if(key2 == 'move'):
                 filter = command[2]
                 return "Moving to filter %s" % filter
+            if(key2 == 'getFilter'):
+                return "Getting filter position..."
 
     if(prePost == 'post'):  # command has a key then is followed by relavent information delimited with commas
         key = command[0]
@@ -168,6 +170,16 @@ def getLogString(command, prePost):
                     return "Successfully moving filter give it a moment..."
                 else:
                     return "Failed to move filter..."
+            if(key2 == 'getFilter'):
+                key3 = command[2]
+                stats = command[3].split(",")
+                if(key3 == 'report'):
+                    filter = stats[0]
+                    return "At filter %s" % filter
+                else:
+                    filter = stats[0]
+                    pos = int(stats[1])
+                    return "At position %d, setting filter to %s" % (pos, filter)
 
     return None
 def timeStamp():
