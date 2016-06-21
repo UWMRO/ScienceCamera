@@ -31,7 +31,7 @@ class Exposure(wx.Panel):
         self.active_threads = []  # list of the acitve threading threads
         self.startTimer = 0  # keeps track of the timer count in ints
         self.endTimer = 0  # keeps track of the max timer count as an int
-        self.saveDir = "/home/mro/data/raw/"
+        self.saveDir = "/home/tristan/data/raw/"
 
         self.abort = False  # tells you if the abort button is active
         self.realDeferal = None
@@ -137,11 +137,13 @@ class Exposure(wx.Panel):
         fails a dialog box tells the user the varible is not a number and will not send it
         to Evora.
         """
+        lessThanZero = True
         if als.isNumber(self.timeToSend):
             if(float(self.timeToSend) < 0):
                 dialog = wx.MessageDialog(None, "Exposure time can not be less than 0...will not expose", "", wx.OK | wx.ICON_ERROR)
                 dialog.ShowModal()
                 dialog.Destroy()
+                lessThanZero = False
 
         else:
             dialog = wx.MessageDialog(None, "Exposure time not a number...will not expose.",
@@ -159,7 +161,7 @@ class Exposure(wx.Panel):
 
         # if statement here is more for redundancy.  The above MessageDialogs let the user their input is incorrect.
         # Else they will enter this if statement just fine.
-        if als.isNumber(self.timeToSend) and self.nameToSend is not "":
+        if als.isNumber(self.timeToSend) and self.nameToSend is not "" and lessThanZero:
             #self.protocol.sendLine("Exposing with name " + str(self.nameToSend) + " and time " + str(self.timeToSend) + " s")
             
             line = self.getAttributesToSend().split()
@@ -256,7 +258,7 @@ class Exposure(wx.Panel):
 
     def exposeTimer(self, time):
         # get exposure time 
-        expTime = float(time) + 0.2
+        expTime = float(time) + 5.8  # trailing digit is readout time
         
         # get the max range for progress bar
         self.endTimer = int(expTime / (10.0*10**-3)) # timer will update every 10 ms
@@ -937,6 +939,7 @@ class FilterControl(wx.Panel):
         wx.Panel.__init__(self, parent)
 
         # global variables
+        self.parent = parent
         self.protocol2 = None
         self.logFunction = None
 
@@ -947,6 +950,7 @@ class FilterControl(wx.Panel):
         self.filterSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.subVert = wx.BoxSizer(wx.VERTICAL)
         self.statusVert = wx.BoxSizer(wx.VERTICAL)
+        self.buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
 
         ## Variables
         self.filterNum, self.filterName = np.genfromtxt("filters.txt", dtype='str', usecols=[0,1], unpack=True)
@@ -959,16 +963,19 @@ class FilterControl(wx.Panel):
         ##
 
         #### Widgets
-        self.filterBox = wx.StaticBox(self, id=2040, label = "Filter Controls", size=(100,100), style=wx.ALIGN_CENTER)
+        self.filterBox = wx.StaticBox(self, id=2040, label="Filter Controls", size=(100,100), style=wx.ALIGN_CENTER)
         self.filBoxSizer = wx.StaticBoxSizer(self.filterBox, wx.VERTICAL)
 
-        self.statusBox = wx.StaticBox(self, id=2041, label = "Filter Status", size=(150,150), style=wx.ALIGN_CENTER)
+        self.statusBox = wx.StaticBox(self, id=2041, label="Filter Status", size=(150,150), style=wx.ALIGN_CENTER)
         self.statusBoxSizer = wx.StaticBoxSizer(self.statusBox, wx.VERTICAL)
 
         self.filterText = wx.StaticText(self, id=2042, label="Filter Type")
         self.filterMenu = wx.ComboBox(self, id=2043, choices=self.filterName, size=(50, -1), style=wx.CB_READONLY)
-        self.filterButton = wx.Button(self, id=2044, label = "Rotate To")
+        self.filterButton = wx.Button(self, id=2044, label="Rotate To", size=(70, -1))
+        self.homeButton = wx.Button(self, id=2046, label="Home", size=(70,-1))
         self.statusBox = wx.TextCtrl(self, id=2045, style=wx.TE_READONLY|wx.TE_MULTILINE, size=(200,100))
+        self.filterButton.Enable(False)
+        self.homeButton.Enable(False)
 
 
         #### Line Up Smaller Sub Sizers
@@ -977,9 +984,13 @@ class FilterControl(wx.Panel):
         als.AddLinearSpacer(self.filterSizer, 15)
         self.filterSizer.Add(self.filterMenu, flag=wx.ALIGN_CENTER)
 
+        self.buttonSizer.Add(self.homeButton, flag=wx.ALIGN_CENTER)
+        als.AddLinearSpacer(self.buttonSizer, 10)
+        self.buttonSizer.Add(self.filterButton, flag=wx.ALIGN_CENTER)
+
         self.subVert.Add(self.filterSizer)
         als.AddLinearSpacer(self.subVert, 10)
-        self.subVert.Add(self.filterButton, flag=wx.ALIGN_CENTER)
+        self.subVert.Add(self.buttonSizer, flag=wx.ALIGN_CENTER)
 
 
         self.filBoxSizer.Add((200, 10))
@@ -1001,6 +1012,7 @@ class FilterControl(wx.Panel):
         ## Bindings
         self.Bind(wx.EVT_COMBOBOX, self.onFilterSelection, id=2043)
         self.Bind(wx.EVT_BUTTON, self.onRotate, id=2044)
+        self.Bind(wx.EVT_BUTTON, self.onHome, id=2046)
         ##
 
         self.SetSizer(self.vertSizer)
@@ -1008,20 +1020,7 @@ class FilterControl(wx.Panel):
 
     def onFilterSelection(self, event):
         self.filterSelection = self.filterMenu.GetValue()
-        print("selection:", self.filterSelection)
-        # find position
-        pos = None
-        for i in range(len(self.filterName)):
-            if(str(self.filterSelection) == self.filterName[i]):
-                pos = self.filterNum[i]
-        try:
-            print("index:", pos)
-            #self.currFilterNum = self.filterNum[pos]
-            #print("Filter number:", self.currFilterNum, type(self.currFilterNum))
-            d = self.protocol2.sendCommand("move " + str(pos))
-        except KeyError:
-            print("not a filter")
-        
+        print("selection:", self.filterSelection)        
 
     def onRotate(self, event):
         """
@@ -1033,6 +1032,41 @@ class FilterControl(wx.Panel):
         else:
             print(type(self.filterSelection))
             # send command to rotate to the specified position
+            # find position
+            pos = None
+            for i in range(len(self.filterName)):
+                if(str(self.filterSelection) == self.filterName[i]):
+                    pos = self.filterNum[i]
+            print("index:", pos)
+
+            self.logFunction = self.logFilter
+            logString = als.getLogString("filter move " + str(self.filterName[pos]), 'pre')
+            self.log(self.logFunction, logString)
+
+            d = self.protocol2.sendCommand("move " + str(pos))
+            d.addCallback(self.rotateCallback)
+
+    def rotateCallback(self, msg):
+        self.logFunction = self.logFilter
+        logString = als.getLogString("filter move " + msg, 'post')
+        self.log(self.logFunction, logString)
+        print("Completed rotation...")
+
+    def onHome(self, event):
+        self.logFunction = self.logFilter
+        logString = als.getLogString("filter home", 'pre')
+        self.log(self.logFunction, logString)
+        
+        d = self.protocol2.sendCommand("home")
+        d.addCallback(self.homingCallback)
+        print("homing...")
+
+    def homingCallback(self, msg):
+        self.logFunction = self.logFilter
+        logString = als.getLogString("filter home " + msg, 'post')
+        self.log(self.logFunction, logString)
+
+        print("Done homing:", msg)
 
     def refreshList(self):
         """

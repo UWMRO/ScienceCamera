@@ -94,6 +94,7 @@ class Evora(wx.Frame):
         filterSub.Append(1110, "&Connect", "Connect to the filter")
         filterSub.Append(1112, "&Disconnect", "Disconnect from filter")
         filterSub.Append(1111, "&Refresh", "Refresh filter list")
+        filterSub.Enable(1112, False)
 
         binningSub = wx.Menu()
         binningSub.Append(1120, "1x1", "Set CCD readout binning", kind=wx.ITEM_RADIO)
@@ -342,7 +343,6 @@ class Evora(wx.Frame):
         self.takeImage.tempInstance.tempButton.Enable(boolean)
         self.takeImage.tempInstance.stopCool.Enable(boolean)
 
-        self.takeImage.filterInstance.filterButton.Enable(boolean)
 
     def onFilterConnect(self, event):
         """
@@ -355,7 +355,8 @@ class Evora(wx.Frame):
         filterSub = self.menuBar.GetMenu(0)  # first index
         filterSub.Enable(1110, False)
         filterSub.Enable(1112, True)
-
+        self.takeImage.filterInstance.filterButton.Enable(True)
+        self.takeImage.filterInstance.homeButton.Enable(True)
 
     def onFilterDisconnect(self, event):
         connection = port_dict['5503']
@@ -364,7 +365,8 @@ class Evora(wx.Frame):
         filterSub = self.menuBar.GetMenu(0)  # first index
         filterSub.Enable(1110, True)
         filterSub.Enable(1112, False)
-
+        self.takeImage.filterInstance.filterButton.Enable(False)
+        self.takeImage.filterInstance.homeButton.Enable(False)
 
     def onFilterListRefresh(self, event):
         """
@@ -787,7 +789,7 @@ class FilterForwarder(basic.LineReceiver):
         self.gui = None
 
     def dataReceived(self, data):
-        print("Receieved:", data)
+        print("Receieved on port 5503:", data)
         
             
         self.gui.takeImage.filterInstance.protocol2 = self

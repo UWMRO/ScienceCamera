@@ -79,22 +79,29 @@ def getLogString(command, prePost):
         key = command[0]
 
         if(key == 'expose'):
-            itime = command[3]
+            itime = float(command[3])
             return "Exposing for time %.2f sec" % itime
         if(key == 'real'):
-            itime = command[3]
+            itime = float(command[3])
             return "Starting real time expsoures with %.2f sec" % itime
         if(key == 'series'):
-            itime = command[3]
-            number = command[2]
-            return "Exposing for %d images with time %.2f sec" % itime
+            itime = float(command[3])
+            number = int(command[2])
+            return "Exposing for %d images with time %.2f sec" % (number, itime)
         if(key == 'setTEC'):
-            temp = command[1]
+            temp = float(command[1])
             return "Setting temperature to %.1f C" % temp
         if(key == 'warmup'):
             return "Turning off cooler"
+        if(key == 'abort'):
+            return "Aborting current exposure..."
         if(key == 'filter'):
-            pass
+            key2 = command[1]
+            if(key2 == 'home'):
+                return "Starting homing sequence..."
+            if(key2 == 'move'):
+                filter = command[2]
+                return "Moving to filter %s" % filter
 
     if(prePost == 'post'):  # command has a key then is followed by relavent information delimited with commas
         key = command[0]
@@ -108,12 +115,12 @@ def getLogString(command, prePost):
         if(key == 'expose'):
             # at the end of stats is the image name
             name = stats[-1]
-            itime = stats[2]
+            itime = float(stats[2])
             results = int(stats[0])
             if(results == 1):  # 1 for successful exposure
-                return "%s completed with time %.2f" % (name, itime)
+                return "\"%s\" completed with time %.2f sec" % (name, itime)
             else:
-                return "%s failed to expose..." % name
+                return "\"%s\" failed to expose..." % name
         if(key == 'real'):
             results = stats[0]
             return "Real time exposure successfully done..."
@@ -122,8 +129,8 @@ def getLogString(command, prePost):
             return "Done take series images..."
         if(key[:-1] == 'seriesSent'):
             name = stats[-1]
-            itime = stats[1]
-            return "%s completed with time %.2f" % (name, itime)
+            itime = float(stats[1])
+            return "\"%s\" completed with time %.2f sec" % (name, itime)
         if(key == 'connect'):
             if(stats[0] == 20002):  # 20002 is "success" Evora
                 return "Initialization completed..."
@@ -132,7 +139,7 @@ def getLogString(command, prePost):
         if(key == 'getTEC'):
             pass
         if(key == 'setTEC'):
-            temp = stats[0]
+            temp = float(stats[0])
             return "Successfully set cooler to %.1f C" % temp
         if(key == 'warmup'):
             return "Successfully warming up..."
@@ -149,7 +156,13 @@ def getLogString(command, prePost):
             results = stats[0]
             return "Successfully aborted exposure..."
         if(key == 'filter'):
-            pass
+            key2 = command[1]
+            stats = command[2].split(",")
+            if(key2 == 'home'):
+                if(int(stats[0]) == 1):
+                    return "Successfully homed..."
+                else:
+                    return "Failed to home try again"
 
     return None
 def timeStamp():

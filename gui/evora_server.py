@@ -490,6 +490,8 @@ class Evora(object):
         status = andor.GetStatus()
         print(status)
         workingImNum = 1
+        start = time.time()
+        end = 0
         while(status[1]==andor.DRV_ACQUIRING):
            
             progress = andor.GetAcquisitionProgress()
@@ -513,6 +515,9 @@ class Evora(object):
 
                     protocol.sendData("realSent " + filename)
                     workingImNum += 1
+                    end = time.time()
+                    print("Took %f seconds" % (end-start))
+                    start = time.time()
 
         return "real 1" # exits with 1 for success
 
