@@ -841,8 +841,8 @@ def GetTemperatureF():
   return _andor.GetTemperatureF()
 GetTemperatureF = _andor.GetTemperatureF
 
-def GetTemperatureRange(*args):
-  return _andor.GetTemperatureRange(*args)
+def GetTemperatureRange():
+  return _andor.GetTemperatureRange()
 GetTemperatureRange = _andor.GetTemperatureRange
 
 def GetTemperaturePrecision(*args):

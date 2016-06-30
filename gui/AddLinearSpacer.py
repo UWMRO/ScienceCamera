@@ -113,10 +113,12 @@ def getLogString(command, prePost):
         stats = command[1].split(",")
         print("Stats in log:", stats)
         if(key == 'status'):
-            if(stats[0] == 20002):  # 20002 is "success" to Evora
+            if(int(stats[0]) == 20002):  # 20002 is "success" to Evora
                 return "Camera already initialized connecting..."
-            else:
+            elif(int(stats[0]) == 20075):
                 return "Camera uninitialized this will take a few..."
+            else:
+                return "Camera drivers reporting incorrectly please run reinstall..."
         if(key == 'expose'):
             # at the end of stats is the image name
             name = stats[-1]
@@ -132,8 +134,7 @@ def getLogString(command, prePost):
         if(key == 'series'):
             results = stats[0]
             return "Done take series images..."
-        if(key == 'seriesSent'):
-            
+        if(key == 'seriesSent'):            
             name = stats[-1]
             itime = float(stats[1])
             return "\"%s\" completed with time %.2f sec" % (name, itime)
@@ -155,6 +156,11 @@ def getLogString(command, prePost):
                 return "Successfully shutdown cooler..."
             else:
                 return "Failure in setting cooler down..."
+        if(key == 'startup'):
+            if stats[0] == 20002:
+                return "Camera initialization successful..."
+            else:
+                return "Camera initialization went wrong check the server..."
         if(key == 'shutdown'):
             results = stats[0]
             return "Successfully shutdown camera..."
@@ -193,7 +199,22 @@ def timeStamp():
     """
     time = datetime.today()
     #stamp = "[%s/%s/%s, " % (time.month, time.day, time.year)
-    stamp = "[%s:%s:%s]" % (time.hour, time.minute, time.second)
+    hour = ""
+    minute = ""
+    second = ""
+    if(time.hour < 10):
+        hour += "0" + str(time.hour)
+    else:
+        hour += str(time.hour)
+    if(time.minute < 10):
+        minute += "0" + str(time.minute)
+    else:
+        minute += str(time.minute)
+    if(time.second < 10):
+        second += "0" + str(time.second)
+    else:
+        second += str(time.second)
+    stamp = "[%s:%s:%s]" % (hour, minute, second)
     return stamp
 
 

@@ -18,6 +18,7 @@ import sys
 import threading
 import Queue
 import thread
+import webbrowser
 
 # twisted imports
 from twisted.python import log
@@ -58,6 +59,8 @@ class Evora(wx.Frame):
         self.active_threads = {}  # list of the active threads
         self.imageOpen = False # keep track of whether the image window is open
         self.window = None # holds the image window
+        self.logFunction = None
+
         panel = wx.Panel(self)
         notebook = wx.Notebook(panel)
 
@@ -171,8 +174,9 @@ class Evora(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onFilterConnect, id=1110)
         self.Bind(wx.EVT_MENU, self.onRefresh, id=1111)
         self.Bind(wx.EVT_MENU, self.onFilterDisconnect, id=1112)
+        self.Bind(wx.EVT_MENU, self.onHelp, id=1300)
         #self.Bind(wx.EVT_MENU, self.onStartup, id=1133)
-        #self.Bind(wx.EVT_CLOSE, self.onClose)
+        self.Bind(wx.EVT_CLOSE, self.onClose)
 
         #wx.EVT_CLOSE(self, lambda evt: reactor.stop())
 
@@ -210,7 +214,7 @@ class Evora(wx.Frame):
         #print (msg)
         if self.connected:
             self.connection.disconnect()
-        """
+        
         filterInstance = self.takeImage.filterInstance
         if(filterInstance.filterConnection):
             port_dict.pop('5503').disconnect()
@@ -219,26 +223,25 @@ class Evora(wx.Frame):
             self.imageOpen = False
             self.window.panel.closeFig()
             self.window.Destroy()
-        """
+        
+
+        #self.Destroy()
         self.Destroy()
-        self.Close()
-        reactor.stop()
+        reactor.callFromThread(reactor.stop)        
 
     def onHelp(self, event):
         """
-        Open up, ideally, markdown window (or potentially html markup) that gives indepth
-        documentations on what is what.
+        Pre: Press the "Help" menu option.
+        Post: Opens up the Evora documentation section of the MRO website.
         """
-        print("Help")
+        webbrowser.open("https://sites.google.com/a/uw.edu/mro/documentation/evora")
         
     def onRefresh(self, event):
         """
         This will simply refresh the filter list so that the menu gets displayed correctly.  
         This is should only be used when the file "filter.txt" has been edited.
         """
-
         self.takeImage.filterInstance.refreshList()
-        print ("hello")
 
     def on1x1(self, event):
         self.binning = "1"
@@ -278,10 +281,16 @@ class Evora(wx.Frame):
         # get the number of clients
         status = int(msg.split(",")[0])
 
+        self.logFunction = self.logMain
+        logString = als.getLogString('status ' + str(status), 'post')
+        self.logMethod(self.logFunction, logString)
+
+        print("status from connect callback", status)
+
         if(status == 20075):  # camera is uninitialized
             d = self.protocol.sendCommand("connect")
             d.addCallback(self.callStartup)
-        else:  # if camera is already initialized then start server like regular
+        elif(status == 20002):  # if camera is already initialized then start server like regular
             # start temperature thread
             t = threading.Thread(target=self.takeImage.tempInstance.watchTemp, args=(), name="temp thread")
             self.takeImage.tempInstance.isConnected = True # setups infinite loop in watchTemp method
@@ -292,6 +301,8 @@ class Evora(wx.Frame):
             # Enable disconnect and shutdown and disable connect menu items
             self.enableConnections(False, True, True)
             self.disableButtons(False)
+        else: # camera drivers are broken needs reinstall
+            pass
 
         #settings.done_ids.put(threading.current_thread().name)
         #signal.alarm(1) # signal thread is done here
@@ -299,6 +310,10 @@ class Evora(wx.Frame):
             
 
     def callStartup(self, msg):
+        self.logFunction = self.logMain
+        logString = als.getLogString('startup ' + msg, 'post')
+        self.logMethod(self.logFunction, logString)
+
         result = int(msg)
 
         self.connected = True # boolean to tell if connected to server
@@ -353,6 +368,10 @@ class Evora(wx.Frame):
             self.disableButtons(True)
 
     def callShutdown(self, msg):
+        self.logFunction = self.logMain
+        logString = als.getLogString("shutdown " + msg, 'post')
+        self.logMethod(self.logFunction, logString)
+        
         self.takeImage.tempInstance.isConnected = False
 
         bitmap = wx.StaticBitmap(self.stats, -1, size=(90, 17))
@@ -409,6 +428,24 @@ class Evora(wx.Frame):
         self.takeImage.filterInstance.filterButton.Enable(False)
         self.takeImage.filterInstance.homeButton.Enable(False)
 
+    def logMain(self, logmsg):
+        print("logging from exposure class")
+        logInstance = self.log.logInstance
+        wx.CallAfter(logInstance.threadSafeLogStatus, logmsg)
+
+    def logMethod(self, logfunc, logmsg):
+        """
+        Pre: Before an exposure is set the correct log function to call is set to self.logFunction.
+        For example, setting self.logFunction to self.logScript will log on the scripting status
+        and the log tab versus self.logExposure.  Also passed in is the logmsg that you want to 
+        print.
+        Post: This method will run the logfunc to print the log message to the correct status
+        boxes; it returns nothing.
+        """
+        print("entered log")
+        logfunc(logmsg)
+
+
     def joinThreads(self, threadKey, demonized=False):
         t = self.active_threads.pop(threadKey)
         if demonized:
@@ -423,8 +460,10 @@ class ImageWindow(wx.Frame):
     def __init__(self, parent):
         wx.Frame.__init__(self, parent, -1, "Image Window", size=(650,550))
 
-        self.image = 'example.fit'
+        #self.image = 'example.fit'  # for debugging
         self.parent = parent
+        self.currSliderValue = 60
+        self.currMap = 'gray'
 
         ## Main sizers
         self.topSizer = wx.BoxSizer(wx.VERTICAL)
@@ -436,10 +475,10 @@ class ImageWindow(wx.Frame):
         self.panel = DrawImage(self)
         self.parent.imageOpen = True
 
-        #self.data = self.panel.getData(self.image)
+        #self.data = self.panel.getData(self.image)  # for debugging
 
         ### Put in matplotlib imshow window
-        #self.panel.plotImage(self.data, 6.0, 'gray')
+        #self.panel.plotImage(self.data, 6.0, 'gray')  # for debuggin
         self.devSlider = wx.Slider(self, id=-1, value=60, minValue=1, maxValue=200, size=(250,-1),\
                          style=wx.SL_HORIZONTAL)
         self.invert = wx.CheckBox(self, id=-1, label="Invert")
@@ -455,6 +494,14 @@ class ImageWindow(wx.Frame):
         self.stats.SetStatusText("Median: %.0f"%(self.panel.median), 3)
 
 
+        self.menuBar = wx.MenuBar()
+
+        self.fileMenu = wx.Menu()
+        self.fileMenu.Append(1500, "&Open", "Open fits image")
+
+        self.menuBar.Append(self.fileMenu, "&File")
+        self.SetMenuBar(self.menuBar)
+
         ##  Adjust sub sizers
         self.sliderSizer.Add(self.text, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.sliderSizer, 10)
@@ -466,10 +513,10 @@ class ImageWindow(wx.Frame):
         self.topSizer.Add(self.panel, proportion=1, flag=wx.EXPAND)
         self.topSizer.Add(self.sliderSizer, flag=wx.ALIGN_CENTER)
 
-
         ### Binds
         self.devSlider.Bind(wx.EVT_SCROLL, self.onSlide)
         self.invert.Bind(wx.EVT_CHECKBOX, self.onInvert)
+        self.Bind(wx.EVT_MENU, self.onOpen, id=1500)
         self.Bind(wx.EVT_CLOSE, self.onClose)
 
         # Set Icon
@@ -481,6 +528,7 @@ class ImageWindow(wx.Frame):
 
 
     def onSlide(self, event):
+        self.currSliderValue = event.GetPosition()
         value = float(event.GetPosition()) / 10.0
         lower = self.panel.median - value * self.panel.mad
         upper = self.panel.median + value * self.panel.mad
@@ -494,15 +542,29 @@ class ImageWindow(wx.Frame):
         self.Destroy()
         #self.Close()
 
+    def onOpen(self, event):
+        openFileDialog = wx.FileDialog(self, "Open Image File", "", "", "Image (*.fits;*.fit)|*.fits.*;*.fits;*.fit", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+        
+        if openFileDialog.ShowModal() == wx.ID_CANCEL:
+            return
+        
+        fileName = openFileDialog.GetFilename()
+        fileName = fileName.split(".")
+        if fileName[-1] in ["fits", "fit"]:
+            data = als.getData(openFileDialog.GetPath())
+            stats_list = als.calcStats(data)
+            self.parent.takeImage.exposureInstance.safePlot(data, stats_list)
+
     def onInvert(self, event):
         value = event.IsChecked()
         if value is True:
             self.panel.updateCmap("gray_r")
             self.panel.refresh()
+            self.currMap = 'gray_r'
         if value is False:
             self.panel.updateCmap('gray')
             self.panel.refresh()
-
+            self.currMap = 'gray'
 
     def resetWidgets(self):
         # Set slid to 60
@@ -559,12 +621,12 @@ class DrawImage(wx.Panel):
         """
         #print "Reached"
 
-        self.mad = np.median(np.abs(data.flat-self.median)) # median absolute deviation
+        self.mad = np.median(np.abs(data.ravel()-self.median))  # median absolute deviation
         deviation = scale * self.mad
         self.upper = self.median + deviation
         self.lower = self.median - deviation
 
-        self.plot = self.axes.imshow(data, vmin=self.lower, vmax=self.upper)
+        self.plot = self.axes.imshow(data, vmin=self.lower, vmax=self.upper, origin='lower')
         
         #print "Not reached"
         self.plot.set_clim(vmin=self.lower, vmax=self.upper)
@@ -915,7 +977,7 @@ class FilterClient(protocol.ClientFactory):
         print("connection lost on port 5503")
         
     def clientConnectionFailed(self, transport, reason):
-        print("connection lost on port 5503")
+        print("connection failed on port 5503")
 
 if __name__ == "__main__":
     #log.startLogging(sys.stdout)

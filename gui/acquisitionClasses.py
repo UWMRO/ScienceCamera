@@ -349,17 +349,20 @@ class Exposure(wx.Panel):
             pass
 
     def safePlot(self, data, stats_list):
+        plotInstance = self.parent.parent.parent.window
         if(not self.parent.parent.parent.imageOpen):
             # create new window
             self.parent.parent.parent.openImage("manual open")
         else:
-            self.parent.parent.parent.window.panel.clear()
-            self.parent.parent.parent.window.resetWidgets()
+            plotInstance.panel.clear()
+            #plotInstance.resetWidgets()
 
-        self.parent.parent.parent.window.panel.updatePassedStats(stats_list)
-        self.parent.parent.parent.window.panel.plotImage(data, 6.0, 'gray')
-        self.parent.parent.parent.window.panel.updateScreenStats()
-        self.parent.parent.parent.window.panel.refresh()
+        sliderVal = plotInstance.currSliderValue / 10
+
+        plotInstance.panel.updatePassedStats(stats_list)
+        plotInstance.panel.plotImage(data, sliderVal, plotInstance.currMap)
+        plotInstance.panel.updateScreenStats()
+        plotInstance.panel.refresh()
 
     def displayRealImage_thread(self, msg):
         thread.start_new_thread(self.displayRealImage, (msg,))
@@ -1000,7 +1003,7 @@ class FilterControl(wx.Panel):
         self.statusBoxSizer = wx.StaticBoxSizer(self.statusBox, wx.VERTICAL)
 
         self.filterText = wx.StaticText(self, id=2042, label="Filter Type")
-        self.filterMenu = wx.ComboBox(self, id=2043, choices=self.filterName, size=(50, -1), style=wx.CB_READONLY)
+        self.filterMenu = wx.ComboBox(self, id=2043, choices=self.filterName, size=(60, -1), style=wx.CB_READONLY)
         self.filterButton = wx.Button(self, id=2044, label="Rotate", size=(70, -1))
         self.homeButton = wx.Button(self, id=2046, label="Home", size=(70,-1))
         self.statusBox = wx.TextCtrl(self, id=2045, style=wx.TE_READONLY|wx.TE_MULTILINE, size=(200,100))
@@ -1174,9 +1177,9 @@ class FilterControl(wx.Panel):
             self.filterMenu.Append(i)
 
     def sendToStatus(self, string):
-        send = als.timeStamp()
-        send += " " + string
-        wx.CallAfter(self.threadSafeFilterStatus, send)
+        #send = als.timeStamp()
+        #send += " " + string
+        wx.CallAfter(self.threadSafeFilterStatus, string)
 
     def threadSafeFilterStatus(self, string):
         val = self.statusBox.GetValue()

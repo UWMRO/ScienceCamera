@@ -83,6 +83,8 @@ class EvoraParser(object):
             return self.e.startup()
         if input[0] == 'temp':
             return self.e.getTemp()
+        if input[0] == 'tempRange':
+            return self.e.getTempRange()
         if input[0] == 'setTEC':
             return self.e.setTEC(input[1])
         if input[0] == 'getTEC':
@@ -182,7 +184,7 @@ class Evora(object):
 
     def getStatus(self):
         # if the first status[0] is 20075 then the camera is not initialized yet and
-        # one needs to run the startup methodg.
+        # one needs to run the startup method.
         status = andor.GetStatus()
         return "status " + str(status[0]) + "," + str(status[1])
 
@@ -273,13 +275,22 @@ class Evora(object):
             txt = txt+","+str(e)
         return "temp " + txt
 
+    def getTempRange(self):
+        stats = andor.GetTemperatureRange()
+        result = stats[0]
+        mintemp = stats[1]
+        maxtemp = stats[2]
+        return "tempRange " + "%s,%s,%s" % (result, mintemp, maxtemp)
+
     def shutdown(self):
         self.warmup()
         res = self.getTemp()
-        while res[1] < int(0):
+        res = res.split(" ")[1].split(",")
+        while int(res[2]) < 0:
             time.sleep(5)
             res = self.getTemp()
-            print('waiting: %s' % str(res[1]))
+            res = res.split(" ")[1].split(",")
+            print('waiting: %s' % str(res[2]))
         print('closing down camera connection')
         andor.ShutDown()
         return "shutdown 1"
