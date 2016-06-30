@@ -894,7 +894,7 @@ class EvoraClient(protocol.ClientFactory):
         exposureInstance.log(exposureInstance.logFunction, logString)
 
         print("connection Lost")
-        reactor.callFromThread(reactor.stop)
+        #reactor.callFromThread(reactor.stop)
 
     def clientConnectionFailed(self, transport, reason):
         exposureInstance = self.gui.takeImage.exposureInstance
@@ -902,7 +902,7 @@ class EvoraClient(protocol.ClientFactory):
         logString = als.getLogString("connectFailed 1", 'post')
         exposureInstance.log(exposureInstance.logFunction, logString)
 
-        reactor.callFromThread(reactor.stop)
+        #reactor.callFromThread(reactor.stop)
 
 class FilterForwarder(basic.LineReceiver):
     def __init__(self):
