@@ -349,14 +349,15 @@ class Exposure(wx.Panel):
             pass
 
     def safePlot(self, data, stats_list):
-        plotInstance = self.parent.parent.parent.window
         if(not self.parent.parent.parent.imageOpen):
             # create new window
             self.parent.parent.parent.openImage("manual open")
+
         else:
-            plotInstance.panel.clear()
+            self.parent.parent.parent.window.panel.clear()
             #plotInstance.resetWidgets()
 
+        plotInstance = self.parent.parent.parent.window
         sliderVal = plotInstance.currSliderValue / 10
 
         plotInstance.panel.updatePassedStats(stats_list)
@@ -765,6 +766,7 @@ class TempControl(wx.Panel):
         self.parent = parent
         self.isConnected = False
         self.logFunction = None
+        self.currTemp = None
 
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
@@ -915,10 +917,11 @@ class TempControl(wx.Panel):
         #print msg
         #print threading.current_thread().name
         temp = msg.split(",")[2]  #  parser sends stats on temperture where I grab that temp
+        self.currTemp = float(temp)
         temp = str(int(round(float(temp))))
         mode = int(msg.split(",")[0])
         targetTemp = msg.split(",")[3]
-        
+
         #self.parent.parent.parent.stats.SetStatusText("Current Temp:            " + temp + " C", 0)
         wx.CallAfter(self.parent.parent.parent.stats.SetStatusText, "Current Temp:            " + temp + " C", 0)
         
@@ -928,6 +931,7 @@ class TempControl(wx.Panel):
         # 20036 is Stabalized
         # 20034 is Off  
         if(mode != 20034 and not self.stopCool.IsEnabled()):
+            print("Enter")
             self.stopCool.Enable(True)
 
         if(mode == 20034 and float(temp) >= 0):

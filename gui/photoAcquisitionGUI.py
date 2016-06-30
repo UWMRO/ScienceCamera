@@ -114,7 +114,7 @@ class Evora(wx.Frame):
         cameraSub.Enable(1132, False)
 
         readoutSub = wx.Menu()
-        readoutSub.Append(1140, "0.5 MHz", "6 seconds", kind=wx.ITEM_RADIO)
+        readoutSub.Append(1140, "0.05 MHz", "6 seconds", kind=wx.ITEM_RADIO)
         readoutSub.Append(1141, "1.0 MHz", "X seconds", kind=wx.ITEM_RADIO)
         readoutSub.Append(1142, "3.0 MHz", "X seconds", kind=wx.ITEM_RADIO)
         readoutSub.Append(1143, "5.0 MHz", "X seconds", kind=wx.ITEM_RADIO)
@@ -311,7 +311,7 @@ class Evora(wx.Frame):
 
     def callStartup(self, msg):
         self.logFunction = self.logMain
-        logString = als.getLogString('startup ' + msg, 'post')
+        logString = als.getLogString('connect ' + msg, 'post')
         self.logMethod(self.logFunction, logString)
 
         result = int(msg)
@@ -363,9 +363,21 @@ class Evora(wx.Frame):
 
     def onShutdown(self, event):
         if(self.protocol is not None):
-            d = self.protocol.sendCommand("shutdown")
-            d.addCallback(self.callShutdown)
-            self.disableButtons(True)
+            temp = self.takeImage.tempInstance.currTemp
+            if(temp < 0):
+                dialog = wx.MessageDialog(None, "Temperature is below 0 are you sure you want to shutdown the camera.", "", \
+                                          wx.OK | wx.CANCEL | wx.ICON_QUESTION)
+
+                answer = dialog.ShowModal()
+                dialog.Destroy()
+                if(answer == wx.ID_OK):
+                    d = self.protocol.sendCommand("shutdown")
+                    d.addCallback(self.callShutdown)
+                    self.disableButtons(True)
+            else:
+                d = self.protocol.sendCommand("shutdown")
+                d.addCallback(self.callShutdown)
+                self.disableButtons(True)
 
     def callShutdown(self, msg):
         self.logFunction = self.logMain
@@ -464,6 +476,7 @@ class ImageWindow(wx.Frame):
         self.parent = parent
         self.currSliderValue = 60
         self.currMap = 'gray'
+        print ("current slider value", self.currSliderValue)
 
         ## Main sizers
         self.topSizer = wx.BoxSizer(wx.VERTICAL)
@@ -875,11 +888,21 @@ class EvoraClient(protocol.ClientFactory):
         self.filterWatchThread = None
 
     def clientConnectionLost(self, transport, reason):
+        exposureInstance = self.gui.takeImage.exposureInstance
+        exposureInstance.logFunction = exposureInstance.logExposure
+        logString = als.getLogString("connectLost 1", 'post')
+        exposureInstance.log(exposureInstance.logFunction, logString)
+
         print("connection Lost")
-        #reactor.stop()
+        reactor.callFromThread(reactor.stop)
 
     def clientConnectionFailed(self, transport, reason):
-        reactor.stop()
+        exposureInstance = self.gui.takeImage.exposureInstance
+        exposureInstance.logFunction = exposureInstance.logExposure
+        logString = als.getLogString("connectFailed 1", 'post')
+        exposureInstance.log(exposureInstance.logFunction, logString)
+
+        reactor.callFromThread(reactor.stop)
 
 class FilterForwarder(basic.LineReceiver):
     def __init__(self):
@@ -974,9 +997,19 @@ class FilterClient(protocol.ClientFactory):
         self.protocol = FilterForwarder
 
     def clientConnectionLost(self, transport, reason):
+        filterInstance = self.gui.takeImage.filterInstance
+        filterInstance.logFunction = filterInstance.logFilter
+        logString = als.getLogString("filter connectLost 1", 'post')
+        filterInstance.log(filterInstance.logFunction, logString)
+
         print("connection lost on port 5503")
         
     def clientConnectionFailed(self, transport, reason):
+        filterInstance = self.gui.takeImage.filterInstance
+        filterInstance.logFunction = filterInstance.logFilter
+        logString = als.getLogString("filter connectFailed 1", 'post')
+        filterInstance.log(filterInstance.logFunction, logString)
+
         print("connection failed on port 5503")
 
 if __name__ == "__main__":

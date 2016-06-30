@@ -139,10 +139,14 @@ def getLogString(command, prePost):
             itime = float(stats[1])
             return "\"%s\" completed with time %.2f sec" % (name, itime)
         if(key == 'connect'):
-            if(stats[0] == 20002):  # 20002 is "success" Evora
+            if(int(stats[0]) == 20002):  # 20002 is "success" Evora
                 return "Initialization completed..."
             else:
                 return "Initialization failed..."
+        if(key == 'connectLost'):
+            return "Disconnected from camera normally..."
+        if(key == 'connectFailed'):
+            return "Disconnected from camera suddenly..."
         if(key == 'getTEC'):
             pass
         if(key == 'setTEC'):
@@ -157,7 +161,7 @@ def getLogString(command, prePost):
             else:
                 return "Failure in setting cooler down..."
         if(key == 'startup'):
-            if stats[0] == 20002:
+            if int(stats[0]) == 20002:
                 return "Camera initialization successful..."
             else:
                 return "Camera initialization went wrong check the server..."
@@ -190,7 +194,10 @@ def getLogString(command, prePost):
                     filter = stats[0]
                     pos = int(stats[1])
                     return "At position %d, setting filter to %s" % (pos, filter)
-
+            if(key2 == 'connectLost'):
+                return "Connection to filter lost normally..."
+            if(key2 == 'connectFailed'):
+                return "Connection to filter failed suddenly..."
     return None
 def timeStamp():
     """
@@ -229,7 +236,7 @@ def getImagePath(type):
     Post: Returns the file path /data/forTCC/ plus an image name with a time stamp
           with accuracy of milliseconds.
     """
-    saveDirectory = "/home/mro/data/evora_server/raw/"
+    saveDirectory = "/home/tristan/data/evora_server/raw/"
     time = datetime.today()
     fileName = "image_%s%s%s_%s%s%s_%s.fits" % (time.year, time.month, time.day, time.hour, time.minute, time.second, time.microsecond)
     if(type == 'real'):

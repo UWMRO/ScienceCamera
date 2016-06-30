@@ -286,11 +286,13 @@ class Evora(object):
         self.warmup()
         res = self.getTemp()
         res = res.split(" ")[1].split(",")
-        while int(res[2]) < 0:
+        """
+        while float(res[2]) < 0:
             time.sleep(5)
             res = self.getTemp()
             res = res.split(" ")[1].split(",")
             print('waiting: %s' % str(res[2]))
+        """
         print('closing down camera connection')
         andor.ShutDown()
         return "shutdown 1"
