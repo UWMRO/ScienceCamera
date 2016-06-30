@@ -831,7 +831,7 @@ class TempControl(wx.Panel):
 
     def onCool(self, event):
         if als.isNumber(self.tempToSend):
-            if(float(self.tempToSend) >= -80.0 and float(self.tempToSend) <= -10.0):
+            if(float(self.tempToSend) >= -100.0 and float(self.tempToSend) <= -10.0):
                 print(float(self.tempToSend))
                 self.logFunction = self.logTemp
                 command = "setTEC " + str(int(self.tempToSend))
