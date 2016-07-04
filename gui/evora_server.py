@@ -1,9 +1,17 @@
-#!/usr/bin/python2
+#!/usr/bin/env python2
 
+# For Python 3 like functionality
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+# Comment on documentation:
+# When reading the doc strings if "Pre:" is present then this stands for "precondition", or the conditions in order to invoke something.
+# Oppositely, "Post:" stands for "postcondition" and states what is returned by the method.
+
+__author__ = "Tristan J. Hillis"
+
+## Imports
 import sys
 import andor
 import numpy as np
@@ -13,7 +21,8 @@ import Queue
 import thread
 import threading
 import AddLinearSpacer as als
-
+from datetime import datetime
+from datetime import date
 
 from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
@@ -28,6 +37,10 @@ acquired = None
 t = None
 isAborted = None  # tracks globally when the abort has been called.  Every call to the parser
                   # is an new instance
+# Get gregorian date, local
+d = date.today()
+logFile = open("/home/mro/ScienceCamera/gui/logs/log_server_" + d.strftime("%Y%m%d") + ".log", "a")
+
 
 
 class EvoraServer(basic.LineReceiver):
@@ -36,18 +49,11 @@ class EvoraServer(basic.LineReceiver):
         If you send more than one line then the callback to start the gui will completely fail.
         """
         self.factory.clients.append(self)
-        #self.sendMessage("Welcome to the Evora Server")
-        #self.sendMessage("Starting camera")
         ep = EvoraParser(self)
         command = ep.parse("status") 
         self.sendMessage(str(command)) # activate the callback to give full control to the camera.
 
     def connectionLost(self, reason):
-        #self.sendLine("Connection Lost")
-        #if len(self.factory.clients) is 1:
-        #    ep = EvoraParser()
-        #    command = ep.parse("shutdown")
-            #self.sendMessage(command)        
         self.factory.clients.remove(self)
 
     def lineReceived(self, line):
@@ -82,6 +88,8 @@ class EvoraParser(object):
             return self.e.startup()
         if input[0] == 'temp':
             return self.e.getTemp()
+        if input[0] == 'tempRange':
+            return self.e.getTempRange()
         if input[0] == 'setTEC':
             return self.e.setTEC(input[1])
         if input[0] == 'getTEC':
@@ -101,7 +109,7 @@ class EvoraParser(object):
         if input[0] == 'filterConnect':
             pass
         if input[0] == 'filterSlew':
-            # pos can be a number 1-6
+            # pos can be a number 0-5
             pos = input[1]
             pass
         if input[0] == 'filterHome':
@@ -110,7 +118,7 @@ class EvoraParser(object):
         if input[0] == "abort":
             return self.e.abort()
         if input[0] == 'expose':
-            # command expose flat 1 10 2
+            # command: expose flat 1 10 2 4
             # get the type of exposure (i.e. bias, flat, object)
             imType = input[1]
             print(imType)
@@ -118,7 +126,13 @@ class EvoraParser(object):
             expnum = int(input[2])
             itime = float(input[3])  # why int?
             binning = int(input[4])
-            return self.e.expose(imType, expnum, itime, binning)
+            readoutIndex = int(input[5])
+            filter = ""
+            try:
+                filter = str(input[6])
+            except IndexError:
+                pass
+            return self.e.expose(imType, expnum, itime, binning, readTime=readoutIndex, filter=filter)
         if input[0] == 'real':
             # command real flat 1 10 2
             imType = input[1]
@@ -136,7 +150,13 @@ class EvoraParser(object):
             expnum = int(input[2])
             itime = float(input[3])
             binning = int(input[4])
-            return self.e.kseriesExposure(self.protocol, imType, itime, numexp=expnum, binning=binning)
+            readoutIndex = int(input[5])
+            filter = ""
+            try:
+                filter = str(input[6])
+            except IndexError:
+                pass
+            return self.e.kseriesExposure(self.protocol, imType, itime, readTime=readoutIndex, filter=filter, numexp=expnum, binning=binning)
         """
         if input[0] == 'realTest':
             #exposureSetting = int(input[1])
@@ -169,7 +189,7 @@ class Evora(object):
 
     def getStatus(self):
         # if the first status[0] is 20075 then the camera is not initialized yet and
-        # one needs to run the startup methodg.
+        # one needs to run the startup method.
         status = andor.GetStatus()
         return "status " + str(status[0]) + "," + str(status[1])
 
@@ -260,13 +280,24 @@ class Evora(object):
             txt = txt+","+str(e)
         return "temp " + txt
 
+    def getTempRange(self):
+        stats = andor.GetTemperatureRange()
+        result = stats[0]
+        mintemp = stats[1]
+        maxtemp = stats[2]
+        return "tempRange " + "%s,%s,%s" % (result, mintemp, maxtemp)
+
     def shutdown(self):
         self.warmup()
         res = self.getTemp()
-        while res[1] < int(0):
+        res = res.split(" ")[1].split(",")
+        """
+        while float(res[2]) < 0:
             time.sleep(5)
             res = self.getTemp()
-            print('waiting: %s' % str(res[1]))
+            res = res.split(" ")[1].split(",")
+            print('waiting: %s' % str(res[2]))
+        """
         print('closing down camera connection')
         andor.ShutDown()
         return "shutdown 1"
@@ -322,7 +353,7 @@ class Evora(object):
         Pre: Takes in a list of attributes: [imType, binning, itime]
         Post: Returns an AstroPy header object to be used for writing to.
         """
-        imType, binning, itime = attributes[0], attributes[1], attributes[2]
+        imType, binning, itime, filter = attributes[0], attributes[1], attributes[2], attributes[3]
         # make new fits header object
         header = fits.Header()
         ut_time = time.gmtime() # get UT time
@@ -332,6 +363,7 @@ class Evora(object):
         header.append(card=("UT", ut_str, "UT time at start of exposure"))
         header.append(card=("OBSERVAT", "mro", "per the iraf list"))
         header.append(card=("IMAGETYP", imType))
+        header.append(card=("FILTER", filter))
         header.append(card=("BINX", binning, "Horizontal Binning"))
         header.append(card=("BINY", binning, "Vertical Binning"))
         header.append(card=("EXPOSURE", itime, "Total exposure time"))
@@ -343,15 +375,13 @@ class Evora(object):
 
         # get readout time and temp
         temp = andor.GetTemperatureStatus()[1]
-        readTime = andor.GetAcquisitionTimings()[1] - itime
+        readTime = andor.GetAcquisitionTimings()[3] - itime
         header.append(card=("TEMP", temp, "Temperature"))
         header.append(card=("READTIME", readTime, "Pixel readout time"))
 
         return header
 
-
-    def expose(self, imType=None, expnum=None, itime=2, binning=1):
-
+    def expose(self, imType=None, expnum=None, itime=2, binning=1, filter="", readTime=3):
         if expnum is None:
             self.num += 1
             expnum = self.num
@@ -377,43 +407,17 @@ class Evora(object):
                 andor.SetShutter(1,0,5,5)
             else:
                 andor.SetShutter(1,2,0,0)
-            print('SetExposureTime:', andor.SetExposureTime(itime)) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
+            print('SetExposureTime:', andor.SetExposureTime(itime))  # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
 
-
-        #expTime, accTime, kTime = ctypes.c_float(), ctypes.c_float(), ctypes.c_float()
-        #expTime, accTime, kTime = andor.GetAcquisitionTimings()
-        print("Adjusted Exposure Time:", andor.GetAcquisitionTimings())
-        # set Readout speeds
+        # set Readout speeds 0, 1, 2, or 3
         #print("SetVSSpeed:", andor.SetVSSpeed(3))
-        print("SetHSSpeed:", andor.SetHSSpeed(0, 3))
+        print("SetHSSpeed:", andor.SetHSSpeed(0, readTime))  # default readTime is index 3 which is 0.5 MHz or ~6 sec
 
-        attributes = [imType, binning, itime]
+        results, expTime, accTime, kTime = andor.GetAcquisitionTimings()
+        print("Adjusted Exposure Time:", [results, expTime, accTime, kTime])
+
+        attributes = [imType, binning, itime, filter]
         header = self.getHeader(attributes)
-        """
-        # make new fits header object
-        header = fits.Header()
-        ut_time = time.gmtime() # get UT time
-        dateObs = time.strftime("%Y-%m-%dT%H:%M:%S", ut_time)
-        ut_str = time.strftime("%H:%M:%S", ut_time)
-        header.append(card=("DATE-OBS", dateObs, "Time at start of exposure"))
-        header.append(card=("UT", ut_str, "UT time at start of exposure"))
-        header.append(card=("OBSERVAT", "mro", "per the iraf list"))
-        header.append(card=("IMAGETYP", imType))
-        header.append(card=("BINX", binning, "Horizontal Binning"))
-        header.append(card=("BINY", binning, "Vertical Binning"))
-        header.append(card=("EXPOSURE", itime, "Total exposure time"))
-        header.append(card=("ACQMODE", "Single Scan", "Acquisition mode"))
-        header.append(card=("READMODE", "Image", "Readout mode"))
-        header.append(card=("INSTRUME", "evora", "Instrument used for imaging"))
-        header.append(card=("LATITUDE", 120.744466667, "Decimal degrees of MRO latitude"))
-        header.append(card=("LONGITUD", 46.9528, "Decimal degress of MRO longitude"))
-
-        # get readout time and temp
-        temp = andor.GetTemperatureStatus()[1]
-        readTime = andor.GetAcquisitionTimings()[1] - itime
-        header.append(card=("TEMP", temp, "Temperature"))
-        header.append(card=("READTIME", readTime, "Pixel readout time"))
-        """
 
         print('StartAcquisition:', andor.StartAcquisition())
 
@@ -447,7 +451,7 @@ class Evora(object):
             print(data.shape,data.dtype)
             hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True, header=header)
             #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
-            filename = als.getImagePath()
+            filename = als.getImagePath('expose')
             hdu.writeto(filename,clobber=True)
             print("wrote: {}".format(filename))
         #queue.put("expose " + filename)
@@ -483,7 +487,7 @@ class Evora(object):
             print('SetExposureTime:', andor.SetExposureTime(itime)) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
             
         data = np.zeros(width//binning*height//binning, dtype='uint16')
-        print("SetHSSpeed:", andor.SetHSSpeed(0, 3))
+        print("SetHSSpeed:", andor.SetHSSpeed(0, 1))  # read time on real is fast because they aren't science images
         print('StartAcquisition:', andor.StartAcquisition())
 
         
@@ -508,7 +512,7 @@ class Evora(object):
                     print(data.shape,data.dtype)
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
                     #filename = time.strftime('/tmp/image_%Y%m%d_%H%M%S.fits') 
-                    filename = als.getImagePath()
+                    filename = als.getImagePath('real')
                     hdu.writeto(filename,clobber=True)
                     print("wrote: {}".format(filename))
                     data = np.zeros(width//binning*height//binning, dtype='uint16')
@@ -573,7 +577,7 @@ class Evora(object):
 
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
                     #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
-                    filename = als.getImagePath()
+                    filename = als.getImagePath('series')
                     hdu.writeto(filename,clobber=True)
 
                     print("wrote: {}".format(filename))
@@ -585,7 +589,7 @@ class Evora(object):
         return "series 1,"+str(counter) # exits with 1 for success
 
 
-    def kseriesExposure(self, protocol, imType, itime, numexp=1, binning=1, numAccum=1, accumCycleTime=0, kCycleTime=0):
+    def kseriesExposure(self, protocol, imType, itime, filter="", readTime=3, numexp=1, binning=1, numAccum=1, accumCycleTime=0, kCycleTime=0):
         """
         This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
         """
@@ -619,10 +623,10 @@ class Evora(object):
 
         print("Timings:", andor.GetAcquisitionTimings())
 
-        print("SetHSSpeed:", andor.SetHSSpeed(0, 3))
+        print("SetHSSpeed:", andor.SetHSSpeed(0, readTime))  # default readTime is index 3 which is 0.5 MHz or ~6 sec
 
         # write headers
-        attributes = [imType, binning, itime]
+        attributes = [imType, binning, itime, filter]
         header = self.getHeader(attributes)
 
         print('StartAcquisition:', andor.StartAcquisition())
@@ -650,7 +654,8 @@ class Evora(object):
                     print(data.shape,data.dtype)
                     
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True, header=header)
-                    filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
+                    #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
+                    filename = als.getImagePath('series')
                     hdu.writeto(filename,clobber=True)
 
                     print("wrote: {}".format(filename))
@@ -671,7 +676,29 @@ class Evora(object):
         return "series 1,"+str(counter) # exits with 1 for success
 
 
+class Logger(object):
+    """
+    This class when assigned to sys.stdout or sys.stderr it will write to a file that is opened everytime a new GUI session is started.
+    It also writes to the terminal window.
+    """
+    def __init__(self, stream):
+        self.terminal = stream
+
+    def write(self, message):
+        self.terminal.flush()
+        self.terminal.write(message)
+        logFile.write(self.stamp() + message) # This prints weirdly but works for now
+
+    def stamp(self):
+        d = datetime.today()
+        string = d.strftime(" [%b %m, %y, %H:%M:%S] ")
+        return string
+
+
 if __name__ == "__main__":
+    sys.stdout = Logger(sys.stdout)
+    sys.stderr = Logger(sys.stderr)
+
     #ep = Evora()
     #ep.startup()
     reactor.suggestThreadPoolSize(30)

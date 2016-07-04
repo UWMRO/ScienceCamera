@@ -53,9 +53,11 @@ class ScriptCommands(wx.Panel):
         self.commandFrame = wx.StaticBox(self, id=3000, label="Command Prompt", size=(350, 50))
         self.commandFrameSizer = wx.StaticBoxSizer(self.commandFrame, wx.VERTICAL)
 
-        self.button = wx.Button(self, id=3001, label="OK")
+        self.button = wx.Button(self, id=3001, label="OK")  # for entering command prompt
         self.upButton = wx.Button(self, id=3002, label="Upload")
-        self.commandBox = wx.TextCtrl(self, id=3003, size=(350, -1), style=wx.TE_PROCESS_ENTER)
+        self.button.Enable(False)
+        self.upButton.Enable(False)
+        self.commandBox = wx.TextCtrl(self, id=3003, size=(350, -1), style=wx.TE_PROCESS_ENTER|wx.TE_READONLY) 
 
         # adjust subsizers
         self.buttonSizer.Add(self.button, flag=wx.ALIGN_CENTER)

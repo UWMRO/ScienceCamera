@@ -31,7 +31,8 @@
 %apply int *OUTPUT {int *number}; // For GetNumberVSAmplitudes
 %apply float *OUTPUT {float *speed}; // For GetVSSpeeds and GetHSSpeeds
 %apply float *OUTPUT {int *index, float *speed}; // For GetFastestRecommendedVSSpeed()
-%apply int *OUTPUT {int *channels}; // For GetNumberADChannels
+%apply int *OUTPUT {int *channels}; // For GetNumberADChannels()
+%apply int *OUTPUT {int *mintemp, int *maxtemp}; // For GetTemperatureRange()
 
 
 

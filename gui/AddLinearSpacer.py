@@ -1,5 +1,12 @@
 #!/usr/bin/python2
 
+# Comment on documentation:
+# When reading the doc strings if "Pre:" is present then this stands for "precondition", or the conditions in order to invoke something.
+# Oppositely, "Post:" stands for "postcondition" and states what is returned by the method.
+
+__author__ = "Tristan J. Hillis"
+
+## Imports
 import wx  # get wxPython
 from astropy.io import fits
 import numpy as np
@@ -7,6 +14,15 @@ import threading
 import time
 import os
 from datetime import datetime
+from datetime import date
+import sys
+
+## Global Variables
+
+# Get gregorian date, local
+d = date.today()
+logFile = open("/home/mro/ScienceCamera/gui/logs/log_gui_" + d.strftime("%Y%m%d") + ".log", "a")
+
 
 def AddLinearSpacer(boxsizer, pixelSpacing):
     """
@@ -102,16 +118,23 @@ def getLogString(command, prePost):
             if(key2 == 'move'):
                 filter = command[2]
                 return "Moving to filter %s" % filter
+            if(key2 == 'getFilter'):
+                return "Getting filter position..."
+            if(key2 == 'connect'):
+                return "Please home filter..."
 
     if(prePost == 'post'):  # command has a key then is followed by relavent information delimited with commas
         key = command[0]
+        print(printStamp() + "key from post:", key)
         stats = command[1].split(",")
-        print("Stats in log:", stats)
+        print(printStamp() + "Stats in log:", stats)
         if(key == 'status'):
-            if(stats[0] == 20002):  # 20002 is "success" to Evora
+            if(int(stats[0]) == 20002):  # 20002 is "success" to Evora
                 return "Camera already initialized connecting..."
-            else:
+            elif(int(stats[0]) == 20075):
                 return "Camera uninitialized this will take a few..."
+            else:
+                return "Camera drivers reporting incorrectly please run reinstall..."
         if(key == 'expose'):
             # at the end of stats is the image name
             name = stats[-1]
@@ -127,15 +150,19 @@ def getLogString(command, prePost):
         if(key == 'series'):
             results = stats[0]
             return "Done take series images..."
-        if(key[:-1] == 'seriesSent'):
+        if(key == 'seriesSent'):            
             name = stats[-1]
             itime = float(stats[1])
             return "\"%s\" completed with time %.2f sec" % (name, itime)
         if(key == 'connect'):
-            if(stats[0] == 20002):  # 20002 is "success" Evora
+            if(int(stats[0]) == 20002):  # 20002 is "success" Evora
                 return "Initialization completed..."
             else:
                 return "Initialization failed..."
+        if(key == 'connectLost'):
+            return "Disconnected from camera normally..."
+        if(key == 'connectFailed'):
+            return "Disconnected from camera suddenly..."
         if(key == 'getTEC'):
             pass
         if(key == 'setTEC'):
@@ -149,6 +176,11 @@ def getLogString(command, prePost):
                 return "Successfully shutdown cooler..."
             else:
                 return "Failure in setting cooler down..."
+        if(key == 'startup'):
+            if int(stats[0]) == 20002:
+                return "Camera initialization successful..."
+            else:
+                return "Camera initialization went wrong check the server..."
         if(key == 'shutdown'):
             results = stats[0]
             return "Successfully shutdown camera..."
@@ -165,11 +197,26 @@ def getLogString(command, prePost):
                     return "Failed to home, try again..."
             if(key2 == 'move'):
                 if(int(stats[0]) == 1):
-                    return "Successfully moving filter give it a moment..."
+                    return "Successfully moved filter..."
                 else:
                     return "Failed to move filter..."
-
+            if(key2 == 'getFilter'):
+                key3 = command[2]
+                stats = command[3].split(",")
+                if(key3 == 'report'):
+                    filter = stats[0]
+                    return "At filter %s" % filter
+                else:
+                    filter = stats[0]
+                    pos = int(stats[1])
+                    return "At position %d, setting filter to %s" % (pos, filter)
+            if(key2 == 'connectLost'):
+                return "Connection to filter lost normally..."
+            if(key2 == 'connectFailed'):
+                return "Connection to filter failed suddenly..."
     return None
+
+
 def timeStamp():
     """
     Pre: No arguments are needed to invoke this method.
@@ -177,24 +224,47 @@ def timeStamp():
     """
     time = datetime.today()
     #stamp = "[%s/%s/%s, " % (time.month, time.day, time.year)
-    stamp = "[%s:%s:%s]" % (time.hour, time.minute, time.second)
+    hour = ""
+    minute = ""
+    second = ""
+    if(time.hour < 10):
+        hour += "0" + str(time.hour)
+    else:
+        hour += str(time.hour)
+    if(time.minute < 10):
+        minute += "0" + str(time.minute)
+    else:
+        minute += str(time.minute)
+    if(time.second < 10):
+        second += "0" + str(time.second)
+    else:
+        second += str(time.second)
+    stamp = "[%s:%s:%s]" % (hour, minute, second)
     return stamp
 
 
 def checkForFile(path):
+    """
+    Pre: User specifies a path to a file.
+    Post: This method will chekc if the specified file exists and return a boolean.
+    """
     boolean = os.path.isfile(path)
     return boolean
 
 
-def getImagePath():
+def getImagePath(type):
     """
     Pre: No inputs.
     Post: Returns the file path /data/forTCC/ plus an image name with a time stamp
           with accuracy of milliseconds.
     """
+    saveDirectory = "/home/mro/data/evora_server/raw/"
     time = datetime.today()
     fileName = "image_%s%s%s_%s%s%s_%s.fits" % (time.year, time.month, time.day, time.hour, time.minute, time.second, time.microsecond)
-    return "/data/forTCC/" + fileName
+    if(type == 'real'):
+        return "/tmp/" + fileName
+    else:
+        return saveDirectory + fileName
 
 
 def checkForImageCounter(name):
@@ -225,7 +295,7 @@ def iterateImageCounter(name):
     """
     temp = name.split('_')
     count = int(temp[-1])
-    print(count)
+    print(printStamp() + str(count))
     count += 1
     if(count < 10):
         temp[-1] = "00" + str(count)
@@ -234,13 +304,47 @@ def iterateImageCounter(name):
     else:
         temp[-1] = str(count)
     name = "_".join(temp[:])
-    print("Iterated to: " + name)
+    print(printStamp() + "Iterated to: " + name)
     return name
+
+def printStamp():
+    """
+    Pre: User needs nothing to pass in.
+    Post: Returns a string catalogging the date and time in the format of [month day year, 24hour:minute:seconds]
+    """
+    d = datetime.today()
+    string = d.strftime("[%b %m, %y, %H:%M:%S]")
+    return string + " "
+
+class Logger(object):
+    """
+    This class when assigned to sys.stdout or sys.stderr it will write to a file that is opened everytime a new GUI session is started.
+    It also writes to the terminal window.
+    """
+    def __init__(self, stream):
+        self.terminal = stream
+
+    def write(self, message):
+        self.terminal.flush()
+        self.terminal.write(message)
+        logFile.write(message)
+
+    def stamp(self):
+        d = datetime.today()
+        string = d.strftime("[%b %m, %y, %H:%M:%S]")
+        return string
 
 
 class SampleTimer(object):
+    """
+    This is a timer object that can be used to sample the time off of a certain time length.
+    """
     def __init__(self, timeLength):
-        self.end = timeLength + 0.24  # add an extra 0.24 for readout and shutter time
+        """
+        Pre: User passes in a time length in seconds as "timeLength".
+        Post: Initializes the timer object.
+        """
+        self.end = timeLength
         self.tick = 10 * 10 ** -3  # tick is 10 milliseconds
 
         self.stopTimer = False
@@ -250,7 +354,11 @@ class SampleTimer(object):
 
         self.t = None
 
-    def timer(self):
+    def _timer(self):
+        """
+        Note: User does not call this method.
+        This method keeps count on the time.
+        """
         counter = 0
         while not self.stopTimer:
             if(self.currentTick == self.totalTicks):
@@ -266,15 +374,28 @@ class SampleTimer(object):
             time.sleep(0.01)
 
     def sample(self):
+        """
+        Pre: No user input.
+        Post: Returns the current tick out of the total amount over the specified time length.
+        """
         return [self.currentTick, self.totalTicks]
 
     def stop(self):
+        """
+        Pre: No user input.
+        Post: Stops the timer object when called by the user.
+        """
         self.stopTimer = True
         self.t.join(0)
 
     def start(self):
+        """
+        Pre: No user input.
+        Post: When called by the user this will start the timer object.
+        """
         self.stopTimer = False
         self.currentTick = 1
-        self.t = threading.Thread(target=self.timer, args=())
+        # Start new thread to avoid blocking in its application.
+        self.t = threading.Thread(target=self._timer, args=())
         self.t.daemon = True
         self.t.start()

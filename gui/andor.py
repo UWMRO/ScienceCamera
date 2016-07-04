@@ -669,8 +669,8 @@ def GetNewFloatData(*args):
   return _andor.GetNewFloatData(*args)
 GetNewFloatData = _andor.GetNewFloatData
 
-def GetNumberADChannels(*args):
-  return _andor.GetNumberADChannels(*args)
+def GetNumberADChannels():
+  return _andor.GetNumberADChannels()
 GetNumberADChannels = _andor.GetNumberADChannels
 
 def GetNumberAmp(*args):
@@ -841,8 +841,8 @@ def GetTemperatureF():
   return _andor.GetTemperatureF()
 GetTemperatureF = _andor.GetTemperatureF
 
-def GetTemperatureRange(*args):
-  return _andor.GetTemperatureRange(*args)
+def GetTemperatureRange():
+  return _andor.GetTemperatureRange()
 GetTemperatureRange = _andor.GetTemperatureRange
 
 def GetTemperaturePrecision(*args):

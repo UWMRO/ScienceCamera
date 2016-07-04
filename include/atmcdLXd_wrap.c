@@ -10140,27 +10140,29 @@ SWIGINTERN PyObject *_wrap_GetTemperatureRange(PyObject *SWIGUNUSEDPARM(self), P
   PyObject *resultobj = 0;
   int *arg1 = (int *) 0 ;
   int *arg2 = (int *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
+  int temp1 ;
+  int res1 = SWIG_TMPOBJ ;
+  int temp2 ;
+  int res2 = SWIG_TMPOBJ ;
   unsigned int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:GetTemperatureRange",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_int, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GetTemperatureRange" "', argument " "1"" of type '" "int *""'"); 
-  }
-  arg1 = (int *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GetTemperatureRange" "', argument " "2"" of type '" "int *""'"); 
-  }
-  arg2 = (int *)(argp2);
+  arg1 = &temp1;
+  arg2 = &temp2;
+  if (!PyArg_ParseTuple(args,(char *)":GetTemperatureRange")) SWIG_fail;
   result = (unsigned int)GetTemperatureRange(arg1,arg2);
   resultobj = SWIG_From_unsigned_SS_int((unsigned int)(result));
+  if (SWIG_IsTmpObj(res1)) {
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_From_int((*arg1)));
+  } else {
+    int new_flags = SWIG_IsNewObj(res1) ? (SWIG_POINTER_OWN |  0 ) :  0 ;
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj((void*)(arg1), SWIGTYPE_p_int, new_flags));
+  }
+  if (SWIG_IsTmpObj(res2)) {
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_From_int((*arg2)));
+  } else {
+    int new_flags = SWIG_IsNewObj(res2) ? (SWIG_POINTER_OWN |  0 ) :  0 ;
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj((void*)(arg2), SWIGTYPE_p_int, new_flags));
+  }
   return resultobj;
 fail:
   return NULL;
