@@ -25,7 +25,7 @@ class FilterMotor(object):
 		"""Add docs to all functions"""
 		self.stepper = None
 		self.fw = fw_io.FWIO()
-		self.dict = {"velocity":None, "amp":None, "acceleration":None, "currentPos":None, "power":None, "hall":None, "commandedPos":None, "filterDelta":6860, "ID":None, "home":False, "filterPos":None}
+		self.dict = {"velocity":None, "amp":None, "acceleration":None, "currentPos":None, "power":None, "hall":None, "commandedPos":None, "filterDelta":6860, "ID":None, "home":False, "filterPos":None, "filterCount":None}
 
 	def DisplayDeviceInfo(self):
 		#==> rename to getDeviceInfo
@@ -39,7 +39,7 @@ class FilterMotor(object):
                 self.stepper.openPhidget()
                 self.stepper.waitForAttach(10000)
 
-		self.setParm(20000,5000,0.8)
+		self.setParm(20000,5000,0.9)
 
 		self.fw.openPort()
 		time.sleep(2)
@@ -104,8 +104,56 @@ class FilterMotor(object):
 		delta = int(self.dict['filterDelta'])
 		print "Moving to filter position %d" % num
 		tpos = num*delta
-		self.moveMotor(tpos)			
-		return "move 1"
+		self.moveMotor(tpos)
+		"""time.sleep(1)
+		while tpos != self.dict['currentPos']:
+			self.status()
+			if int(self.dict['hall'][0]) == 0:
+				print 'passed', tpos, self.dict['currentPos']
+				if int(tpos) >= int(self.dict['currentPos']):
+					print 'increment', self.dict			
+				if int(tpos) <= int(self.dict['currentPos']):
+					print 'dec',self.dict
+			time.sleep(.2)"""
+
+		while tpos != self.dict['currentPos']:
+			self.status()
+			print 'moving', self.dict['currentPos']
+			time.sleep(1)
+		if tpos == self.dict['currentPos']:
+			self.status()
+			if int(self.dict['hall'][0]) == 0:
+				print 'move complete', self.dict
+				self.motorPower(False)
+				return "move 1"
+			if int(self.dict['hall'][0]) == 1:
+				print 'move incomplete, intiate find', self.dict
+				self.findPos()
+				self.motorPower(False)
+                                return "move 0"
+
+	def findPos(self):
+		startPos = self.dict['currentPos']
+		for x in range(0,200,25):
+			newPos = x + startPos
+			self.moveMotor(newPos)
+			time.sleep(1)
+			self.status()
+			if int(self.dict['hall'][0]) == 0:
+				print 'pos found', self.dict
+				self.setPos(int(startPos))
+				return
+			
+		for x in range(0,200,25):
+                        newPos = x - startPos
+                        self.moveMotor(newPos)
+                        time.sleep(1)
+                        self.status()
+                        if int(self.dict['hall'][0]) == 0:
+                                print 'pos found', self.dict
+				self.setPos(int(startPos))
+                                return
+
 
         def getFilterPosition(self):
                 """
@@ -143,11 +191,11 @@ class FilterMotor(object):
 					if self.dict['hall'][0] == '0' and self.dict['hall'][1] == '0':
 						if pastHome == 0: 
 							pastHome = pastHome + 1
-							print 'first home', self.status()
+							print 'first pass', self.status()
 							previousPos = self.dict['currentPos']
 						if  self.dict['currentPos'] - previousPos >  3000:
 							pastHome = pastHome + 1
-							print 'second home', self.status()
+							print 'second pass', self.status()
 						if pastHome == 2:
 							self.motorStop()
 							self.setPos(int(100))
@@ -175,6 +223,7 @@ class FilterMotor(object):
 			self.motorPower(False)
 			return "home 0"  # returning a boolean has some issues when coming out client side
 		self.motorPower(False)
+		self.dict['filterCount'] = 0
 		return "home 1"  # returning a boolean has some issues when coming out client side
 
 if __name__ == "__main__":
