@@ -19,9 +19,6 @@ from Phidgets.Phidget import PhidgetLogLevel
 import fw_io
 import numpy as np
 
-## Global Variables
-#motorProtocol = None
-
 
 class FilterMotor(object):
 	def __init__(self):
