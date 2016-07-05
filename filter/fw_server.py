@@ -26,7 +26,7 @@ class FilterWheelServer(basic.LineReceiver):
 	self.f.connDev()
 
         # Pass protocol to FilterMotor.py
-        motorProtocol = self
+        self.f.motorProtocol = self
 
     def connectionMade(self):
         """

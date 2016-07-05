@@ -20,12 +20,13 @@ import fw_io
 import numpy as np
 
 ## Global Variables
-motorProtocol = None
+#motorProtocol = None
 
 
 class FilterMotor(object):
 	def __init__(self):
 		"""Add docs to all functions"""
+                self.motorProtocol = None
 		self.stepper = None
 		self.fw = fw_io.FWIO()
 		self.dict = {"velocity":None, "amp":None, "acceleration":None, "currentPos":None, "power":None, "hall":None, "commandedPos":None, "filterDelta":6860, "ID":None, "home":False, "filterPos":None, "filterCount":None}
@@ -140,7 +141,7 @@ class FilterMotor(object):
 
 
 	def findPos(self):
-                motorProtocol.sendData("findPos 1")  # Sends to server that it is addjusting filter position
+                self.motorProtocol.sendData("findPos 1")  # Sends to server that it is addjusting filter position
 		startPos = self.dict['currentPos']
 		for x in range(0,200,25):
 			newPos = x + startPos
