@@ -335,7 +335,7 @@ class Exposure(wx.Panel):
             stats_list = als.calcStats(data)
 
             # change the gui with thread safety
-            wx.CallAfter(self.safePlot, data, stats_list)
+            #wx.CallAfter(self.safePlot, data, stats_list)
 
             # copy file to different folder
             self.copyImage(path, name)
@@ -384,7 +384,7 @@ class Exposure(wx.Panel):
             data = als.getData(path)
             stats_list = als.calcStats(data)
             # change the gui with thread safety
-            wx.CallAfter(self.safePlot, data, stats_list)
+            #wx.CallAfter(self.safePlot, data, stats_list)
 
             self.parent.parent.parent.expGauge.SetValue(0)
             self.startTimer = 0
@@ -447,7 +447,7 @@ class Exposure(wx.Panel):
             data = als.getData(path)
             stats_list = als.calcStats(data)
             # change the gui with thread safety
-            wx.CallAfter(self.safePlot, data, stats_list)
+            #wx.CallAfter(self.safePlot, data, stats_list)
             
             # copy image over (counter looks like "_XXX.fits")
             print("current image name:", self.currentImage)
@@ -906,7 +906,7 @@ class TempControl(wx.Panel):
         # create an infinite while loop
         while self.isConnected:
             d = self.protocol.sendCommand("temp")
-            d.addCallback(self.callbackTemp_thread)
+            d.addCallback(self.callbackTemp)
             #  put thread to sleep; on wake up repeats
             time.sleep(10)
 
@@ -943,8 +943,8 @@ class TempControl(wx.Panel):
         if(mode == 20036):
             bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('blueCirc.png'), size=(90,17))
         
-        #self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-        wx.CallAfter(self.parent.parent.parent.stats.AddWidget, bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        #wx.CallAfter(self.parent.parent.parent.stats.AddWidget, bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
 
 
     def logTemp(self, logmsg):
