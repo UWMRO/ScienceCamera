@@ -1,9 +1,16 @@
 #!/usr/bin/python2
 
+# Comment on documentation:
+# When reading the doc strings if "Pre:" is present then this stands for "precondition", or the conditions in order to invoke something.
+# Oppositely, "Post:" stands for "postcondition" and states what is returned by the method.
+
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+__author__ = "Tristan J. Hillis"
+
+## Imports
 import time
 import wx  # get wxPython
 import AddLinearSpacer as als  # get useful methods
@@ -31,7 +38,7 @@ class Exposure(wx.Panel):
         self.active_threads = []  # list of the acitve threading threads
         self.startTimer = 0  # keeps track of the timer count in ints
         self.endTimer = 0  # keeps track of the max timer count as an int
-        self.saveDir = "/home/mro/data/raw/"
+        self.saveDir = "/home/mro/data/raw/"  # Default directory to save images to.
 
         self.abort = False  # tells you if the abort button is active
         self.realDeferal = None
@@ -219,7 +226,7 @@ class Exposure(wx.Panel):
                 if answer == wx.ID_OK:
                     self.seriesImageNumber = dialog.GetValue()
                     if(als.isInt(self.seriesImageNumber)):
-                        print("Number of image to be taken:", int(self.seriesImageNumber))
+                        print(als.printStamp() + "Number of image to be taken:", int(self.seriesImageNumber))
                         line[2] = self.seriesImageNumber
                         line = " ".join(line[1:])
                         
@@ -315,8 +322,8 @@ class Exposure(wx.Panel):
         self.parent.parent.parent.expGauge.SetValue(0)
         self.startTimer = 0
 
-        print(self.parent.parent.parent.imageOpen)
-        print("opened window")
+        print(als.printStamp() + str(self.parent.parent.parent.imageOpen))
+        print(als.printStamp() + "opened window from exposeCallback method")
 
         if(success == 1):
             # get name of image and path
@@ -328,7 +335,7 @@ class Exposure(wx.Panel):
             # get time sent to server
             time = float(results[2])
                 
-            print(path, name)
+            print(als.printStamp() + path, name)
 
             # get data
             data = als.getData(path+name)
@@ -345,7 +352,7 @@ class Exposure(wx.Panel):
             logString = als.getLogString("expose " + msg + "," + self.currentImage, 'post')
             self.log(self.logFunction, logString)
         else:
-            print("Successfully Aborted")
+            print(als.printStamp() + "Successfully Aborted")
             pass
 
     def safePlot(self, data, stats_list):
@@ -392,7 +399,7 @@ class Exposure(wx.Panel):
             thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
 
     def displayRealImage_callback_thread(self, msg):
-        print("From real image callback thread:", repr(msg))
+        print(als.printStamp() + "From real image callback thread:", repr(msg))
         msg = msg.rstrip()
         thread.start_new_thread(self.displayRealImage_callback, (msg,))
 
@@ -412,10 +419,10 @@ class Exposure(wx.Panel):
         self.logFunction = self.logExposure
         logString = als.getLogString("real " + msg, 'post')
         self.log(self.logFunction, logString)
-        print("Completed real time series with exit:", msg)
+        print(als.printStamp() + "Completed real time series with exit:", msg)
 
     def displaySeriesImage_thread(self, msg):
-        print("From real image callback thread:", repr(msg))
+        print(als.printStamp() + "From series image callback thread:", repr(msg))
         msg = msg.rstrip()
         thread.start_new_thread(self.displaySeriesImage, (msg,))
 
@@ -423,7 +430,7 @@ class Exposure(wx.Panel):
         msg = msg.split(",")
 
         imNum = int(msg[0])
-        print(type(imNum))
+        print(als.printStamp() + str(type(imNum)))
         time = float(msg[1])
         path = msg[2]
 
@@ -433,10 +440,9 @@ class Exposure(wx.Panel):
         for i in fullPath[:-1]:
             directory += i + "/"
 
-        print("Got:", msg)
         # no abort then display the image
         if(imNum <= int(self.seriesImageNumber)):
-            print("Entered to display series image")
+            print(als.printStamp() + "Entered to display series image")
 
             if(self.timer.IsRunning()):
                 self.timer.Stop()
@@ -450,11 +456,11 @@ class Exposure(wx.Panel):
             #wx.CallAfter(self.safePlot, data, stats_list)
             
             # copy image over (counter looks like "_XXX.fits")
-            print("current image name:", self.currentImage)
-            print(self.checkForImageCounter(self.currentImage))
+            print(als.printStamp() + "current image name:", self.currentImage)
+            print(als.printStamp() + str(self.checkForImageCounter(self.currentImage)))
             if(not self.checkForImageCounter(self.currentImage)):
                 self.currentImage += "_001"
-                print("entered")
+                print(als.printStamp() + "entered")
             else:
                 if(imNum > 1): 
                     self.iterateImageCounter(self.currentImage)
@@ -482,7 +488,7 @@ class Exposure(wx.Panel):
                 self.protocol.removeDeferred(key)
         # reset series image number
         #self.seriesImageNumber = None
-        print(self.protocol._deferreds)
+        print(als.printStamp() + str(self.protocol._deferreds))
         
         self.abort = False
         self.expButton.Enable(True)
@@ -503,31 +509,34 @@ class Exposure(wx.Panel):
         self.logFunction = self.logExposure
         logString = als.getLogString("series " + dataMsg, 'post')
         self.log(self.logFunction, logString)
-        print("Completed real time series with exit:", msg)
+        print(als.printStamp() + "Completed real time series with exit:", msg)
 
     def abort_callback(self, msg):
         self.parent.parent.parent.expGauge.SetValue(0)  # redundancy to clear the exposure gauge
         self.logFunction = self.logExposure
         logString = als.getLogString("abort " + msg, 'post')
         self.log(self.logFunction, logString)
-        print("Aborted", msg)
+        print(als.printStamp() + "Aborted", msg)
 
     def openData(self, path, name):
-        print("opening")
+        """
+        Deprecated
+        """
+        print(als.printStamp() + "opening")
         self.parent.parent.parent.expGauge.SetValue(0)
         
-        print(self.parent.parent.parent.imageOpen)
+        print(als.printStamp() + str(self.parent.parent.parent.imageOpen))
         # open image window 
         if(not self.parent.parent.parent.imageOpen):
             # create new window
             self.parent.parent.parent.openImage("manual open")
-        print("opened window")
+        print(als.printStamp() + "opened window")
 
         self.parent.parent.parent.window.panel.clear()
         data = self.parent.parent.parent.window.panel.getData(path+name)
-        print("got data")
+        print(als.printStamp() + "got data")
         self.parent.parent.parent.window.panel.plotImage(data, 6.0, 'gray')
-        print("plotted")
+        print(als.printStamp() + "plotted")
         self.parent.parent.parent.window.panel.updateScreenStats()
         self.parent.parent.parent.window.panel.refresh()
 
@@ -553,7 +562,7 @@ class Exposure(wx.Panel):
         
         filterInstance = self.parent.filterInstance
         filter = str(filterInstance.filterSelection)
-        print("from attributes filter is:", filter)
+        print(als.printStamp() + "from attributes filter is:", filter)
 
         # set the global current image name
         #name = str(self.nameToSend)
@@ -570,7 +579,7 @@ class Exposure(wx.Panel):
         return line
 
     def logExposure(self, logmsg):
-        print("logging from exposure class")
+        print(als.printStamp() + "logging from exposure class")
         logInstance = self.parent.parent.parent.log.logInstance
         wx.CallAfter(logInstance.threadSafeLogStatus, logmsg)
 
@@ -583,7 +592,7 @@ class Exposure(wx.Panel):
         Post: This method will run the logfunc to print the log message to the correct status
         boxes; it returns nothing.
         """
-        print("entered log")
+        print(als.printStamp() + "entered log")
         logfunc(logmsg)
 
 
@@ -632,7 +641,7 @@ class Exposure(wx.Panel):
         else:
             temp[-1] = str(count)
         self.currentImage = "_".join(temp[:])
-        print("Iterated to: " + self.currentImage)
+        print(als.printStamp() + "Iterated to: " + self.currentImage)
         
     def onSetDir(self, event):
         dialog = wx.TextEntryDialog(None, "Point to new directory.  Currently set to %s" % self.saveDir,
@@ -648,7 +657,7 @@ class Exposure(wx.Panel):
                 self.saveDir = setTo
                 if(self.saveDir[-1] != '/'):
                     self.saveDir += "/"
-                print("Directory:",self.saveDir)
+                print(als.printStamp() + "Directory:",self.saveDir)
             else:
                 dialog = wx.MessageDialog(None, "Directory not found please take a moment to create it and try again.",
                                           "", wx.OK | wx.ICON_INFORMATION)
@@ -674,7 +683,7 @@ class Exposure(wx.Panel):
         self.stopExp.Enable(False)
         self.abort = False
 
-        print("Stop Exposure")
+        print(als.printStamp() + "Stop Exposure")
 
     def joinThreads(self):
         for t in self.active_threads:
@@ -731,7 +740,7 @@ class TypeSelection(wx.Panel):
     def onImageType(self, event):
         """
         When a new image type is selected this will write that type to the header on the next
-        image that is exposed.n
+        image that is exposed.
         """
         index = self.imageType.GetSelection()
         if(index == 0):
@@ -754,7 +763,7 @@ class TypeSelection(wx.Panel):
         else:
             self.exposeClass.nameField.SetWindowStyle(wx.TE_RICH)
             self.exposeClass.nameField.SetValue("")
-        print(self.exposeType.GetStringSelection())
+        print(als.printStamp() + self.exposeType.GetStringSelection())
 
 
 class TempControl(wx.Panel):
@@ -832,7 +841,7 @@ class TempControl(wx.Panel):
     def onCool(self, event):
         if als.isNumber(self.tempToSend):
             if(float(self.tempToSend) >= -100.0 and float(self.tempToSend) <= -10.0):
-                print(float(self.tempToSend))
+                print(als.printStamp() + str(float(self.tempToSend)))
                 self.logFunction = self.logTemp
                 command = "setTEC " + str(int(self.tempToSend))
                 if self.parent.exposureInstance.abort:
@@ -871,7 +880,7 @@ class TempControl(wx.Panel):
         self.logFunction = self.logTemp
         logString = als.getLogString("setTEC " + msg, 'post')
         self.log(self.logFunction, logString)
-        print("Cooling to:", msg)
+        print(als.printStamp() + "Cooling to:", msg)
 
     def onStopCooling(self, event):
         """
@@ -890,7 +899,7 @@ class TempControl(wx.Panel):
         self.logFunction = self.logTemp
         logString = als.getLogString("warmup " + msg, 'post')
         self.log(self.logFunction, logString)
-        print("Warmed with exit:", msg)
+        print(als.printStamp() + "Warmed with exit:", msg)
         
 
     def changeTemp(self, value, statusbar):
@@ -931,7 +940,7 @@ class TempControl(wx.Panel):
         # 20036 is Stabalized
         # 20034 is Off  
         if(mode != 20034 and not self.stopCool.IsEnabled()):
-            print("Enter")
+            print(als.printStamp() + "Enter")
             self.stopCool.Enable(True)
 
         if(mode == 20034 and float(temp) >= 0):
@@ -948,7 +957,7 @@ class TempControl(wx.Panel):
 
 
     def logTemp(self, logmsg):
-        print("logging from temperature class")
+        print(als.printStamp() + "logging from temperature class")
         logInstance = self.parent.parent.parent.log.logInstance
         wx.CallAfter(logInstance.threadSafeLogStatus, logmsg)
 
@@ -962,7 +971,7 @@ class TempControl(wx.Panel):
         Post: This method will run the logfunc to print the log message to the correct status
         boxes; it returns nothing.
         """
-        print("entered log")
+        print(als.printStamp() + "entered log")
         logfunc(logmsg) 
 
 class FilterControl(wx.Panel):
@@ -1057,7 +1066,7 @@ class FilterControl(wx.Panel):
 
     def onFilterSelection(self, event):
         self.filterSelection = self.filterMenu.GetValue()
-        print("selection:", self.filterSelection)        
+        print(als.printStamp() + "selection:", self.filterSelection)        
 
     def onRotate(self, event):
         """
@@ -1065,16 +1074,16 @@ class FilterControl(wx.Panel):
         that will slew the filter appropriately.
         """ 
         if self.filterSelection is "":
-            print("No filter selected")
+            print(als.printStamp() + "No filter selected")
         else:
-            print(type(self.filterSelection))
+            print(als.printStamp() + str(type(self.filterSelection)))
             # send command to rotate to the specified position
             # find position
             pos = None
             for i in range(len(self.filterName)):
                 if(str(self.filterSelection) == self.filterName[i]):
                     pos = self.filterNum[i]
-            print("index:", pos)
+            print(als.printStamp() + "index:", pos)
 
             self.targetFilter = pos
             self.watchFilterTime = 1 # set to one seconds
@@ -1091,11 +1100,11 @@ class FilterControl(wx.Panel):
 
     def rotateCallback(self, msg):
         self.logFunction = self.logFilter
-        print(msg)
+        print(als.printStamp() + msg)
         logString = als.getLogString("filter move " + msg, 'post')
-        print("in rotate callback", logString)
+        print(als.printStamp() + "in rotate callback", logString)
         self.log(self.logFunction, logString)
-        print("Completed rotation...")
+        print(als.printStamp() + "Completed rotation...")
 
     def onHome(self, event):
         self.logFunction = self.logFilter
@@ -1104,14 +1113,14 @@ class FilterControl(wx.Panel):
         
         d = self.protocol2.sendCommand("home")
         d.addCallback(self.homingCallback)
-        print("homing...")
+        print(als.printStamp() + "homing...")
 
     def homingCallback(self, msg):
         self.logFunction = self.logFilter
         logString = als.getLogString("filter home " + msg, 'post')
         self.log(self.logFunction, logString)
 
-        print("Done homing:", msg)
+        print(als.printStamp() + "Done homing:", msg)
 
         self.logFunction = self.logFilter
         logString = als.getLogString("filter getFilter", 'pre')
@@ -1122,7 +1131,7 @@ class FilterControl(wx.Panel):
 
     def getFilterCallback(self, msg):
         pos = int(msg)
-        print("position:", pos)
+        print(als.printStamp() + "position:", pos)
         filter = self.filterName[pos]
 
         self.logFunction = self.logFilter
@@ -1138,7 +1147,7 @@ class FilterControl(wx.Panel):
             self.filterMenu.SetSelection(pos)
             self.filterSelection = str(self.filterMenu.GetValue())
             self.targetFilter = None
-        print("Filter position is", filter)
+        print(als.printStamp() + "Filter position is", filter)
 
     def getFilterCallback_thread(self, msg):
         """
@@ -1174,7 +1183,7 @@ class FilterControl(wx.Panel):
         self.filterMap = {}
         for i in range(len(newNum)):
             self.filterMap[newName[i]] = newNum[i]
-        print(self.filterMap)
+        print(als.printStamp() + str(self.filterMap))
         
         # update GUI drop down filter menu
         for i in newName:
@@ -1191,7 +1200,7 @@ class FilterControl(wx.Panel):
         self.statusBox.SetInsertionPointEnd()
 
     def logFilter(self, logmsg):
-        print("logging from exposure class")
+        print(als.printStamp() + "logging from exposure class")
         self.sendToStatus(logmsg)
         logInstance = self.parent.parent.parent.log.logInstance
         wx.CallAfter(logInstance.threadSafeLogStatus, logmsg)
@@ -1205,5 +1214,5 @@ class FilterControl(wx.Panel):
         Post: This method will run the logfunc to print the log message to the correct status
         boxes; it returns nothing.
         """
-        print("entered log")
+        print(als.printStamp() + "entered log in filter classes")
         logfunc(logmsg)

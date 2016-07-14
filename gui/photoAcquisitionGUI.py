@@ -1,9 +1,16 @@
 #!/usr/bin/env python2
 
+# Comment on documentation:
+# When reading the doc strings if "Pre:" is present then this stands for "precondition", or the conditions in order to invoke something.
+# Oppositely, "Post:" stands for "postcondition" and states what is returned by the method.
+
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+__author__ = "Tristan J. Hillis"
+
+# "Use" imports
 import wx
 import matplotlib
 matplotlib.use("WXAgg")
@@ -32,6 +39,7 @@ from twisted.internet import defer
 from twisted.internet import threads
 from twisted.protocols import basic
 
+# GUI element imports
 import acquisitionClasses as ac
 import controlClasses as cc
 import scriptingClasses as sc
@@ -40,8 +48,8 @@ import AddLinearSpacer as als
 
 
 ## Global Variables
-app = None
-port_dict = {}
+app = None  # reference to Evora app
+port_dict = {}  # dictionary storing different connections that may be open.
 
 ## Getting to parents (i.e. different classes)
 # Three parents will get to the Evora class and out of the notebook
@@ -189,19 +197,21 @@ class Evora(wx.Frame):
         panel.SetSizer(sizer)
         panel.Layout()
   
-    ## Memory upon destruction seems to not release.  This could cause memory usage to increase
+    ## Keep an eye on memory (i.e. make sure it doesn't increase the more images are ploted).  This could cause memory usage to increase
     ## with newly loaded images when using the evora camera.
     def openImage(self, event):
         self.window = ImageWindow(self)
         self.window.Show()
         self.imageOpen = True
+        print(als.printStamp() + "Opening image window.")
 
     def onClose(self, event):
         dialog = wx.MessageDialog(None, "Close Evora GUI?", "Closing Evora", wx.OK | wx.CANCEL|wx.ICON_QUESTION)
         answer = dialog.ShowModal()
         dialog.Destroy()
-        #print (answer)
+        #print(answer)
         if answer == wx.ID_OK:
+            print(als.printStamp() + "Closing down Evora GUI")
             self.quit()
             #if(self.protocol is not None):
             #    d = self.protocol.sendCommand("shutdown")
@@ -209,17 +219,22 @@ class Evora(wx.Frame):
 
             #self.Destroy()
             #reactor.stop()
+        else:
+            print(als.printStamp() + "Quit called but not closing.")
     
     def quit(self):
         #print (msg)
         if self.connected:
+            print(als.printStamp() + "killing E. server connection in quit method")
             self.connection.disconnect()
         
         filterInstance = self.takeImage.filterInstance
         if(filterInstance.filterConnection):
+            print(als.printStamp() + "killing F. server connection in quit method")
             port_dict.pop('5503').disconnect()
 
         if(self.imageOpen):
+            print(als.printStamp() + "destroying image frame in quit method")
             self.imageOpen = False
             self.window.panel.closeFig()
             self.window.Destroy()
@@ -227,13 +242,15 @@ class Evora(wx.Frame):
 
         #self.Destroy()
         self.Destroy()
-        reactor.callFromThread(reactor.stop)        
+        reactor.callFromThread(reactor.stop)  # Important to call like this else GUI hangs when trying to destroy it.
+        print(als.printStamp() + "reactor stopped, finished quitting")
 
     def onHelp(self, event):
         """
         Pre: Press the "Help" menu option.
         Post: Opens up the Evora documentation section of the MRO website.
         """
+        print(als.printStamp() + "opening web browser for help")
         webbrowser.open("https://sites.google.com/a/uw.edu/mro/documentation/evora")
         
     def onRefresh(self, event):
@@ -244,10 +261,12 @@ class Evora(wx.Frame):
         self.takeImage.filterInstance.refreshList()
 
     def on1x1(self, event):
+        print(als.printStamp() + "setting binning type to 1x1")
         self.binning = "1"
         self.stats.SetStatusText("Binning Type: 1x1", 2)
 
     def on2x2(self, event):
+        print(als.printStamp() + "setting binning type to 2x2")
         self.binning = "2"
         self.stats.SetStatusText("Binning Type: 2x2", 2)
         
@@ -261,10 +280,11 @@ class Evora(wx.Frame):
             self.readoutIndex = 1
         if(id == 1143):
             self.readoutIndex = 0
+        print(als.printStamp() + "setting readout index to index", self.readoutIndex)
 
     def onConnect(self, event):
         global port_dict
-        print ("Connecting")
+        print (als.timeStamp() + "Connect command pressed")
         #reactor.run()
         #self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
         # add filter connection
@@ -275,7 +295,7 @@ class Evora(wx.Frame):
         #msg = args[0]
         #thread = args[1]
 
-        print (msg, "Startup callback entered")
+        print(als.printStamp() + msg, "Startup callback entered")
         self.connected = True
 
         # get the number of clients
@@ -285,7 +305,7 @@ class Evora(wx.Frame):
         logString = als.getLogString('status ' + str(status), 'post')
         self.logMethod(self.logFunction, logString)
 
-        print("status from connect callback", status)
+        print(als.printStamp() + "status from connect callback", status)
 
         if(status == 20075):  # camera is uninitialized
             d = self.protocol.sendCommand("connect")
@@ -325,41 +345,31 @@ class Evora(wx.Frame):
         t.start()
         self.active_threads["temp"] = t
 
-        print("Started up")
+        print(als.printStamp() + "Started up from callStartup method")
 
         #settings.done_ids.put(threading.current_thread().name)
         #signal.alarm(1)
     
     def onDisconnect(self, event):
-        print("Disconnecting")
+        print(als.printStamp() + "Disconnect command pressed")
         self.takeImage.tempInstance.isConnected = False # closes infinite loop in watchTemp method
         
         bitmap = wx.StaticBitmap(self.stats, -1, size=(90, 17))
         self.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
         self.stats.SetStatusText("Current Temp:            ... C", 0)
         
-        #t = threading.Thread(target=self.joinThreads, args=("temp",))
-        #t.start()
         self.joinThreads("temp", demonized=True)
         self.connection.disconnect() # this is the acutal disconnection from the server'
 
         self.connected = False
         self.enableConnections(True, False, False)
         self.disableButtons(True)
-
-        #reactor.stop()
         
     def onDisconnectCallback(self):
+        print(als.printStamp() + "Done disconnecting, changing GUI state")
         self.connected = False
         self.enableConnections(True, False, False) # edit the connections menu in the file menu
         self.disableButtons(True)
-        
-    """
-    def onStartup(self, event):
-        #self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
-        d = self.protocol.sendCommand("connect")
-        d.addCallback(self.callStartup)
-    """
 
     def onShutdown(self, event):
         if(self.protocol is not None):
@@ -371,6 +381,7 @@ class Evora(wx.Frame):
                 answer = dialog.ShowModal()
                 dialog.Destroy()
                 if(answer == wx.ID_OK):
+                    print(als.printStamp() + "Shutting down camera")
                     d = self.protocol.sendCommand("shutdown")
                     d.addCallback(self.callShutdown)
                     self.disableButtons(True)
@@ -396,6 +407,9 @@ class Evora(wx.Frame):
         self.enableConnections(True, False, False)
 
     def enableConnections(self, con, discon, shut):
+        """
+        This is used to enable the Connect, Disconnect, and Shutdown menu options in Camera fast. 
+        """
         # get file menu
         cameraSub = self.menuBar.GetMenu(1)  # first index
         # get camera sub menu
@@ -406,6 +420,9 @@ class Evora(wx.Frame):
         cameraSub.Enable(1132, shut)
 
     def disableButtons(self, boolean):
+        """
+        Used to lock down GUI or not.
+        """
         # Diable GUI functionality (expose, stop, cool, warmup, rotate to)
         boolean = not boolean
         self.takeImage.exposureInstance.expButton.Enable(boolean)
@@ -421,16 +438,20 @@ class Evora(wx.Frame):
         The server will will start the filter motor and then use the connect function
         """
         # send command on filter setup
+        print(als.printStamp() + "Connect pressed in Filter menu")
         port_dict['5503'] = reactor.connectTCP('192.168.1.30', 5503, FilterClient(app.frame1))
         # lock the connect button up and unlock the disconnect
         filterSub = self.menuBar.GetMenu(2)  # second index
+        # change the status of Filter menu options
         filterSub.Enable(1110, False)
         filterSub.Enable(1112, True)
+        # Turn on buttons in filter section of the Image tab.
         self.takeImage.filterInstance.filterButton.Enable(True)
         self.takeImage.filterInstance.homeButton.Enable(True)
         
 
     def onFilterDisconnect(self, event):
+        print(als.printStamp() + "Disconnect pressed in filter menu")
         connection = port_dict['5503']
         connection.disconnect()
         # lock the connect button up and unlock the disconnect
@@ -441,7 +462,11 @@ class Evora(wx.Frame):
         self.takeImage.filterInstance.homeButton.Enable(False)
 
     def logMain(self, logmsg):
-        print("logging from exposure class")
+        """
+        Note: This is used to log activity within the most top level class.
+        Pre: Pass in string that will be logged to only the log tab.
+        """
+        print(als.timeStamp() + "logging from exposure class")
         logInstance = self.log.logInstance
         wx.CallAfter(logInstance.threadSafeLogStatus, logmsg)
 
@@ -454,7 +479,7 @@ class Evora(wx.Frame):
         Post: This method will run the logfunc to print the log message to the correct status
         boxes; it returns nothing.
         """
-        print("entered log")
+        print(als.printStamp() + "entered logMethod")
         logfunc(logmsg)
 
 
@@ -464,7 +489,7 @@ class Evora(wx.Frame):
             t.join(0)
         else:
             t.join(0)
-        print("Thread with key", threadKey, "is shutdown")
+        print(als.printStamp() + "Thread with key", threadKey, "is shutdown")
 
 
 class ImageWindow(wx.Frame):
@@ -476,7 +501,7 @@ class ImageWindow(wx.Frame):
         self.parent = parent
         self.currSliderValue = 60
         self.currMap = 'gray'
-        print ("current slider value", self.currSliderValue)
+        print(als.printStamp() + "current slider value", self.currSliderValue)
 
         ## Main sizers
         self.topSizer = wx.BoxSizer(wx.VERTICAL)
@@ -541,6 +566,9 @@ class ImageWindow(wx.Frame):
 
 
     def onSlide(self, event):
+        """
+        When the user uses the contrast slider this will adjust the limits of the image based on the median average deviation.
+        """
         self.currSliderValue = event.GetPosition()
         value = float(event.GetPosition()) / 10.0
         lower = self.panel.median - value * self.panel.mad
@@ -549,13 +577,14 @@ class ImageWindow(wx.Frame):
         self.panel.refresh()
 
     def onClose(self, event):
-        print("entered close")
+        print(als.printStamp() + "entered close")
         self.parent.imageOpen = False
         self.panel.closeFig()
         self.Destroy()
         #self.Close()
 
     def onOpen(self, event):
+        print(als.printStamp() + "Trying to open image")
         openFileDialog = wx.FileDialog(self, "Open Image File", "", "", "Image (*.fits;*.fit)|*.fits.*;*.fits;*.fit", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         
         if openFileDialog.ShowModal() == wx.ID_CANCEL:
@@ -571,21 +600,30 @@ class ImageWindow(wx.Frame):
     def onInvert(self, event):
         value = event.IsChecked()
         if value is True:
+            print(als.printStamp() + "Inverting image gray scale")
             self.panel.updateCmap("gray_r")
             self.panel.refresh()
             self.currMap = 'gray_r'
         if value is False:
+            print(als.printStamp() + "Changing image to regular gray scale")
             self.panel.updateCmap('gray')
             self.panel.refresh()
             self.currMap = 'gray'
 
     def resetWidgets(self):
+        """
+        DEPRECATED: When plotting new image, uses the current position to set the scale.
+        Used to reset the slider to the default state.
+        """
         # Set slid to 60
         self.devSlider.SetValue(60)
         self.invert.SetValue(False)
 
 
 class DrawImage(wx.Panel):
+    """
+    Used to draw a plot onto the Matplotlib figure that is embedded in a wxPython frame.
+    """
 
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
@@ -815,27 +853,20 @@ class EvoraForwarder(basic.LineReceiver):
         self._deferreds = {}
 
     def dataReceived(self, data):
-        print("Receieved:", data)
+        print(als.printStamp() + "Receieved from E. server:", data)
         
+        # Get GUI instance
         gui = self.factory.gui
             
+        # Initialize ports.
         gui.protocol = self
         gui.takeImage.exposureInstance.protocol = self
         gui.takeImage.tempInstance.protocol = self
         gui.takeImage.filterInstance.protocol = self
         gui.scripting.scriptCommands.protocol = self
 
-        """
-        if gui:
-            val = gui.log.logInstance.logBox.GetValue()
-            #print val
-            gui.log.logInstance.logBox.SetValue(val + data)
-            gui.log.logInstance.logBox.SetInsertionPointEnd()
-            #sep_data = data.split(" ")
-            #print sep_data
-        """
 
-        # if there is more than one line that was sent and received 
+        # if there is more than one line that was and received 
         sep_data = data.rsplit() # split for multiple lines
         size = len(sep_data) # size of sep_data will always be even (key followed by data pair)
         for i in range(0, size, 2):
@@ -846,13 +877,14 @@ class EvoraForwarder(basic.LineReceiver):
                 self._deferreds.pop(singular_sep_data[0]).callback(singular_sep_data[1])
         
     def sendCommand(self, data):
+        print(als.printStamp() + "Sent to E. server:", data)
         self.sendLine(data)
         d = self._deferreds[data.split(" ")[0]] = defer.Deferred()
         return d
 
     def connectionMade(self):
         self.output = self.factory.gui.log.logInstance.logBox
-        
+        print(als.printStamp() + "Connection made to E. server on port 5502")
         ## Add a callback that will open up the rest of the gui when the camera is done setting up
         gui = self.factory.gui # get gui for adding the callback method
         d = defer.Deferred()
@@ -893,16 +925,15 @@ class EvoraClient(protocol.ClientFactory):
         logString = als.getLogString("connectLost 1", 'post')
         exposureInstance.log(exposureInstance.logFunction, logString)
 
-        print("connection Lost")
-        #reactor.callFromThread(reactor.stop)
+        print(als.printStamp() + "connection to E. server lost normally on port 5502")
+
 
     def clientConnectionFailed(self, transport, reason):
         exposureInstance = self.gui.takeImage.exposureInstance
         exposureInstance.logFunction = exposureInstance.logExposure
         logString = als.getLogString("connectFailed 1", 'post')
         exposureInstance.log(exposureInstance.logFunction, logString)
-
-        #reactor.callFromThread(reactor.stop)
+        print(als.printStamp() + "connection to E. server failed on port 5502")
 
 class FilterForwarder(basic.LineReceiver):
     def __init__(self):
@@ -911,31 +942,22 @@ class FilterForwarder(basic.LineReceiver):
         self.gui = None
 
     def dataReceived(self, data):
-        print("Receieved on port 5503:", data)
-        
+        print(als.printStamp() + "Receieved from filter (5503):", data)        
             
         self.gui.takeImage.filterInstance.protocol2 = self
         
-        """
-        if self.gui:
-            val = self.gui.log.logInstance.logBox.GetValue()
-            #print val
-            self.gui.log.logInstance.logBox.SetValue(val + data)
-            self.gui.log.logInstance.logBox.SetInsertionPointEnd()
-            #sep_data = data.split(" ")
-            #print sep_data
-        """
-        # if there is more than one line that was sent and received 
+        # if there is more than one line that was received 
         sep_data = data.rsplit()  # split for multiple lines
         size = len(sep_data) # size of sep_data will always be even (key followed by data pair)
         for i in range(0, size, 2):
             singular_sep_data = [sep_data[i], sep_data[i+1]]
 
-            #print singular_sep_data
+            # run singular_sep_data command one at a time
             if singular_sep_data[0] in self._deferreds:
                 self._deferreds.pop(singular_sep_data[0]).callback(singular_sep_data[1])
         
     def sendCommand(self, data):
+        print(als.timeStamp() + "Sending to filter:", data)
         self.sendLine(data)
         d = self._deferreds[data.split(" ")[0]] = defer.Deferred()
         return d
@@ -950,7 +972,7 @@ class FilterForwarder(basic.LineReceiver):
         #self._deferreds["status"] = d
         self.gui = self.factory.gui
         self.gui.takeImage.filterInstance.protocol2 = self
-        print("connection made to filter")
+        print(als.printStamp() + "connection made to filter")
 
         filterInstance = self.gui.takeImage.filterInstance
 
@@ -1002,7 +1024,7 @@ class FilterClient(protocol.ClientFactory):
         logString = als.getLogString("filter connectLost 1", 'post')
         filterInstance.log(filterInstance.logFunction, logString)
 
-        print("connection lost on port 5503")
+        print(als.printStamp() + "connection lost normally on port 5503")
         
     def clientConnectionFailed(self, transport, reason):
         filterInstance = self.gui.takeImage.filterInstance
@@ -1010,7 +1032,7 @@ class FilterClient(protocol.ClientFactory):
         logString = als.getLogString("filter connectFailed 1", 'post')
         filterInstance.log(filterInstance.logFunction, logString)
 
-        print("connection failed on port 5503")
+        print(als.printStamp() + "connection failed on port 5503")
 
 if __name__ == "__main__":
     #log.startLogging(sys.stdout)

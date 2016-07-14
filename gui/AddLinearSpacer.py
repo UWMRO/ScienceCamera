@@ -1,5 +1,12 @@
 #!/usr/bin/python2
 
+# Comment on documentation:
+# When reading the doc strings if "Pre:" is present then this stands for "precondition", or the conditions in order to invoke something.
+# Oppositely, "Post:" stands for "postcondition" and states what is returned by the method.
+
+__author__ = "Tristan J. Hillis"
+
+## Imports
 import wx  # get wxPython
 from astropy.io import fits
 import numpy as np
@@ -14,7 +21,7 @@ import sys
 
 # Get gregorian date, local
 d = date.today()
-logFile = open("/home/mro/ScienceCamera/gui/logs/log_" + d.strftime("%Y%m%d") + ".txt", "a")
+logFile = open("/home/mro/ScienceCamera/gui/logs/log_gui_" + d.strftime("%Y%m%d") + ".log", "a")
 
 
 def AddLinearSpacer(boxsizer, pixelSpacing):
@@ -118,9 +125,9 @@ def getLogString(command, prePost):
 
     if(prePost == 'post'):  # command has a key then is followed by relavent information delimited with commas
         key = command[0]
-        print("key from post:", key)
+        print(printStamp() + "key from post:", key)
         stats = command[1].split(",")
-        print("Stats in log:", stats)
+        print(printStamp() + "Stats in log:", stats)
         if(key == 'status'):
             if(int(stats[0]) == 20002):  # 20002 is "success" to Evora
                 return "Camera already initialized connecting..."
@@ -190,7 +197,7 @@ def getLogString(command, prePost):
                     return "Failed to home, try again..."
             if(key2 == 'move'):
                 if(int(stats[0]) == 1):
-                    return "Successfully moving filter give it a moment..."
+                    return "Successfully moved filter..."
                 else:
                     return "Failed to move filter..."
             if(key2 == 'getFilter'):
@@ -237,6 +244,10 @@ def timeStamp():
 
 
 def checkForFile(path):
+    """
+    Pre: User specifies a path to a file.
+    Post: This method will chekc if the specified file exists and return a boolean.
+    """
     boolean = os.path.isfile(path)
     return boolean
 
@@ -284,7 +295,7 @@ def iterateImageCounter(name):
     """
     temp = name.split('_')
     count = int(temp[-1])
-    print(count)
+    print(printStamp() + str(count))
     count += 1
     if(count < 10):
         temp[-1] = "00" + str(count)
@@ -293,15 +304,23 @@ def iterateImageCounter(name):
     else:
         temp[-1] = str(count)
     name = "_".join(temp[:])
-    print("Iterated to: " + name)
+    print(printStamp() + "Iterated to: " + name)
     return name
 
 def printStamp():
+    """
+    Pre: User needs nothing to pass in.
+    Post: Returns a string catalogging the date and time in the format of [month day year, 24hour:minute:seconds]
+    """
     d = datetime.today()
     string = d.strftime("[%b %m, %y, %H:%M:%S]")
-    return string
+    return string + " "
 
 class Logger(object):
+    """
+    This class when assigned to sys.stdout or sys.stderr it will write to a file that is opened everytime a new GUI session is started.
+    It also writes to the terminal window.
+    """
     def __init__(self, stream):
         self.terminal = stream
 
@@ -317,8 +336,15 @@ class Logger(object):
 
 
 class SampleTimer(object):
+    """
+    This is a timer object that can be used to sample the time off of a certain time length.
+    """
     def __init__(self, timeLength):
-        self.end = timeLength + 0.24  # add an extra 0.24 for readout and shutter time
+        """
+        Pre: User passes in a time length in seconds as "timeLength".
+        Post: Initializes the timer object.
+        """
+        self.end = timeLength
         self.tick = 10 * 10 ** -3  # tick is 10 milliseconds
 
         self.stopTimer = False
@@ -328,7 +354,11 @@ class SampleTimer(object):
 
         self.t = None
 
-    def timer(self):
+    def _timer(self):
+        """
+        Note: User does not call this method.
+        This method keeps count on the time.
+        """
         counter = 0
         while not self.stopTimer:
             if(self.currentTick == self.totalTicks):
@@ -344,15 +374,28 @@ class SampleTimer(object):
             time.sleep(0.01)
 
     def sample(self):
+        """
+        Pre: No user input.
+        Post: Returns the current tick out of the total amount over the specified time length.
+        """
         return [self.currentTick, self.totalTicks]
 
     def stop(self):
+        """
+        Pre: No user input.
+        Post: Stops the timer object when called by the user.
+        """
         self.stopTimer = True
         self.t.join(0)
 
     def start(self):
+        """
+        Pre: No user input.
+        Post: When called by the user this will start the timer object.
+        """
         self.stopTimer = False
         self.currentTick = 1
-        self.t = threading.Thread(target=self.timer, args=())
+        # Start new thread to avoid blocking in its application.
+        self.t = threading.Thread(target=self._timer, args=())
         self.t.daemon = True
         self.t.start()
