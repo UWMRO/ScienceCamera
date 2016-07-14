@@ -342,7 +342,7 @@ class Exposure(wx.Panel):
             stats_list = als.calcStats(data)
 
             # change the gui with thread safety
-            #wx.CallAfter(self.safePlot, data, stats_list)
+            wx.CallAfter(self.safePlot, data, stats_list)
 
             # copy file to different folder
             self.copyImage(path, name)
@@ -391,7 +391,7 @@ class Exposure(wx.Panel):
             data = als.getData(path)
             stats_list = als.calcStats(data)
             # change the gui with thread safety
-            #wx.CallAfter(self.safePlot, data, stats_list)
+            wx.CallAfter(self.safePlot, data, stats_list)
 
             self.parent.parent.parent.expGauge.SetValue(0)
             self.startTimer = 0
@@ -399,11 +399,13 @@ class Exposure(wx.Panel):
             thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
 
     def displayRealImage_callback_thread(self, msg):
+        # DEPRECATED
         print(als.printStamp() + "From real image callback thread:", repr(msg))
         msg = msg.rstrip()
         thread.start_new_thread(self.displayRealImage_callback, (msg,))
 
     def displayRealImage_callback(self, msg):
+        # DEPRECATED
         path = msg  # path to image (/tmp/image_date.fits)
 
         if(msg != "None"):
@@ -453,7 +455,7 @@ class Exposure(wx.Panel):
             data = als.getData(path)
             stats_list = als.calcStats(data)
             # change the gui with thread safety
-            #wx.CallAfter(self.safePlot, data, stats_list)
+            wx.CallAfter(self.safePlot, data, stats_list)
             
             # copy image over (counter looks like "_XXX.fits")
             print(als.printStamp() + "current image name:", self.currentImage)
