@@ -7,6 +7,15 @@ import threading
 import time
 import os
 from datetime import datetime
+from datetime import date
+import sys
+
+## Global Variables
+
+# Get gregorian date, local
+d = date.today()
+logFile = open("/home/mro/ScienceCamera/gui/logs/log_" + d.strftime("%Y%m%d") + ".txt", "a")
+
 
 def AddLinearSpacer(boxsizer, pixelSpacing):
     """
@@ -199,6 +208,8 @@ def getLogString(command, prePost):
             if(key2 == 'connectFailed'):
                 return "Connection to filter failed suddenly..."
     return None
+
+
 def timeStamp():
     """
     Pre: No arguments are needed to invoke this method.
@@ -284,6 +295,25 @@ def iterateImageCounter(name):
     name = "_".join(temp[:])
     print("Iterated to: " + name)
     return name
+
+def printStamp():
+    d = datetime.today()
+    string = d.strftime("[%b %m, %y, %H:%M:%S]")
+    return string
+
+class Logger(object):
+    def __init__(self, stream):
+        self.terminal = stream
+
+    def write(self, message):
+        self.terminal.flush()
+        self.terminal.write(message)
+        logFile.write(message)
+
+    def stamp(self):
+        d = datetime.today()
+        string = d.strftime("[%b %m, %y, %H:%M:%S]")
+        return string
 
 
 class SampleTimer(object):

@@ -740,7 +740,7 @@ class TypeSelection(wx.Panel):
         else:
             self.exposeClass.expValue.SetWindowStyle(wx.TE_RICH)
             self.exposeClass.expValue.SetValue("")
-        print(self.imageType.GetStringSelection())
+        print(als.printStamp() + self.imageType.GetStringSelection())
 
     def onExposeType(self, event):
         """

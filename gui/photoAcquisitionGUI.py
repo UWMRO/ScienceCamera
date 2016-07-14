@@ -1014,6 +1014,8 @@ class FilterClient(protocol.ClientFactory):
 
 if __name__ == "__main__":
     #log.startLogging(sys.stdout)
+    sys.stdout = als.Logger(sys.stdout)
+    sys.stderr = als.Logger(sys.stderr)
 
     app = wx.App(False)
     app.frame1 = Evora()
