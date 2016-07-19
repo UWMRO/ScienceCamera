@@ -19,6 +19,9 @@ from Phidgets.Phidget import PhidgetLogLevel
 import fw_io
 import numpy as np
 
+## Global Variables
+motorProtocol = None
+
 
 class FilterMotor(object):
 	def __init__(self):
@@ -128,11 +131,16 @@ class FilterMotor(object):
 				return "move 1"
 			if int(self.dict['hall'][0]) == 1:
 				print 'move incomplete, intiate find', self.dict
-				self.findPos()
+				results = self.findPos()
 				self.motorPower(False)
-                                return "move 0"
+                                if(results == True):
+                                        return "move 11"  # Adjustment successful
+                                else:
+                                        return "move 0"  # Adjustment failed
+
 
 	def findPos(self):
+                motorProtocol.sendData("findPos 1")  # Sends to server that it is addjusting filter position
 		startPos = self.dict['currentPos']
 		for x in range(0,200,25):
 			newPos = x + startPos
@@ -142,7 +150,7 @@ class FilterMotor(object):
 			if int(self.dict['hall'][0]) == 0:
 				print 'pos found', self.dict
 				self.setPos(int(startPos))
-				return
+				return True  # Successfully found filter position
 			
 		for x in range(0,200,25):
                         newPos = x - startPos
@@ -152,7 +160,8 @@ class FilterMotor(object):
                         if int(self.dict['hall'][0]) == 0:
                                 print 'pos found', self.dict
 				self.setPos(int(startPos))
-                                return
+                                return True  # Successfully found filter position
+                return False  # For when even findPos fails
 
 
         def getFilterPosition(self):

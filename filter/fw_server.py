@@ -25,6 +25,9 @@ class FilterWheelServer(basic.LineReceiver):
 	self.fw = FilterWheelParser(self, self.f)
 	self.f.connDev()
 
+        # Pass protocol to FilterMotor.py
+        motorProtocol = self
+
     def connectionMade(self):
         """
         If you send more than one line then the callback to start the gui will completely fail.

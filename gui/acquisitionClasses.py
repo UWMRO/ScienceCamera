@@ -987,6 +987,7 @@ class FilterControl(wx.Panel):
         self.logFunction = None
         self.filterConnection = False
         self.watch = False
+        self.adjusting = False
 
         self.watchFilterTime = 10  # default is every minute but changes to every
                                    # second when moving filter position
@@ -1096,6 +1097,9 @@ class FilterControl(wx.Panel):
             self.log(self.logFunction, logString)
 
 
+            d = self.protocol2.addDeferred("findPos")
+            d.addCallback(self.findPosCallback)
+
             d = self.protocol2.sendCommand("move " + str(pos))
             d.addCallback(self.rotateCallback)
             thread.start_new_thread(self.filterWatch, ())
@@ -1107,6 +1111,15 @@ class FilterControl(wx.Panel):
         print(als.printStamp() + "in rotate callback", logString)
         self.log(self.logFunction, logString)
         print(als.printStamp() + "Completed rotation...")
+
+        self.protocol2.removeDeferred('findPos')  # If deffered does not get activated remove it.
+
+    def findPosCallback(self, msg):
+        self.adjusting = True
+
+        self.logFunction = self.logFilter
+        logString = als.getLogString("filter findPos", 'post')
+        self.log(self.logFunction, logString)
 
     def onHome(self, event):
         self.logFunction = self.logFilter
@@ -1141,11 +1154,22 @@ class FilterControl(wx.Panel):
             logString = als.getLogString("filter getFilter report " + filter, 'post')
             self.log(self.logFunction, logString)
         # set drop down menu to the correct filter
+        elif(self.targetFilter == pos and self.adjusting):  # Kill the getFilter sequence when adjusting
+            self.watch = False
+            self.logFunction = self.logFilter
+            logString = als.getLogString("filter getFilter finding " + filter + "," + str(pos), 'post')
+            self.log(self.logFunction, logString)
+            
+            self.filterMenu.SetSelection(pos)
+            self.filterSelection = str(self.filterMenu.GetValue())
+            self.targetFilter = None
+            
         else:
             self.watch = False
             self.logFunction = self.logFilter
             logString = als.getLogString("filter getFilter set " + filter + "," + str(pos), 'post')
             self.log(self.logFunction, logString)
+            
             self.filterMenu.SetSelection(pos)
             self.filterSelection = str(self.filterMenu.GetValue())
             self.targetFilter = None
