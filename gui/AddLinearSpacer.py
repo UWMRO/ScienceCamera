@@ -203,7 +203,7 @@ def getLogString(command, prePost):
                 else:
                     return "Failed to move filter..."
             if(key2 == 'findPos'):
-                return "Filter is running adjustments this can take awhile..."
+                return "Adjusting fitler this can take awhile..."
             if(key2 == 'getFilter'):
                 key3 = command[2]
                 stats = command[3].split(",")
@@ -213,11 +213,11 @@ def getLogString(command, prePost):
                 if(key3 == 'finding'):
                     filter = stats[0]
                     pos = int(stats[1])
-                    return "Filter fine tuning to position %d, or filter %s" % (pos, filter)
+                    return "Filter fine tuning to position %d, or filter %s..." % (pos, filter)
                 else:
                     filter = stats[0]
                     pos = int(stats[1])
-                    return "At position %d, setting filter to %s" % (pos, filter)
+                    return "At position %d, setting filter to %s..." % (pos, filter)
             if(key2 == 'connectLost'):
                 return "Connection to filter lost normally..."
             if(key2 == 'connectFailed'):
@@ -320,8 +320,8 @@ def printStamp():
     Pre: User needs nothing to pass in.
     Post: Returns a string catalogging the date and time in the format of [month day year, 24hour:minute:seconds]
     """
-    d = datetime.today()
-    string = d.strftime("[%b %m, %y, %H:%M:%S]")
+    day = datetime.today()
+    string = day.strftime("[%b %m, %y, %H:%M:%S]")
     return string + " "
 
 class Logger(object):

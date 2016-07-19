@@ -1023,9 +1023,7 @@ class FilterControl(wx.Panel):
         self.filterButton = wx.Button(self, id=2044, label="Rotate", size=(70, -1))
         self.homeButton = wx.Button(self, id=2046, label="Home", size=(70,-1))
         self.statusBox = wx.TextCtrl(self, id=2045, style=wx.TE_READONLY|wx.TE_MULTILINE, size=(200,100))
-        self.filterButton.Enable(False)
-        self.homeButton.Enable(False)
-
+        self.enableButtons(False)
 
         #### Line Up Smaller Sub Sizers
 
@@ -1104,6 +1102,8 @@ class FilterControl(wx.Panel):
             d.addCallback(self.rotateCallback)
             thread.start_new_thread(self.filterWatch, ())
 
+            self.enableButtons(False)
+
     def rotateCallback(self, msg):
         self.logFunction = self.logFilter
         print(als.printStamp() + msg)
@@ -1112,13 +1112,14 @@ class FilterControl(wx.Panel):
         self.log(self.logFunction, logString)
         print(als.printStamp() + "Completed rotation...")
 
+        self.enableButtons(True)
         self.protocol2.removeDeferred('findPos')  # If deffered does not get activated remove it.
 
     def findPosCallback(self, msg):
         self.adjusting = True
 
         self.logFunction = self.logFilter
-        logString = als.getLogString("filter findPos", 'post')
+        logString = als.getLogString("filter findPos None", 'post')
         self.log(self.logFunction, logString)
 
     def onHome(self, event):
@@ -1129,6 +1130,8 @@ class FilterControl(wx.Panel):
         d = self.protocol2.sendCommand("home")
         d.addCallback(self.homingCallback)
         print(als.printStamp() + "homing...")
+
+        self.enableButtons(False)
 
     def homingCallback(self, msg):
         self.logFunction = self.logFilter
@@ -1143,6 +1146,8 @@ class FilterControl(wx.Panel):
 
         d = self.protocol2.sendCommand("getFilter")
         d.addCallback(self.getFilterCallback)
+        
+        self.enableButtons(True)
 
     def getFilterCallback(self, msg):
         pos = int(msg)
@@ -1224,6 +1229,10 @@ class FilterControl(wx.Panel):
         val = self.statusBox.GetValue()
         self.statusBox.SetValue(val + string + "\n")
         self.statusBox.SetInsertionPointEnd()
+
+    def enableButtons(self, bool):
+        self.filterButton.Enable(bool)
+        self.homeButton.Enable(bool)
 
     def logFilter(self, logmsg):
         print(als.printStamp() + "logging from exposure class")
