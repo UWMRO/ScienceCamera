@@ -366,7 +366,7 @@ class Evora(object):
         header.append(card=("FILTER", filter))
         header.append(card=("BINX", binning, "Horizontal Binning"))
         header.append(card=("BINY", binning, "Vertical Binning"))
-        header.append(card=("EXPOSURE", itime, "Total exposure time"))
+        header.append(card=("EXPTIME", itime, "Total exposure time"))
         header.append(card=("ACQMODE", "Single Scan", "Acquisition mode"))
         header.append(card=("READMODE", "Image", "Readout mode"))
         header.append(card=("INSTRUME", "evora", "Instrument used for imaging"))
