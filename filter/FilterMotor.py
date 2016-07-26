@@ -120,16 +120,16 @@ class FilterMotor(object):
 				print 'move complete', self.dict
 				self.motorPower(False)
 				print self.status()
-				return "move 1"
+				return True
 			if int(self.dict['hall'][0]) == 1:
 				print 'move incomplete, intiate find', self.dict
 				results = self.findPos()
 				self.motorStop()
 				print self.status()
                                 if(results == True):
-                                        return "move 11"  # Adjustment successful
+                                        return True  # Adjustment successful
                                 else:
-                                        return "move 0"  # Adjustment failed
+                                        return False  # Adjustment failed
 
 
 	def findPos(self):
@@ -141,7 +141,7 @@ class FilterMotor(object):
 			time.sleep(1)
 			self.status()
 			if int(self.dict['hall'][0]) == 0:
-				print 'pos found', self.dict
+				print 'positive position found', self.dict
 				self.setPos(int(startPos))
 				return True  # Successfully found filter position
 			
@@ -151,7 +151,7 @@ class FilterMotor(object):
                         time.sleep(1)
                         self.status()
                         if int(self.dict['hall'][0]) == 0:
-                                print 'pos found', self.dict
+                                print 'negative position found', self.dict
 				self.setPos(int(startPos))
                                 return True  # Successfully found filter position
 		self.motorStop()
