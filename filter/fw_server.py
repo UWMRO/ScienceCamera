@@ -27,6 +27,13 @@ class FilterWheelServer(basic.LineReceiver):
 
         # Pass protocol to FilterMotor.py
         self.f.motorProtocol = self
+	print "You have just started the MRO Filter Wheel Server\n  \
+		This product is currently under first year beta testing\n \
+		Please Report any bugs to:\n \
+		jlozo@uw.edu\n \
+		jwhueh@uw.edu \n \
+		Thank you and Enjoy your filter movement experience \n"
+
 
     def connectionMade(self):
         """

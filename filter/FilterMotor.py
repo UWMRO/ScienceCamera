@@ -26,7 +26,7 @@ class FilterMotor(object):
                 self.motorProtocol = None
 		self.stepper = None
 		self.fw = fw_io.FWIO()
-		self.dict = {"velocity":None, "amp":None, "acceleration":None, "currentPos":None, "power":None, "hall":None, "commandedPos":None, "filterDelta":6860, "ID":None, "home":False, "filterPos":None, "filterCount":None}
+		self.dict = {"velocity":None, "amp":None, "acceleration":None, "currentPos":None, "power":None, "hall":None, "commandedPos":None, "filterDelta":6860, "ID":None, "home":False, "filterPos":None, "filterCount":None, "moving":False}
 
 	def DisplayDeviceInfo(self):
 		#==> rename to getDeviceInfo
@@ -57,6 +57,8 @@ class FilterMotor(object):
 
 	def motorPower(self, val = False):
 		self.stepper.setEngaged(0,val)
+		if val == False:
+			self.dict['moving'] = False
 		return
 
 	def setParm(self, acc, vel, cur):
@@ -83,6 +85,7 @@ class FilterMotor(object):
 		return
 
 	def moveMotor(self, pos = None):
+		self.dict['moving'] = True
 		self.motorPower(True)
 		self.stepper.setTargetPosition(0, int(pos))
 		self.dict["commandedPos"] = pos
@@ -102,21 +105,11 @@ class FilterMotor(object):
 		print "hi" 
 
 	def moveFilter(self, num = None):
+		self.dict['moving'] = True
 		delta = int(self.dict['filterDelta'])
 		print "Moving to filter position %d" % num
 		tpos = num*delta
 		self.moveMotor(tpos)
-		"""time.sleep(1)
-		while tpos != self.dict['currentPos']:
-			self.status()
-			if int(self.dict['hall'][0]) == 0:
-				print 'passed', tpos, self.dict['currentPos']
-				if int(tpos) >= int(self.dict['currentPos']):
-					print 'increment', self.dict			
-				if int(tpos) <= int(self.dict['currentPos']):
-					print 'dec',self.dict
-			time.sleep(.2)"""
-
 		while tpos != self.dict['currentPos']:
 			self.status()
 			print 'moving', self.dict['currentPos']
@@ -177,6 +170,7 @@ class FilterMotor(object):
 
 	def motorStop(self):
 		self.motorPower(False)
+		self.dict['moving'] = False
 		return
 
 	def home(self): 
@@ -228,9 +222,11 @@ class FilterMotor(object):
 		except:
 			self.dict["home"] = False
 			self.motorPower(False)
+			print "==>FAILED TO HOME!!!!!"
 			return "home 0"  # returning a boolean has some issues when coming out client side
 		self.motorPower(False)
 		self.dict['filterCount'] = 0
+		print "==> HOME SUCCESSFUL"
 		return "home 1"  # returning a boolean has some issues when coming out client side
 
 if __name__ == "__main__":
