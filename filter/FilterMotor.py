@@ -168,7 +168,6 @@ class FilterMotor(object):
                       be parsed.
                 """
                 filter = int(self.dict['currentPos'])/int(self.dict['filterDelta'])
-                print("getFilterPosition " + str(filter))
                 return "getFilter " + str(filter) 
 
 	def motorStop(self):
