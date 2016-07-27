@@ -76,7 +76,7 @@ class FilterWheelParser(object):
 	if input[0] == 'power':
 	    return self.f.motorPower(bool(input[1]))
 	if input[0] == 'move':
-	    return "moved " + self.f.moveFilter(int(input[1]))
+	    return "moved " + str(self.f.moveFilter(int(input[1])))
 	if input[0] == 'home':
 	    return self.f.home()
         if input[0] == 'test':
