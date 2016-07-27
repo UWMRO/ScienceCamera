@@ -196,9 +196,9 @@ def getLogString(command, prePost):
                 else:
                     return "Failed to home, try again..."
             if(key2 == 'move'):
-                if(int(stats[0]) == 1):
+                if(bool(stats[0]) == True):
                     return "Successfully moved filter..."
-                if(int(stats[0]) == 11):
+                if(bool(stats[0]) == 11):
                    return "Successfully adjusted filter..."
                 else:
                     return "Failed to move filter..."

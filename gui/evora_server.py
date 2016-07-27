@@ -42,7 +42,6 @@ d = date.today()
 logFile = open("/home/mro/ScienceCamera/gui/logs/log_server_" + d.strftime("%Y%m%d") + ".log", "a")
 
 
-
 class EvoraServer(basic.LineReceiver):
     def connectionMade(self):
         """

@@ -959,7 +959,11 @@ class FilterForwarder(basic.LineReceiver):
     def sendCommand(self, data):
         print(als.timeStamp() + "Sending to filter:", data)
         self.sendLine(data)
-        d = self._deferreds[data.split(" ")[0]] = defer.Deferred()
+        d = None
+        if(data.split(" ")[0] == "move"):
+            d = self._deferreds["moved"] = defer.Deferred()
+        else:
+            d = self._deferreds[data.split(" ")[0]] = defer.Deferred()
         return d
 
     def connectionMade(self):

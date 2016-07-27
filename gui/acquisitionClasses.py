@@ -1105,6 +1105,9 @@ class FilterControl(wx.Panel):
             self.enableButtons(False)
 
     def rotateCallback(self, msg):
+        print("Boolean recieved", msg)
+        print(bool(msg) == True)
+        print(bool(msg) == False)
         self.logFunction = self.logFilter
         print(als.printStamp() + msg)
         logString = als.getLogString("filter move " + msg, 'post')
