@@ -989,8 +989,7 @@ class FilterControl(wx.Panel):
         self.watch = False
         self.adjusting = False
 
-        self.watchFilterTime = 10  # default is every minute but changes to every
-                                   # second when moving filter position
+        self.watchFilterTime = 10  # every second when moving filter position
         self.targetFilter = None  # keep track globally of the target filter
 
         ### Main sizers
@@ -1087,7 +1086,7 @@ class FilterControl(wx.Panel):
             print(als.printStamp() + "index:", pos)
 
             self.targetFilter = pos
-            self.watchFilterTime = 1 # set to one seconds
+            self.watchFilterTime = 1.5 # set to one seconds
             self.watch = True
 
             self.logFunction = self.logFilter

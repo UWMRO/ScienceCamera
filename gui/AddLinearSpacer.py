@@ -198,8 +198,6 @@ def getLogString(command, prePost):
             if(key2 == 'move'):
                 if(bool(stats[0]) == True):
                     return "Successfully moved filter..."
-                if(bool(stats[0]) == 11):
-                   return "Successfully adjusted filter..."
                 else:
                     return "Failed to move filter..."
             if(key2 == 'findPos'):
@@ -213,7 +211,7 @@ def getLogString(command, prePost):
                 if(key3 == 'finding'):
                     filter = stats[0]
                     pos = int(stats[1])
-                    return "Filter fine tuning to position %d, or filter %s..." % (pos, filter)
+                    return "Filter settleing in on position %d, or filter %s..." % (pos, filter)
                 else:
                     filter = stats[0]
                     pos = int(stats[1])
