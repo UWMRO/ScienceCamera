@@ -167,7 +167,7 @@ class FilterMotor(object):
                 Post: Returns the filter position as an integer between 0 and 5 that will
                       be parsed.
                 """
-                filter = self.dict['currentPos']
+                filter = int(self.dict['currentPos'])/int(self.dict['filterDelta'])
                 return "getFilter " + str(filter) 
 
 	def motorStop(self):
