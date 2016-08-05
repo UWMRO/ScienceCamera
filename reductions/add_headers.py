@@ -292,8 +292,8 @@ while ( True==True ):
             sys.exit(1)
 
         ## Set air mass and jd
-        iraf.noao.astutil.setairmass (options.destination_dir+'/'+FileName, observatory=")_.observatory", intype="beginning", outtype="effective", ra="ra", dec="dec", equinox="epoch", st="st", ut="ut", date="date-obs", exposure="exposure", airmass="airmass", utmiddle="utmiddle", scale=750., show='yes', update='yes', override='yes')
-        iraf.noao.astutil.setjd (options.destination_dir+'/'+FileName, observatory=")_.observatory", date="date-obs", time="ut", exposure="exposure", ra="ra", dec="dec", epoch="epoch", jd="jd", hjd="hjd", ljd="ljd", utdate='yes', uttime='yes', listonly='no')
+        iraf.noao.astutil.setairmass (options.destination_dir+'/'+FileName, observatory=")_.observatory", intype="beginning", outtype="effective", ra="ra", dec="dec", equinox="epoch", st="st", ut="ut", date="date-obs", exposure="exptime", airmass="airmass", utmiddle="utmiddle", scale=750., show='yes', update='yes', override='yes')
+        iraf.noao.astutil.setjd (options.destination_dir+'/'+FileName, observatory=")_.observatory", date="date-obs", time="ut", exposure="exptime", ra="ra", dec="dec", epoch="epoch", jd="jd", hjd="hjd", ljd="ljd", utdate='yes', uttime='yes', listonly='no')
         
         ## Display the image
         if ds9:
