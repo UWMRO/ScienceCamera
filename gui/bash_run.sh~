@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+DATE = $(date + "%Y%m%d%H%M")
+./photoAcquisitionGUI.py > $DATE.log
