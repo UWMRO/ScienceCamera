@@ -292,7 +292,7 @@ class Exposure(wx.Panel):
         self.parent.parent.parent.expGauge.SetRange(self.endTimer)
 
         # start timer
-        self.timer.Start(10) # 10 millisecond intervals
+        wx.CallAfter(self.timer.Start, 10) # 10 millisecond intervals
 
     def onExposeTimer(self, event):
         """
