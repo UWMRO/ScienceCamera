@@ -467,7 +467,7 @@ class Exposure(wx.Panel):
         logString = als.getLogString("real " + msg, 'post')
         self.log(self.logFunction, logString)
 
-        loogger.debug("Completed real time series with exit: " + msg)
+        logger.debug("Completed real time series with exit: " + msg)
 
     def displaySeriesImage_thread(self, msg):
         """
@@ -1048,6 +1048,8 @@ class TempControl(wx.Panel):
             logger.info("Enter")
             self.stopCool.Enable(True)
 
+        rect = self.parent.parent.parent.stats.GetFieldRect(self, 0)
+        print("Status box width: %d %d" % (rect.GetX(), rectGetY()))
         if mode == 20034 and float(temp) >= 0:
             bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('greenCirc.png'), size=(90,17))
         if mode == 20037 or (mode == 20034 and float(temp) < 0):
