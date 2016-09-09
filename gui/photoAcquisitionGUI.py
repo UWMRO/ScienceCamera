@@ -153,7 +153,7 @@ class Evora(wx.Frame):
         self.stats.SetSize((23,-1))
         self.stats.SetFieldsCount(3)
         self.SetStatusBar(self.stats)
-        self.stats.SetStatusText("Current Temp:            ... C", 0)
+        self.stats.SetStatusText("      Temp:  ... C", 0)
         self.stats.SetStatusText("Binning Type: 2x2", 2)
         self.stats.SetStatusText("Exp. Status:", 1)
         self.expGauge = wx.Gauge(self.stats, id=1, range=100, size=(110, -1))

@@ -1037,7 +1037,7 @@ class TempControl(wx.Panel):
         targetTemp = msg.split(",")[3]
 
         #self.parent.parent.parent.stats.SetStatusText("Current Temp:            " + temp + " C", 0)
-        wx.CallAfter(self.parent.parent.parent.stats.SetStatusText, "Current Temp:            " + temp + " C", 0)
+        wx.CallAfter(self.parent.parent.parent.stats.SetStatusText, "      Temp: " + temp + " C", 0)
         
         ## based on temp change bitmap color
         # 20037 is NotReached
@@ -1048,18 +1048,17 @@ class TempControl(wx.Panel):
             logger.info("Enter")
             self.stopCool.Enable(True)
 
-        rect = self.parent.parent.parent.stats.GetFieldRect(self, 0)
-        print("Status box width: %d %d" % (rect.GetX(), rectGetY()))
         if mode == 20034 and float(temp) >= 0:
-            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('greenCirc.png'), size=(90,17))
+            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('greenCirc.png'))
         if mode == 20037 or (mode == 20034 and float(temp) < 0):
-            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('redCirc.png'), size=(90,17))
+            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('redCirc.png'))
         if mode == 20035:
-            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('yellowCirc.png'), size=(90,17))
+            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('yellowCirc.png'))
         if mode == 20036:
-            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('blueCirc.png'), size=(90,17))
+            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('blueCirc.png'))
         
-        self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT,
+                                                  verticalalignment=EnhancedStatusBar.ESB_ALIGN_BOTTOM)
 
     def logTemp(self, logmsg):
         """
