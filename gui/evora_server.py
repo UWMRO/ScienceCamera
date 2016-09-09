@@ -13,16 +13,17 @@ __author__ = "Tristan J. Hillis"
 
 ## Imports
 import sys
-import andor
-import numpy as np
-from astropy.io import fits
 import time
 import Queue
 import thread
 import threading
-import AddLinearSpacer as als
 from datetime import datetime
 from datetime import date
+
+import andor
+import numpy as np
+from astropy.io import fits
+import AddLinearSpacer as als
 
 from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
@@ -43,6 +44,13 @@ logFile = open("/home/mro/ScienceCamera/gui/logs/log_server_" + d.strftime("%Y%m
 
 
 class EvoraServer(basic.LineReceiver):
+    """
+    This is the Evora camera server code using Twisted's convienience object of basic.LineReceiver.
+    When a line is recieved from the client it is sent to the parser to execute the camera commands
+    and the resulting data is sent back to the client.  This a threaded server so that long
+    running functions in the parser don't hang the whole server.
+    """
+    
     def connectionMade(self):
         """
         If you send more than one line then the callback to start the gui will completely fail.
@@ -53,72 +61,154 @@ class EvoraServer(basic.LineReceiver):
         self.sendMessage(str(command)) # activate the callback to give full control to the camera.
 
     def connectionLost(self, reason):
+        """
+        Adds connecting client to the list of existing clients.
+        """
         self.factory.clients.remove(self)
 
     def lineReceived(self, line):
+        """
+        Called when server recieves a line. Runs the line through the parser and then
+        sends the resulting data off.
+        """
         print("received", line)
         ep = EvoraParser(self)
         d = threads.deferToThread(ep.parse, line)
         d.addCallback(self.sendData)
 
     def sendData(self, data):
+        """
+        Decorator method to self.sendMessage(...) so that it
+        sends the resulting data to every connected client.
+        """
         if data is not None:
             self.sendMessage(str(data))
 
     def sendMessage(self, message):
+        """
+        Sends message to every connect client.
+        """
         for client in self.factory.clients:
             client.sendLine(message)
 
 
 class EvoraClient(protocol.ServerFactory):
+    """
+    This makes up the twistedPython factory that defines the protocol and stores
+    a list of the clients connect.
+    """
     protocol = EvoraServer
     clients = []
 
 ## Evora Parser commands sent here from server where it envokes the camera commands.
 class EvoraParser(object):
+    """
+    This object parses incoming data lines from the client and executes the respective hardware
+    driver code.
+    """
+    
     def __init__(self, protocol):
+        """
+        Trickles down the protocol for potential usage as well as defines an instance of Evora (the object
+        that holds the driver code).
+        """
         self.e = Evora()
         self.protocol = protocol
 
     def parse(self, input=None):
+        """
+        Receive an input and splits it up and based on the first argument will execute the right method 
+        (e.g. input=connect will run the Evora startup routine).
+        """
         print(input)
         input = input.split()
         if input[0] == 'connect':
+            """
+            Run Evora initialization routine.
+            """
             return self.e.startup()
+
         if input[0] == 'temp':
+            """
+            Get the current temperature and more of the camera.
+            """
             return self.e.getTemp()
+
         if input[0] == 'tempRange':
+            """
+            Used to see the cooler temperature range from the camera itself.
+            """
             return self.e.getTempRange()
+
         if input[0] == 'setTEC':
+            """
+            Set Thermo-electric cooler target temperature with an input.  Excepts values of -10 to -100 within
+            specifications.  Cooler may not be able to push to the furthest end with high ambient temperature.
+            """
             return self.e.setTEC(input[1])
+
         if input[0] == 'getTEC':
+            """
+            Get the status of the thermo-electric cooler.
+            """
             return self.e.getTEC()
+
         if input[0] == 'warmup':
+            """
+            Run Evora camera warmup routine.
+            """
             return self.e.warmup()
+
         if input[0] == 'shutdown':
+            """
+            Run Evora shutdown routine.
+            """
             return self.e.shutdown()
+
         if input[0] == "status":
+            """
+            Gets the current status of the camera.  For example, it will return an integer code saying it is uninitialized 
+            or, perhaps, currently acquisitioning.
+            """
             return self.e.getStatus()
+        
         if input[0] == "timings":
+            """
+            This retrieves the timings for the current Evora settings.  May not work since every new call of the parser
+            is a new Evora instance variable.
+            """
             return self.e.getTimings()
+        
         if input[0] == "vertStats":
+            """
+            Specify and index as the input. See the Andor SDK documentation for more information.
+            """
             return self.e.verticalSpeedStats(int(input[1]))
+        
         if input[0] == "horzStats":
+            """
+            Specify channel, type, and an index as the inputs.  See the Andor SDK documentation for more information.
+            """
             return self.e.horizontalSpeedStats(int(input[1]), int(input[2]), int(input[3]))
-        if input[0] == 'filterConnect':
-            pass
-        if input[0] == 'filterSlew':
-            # pos can be a number 0-5
-            pos = input[1]
-            pass
-        if input[0] == 'filterHome':
-            # simply slews the filter to home
-            pass
+        
         if input[0] == "abort":
+            """
+            Calls the Evora abort command to stop an exposure.  Appears there is no way to then readout the 
+            CCD partially.
+            """
             return self.e.abort()
+        
         if input[0] == 'expose':
-            # command: expose flat 1 10 2 4
-            # get the type of exposure (i.e. bias, flat, object)
+            """
+            This if entry exectues a single exposure command.  The required arguements to define (i.e.
+            when using Telnet) are image type, such as bias, the number of exposures (should be one), the integration time, the
+            binning type (1x1 or 2x2), and a readoutIndex (0, 1, 2, or 4). Filter type should be specified but is not
+            required and is the last arguement.
+
+            Example line: expose object 1 20 2 3 g
+            """
+            
+            # Note to self: get rid of expNum, a different method handles getting multiple images.
             imType = input[1]
             print(imType)
             # exposure attributes
@@ -131,8 +221,17 @@ class EvoraParser(object):
                 filter = str(input[6])
             except IndexError:
                 pass
+            
             return self.e.expose(imType, expnum, itime, binning, readTime=readoutIndex, filter=filter)
+        
         if input[0] == 'real':
+            """
+            This if entry handles the real time series exposure where the camera runs in RunTillAbort mode.
+            The arguements to give (i.e. using Telnet) are image type (e.g. bias), exposure number, integration time,
+            and binning type (1x1 or 2x2).
+
+            Example: real object 1 5 2
+            """
             # command real flat 1 10 2
             imType = input[1]
             print(imType)
@@ -141,7 +240,15 @@ class EvoraParser(object):
             itime = float(input[3])
             binning = int(input[4])
             return self.e.realTimeExposure(self.protocol, imType, itime, binning)
+        
         if input[0] == 'series':
+            """
+            This handles taking multiple images in one go.  The arguements to sepcify (ie when using Telnes) are
+            image type (eg bias), exposure number (>1), integration time, binning type (1x1 or 2x2), the readout index
+            (0, 1, 2, or 3).  The last arguement is the filter name which isn't required but is recommended to include.
+
+            Example: series object 5 20 2 3 g
+            """
             # series bias 1 10 2
             imType = input[1]
             print(imType)
@@ -155,38 +262,26 @@ class EvoraParser(object):
                 filter = str(input[6])
             except IndexError:
                 pass
-            return self.e.kseriesExposure(self.protocol, imType, itime, readTime=readoutIndex, filter=filter, numexp=expnum, binning=binning)
-        """
-        if input[0] == 'realTest':
-            #exposureSetting = int(input[1])
-            imType = input[1]
-            print(imType)
-            # exposure attributes
-            expnum = int(input[2]) # don't need this
-            itime = float(input[3])
-            binning = int(input[4])
-            return self.e.realTimeExposure_test(self.protocol, imType, itime, binning)
-
-        # This is a deprecated function for series exposure.  It utilizes run till abort, e.g. real time, and will
-        # self abort when a counter has reached the user specified number of exposures.
-        if input[0] == 'series_tillAbort':
-            #exposureSetting = int(input[1])
-            imType = input[1]
-            print(imType)
-            # exposure attributes
-            expnum = int(input[2])
-            itime = float(input[3])
-            binning = int(input[4])
-            return self.e.seriesExposure(self.protocol, imType, itime, expnum, binning)
-        """
+            return self.e.kseriesExposure(self.protocol, imType, itime, readTime=readoutIndex, filter=filter,
+                                          numexp=expnum, binning=binning)
 
 
 class Evora(object):
 
+    """
+    This class executes the driver code through the "andor" import which is "swigged" C++ code.
+
+    Replace all the prints with a safe call method.
+    """
+    
     def __init__(self):
         self.num = 0
 
     def getStatus(self):
+        """
+        No input needed. Returns an integer value representing the camera status.  E.g. 20075 means
+        the camera is uninitialized.
+        """
         # if the first status[0] is 20075 then the camera is not initialized yet and
         # one needs to run the startup method.
         status = andor.GetStatus()
@@ -221,6 +316,9 @@ class Evora(object):
         return "connect " + str(init)
 
     def getTEC(self):
+        """
+        Gets the TEC status by calling andor.GetTemperatureF
+        """
         # index on [result[0] - andor.DRV_TEMPERATURE_OFF]
         coolerStatusNames = ('Off', 'NotStabilized', 'Stabilized',
                              'NotReached', 'OutOfRange', 'NotSupported',
@@ -238,6 +336,9 @@ class Evora(object):
         return return_res
 
     def setTEC(self, setPoint=None):
+        """
+        Turns on TEC and sets the temperature with andor.SetTemperature
+        """
         result = self.getTEC().split(" ")[1].split(",")
         result = [int(result[0]), float(result[1])]
         print(result)
@@ -267,6 +368,9 @@ class Evora(object):
         return "warmup " + str(results)
 
     def getTemp(self):
+        """
+        Used to get the temperature as well as other status.
+        """
         # 20037 is NotReached
         # 20035 is NotStabalized
         # 20036 is Stabalized
@@ -280,6 +384,9 @@ class Evora(object):
         return "temp " + txt
 
     def getTempRange(self):
+        """
+        Used to get the range of temperature, in C, that the hardware allows.
+        """
         stats = andor.GetTemperatureRange()
         result = stats[0]
         mintemp = stats[1]
@@ -287,6 +394,11 @@ class Evora(object):
         return "tempRange " + "%s,%s,%s" % (result, mintemp, maxtemp)
 
     def shutdown(self):
+        """
+        Warms up camera by turning off the cooler and then shuts down the camera.
+        Future versions should have it wait till the camera is warmed up to 0 C at least.
+        """
+
         self.warmup()
         res = self.getTemp()
         res = res.split(" ")[1].split(",")
@@ -301,24 +413,10 @@ class Evora(object):
         andor.ShutDown()
         return "shutdown 1"
 
-    def filterConnect(self):
-        # check the status of the filter and connect as needed
-        # return which filter is in position
-        pass
-
-    def filterSlew(self, pos):
-        """
-        Takes in a position from 1 to 6 and slews to that filter position.
-        """
-        pass
-
-    def filterHome(self):
-        """
-        Slews to the home position of the filter wheel.  Returns which filter position this is.
-        """
-        pass
-
     def getTimings(self):
+        """
+        Used to get the actual time in seconds the exposure will take.
+        """
         #retval, width, height = andor.GetDetector()
         #print retval, width, height
         expTime, accTime, kTime = andor.GetAcquisitionTimings()
@@ -327,12 +425,18 @@ class Evora(object):
         return "timings"
 
     def verticalSpeedStats(self, index):
+        """
+        Gets the vertical readout speed stats.
+        """
         print("GetNumberVSSpeeds:", andor.GetNumberVSSpeeds())
         print("GetNumberVSAmplitudes:", andor.GetNumberVSAmplitudes())
         print("GetVSSpeed:", andor.GetVSSpeed(index))
         print("GetFastestRecommendedVSSpeed:", andor.GetFastestRecommendedVSSpeed())
 
     def horizontalSpeedStats(self, channel, type, index):
+        """
+        Gets the stats of the horizontal readout speed.
+        """
         print("GetNumberHSSpeeds:", andor.GetNumberHSSpeeds(channel, type))
         print("GetHSSpeed:", andor.GetHSSpeed(channel, type, index))
 
@@ -381,6 +485,11 @@ class Evora(object):
         return header
 
     def expose(self, imType=None, expnum=None, itime=2, binning=1, filter="", readTime=3):
+        """
+        expNum is deprecated and should be removed.
+        This handles a single exposure and no more.  Inputs are the image type integration time, binning type
+        filter type, as a string, and the index for the specified horizontal readout time.
+        """
         if expnum is None:
             self.num += 1
             expnum = self.num
@@ -457,9 +566,10 @@ class Evora(object):
         return "expose " + str(success) + ","+str(filename) + "," + str(itime)
 
 
-    def realTimeExposure(self, protocol, imType, itime, binning=1): 
+    def realTimeExposure(self, protocol, imType, itime, binning=1):
         """
-        This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
+        Inputs are the Evora server protocol, the image type, the integration time, and the binning size.
+        Runs camera in RunTillAbort mode.
         """
         #global acquired
         retval,width,height = andor.GetDetector()
@@ -524,73 +634,13 @@ class Evora(object):
 
         return "real 1" # exits with 1 for success
 
-    # deprecated to kseriesExposure
-    def seriesExposure(self, protocol, imType, itime, numexp=1, binning=1):
-        global isAborted
-        isAborted = False
-        """
-        This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
-        """
-        retval,width,height = andor.GetDetector()
-        print('GetDetector:', retval,width,height)
-
-        print("SetAcquisitionMode:", andor.SetAcquisitionMode(5))
-        print('SetReadMode:', andor.SetReadMode(4))
-
-        print('SetImage:', andor.SetImage(binning,binning,1,width,1,height))
-        print('GetDetector (again):', andor.GetDetector())
-
-        print('SetExposureTime:', andor.SetExposureTime(itime))
-        print('SetKineticTime:', andor.SetKineticCycleTime(0))
-
-        if(imType == "bias"):
-            itime = 0
-            andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
-            print('SetExposureTime:', andor.SetExposureTime(0))
-        else:
-            andor.SetShutter(1,0,5,5)
-            print('SetExposureTime:', andor.SetExposureTime(itime)) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
-
-        data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
-
-        print('StartAcquisition:', andor.StartAcquisition())
-
-        status = andor.GetStatus()
-
-        print(status)
-        counter = 1
-        
-        while(status[1]==andor.DRV_ACQUIRING and counter <= numexp):
-            status = andor.GetStatus()
-            
-            progress = andor.GetAcquisitionProgress()
-            status = andor.GetStatus()
-
-            if(status[1] == andor.DRV_ACQUIRING and progress[2] == counter):
-                results = andor.GetMostRecentImage16(data) # store image data
-                print(results, 'success={}'.format(results == 20002)) # print if the results were successful
-                
-                if(results == andor.DRV_SUCCESS): # if the array filled store successfully
-                    data=data.reshape(width/binning,height/binning) # reshape into image
-                    print(data.shape,data.dtype)
-
-                    hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
-                    #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
-                    filename = als.getImagePath('series')
-                    hdu.writeto(filename,clobber=True)
-
-                    print("wrote: {}".format(filename))
-                    
-                    protocol.sendData("seriesSent"+str(counter)+" "+str(counter)+","+itime+","+filename)
-
-                counter += 1
-        print("Aborting", andor.AbortAcquisition())
-        return "series 1,"+str(counter) # exits with 1 for success
-
-
     def kseriesExposure(self, protocol, imType, itime, filter="", readTime=3, numexp=1, binning=1, numAccum=1, accumCycleTime=0, kCycleTime=0):
         """
-        This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
+        This handles multiple image acquisition using the camera kinetic series capability.  The basic arguements are
+        the passed in protocol, the image type, integration time, filter type, readout index, number of exposures, and binning type.
+
+        In the future this function could be modified to include accumulations or add time the kinetic cycle time.  Accumulations 
+        are how many images should be readout as one, and kCycleTime can add time between each exposure that is taken.
         """
         global isAborted
         isAborted = False
@@ -675,6 +725,72 @@ class Evora(object):
         return "series 1,"+str(counter) # exits with 1 for success
 
 
+    # deprecated to kseriesExposure
+    """
+    def seriesExposure(self, protocol, imType, itime, numexp=1, binning=1):
+        global isAborted
+        isAborted = False
+        
+        This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
+        
+        retval,width,height = andor.GetDetector()
+        print('GetDetector:', retval,width,height)
+
+        print("SetAcquisitionMode:", andor.SetAcquisitionMode(5))
+        print('SetReadMode:', andor.SetReadMode(4))
+
+        print('SetImage:', andor.SetImage(binning,binning,1,width,1,height))
+        print('GetDetector (again):', andor.GetDetector())
+
+        print('SetExposureTime:', andor.SetExposureTime(itime))
+        print('SetKineticTime:', andor.SetKineticCycleTime(0))
+
+        if(imType == "bias"):
+            itime = 0
+            andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
+            print('SetExposureTime:', andor.SetExposureTime(0))
+        else:
+            andor.SetShutter(1,0,5,5)
+            print('SetExposureTime:', andor.SetExposureTime(itime)) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
+
+        data = np.zeros(width/binning*height/binning, dtype='uint16') # reserve room for image
+
+        print('StartAcquisition:', andor.StartAcquisition())
+
+        status = andor.GetStatus()
+
+        print(status)
+        counter = 1
+        
+        while(status[1]==andor.DRV_ACQUIRING and counter <= numexp):
+            status = andor.GetStatus()
+            
+            progress = andor.GetAcquisitionProgress()
+            status = andor.GetStatus()
+
+            if(status[1] == andor.DRV_ACQUIRING and progress[2] == counter):
+                results = andor.GetMostRecentImage16(data) # store image data
+                print(results, 'success={}'.format(results == 20002)) # print if the results were successful
+                
+                if(results == andor.DRV_SUCCESS): # if the array filled store successfully
+                    data=data.reshape(width/binning,height/binning) # reshape into image
+                    print(data.shape,data.dtype)
+
+                    hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
+                    #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
+                    filename = als.getImagePath('series')
+                    hdu.writeto(filename,clobber=True)
+
+                    print("wrote: {}".format(filename))
+                    
+                    protocol.sendData("seriesSent"+str(counter)+" "+str(counter)+","+itime+","+filename)
+
+                counter += 1
+        print("Aborting", andor.AbortAcquisition())
+        return "series 1,"+str(counter) # exits with 1 for success
+    """
+
+    
 class Logger(object):
     """
     This class when assigned to sys.stdout or sys.stderr it will write to a file that is opened everytime a new GUI session is started.

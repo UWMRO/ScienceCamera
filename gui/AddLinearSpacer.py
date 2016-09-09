@@ -1,15 +1,9 @@
 #!/usr/bin/python2
-
-# Comment on documentation:
-# When reading the doc strings if "Pre:" is present then this stands for "precondition", or the conditions in order to invoke something.
-# Oppositely, "Post:" stands for "postcondition" and states what is returned by the method.
-
-__author__ = "Tristan J. Hillis"
+from __future__ import print_function
+from __future__ import division
 
 ## Imports
-import wx  # get wxPython
-from astropy.io import fits
-import numpy as np
+# Core Imports
 import threading
 import time
 import os
@@ -17,11 +11,28 @@ from datetime import datetime
 from datetime import date
 import sys
 
+# Third-party imports
+import wx  # get wxPython
+from astropy.io import fits
+import numpy as np
+
+__author__ = "Tristan J. Hillis"
+
+"""
+Comment on documentation:
+When reading the doc strings if "Pre:" is present then this stands for "precondition", or the conditions in order
+to invoke something.  Oppositely, "Post:" stands for "postcondition" and states what is returned by the method.
+
+File Description: This file contains a set of functions that the GUI or server code calls throughout.
+"""
+
+
 ## Global Variables
 
+# Deprecated
 # Get gregorian date, local
-d = date.today()
-logFile = open("/home/mro/ScienceCamera/gui/logs/log_gui_" + d.strftime("%Y%m%d") + ".log", "a")
+#d = date.today()
+#logFile = open("/home/mro/ScienceCamera/gui/logs/log_gui_" + d.strftime("%Y%m%d") + ".log", "a")
 
 
 def AddLinearSpacer(boxsizer, pixelSpacing):
@@ -38,9 +49,9 @@ def AddLinearSpacer(boxsizer, pixelSpacing):
     """
 
     orientation = boxsizer.GetOrientation()
-    if(orientation == wx.HORIZONTAL):
+    if orientation == wx.HORIZONTAL:
         boxsizer.Add((pixelSpacing, 0))
-    elif(orientation == wx.VERTICAL):
+    elif orientation == wx.VERTICAL:
         boxsizer.Add((0, pixelSpacing))
 
 
@@ -70,10 +81,18 @@ def isInt(string):
 
 
 def getData(path):
+    """
+    This function will open a fits file, get the data as a 2x2 numpy array, and return it.
+    """ 
     return fits.getdata(path)
 
 
 def calcStats(data):
+    """
+    This function calculates the standard statistics of a FITS image of min, max, mean, and median.
+    A list of these stats is returned so that these stats can then be displayed at the bottom
+    of the image GUI window.
+    """
     stats_list = []
     stats_list.append(min(data.flat))
     stats_list.append(max(data.flat))
@@ -282,9 +301,9 @@ def checkForImageCounter(name):
     Post: Returns a boolean of whether the standard iterator is on the end of the image name.  That
               standard format follows like *_XXX.fits where XXX goes from 001 an up.
     """
-    if("_" in name):
+    if "_" in name:
         name.split("_")
-        if(isInt(name[-1])):
+        if isInt(name[-1]):
             return True
         else:
             return False
@@ -296,7 +315,7 @@ def iterateImageCounter(name):
     """
     Note: This method is only invoked if the current image name has been checked to have a counter.
     Pre: Takes in an image name with a counter.
-    Post: Gets the counter and iterates it, and then edits self.currentImage to have an iterated count string
+    Post: Gets the counter and iterates it, and then is used to edit self.currentImage to have an iterated count string
           in the standard format.
     """
     temp = name.split('_')
@@ -340,7 +359,7 @@ class Logger(object):
         string = d.strftime("[%b %m, %y, %H:%M:%S]")
         return string
 
-
+# Deprecated code
 class SampleTimer(object):
     """
     This is a timer object that can be used to sample the time off of a certain time length.
