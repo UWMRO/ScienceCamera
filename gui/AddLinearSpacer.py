@@ -30,6 +30,8 @@ File Description: This file contains a set of functions that the GUI or server c
 ## Global Variables
 
 # Deprecated
+import MyLogger
+logger = MyLogger.myLogger("AddLinearSpacer.py", "client")
 # Get gregorian date, local
 #d = date.today()
 #logFile = open("/home/mro/ScienceCamera/gui/logs/log_gui_" + d.strftime("%Y%m%d") + ".log", "a")
@@ -144,9 +146,9 @@ def getLogString(command, prePost):
 
     if(prePost == 'post'):  # command has a key then is followed by relavent information delimited with commas
         key = command[0]
-        print(printStamp() + "key from post:", key)
+        logger.debug("key from post: " + key)
         stats = command[1].split(",")
-        print(printStamp() + "Stats in log:", stats)
+        logger.debug("Stats in log:" + stats)
         if(key == 'status'):
             if(int(stats[0]) == 20002):  # 20002 is "success" to Evora
                 return "Camera already initialized connecting..."
@@ -320,7 +322,7 @@ def iterateImageCounter(name):
     """
     temp = name.split('_')
     count = int(temp[-1])
-    print(printStamp() + str(count))
+    logger.debug(str(count))
     count += 1
     if(count < 10):
         temp[-1] = "00" + str(count)
@@ -329,7 +331,7 @@ def iterateImageCounter(name):
     else:
         temp[-1] = str(count)
     name = "_".join(temp[:])
-    print(printStamp() + "Iterated to: " + name)
+    logger.debug("Iterated to: " + name)
     return name
 
 def printStamp():
