@@ -146,9 +146,9 @@ def getLogString(command, prePost):
 
     if(prePost == 'post'):  # command has a key then is followed by relavent information delimited with commas
         key = command[0]
-        logger.debug("key from post: " + key)
+        logger.debug("key from post: " + str(key))
         stats = command[1].split(",")
-        logger.debug("Stats in log:" + stats)
+        logger.debug("Stats in log:" + str(stats))
         if(key == 'status'):
             if(int(stats[0]) == 20002):  # 20002 is "success" to Evora
                 return "Camera already initialized connecting..."

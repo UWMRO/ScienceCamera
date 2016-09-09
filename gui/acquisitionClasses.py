@@ -511,8 +511,8 @@ class Exposure(wx.Panel):
             wx.CallAfter(self.safePlot, data, stats_list)
             
             # copy image over (counter looks like "_XXX.fits")
-            print(als.printStamp() + "current image name:", self.currentImage)
-            print(als.printStamp() + str(self.checkForImageCounter(self.currentImage)))
+            logger.debug("current image name: " + self.currentImage)
+            logger.debug(str(self.checkForImageCounter(self.currentImage)))
             
             if not self.checkForImageCounter(self.currentImage):
                 self.currentImage += "_001"
@@ -568,7 +568,7 @@ class Exposure(wx.Panel):
         self.logFunction = self.logExposure
         logString = als.getLogString("series " + dataMsg, 'post')
         self.log(self.logFunction, logString)
-        logger.debug("Completed real time series with exit: " + msg)
+        logger.debug("Completed real time series with exit: " + str(msg))
 
     def abort_callback(self, msg):
         self.parent.parent.parent.expGauge.SetValue(0)  # redundancy to clear the exposure gauge
@@ -1194,7 +1194,7 @@ class FilterControl(wx.Panel):
             for i in range(len(self.filterName)):
                 if(str(self.filterSelection) == self.filterName[i]):
                     pos = self.filterNum[i]
-            logger.debug("index: " + pos)
+            logger.debug("index: " + str(pos))
 
             self.targetFilter = pos
             self.watchFilterTime = 1.5 # set to one seconds
@@ -1274,7 +1274,7 @@ class FilterControl(wx.Panel):
 
     def getFilterCallback(self, msg):
         pos = int(msg)
-        logger.debug("position: " + pos)
+        logger.debug("position: " + str(pos))
         filter = self.filterName[pos]
 
         self.logFunction = self.logFilter

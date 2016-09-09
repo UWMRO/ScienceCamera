@@ -227,7 +227,7 @@ class Evora(wx.Frame):
         Helper method that handles properly closing the GUI.
         """
         if self.connected:
-            print(als.printStamp() + "killing E. server connection in quit method")
+            logger.info("killing E. server connection in quit method")
             self.connection.disconnect()
         
         filterInstance = self.takeImage.filterInstance
@@ -286,7 +286,7 @@ class Evora(wx.Frame):
             self.readoutIndex = 1
         if id == 1143:
             self.readoutIndex = 0
-        logger.debug("setting readout index to index " + self.readoutIndex)
+        logger.debug("setting readout index to index " + str(self.readoutIndex))
 
     def onConnect(self, event):
         """
@@ -642,12 +642,12 @@ class ImageWindow(wx.Frame):
         """
         value = event.IsChecked()
         if value is True:
-            print(als.printStamp() + "Inverting image gray scale")
+            logger.info("Inverting image gray scale")
             self.panel.updateCmap("gray_r")
             self.panel.refresh()
             self.currMap = 'gray_r'
         if value is False:
-            print(als.printStamp() + "Changing image to regular gray scale")
+            logger.info("Changing image to regular gray scale")
             self.panel.updateCmap('gray')
             self.panel.refresh()
             self.currMap = 'gray'
@@ -1033,7 +1033,7 @@ class FilterForwarder(basic.LineReceiver):
                 self._deferreds.pop(singular_sep_data[0]).callback(singular_sep_data[1])
         
     def sendCommand(self, data):
-        print(als.timeStamp() + "Sending to filter:", data)
+        logger.debug("Sending to filter: " +  str(data))
         self.sendLine(data)
         d = None
         if(data.split(" ")[0] == "move"):
