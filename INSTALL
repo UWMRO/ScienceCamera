@@ -214,7 +214,6 @@ WARNING: This has not been fully verified to work for all systems and is therefo
 
 Open() failed ERROR
 ----------
-
 On some systems USB hotplug does not work as expected and the camera will fail to initialize.  This amnifests as an "open() failed" error message.  As a workaround it is necessary to install additional libusb development files on to the system; details below (Ubuntu and Fedora are detailed but  similar command sets should work on other distributions):
 
 Ubuntu:
@@ -224,4 +223,37 @@ Ubuntu:
 Fedora:
 1. Open terminal;
 2. As superuser run the command 	`yum install libusb-devel'
+
+If the above still does not work then the downloaded version of libusb-dev may be too new.  Tested on Ubuntu 16.04LTS, the
+libusb-dev version (2:0.1.12-28) continues to give the Open() failed ERROR.  The known version to work is from Ubuntu 14.04LTS
+(2:0.1.12-23.3ubuntu1).  To find these packages one can go to the Ubuntu or Fedora repository lists and find the ".deb" or ".rpm"
+files, respectively.  First, try to install the libusb-dev library, which will likely fail and tell you about the version conflictions
+of the dependencies.  Follow the list of dependancies one needs to download from the same repository list that you found libusb-dev;
+the repostitory lists should link the required dependancies.
+
+Download and install, manually, those of which your attempt at installing libusb-dev mentions.  For my experience on Ubuntu 16.04LTS,
+all was needed was the Ubuntu 14.04LTS libusb-dev and libusb-0.1-4 versions found in the Ubuntu 14.04LTS package list, but it could
+end up being a game of cat and mouse.
+
+The next step is to lock these versions in so that updates won't revert the packages to the newest versions.  There is likely a command
+with aptitude, or yum, that can achieve this from the command line, but potentially an easier alternative is to use the synaptic package
+manager.  This means downloading the synaptic from the repository list and then running the this GUI.  Search for the packages just installed
+one at a time and highlight the package, then go to the package tab, and click on lock version.  This will lock in the package version you
+want to keep installed.
+
+There is no telling what rolling back these package versions could do to the rest of the Linux install.  However, if the only
+usage for the computer is to run the Andor software, then other system capabilites breaking should not be a big issue unless important.
+
+INSTALLING (DEB/RPM) packages manually.
+NOTE: DEB files are for Debian based distros only, like Ubuntu, and RPM files are, likewise, for Redhat based distros only.  Do
+not attempt to install a DEB file on Fedora, not that it would let you anyway.
+
+Ubuntu:
+1. Open terminal;
+2. As superuser run the command		`dpkg -i package-to-install.deb`
+
+Fedora:
+1. Open terminal;
+2. As superuser run the command		`rpm -i package-to-install.rpm`
+
 
