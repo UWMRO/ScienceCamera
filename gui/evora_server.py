@@ -483,6 +483,53 @@ class Evora(object):
 
         return header
 
+    def getHeader2(self, attributes):
+        """
+        Pre: Takes in a list of attributes: [imType, binning, itime]
+        Post: Returns an AstroPy header object to be used for writing to.
+        """
+        imType, binning, itime, filter = attributes[0], attributes[1], attributes[2], attributes[3]
+        # make new fits header object
+        header = fits.Header()
+        ut_time = time.gmtime() # get UT time
+        dateObs = time.strftime("%Y-%m-%dT%H:%M:%S", ut_time)
+        ut_str = time.strftime("%H:%M:%S", ut_time)
+        header.append(card=("DATE-OBS", dateObs, "Time at start of exposure"))
+        header.append(card=("UT", ut_str, "UT time at start of exposure"))
+        header.append(card=("OBSERVAT", "mro", "per the iraf list"))
+        header.append(card=("IMAGETYP", imType))
+        header.append(card=("FILTER", filter))
+        header.append(card=("BINX", binning, "Horizontal Binning"))
+        header.append(card=("BINY", binning, "Vertical Binning"))
+        header.append(card=("EXPTIME", itime, "Total exposure time"))
+        header.append(card=("ACQMODE", "Single Scan", "Acquisition mode"))
+        header.append(card=("READMODE", "Image", "Readout mode"))
+        header.append(card=("INSTRUME", "evora", "Instrument used for imaging"))
+        header.append(card=("LATITUDE", 120.744466667, "Decimal degrees of MRO latitude"))
+        header.append(card=("LONGITUD", 46.9528, "Decimal degress of MRO longitude"))
+
+        # get readout time and temp
+        temp = andor.GetTemperatureStatus()[1]
+        readTime = andor.GetAcquisitionTimings()[3] - itime
+        header.append(card=("TEMP", temp, "Temperature"))
+        header.append(card=("READTIME", readTime, "Pixel readout time"))
+
+        # NEEDED header keywords
+        # RA / Right Ascension
+        # DEC / Declination
+        # EPOCH / Epoch for RA and Dec (years)
+        # ST / local sidereal time (hours)
+        # HA / Hour Angle
+        # ZD / Zenith Angle
+        # AIRMASS
+        # UTMIDDLE
+        # JD
+        # HJD
+        # LJD
+        
+        return header
+
+    
     def expose(self, imType=None, expnum=None, itime=2, binning=1, filter="", readTime=3):
         """
         expNum is deprecated and should be removed.

@@ -287,7 +287,7 @@ def getImagePath(type):
     """
     saveDirectory = "/home/mro/data/evora_server/raw/"
     time = datetime.today()
-    fileName = "image_%s%s%s_%s%s%s_%s.fits" % (time.year, time.month, time.day, time.hour, time.minute, time.second, time.microsecond)
+    fileName = time.strftime("image_%Y%m%d_%H%M%S_%f.fits")
     if(type == 'real'):
         return "/tmp/" + fileName
     else:

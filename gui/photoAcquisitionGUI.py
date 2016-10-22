@@ -62,7 +62,7 @@ class Evora(wx.Frame):
         self.protocol = None # client protocol
         self.connection = None
         self.connected = False  # keeps track of whether the gui is connect to camera
-        self.active_threads = {}  # list of the active threads
+        self.active_threads = {}  # dict of the active threads
         self.imageOpen = False # keep track of whether the image window is open
         self.window = None # holds the image window
         self.logFunction = None
@@ -186,7 +186,7 @@ class Evora(wx.Frame):
 
         #wx.EVT_CLOSE(self, lambda evt: reactor.stop())
 
-        self.disableButtons(True)
+        self.disableButtons("evora", True)
 
         # Add and set icon
         ico = wx.Icon("evora_logo_circ.ico", wx.BITMAP_TYPE_ICO)
@@ -329,12 +329,13 @@ class Evora(wx.Frame):
             t = threading.Thread(target=self.takeImage.tempInstance.watchTemp, args=(), name="temp thread")
             self.takeImage.tempInstance.isConnected = True # setups infinite loop in watchTemp method
             t.daemon = True
-            t.start()
-            self.active_threads["temp"] = t
             
             # Enable disconnect and shutdown and disable connect menu items
             self.enableConnections(False, True, True)
-            self.disableButtons(False)
+            self.disableButtons("connect", False)
+
+            t.start()
+            self.active_threads["temp"] = t
             
         else: # camera drivers are broken needs reinstall?
             pass
@@ -351,7 +352,7 @@ class Evora(wx.Frame):
 
         self.connected = True # boolean to tell if connected to server
         self.enableConnections(False, True, True) # grey and un-grey camera menu options
-        self.disableButtons(False) # enable gui functionality
+        self.disableButtons("connect", False) # enable gui functionality
         self.takeImage.tempInstance.isConnected = True # setups infinite loop in watchTemp method
         t = threading.Thread(target=self.takeImage.tempInstance.watchTemp, args=(), name="temp thread")
         t.daemon = True
@@ -370,23 +371,14 @@ class Evora(wx.Frame):
         # Update temperature bitmap in status bar.
         bitmap = wx.StaticBitmap(self.stats, -1, size=(90, 17))
         self.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-        self.stats.SetStatusText("Current Temp:            ... C", 0)
+        self.stats.SetStatusText("      Temp:  ... C", 0)
         
         self.joinThreads("temp", demonized=True)
         self.connection.disconnect() # this is the acutal disconnection from the server'
 
         self.connected = False
         self.enableConnections(True, False, False)
-        self.disableButtons(True)
-        
-    def onDisconnectCallback(self):
-        """
-        Locks down GUI when connection to the port has closed.
-        """
-        logger.info("Done disconnecting, changing GUI state")
-        self.connected = False
-        self.enableConnections(True, False, False) # edit the connections menu in the file menu
-        self.disableButtons(True)
+        self.disableButtons('disconnect', True)
 
     def onShutdown(self, event):
         """
@@ -407,12 +399,12 @@ class Evora(wx.Frame):
                     logger.info("Shutting down camera")
                     d = self.protocol.sendCommand("shutdown")
                     d.addCallback(self.callShutdown)
-                    self.disableButtons(True)
+                    self.disableButtons('shutdown', True)
                     
             else:
                 d = self.protocol.sendCommand("shutdown")
                 d.addCallback(self.callShutdown)
-                self.disableButtons(True)
+                self.disableButtons('shutdown', True)
 
     def callShutdown(self, msg):
         """
@@ -444,7 +436,7 @@ class Evora(wx.Frame):
         cameraSub.Enable(1131, discon)
         cameraSub.Enable(1132, shut)
 
-    def disableButtons(self, boolean):
+    def disableButtons(self, method, boolean):
         """
         Used to lock down GUI or not.
         """
@@ -453,7 +445,8 @@ class Evora(wx.Frame):
         self.takeImage.exposureInstance.expButton.Enable(boolean)
         
         self.takeImage.tempInstance.tempButton.Enable(boolean)
-        self.takeImage.tempInstance.stopCool.Enable(boolean)
+        if method != 'connect':
+            self.takeImage.tempInstance.stopCool.Enable(boolean)
 
 
     def onFilterConnect(self, event):
@@ -511,7 +504,6 @@ class Evora(wx.Frame):
         """
         logger.info("entered logMethod")
         logfunc(logmsg)
-
 
     def joinThreads(self, threadKey, demonized=False):
         t = self.active_threads.pop(threadKey)

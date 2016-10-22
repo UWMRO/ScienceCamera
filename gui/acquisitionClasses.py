@@ -6,6 +6,7 @@ from __future__ import absolute_import
 ## Imports
 import time
 import thread
+import threading
 import shutil
 import os
 import wx  # get wxPython
@@ -205,7 +206,8 @@ class Exposure(wx.Panel):
 
                     d = self.protocol.sendCommand(command)
                     d.addCallback(self.expose_callback_thread)
-                    thread.start_new_thread(self.exposeTimer, (itime,))
+                    self.exposeTimer(itime)
+                    #thread.start_new_thread(self.exposeTimer, (itime,))
 
             if imType == 2:  # real time exposure
                 self.expButton.Enable(False)
@@ -225,7 +227,8 @@ class Exposure(wx.Panel):
                 d.addCallback(self.realCallback)  # this will clear the image path queue
 
                 # start timer
-                thread.start_new_thread(self.exposeTimer, (itime,))
+                self.exposeTimer(itime)
+                #thread.start_new_thread(self.exposeTimer, (itime,))
 
             if imType == 3:  # series exposure
                 dialog = wx.TextEntryDialog(None, "How many exposure?", "Entry", "1", wx.OK | wx.CANCEL)
@@ -267,7 +270,8 @@ class Exposure(wx.Panel):
                             d.addCallback(self.seriesCallback)
 
                             # start timer
-                            thread.start_new_thread(self.exposeTimer, (itime,))
+                            self.exposeTimer(itime)
+                            #thread.start_new_thread(self.exposeTimer, (itime,))
 
                     else:
                         dialog = wx.MessageDialog(None, "Entry was not a valid integer!", "", wx.OK | wx.ICON_ERROR)
@@ -286,27 +290,27 @@ class Exposure(wx.Panel):
             expTime = float(time) + exposeTimes[1]  # trailing digit is readout time
         
         # get the max range for progress bar
-        self.endTimer = int(expTime / (10.0*10**-3)) # timer will update every 10 ms
+        self.endTimer = int(expTime / (50.0*10**-3)) # timer will update every 10 ms
         
         # set exposure progress bar range
         self.parent.parent.parent.expGauge.SetRange(self.endTimer)
 
         # start timer
-        wx.CallAfter(self.timer.Start, 10) # 10 millisecond intervals
+        wx.CallAfter(self.timer.Start, 50) # 50 millisecond intervals
 
     def onExposeTimer(self, event):
         """
         This is called by the wxPython Timer object and updates the exposure gauge by an integer
         value every 10 milliseconds.
         """
-        if self.startTimer == self.endTimer - 1:
+        if self.startTimer == self.endTimer:
             self.timer.Stop()
             self.startTimer = 0
 
         else:
             # get gauge value
             val = self.parent.parent.parent.expGauge.GetValue()
-            wx.CallAfter(self.parent.parent.parent.expGauge.SetValue, (val + 1))
+            wx.CallAfter(self.parent.parent.parent.expGauge.SetValue, val+1)
             self.startTimer += 1
 
     def expose_callback_thread(self, msg):
@@ -435,28 +439,9 @@ class Exposure(wx.Panel):
             self.parent.parent.parent.expGauge.SetValue(0)
             self.startTimer = 0
 
-            thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
+            self.exposeTimer(self.timeToSend)
+            #thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
             
-    # TO BE REMOVED; replaced with displayRealImage
-    """
-    def displayRealImage_callback_thread(self, msg):
-        # DEPRECATED
-        print(als.printStamp() + "From real image callback thread:", repr(msg))
-        msg = msg.rstrip()
-        thread.start_new_thread(self.displayRealImage_callback, (msg,))
-
-    def displayRealImage_callback(self, msg):
-        # DEPRECATED
-        path = msg  # path to image (/tmp/image_date.fits)
-
-        if(msg != "None"):
-                        # get data
-            data = als.getData(path)
-            stats_list = als.calcStats(data)
-            # change the gui with thread safety
-            wx.CallAfter(self.safePlot, data, stats_list)
-    """
-
     def realCallback(self, msg):
         """
         Called when the camera has been aborted during a real time series exposure.
@@ -494,14 +479,14 @@ class Exposure(wx.Panel):
         for i in fullPath[:-1]:
             directory += i + "/"
 
+        if(self.timer.IsRunning()):
+            self.timer.Stop()
+        self.parent.parent.parent.expGauge.SetValue(self.endTimer)
         # no abort then display the image
         if(imNum <= int(self.seriesImageNumber)):
             logger.info("Entered to display series image")
 
-            if(self.timer.IsRunning()):
-                self.timer.Stop()
 
-            self.parent.parent.parent.expGauge.SetValue(self.endTimer)
 
             # get stats
             data = als.getData(path)
@@ -529,13 +514,16 @@ class Exposure(wx.Panel):
             logString = als.getLogString("seriesSent " + dataMsg + "," + self.currentImage, 'post')
             self.log(self.logFunction, logString)
 
-            self.parent.parent.parent.expGauge.SetValue(0)
-            self.startTimer = 0
+
 
             if self.seriesImageNumber is not None:
                 if imNum < int(self.seriesImageNumber):
-                    thread.start_new_thread(self.exposeTimer, (time,))
-
+                    self.exposeTimer(time)
+                    #thread.start_new_thread(self.exposeTimer, (time,))
+                    
+        self.parent.parent.parent.expGauge.SetValue(0)
+        self.startTimer = 0
+                    
     def seriesCallback(self, msg):
         msg = msg.split(",")
         exitNumber = int(msg[1])  # server will send which count the series loop ended on
@@ -855,6 +843,7 @@ class TempControl(wx.Panel):
         self.isConnected = False
         self.logFunction = None
         self.currTemp = None
+        self.prevMode = None
 
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
@@ -1002,15 +991,7 @@ class TempControl(wx.Panel):
         self.log(self.logFunction, logString)
 
         logger.info("Warmed with exit: " + msg)
-        
-    def changeTemp(self, value, statusbar):
-        """
-        Changes the temperature status in the status bar.
-        """
-        bitmap = wx.StaticBitmap(statusbar, size=(50,50))
-        bitmap.SetBitmap(wx.ArtProvider.GetBitmap("ID_YES"))
-        statusbar.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
-
+       
     def watchTemp(self):
         """
         Run as a demon thread in the background when the GUI connects to the camera.
@@ -1044,10 +1025,12 @@ class TempControl(wx.Panel):
         # 20035 is NotStabalized
         # 20036 is Stabalized
         # 20034 is Off  
+        
         if mode != 20034 and not self.stopCool.IsEnabled():
             logger.info("Enter")
             self.stopCool.Enable(True)
-
+        #if self.prevMode is None or self.prevMode != mode:
+            #print("MAKING NEW BITMAP")
         if mode == 20034 and float(temp) >= 0:
             bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('greenCirc.png'))
         if mode == 20037 or (mode == 20034 and float(temp) < 0):
@@ -1058,8 +1041,9 @@ class TempControl(wx.Panel):
             bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('blueCirc.png'))
         
         self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT,
-                                                  verticalalignment=EnhancedStatusBar.ESB_ALIGN_BOTTOM)
-
+                                                      verticalalignment=EnhancedStatusBar.ESB_ALIGN_BOTTOM)
+         #   self.prevMode = mode
+        
     def logTemp(self, logmsg):
         """
         Handles displaying log information to the user.
