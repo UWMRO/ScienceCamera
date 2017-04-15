@@ -12,6 +12,7 @@ from __future__ import absolute_import
 __author__ = "Tristan J. Hillis"
 
 ## Imports
+import subprocess
 import sys
 import time
 import Queue
@@ -863,23 +864,40 @@ class FTPThread(threading.Thread):
         f = FTPFactory(p)
         f.timeOut = None
         reactor.listenTCP(5504, f)
-        
+
+class FilterThread(thread.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.on = True # This handles whether the Filter Server is gets shutdown on or not
+    def run(self):
+        print("Starting server")
+        server_pipe = subprocess.Popen('ssh -xtt mro@192.168.1.30', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        server_pipe.stdin.write("./FilterServer\n")
+        while self.on:
+            print("Filter Server on")
+            time.sleep(10)
+        server_pipe.stdin.close()
+        server_pipe.wait()
 
 if __name__ == "__main__":
-    #sys.stdout = Logger(sys.stdout)
-    #sys.stderr = Logger(sys.stderr)
+    ftp_server = None
+    try:
+        #sys.stdout = Logger(sys.stdout)
+        #sys.stderr = Logger(sys.stderr)
 
-    #ep = Evora()
-    #ep.startup()
-    reactor.suggestThreadPoolSize(30)
-    reactor.listenTCP(5502, EvoraClient())
+        #ep = Evora()
+        #ep.startup()
+        reactor.suggestThreadPoolSize(30)
+        reactor.listenTCP(5502, EvoraClient())
 
-    # Once the camera server starts start the ftp server
-    ftp_server = FTPThread()
-    ftp_server.daemon = True
-    ftp_server.run()
+        # Once the camera server starts start the ftp server
+        ftp_server = FTPThread()
+        ftp_server.daemon = True
+        ftp_server.run()
 
-    print("Server ready.")
-    
-    reactor.run()
+        print("Server ready.")
 
+        reactor.run()
+    except KeyboardInterrupt:
+        ftp_server.on = False
+        sys.exit(0)
