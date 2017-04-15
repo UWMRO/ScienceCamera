@@ -880,7 +880,7 @@ class FilterThread(threading.Thread):
         server_pipe.wait()
 
 if __name__ == "__main__":
-    ftp_server = None
+    filter_server = None
     try:
         #sys.stdout = Logger(sys.stdout)
         #sys.stderr = Logger(sys.stderr)
@@ -895,9 +895,11 @@ if __name__ == "__main__":
         ftp_server.daemon = True
         ftp_server.run()
 
-        time.sleep(10)
+        filter_server = FilterThread()
+        filter_server.daemon = True
+        filter_server.run()
         print("Server ready.")
         reactor.run()
     except KeyboardInterrupt:
-        ftp_server.on = False
+        filter_server.on = False
         sys.exit(0)
