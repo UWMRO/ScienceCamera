@@ -898,7 +898,7 @@ if __name__ == "__main__":
 
         filter_server = FilterThread()
         #filter_server.daemon = True
-        filter_server.run()
+        filter_server.start()
         print("Server ready.")
         reactor.run()
     except KeyboardInterrupt:
