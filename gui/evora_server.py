@@ -896,7 +896,7 @@ if __name__ == "__main__":
         ftp_server.run()
 
         print("Server ready.")
-
+        time.sleep(10)
         reactor.run()
     except KeyboardInterrupt:
         ftp_server.on = False
