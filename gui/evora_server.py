@@ -865,7 +865,7 @@ class FTPThread(threading.Thread):
         f.timeOut = None
         reactor.listenTCP(5504, f)
 
-class FilterThread(thread.Thread):
+class FilterThread(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.on = True # This handles whether the Filter Server is gets shutdown on or not
