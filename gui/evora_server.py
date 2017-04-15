@@ -893,8 +893,9 @@ if __name__ == "__main__":
         # Once the camera server starts start the ftp server
         ftp_server = FTPThread()
         ftp_server.daemon = True
-        reactor.callFromThread(ftp_server.run())
+        ftp_server.run()
 
+        time.sleep(10)
         print("Server ready.")
         reactor.run()
     except KeyboardInterrupt:
