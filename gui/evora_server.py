@@ -29,10 +29,19 @@ import MyLogger
 from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
 
+# ftp server imports
+from twisted.protocols.ftp import FTPFactory
+from twisted.protocols.ftp import FTPRealm
+from twisted.cred.portal import Portal
+from twisted.cred.checkers import AllowAnonymousAccess
+
+
 # For filter controls
 #from FilterMotor import filtermotor
 
 # port for evora is 5502
+# port for filter wheel is 5503
+# port for ftp server is 5504
 
 # Global Variables
 acquired = None
@@ -844,6 +853,16 @@ class Logger(object):
         string = d.strftime(" [%b %m, %y, %H:%M:%S] ")
         return string
 
+class FTPThread(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        p = Portal(FTPRealm("/home/mro/data/raw/"), [AllowAnonymousAccess()])
+        f = FTPFactory(p)
+        f.timeOut = None
+        reactor.listenTCP(5504, f)
+        
 
 if __name__ == "__main__":
     #sys.stdout = Logger(sys.stdout)
@@ -853,5 +872,11 @@ if __name__ == "__main__":
     #ep.startup()
     reactor.suggestThreadPoolSize(30)
     reactor.listenTCP(5502, EvoraClient())
+
+    # Once the camera server starts start the ftp server
+    ftp_server = FTPThread()
+    ftp_server.daemon = True
+    ftp_server.run()
+    
     reactor.run()
 

@@ -285,7 +285,7 @@ def getImagePath(type):
     Post: Returns the file path /data/forTCC/ plus an image name with a time stamp
           with accuracy of milliseconds.
     """
-    saveDirectory = "/home/mro/data/evora_server/raw/"
+    saveDirectory = "/home/mro/data/raw/"
     time = datetime.today()
     fileName = time.strftime("image_%Y%m%d_%H%M%S_%f.fits")
     if(type == 'real'):
