@@ -875,7 +875,7 @@ class FilterThread(threading.Thread):
         server_pipe.stdin.write("./FilterServer\n")
         while self.on:
             print("Filter Server on")
-            time.sleep(10)
+            time.sleep(1)
         server_pipe.stdin.close()
         server_pipe.wait()
         time.sleep(10)
@@ -903,5 +903,5 @@ if __name__ == "__main__":
         reactor.run()
     except KeyboardInterrupt:
         filter_server.on = False
-        filter_server.join()
+        filter_server.stop()
         sys.exit(0)
