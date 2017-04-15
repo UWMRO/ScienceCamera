@@ -897,10 +897,11 @@ if __name__ == "__main__":
         ftp_server.run()
 
         filter_server = FilterThread()
-        #filter_server.daemon = True
+        filter_server.daemon = True
         filter_server.run()
         print("Server ready.")
         reactor.run()
     except KeyboardInterrupt:
         filter_server.on = False
+        filter_server.join()
         sys.exit(0)
