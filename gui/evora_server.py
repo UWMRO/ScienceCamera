@@ -858,6 +858,7 @@ class FTPThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
+        print("Creating FTP Server")
         p = Portal(FTPRealm("/home/mro/data/raw/"), [AllowAnonymousAccess()])
         f = FTPFactory(p)
         f.timeOut = None
@@ -877,6 +878,8 @@ if __name__ == "__main__":
     ftp_server = FTPThread()
     ftp_server.daemon = True
     ftp_server.run()
+
+    print("Server ready."
     
     reactor.run()
 
