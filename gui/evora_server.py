@@ -879,7 +879,7 @@ if __name__ == "__main__":
     ftp_server.daemon = True
     ftp_server.run()
 
-    print("Server ready."
+    print("Server ready.")
     
     reactor.run()
 
