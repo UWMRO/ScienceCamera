@@ -878,6 +878,7 @@ class FilterThread(threading.Thread):
             time.sleep(10)
         server_pipe.stdin.close()
         server_pipe.wait()
+        time.sleep(10)
 
 if __name__ == "__main__":
     filter_server = None
@@ -896,7 +897,7 @@ if __name__ == "__main__":
         ftp_server.run()
 
         filter_server = FilterThread()
-        filter_server.daemon = True
+        #filter_server.daemon = True
         filter_server.run()
         print("Server ready.")
         reactor.run()
