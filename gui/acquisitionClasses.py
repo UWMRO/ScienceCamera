@@ -370,6 +370,7 @@ class Exposure(wx.Panel):
             logger.debug(path + name)
 
             savedImage = self.copyImage2(path, name)
+            print("Saved Image is:", savedImage)
             
             # get data
             #data = als.getData(path+name)
@@ -662,12 +663,22 @@ class Exposure(wx.Panel):
               current image name.  In the case of series images this current image name will be iterated.
               Returns nothing.
         """
-        #fileList = FTPFileListProtocol()
+        fileList = FTPFileListProtocol()
         fullImagePath = self.saveDir+self.currentImage+".fits"
+        print("Image to grab SaveImName:", serverImName)
+        self.ftp.list(".", fileList).addCallbacks(self.printFiles, self.ftpFail, callbackArgs=(fileList,))
         self.ftp.retrieveFile(serverImName, als.FileWriter(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
         return fullImagePath
         #shutil.copyfile(path + serverImName, self.saveDir + self.currentImage + ".fits")
-        
+
+    def printFiles(self, results, fileList):
+        #print("MESSAGE:", results)
+        for file in fileList.files:
+            print('    %s: %d bytes, %s' \
+              % (file['filename'], file['size'], file['date']))
+        print('Total: %d files' % (len(fileList.files)))
+
+    
     def ftpDone(self, msg):
         print("DONE Retrieving:", msg)
         
