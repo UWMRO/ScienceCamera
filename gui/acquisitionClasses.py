@@ -376,10 +376,14 @@ class Exposure(wx.Panel):
 
             logger.debug(path + name)
 
+            # log the status
+            self.logFunction = self.logExposure
+            logString = als.getLogString("expose " + msg + "," + self.currentImage, 'post')
+
             savedImage, d = self.copyImage2(path, name, 'single')
             print("Saved Image is:", savedImage)
 
-            d.addCallback(self.display, savedImage=savedImage, msg=msg, type='single')
+            d.addCallback(self.display, savedImage=savedImage, logString=logString)
             
             # get data
             #data = als.getData(path+name)
@@ -396,12 +400,12 @@ class Exposure(wx.Panel):
             # log the status
             #self.logFunction = self.logExposure
             #logString = als.getLogString("expose " + msg + "," + self.currentImage, 'post')
-            #self.log(self.logFunction, logString)
+
             
         else:
             logger.info("Successfully Aborted")
 
-    def display(self, results, savedImage, msg, type):
+    def display(self, results, savedImage, logString):
         print("displaying saved image")
         data = als.getData(savedImage)
         stats_list = als.calcStats(data)
@@ -412,11 +416,7 @@ class Exposure(wx.Panel):
 
         # copy file to different folder
         #self.copyImage(path, name)
-
-        # log the status
-        if type != 'real':
-            self.logFunction = self.logExposure
-            logString = als.getLogString("expose " + msg + "," + self.currentImage, 'post')
+        if logString is not None:
             self.log(self.logFunction, logString)
                 
     def safePlot(self, data, stats_list):
@@ -467,7 +467,7 @@ class Exposure(wx.Panel):
             name = path[-1]
             path = "/".join(path[:-1]) + "/"
             fullImPath, d = self.copyImage2(path, name, 'real')
-            d.addCallback(self.display, savedImage=fullImPath, msg=msg, type='real') 
+            d.addCallback(self.display, savedImage=fullImPath, logString=None) 
             
             #data = als.getData(path)
             #stats_list = als.calcStats(data)
@@ -548,17 +548,16 @@ class Exposure(wx.Panel):
                 if imNum > 1: 
                     self.iterateImageCounter(self.currentImage)
 
-            savedImage, d = self.copyImage2(directory, name, 'series')
-            print("Saved Image is:", savedImage)
-            d.addCallback(self.display, savedImage=savedImage, msg=msg, type='series')
-
             #self.copyImage(directory, name)
 
             self.logFunction = self.logExposure
             dataMsg = ",".join(msg)
             logString = als.getLogString("seriesSent " + dataMsg + "," + self.currentImage, 'post')
-            self.log(self.logFunction, logString)
+            #self.log(self.logFunction, logString)
 
+            savedImage, d = self.copyImage2(directory, name, 'series')
+            print("Saved Image is:", savedImage)
+            d.addCallback(self.display, savedImage=savedImage, logString=logString)
 
 
             if self.seriesImageNumber is not None:
