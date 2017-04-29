@@ -16,6 +16,8 @@ import wx  # get wxPython
 from astropy.io import fits
 import numpy as np
 
+from twisted.internet import protocol
+
 __author__ = "Tristan J. Hillis"
 
 """
@@ -28,6 +30,15 @@ File Description: This file contains a set of functions that the GUI or server c
 
 
 ## Global Variables
+HEIMDALL_IP = "192.168.1.10"
+GTCC_IP = "192.168.1.11"
+FILTER_PI_IP = "192.168.1.30"
+
+CAMERA_PORT = 5502
+FTP_PORT = 5504
+FILTER_PORT = 5503
+
+
 
 # Deprecated
 import MyLogger
@@ -285,7 +296,7 @@ def getImagePath(type):
     Post: Returns the file path /data/forTCC/ plus an image name with a time stamp
           with accuracy of milliseconds.
     """
-    saveDirectory = "/home/mro/data/raw/"
+    saveDirectory = "/home/mro/storage/evora_data/"
     time = datetime.today()
     fileName = time.strftime("image_%Y%m%d_%H%M%S_%f.fits")
     if(type == 'real'):
@@ -361,6 +372,23 @@ class Logger(object):
         string = d.strftime("[%b %m, %y, %H:%M:%S]")
         return string
 
+class FileWriter(protocol.Protocol):
+
+    def __init__(self, directory, fileName):
+        """
+        Pass full directory in for the file to be saved with just the fileName
+        """
+        self.f = open(directory+fileName, 'wb')
+
+    def dataReceived(self, data):
+        print("Byte size", len(data))
+        self.f.write(data)
+
+    def connectionLost(self, reason):
+        print("Writing closed and done")
+        self.f.close()
+
+    
 # Deprecated code
 class SampleTimer(object):
     """

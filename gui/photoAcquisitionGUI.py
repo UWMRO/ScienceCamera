@@ -26,6 +26,11 @@ from twisted.internet import defer, protocol, reactor, threads
 from twisted.protocols import basic
 from twisted.python import log
 
+# FTP Client Things
+from twisted.protocols.ftp import FTPFactory
+from twisted.protocols.ftp import FTPFileListProtocol
+from twisted.protocols.ftp import FTPClient
+
 # GUI element imports
 import acquisitionClasses as ac
 import AddLinearSpacer as als
@@ -60,6 +65,7 @@ class Evora(wx.Frame):
         wx.Frame.__init__(self, None, -1, "Evora Acquisition GUI", size=(600, 450))
 
         self.protocol = None # client protocol
+        self.ftp = None
         self.connection = None
         self.connected = False  # keeps track of whether the gui is connect to camera
         self.active_threads = {}  # dict of the active threads
@@ -85,10 +91,10 @@ class Evora(wx.Frame):
         notebook.AddPage(page3, "Log")
 
         # make instances of the tabs to access variables within them
-        self.takeImage = notebook.GetPage(0)
+        self.takeImage = notebook.GetPage(0) # Gives access to TakeImage class
         #self.otherParams = notebook.GetPage(1)
-        self.scripting = notebook.GetPage(1)
-        self.log = notebook.GetPage(2)
+        self.scripting = notebook.GetPage(1) # Gives access to Scripting class
+        self.log = notebook.GetPage(2) # Gives access to Log class
 
         # Widgets
 
@@ -297,7 +303,8 @@ class Evora(wx.Frame):
         #reactor.run()
         #self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
         # add filter connection
-        self.connection = port_dict['5502'] = reactor.connectTCP('localhost', 5502, EvoraClient(app.frame1))
+        self.connection = port_dict[str(als.CAMERA_PORT)] = reactor.connectTCP(als.HEIMDALL_IP, als.CAMERA_PORT, EvoraClient(app.frame1))
+        prot_dict[str(als.FTP_PORT)] = reactor.connectTCP(als.HEIMDALL_IP, als.FTP_PORT, FileClientFactory(app.frame1))
 
     def onConnectCallback(self, msg):
         """
@@ -456,7 +463,7 @@ class Evora(wx.Frame):
         """        
         # send command on filter setup
         logger.info("Connect pressed in Filter menu")
-        port_dict['5503'] = reactor.connectTCP('192.168.1.30', 5503, FilterClient(app.frame1))
+        port_dict[str(als.FILTER_PORT)] = reactor.connectTCP(als.FILTER_PI_IP, als.FILTER_PORT, FilterClient(app.frame1))
 
         # lock the connect button up and unlock the disconnect
         filterSub = self.menuBar.GetMenu(2)  # second index
@@ -1119,6 +1126,40 @@ class FilterClient(protocol.ClientFactory):
 
         logger.warning("connection failed on port 5503")
 
+class FileClient(FTPClient, objecct):
+
+    def __init__(self, factory, username, password, passive):
+        super(FileClient, self).__init__(username=username, password=password, passive=passive)
+        # Set to not be passive ftp protocol, ie 1.
+        self.factory = factory
+
+    def connectionMade(self):
+        # Pass the protocol to the gui when connection is made to FTP Sever
+        gui = self.factory.gui
+        # Main wx.Frame
+        gui.ftp = self
+        gui.takeImage.exposureInstance.ftp = self
+        
+        
+        
+class FileClientFactory(protocol.ClientFactory):
+    def __init__(self, gui):
+        self.gui = gui
+        self.protocol = None
+
+    def buildProtocol(self, addr):
+        # The username and passwd are meaningless but needed
+        user = 'anonymous'
+        passwd = 'mro@uw.edu' # again this is meaningless
+        self.protocol = FileClient(self, username=user, password=passwd, passive=1)
+        return self.protocol
+    
+    def clientConnectionLost(self, transport, reason):
+        print("Connection to FTP server lost normally:", reason)
+
+    def clientConnectionLost(self, transport, reason):
+        print("Connection failed:", reason)
+        
 if __name__ == "__main__":
     ## Deprecated
     #log.startLogging(sys.stdout)

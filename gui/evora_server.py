@@ -859,11 +859,11 @@ class FTPThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        print("Creating FTP Server")
+        print("Creating FTP Server to run on port 5504")
         p = Portal(FTPRealm("/home/mro/data/raw/"), [AllowAnonymousAccess()])
         f = FTPFactory(p)
         f.timeOut = None
-        reactor.listenTCP(5504, f)
+        reactor.listenTCP(als.FTP_PORT, f)
 
 class FilterThread(threading.Thread):
     def __init__(self):
@@ -889,7 +889,7 @@ if __name__ == "__main__":
         #ep = Evora()
         #ep.startup()
         reactor.suggestThreadPoolSize(30)
-        reactor.listenTCP(5502, EvoraClient())
+        reactor.listenTCP(als.CAMERA_PORT, EvoraClient())
 
         # Once the camera server starts start the ftp server
         ftp_server = FTPThread()

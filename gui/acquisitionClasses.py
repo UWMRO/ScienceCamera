@@ -10,6 +10,7 @@ import threading
 import shutil
 import os
 import wx  # get wxPython
+from twisted.protocols.ftp import FTPFileListProtocol
 
 import numpy as np  # get NumPy
 
@@ -42,7 +43,8 @@ class Exposure(wx.Panel):
         """
         wx.Panel.__init__(self, parent)
 
-        self.protocol = None  # gives access to the server protocol
+        self.protocol = None  # gives access to the Evora client protocol
+        self.ftp = None # Gives access to FTP client protocol
         self.parent = parent  # gives access to the higher classes
         self.startTimer = 0  # keeps track of the timer count in ints
         self.endTimer = 0  # keeps track of the max timer count as an int
@@ -367,8 +369,11 @@ class Exposure(wx.Panel):
 
             logger.debug(path + name)
 
+            savedImage = self.copyImage2(path, name)
+            
             # get data
-            data = als.getData(path+name)
+            #data = als.getData(path+name)
+            data = als.getData(savedImage)
             stats_list = als.calcStats(data)
 
             # change the gui with thread safety
@@ -376,7 +381,7 @@ class Exposure(wx.Panel):
             wx.CallAfter(self.safePlot, data, stats_list)
 
             # copy file to different folder
-            self.copyImage(path, name)
+            #self.copyImage(path, name)
 
             # log the status
             self.logFunction = self.logExposure
@@ -649,7 +654,27 @@ class Exposure(wx.Panel):
         logger.info("entered log")
         logfunc(logmsg)
 
-
+    def copyImage2(self, path, serverImName):
+        """
+        Pre: Takes in the diretory path to the original image file name as "path" as well as the 
+             name of the orignal image as serverImName as strings.
+        Post: The orignally created image is copied into a hard coded directory with the global
+              current image name.  In the case of series images this current image name will be iterated.
+              Returns nothing.
+        """
+        #fileList = FTPFileListProtocol()
+        fullImagePath = self.saveDir+self.currentImage+".fits"
+        self.ftp.retrieveFile(serverImName, als.FileWriter(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
+        return fullImagePath
+        #shutil.copyfile(path + serverImName, self.saveDir + self.currentImage + ".fits")
+        
+    def ftpDone(self, msg):
+        print("DONE Retrieving:", msg)
+        
+    def ftpFail(self, error):
+        print("Failed retrieving file. Error was:")
+        print(error)
+        
     def copyImage(self, path, serverImName):
         """
         Pre: Takes in the diretory path to the original image file name as "path" as well as the 
