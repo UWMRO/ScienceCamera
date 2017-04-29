@@ -529,14 +529,12 @@ class Exposure(wx.Panel):
         if(imNum <= int(self.seriesImageNumber)):
             logger.info("Entered to display series image")
 
-
-
             # get stats
-            data = als.getData(path)
-            stats_list = als.calcStats(data)
+            #data = als.getData(path)
+            #stats_list = als.calcStats(data)
             
             # change the gui with thread safety
-            wx.CallAfter(self.safePlot, data, stats_list)
+            #wx.CallAfter(self.safePlot, data, stats_list)
             
             # copy image over (counter looks like "_XXX.fits")
             logger.debug("current image name: " + self.currentImage)
@@ -550,7 +548,11 @@ class Exposure(wx.Panel):
                 if imNum > 1: 
                     self.iterateImageCounter(self.currentImage)
 
-            self.copyImage(directory, name)
+            savedImage, d = self.copyImage2(directory, name, 'series')
+            print("Saved Image is:", savedImage)
+            d.addCallback(self.display, savedImage=savedImage, msg=msg, type='series')
+
+            #self.copyImage(directory, name)
 
             self.logFunction = self.logExposure
             dataMsg = ",".join(msg)
