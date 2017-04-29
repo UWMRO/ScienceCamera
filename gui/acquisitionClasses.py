@@ -379,7 +379,7 @@ class Exposure(wx.Panel):
             savedImage, d = self.copyImage2(path, name, 'single')
             print("Saved Image is:", savedImage)
 
-            d.addCallback(self.display, savedImage=savedImage, msg=msg)
+            d.addCallback(self.display, savedImage=savedImage, msg=msg, type='single')
             
             # get data
             #data = als.getData(path+name)
@@ -401,7 +401,7 @@ class Exposure(wx.Panel):
         else:
             logger.info("Successfully Aborted")
 
-    def display(self, results, savedImage, msg):
+    def display(self, results, savedImage, msg, type):
         print("displaying saved image")
         data = als.getData(savedImage)
         stats_list = als.calcStats(data)
@@ -414,9 +414,10 @@ class Exposure(wx.Panel):
         #self.copyImage(path, name)
 
         # log the status
-        self.logFunction = self.logExposure
-        logString = als.getLogString("expose " + msg + "," + self.currentImage, 'post')
-        self.log(self.logFunction, logString)
+        if type != 'real':
+            self.logFunction = self.logExposure
+            logString = als.getLogString("expose " + msg + "," + self.currentImage, 'post')
+            self.log(self.logFunction, logString)
                 
     def safePlot(self, data, stats_list):
         """
@@ -466,7 +467,7 @@ class Exposure(wx.Panel):
             name = path[-1]
             path = "/".join(path[:-1]) + "/"
             fullImPath, d = self.copyImage2(path, name, 'real')
-            d.addCallback(self.display, savedImage=fullImPath, msg=msg) 
+            d.addCallback(self.display, savedImage=fullImPath, msg=msg, typy='real') 
             
             #data = als.getData(path)
             #stats_list = als.calcStats(data)
