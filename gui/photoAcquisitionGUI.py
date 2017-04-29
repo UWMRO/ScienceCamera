@@ -1126,7 +1126,7 @@ class FilterClient(protocol.ClientFactory):
 
         logger.warning("connection failed on port 5503")
 
-class FileClient(FTPClient, objecct):
+class FileClient(FTPClient, object):
 
     def __init__(self, factory, username, password, passive):
         super(FileClient, self).__init__(username=username, password=password, passive=passive)
@@ -1157,7 +1157,7 @@ class FileClientFactory(protocol.ClientFactory):
     def clientConnectionLost(self, transport, reason):
         print("Connection to FTP server lost normally:", reason)
 
-    def clientConnectionLost(self, transport, reason):
+    def clientConnectionFailed(self, transport, reason):
         print("Connection failed:", reason)
         
 if __name__ == "__main__":
