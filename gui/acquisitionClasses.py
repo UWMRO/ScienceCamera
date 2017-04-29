@@ -464,7 +464,7 @@ class Exposure(wx.Panel):
             # get stats
             path = path.split("/")
             name = path[-1]
-            path = path[:-1] + "/"
+            path = "/".join(path[:-1]) + "/"
             fullImPath, d = self.copyImage2(path, name, 'real')
             d.addCallback(self.display, savedImage=fullImPath, msg=msg) 
             
