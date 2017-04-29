@@ -226,7 +226,7 @@ class Exposure(wx.Panel):
                 self.log(self.logFunction, logString)
 
                 # change ftp server to the tmp folder
-                self.ftp.cwd("/tmp/").addCallback(self.ftpCWD)
+                self.ftp.cwd("tmp/").addCallback(self.ftpCWD)
                 
                 # send command to start realtime exposure
                 d = self.protocol.sendCommand(command) 
@@ -487,7 +487,7 @@ class Exposure(wx.Panel):
         self.protocol.removeDeferred("realSent")  # Remove floating deffered object
 
         # change the ftp server directory to default
-        self.ftp.cwd("/home/mro/storage/evora_data/").addCallback(self.ftpCWD)
+        self.ftp.cdup().addCallback(self.ftpCWD)
         
         self.logFunction = self.logExposure
         logString = als.getLogString("real " + msg, 'post')
@@ -707,9 +707,9 @@ class Exposure(wx.Panel):
             d = self.ftp.retrieveFile(serverImName, als.FileWriter(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
             return fullImagePath, d
         else:
-            fullImagePath = path+serverImName
+            fullImagePath = "/tmp/"+serverImName
             print("Real time image to grab:", serverImName)
-            d = self.ftp.retrieveFile(serverImName, als.FileWriter(path, serverImname), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
+            d = self.ftp.retrieveFile(serverImName, als.FileWriter("/tmp/", serverImName), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
             return fullImagePath, d
         #shutil.copyfile(path + serverImName, self.saveDir + self.currentImage + ".fits")
 
