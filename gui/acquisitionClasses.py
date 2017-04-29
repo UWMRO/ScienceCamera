@@ -225,7 +225,11 @@ class Exposure(wx.Panel):
                 logString = als.getLogString(command, 'pre')
                 self.log(self.logFunction, logString)
 
-                d = self.protocol.sendCommand(command)
+                # change ftp server to the tmp folder
+                self.ftp.cwd("/tmp/").addCallback(self.ftpCWD)
+                
+                # send command to start realtime exposure
+                d = self.protocol.sendCommand(command) 
                 d.addCallback(self.realCallback)  # this will clear the image path queue
 
                 # start timer
@@ -280,6 +284,9 @@ class Exposure(wx.Panel):
                         dialog.ShowModal()
                         dialog.Destroy()
 
+    def ftpCWD(self, msg):
+        print("Changed FTP server directory:", msg)
+                        
     def exposeTimer(self, time):
         """
         This function, given some time, will start the wxPython Timer object and will set it to call
@@ -369,7 +376,7 @@ class Exposure(wx.Panel):
 
             logger.debug(path + name)
 
-            savedImage, d = self.copyImage2(path, name)
+            savedImage, d = self.copyImage2(path, name, 'single')
             print("Saved Image is:", savedImage)
 
             d.addCallback(self.display, savedImage=savedImage, msg=msg)
@@ -395,6 +402,7 @@ class Exposure(wx.Panel):
             logger.info("Successfully Aborted")
 
     def display(self, results, savedImage, msg):
+        print("displaying saved image")
         data = als.getData(savedImage)
         stats_list = als.calcStats(data)
 
@@ -452,31 +460,41 @@ class Exposure(wx.Panel):
             if(self.timer.IsRunning()):
                 self.timer.Stop()
             self.parent.parent.parent.expGauge.SetValue(self.endTimer)
-
+            
             # get stats
-            data = als.getData(path)
-            stats_list = als.calcStats(data)
+            path = path.split("/")
+            name = path[-1]
+            path = path[:-1] + "/"
+            fullImPath, d = self.copyImage2(path, name, 'real')
+            d.addCallback(self.display, savedImage=fullImPath, msg=msg) 
+            
+            #data = als.getData(path)
+            #stats_list = als.calcStats(data)
             
             # change the gui with thread safety
-            wx.CallAfter(self.safePlot, data, stats_list)
+            #wx.CallAfter(self.safePlot, data, stats_list)
 
             self.parent.parent.parent.expGauge.SetValue(0)
             self.startTimer = 0
 
             self.exposeTimer(self.timeToSend)
-            #thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
+            thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
             
     def realCallback(self, msg):
         """
         Called when the camera has been aborted during a real time series exposure.
         """
         self.protocol.removeDeferred("realSent")  # Remove floating deffered object
+
+        # change the ftp server directory to default
+        self.ftp.cwd("/home/mro/storage/evora_data/").addCallback(self.ftpCWD)
         
         self.logFunction = self.logExposure
         logString = als.getLogString("real " + msg, 'post')
         self.log(self.logFunction, logString)
 
         logger.debug("Completed real time series with exit: " + msg)
+
 
     def displaySeriesImage_thread(self, msg):
         """
@@ -673,7 +691,7 @@ class Exposure(wx.Panel):
         logger.info("entered log")
         logfunc(logmsg)
 
-    def copyImage2(self, path, serverImName):
+    def copyImage2(self, path, serverImName, type):
         """
         Pre: Takes in the diretory path to the original image file name as "path" as well as the 
              name of the orignal image as serverImName as strings.
@@ -682,11 +700,17 @@ class Exposure(wx.Panel):
               Returns nothing.
         """
         #fileList = FTPFileListProtocol()
-        fullImagePath = self.saveDir+self.currentImage+".fits"
-        print("Image to grab SaveImName:", serverImName)
-        #self.ftp.list(".", fileList).addCallbacks(self.printFiles, self.ftpFail, callbackArgs=(fileList,))
-        d = self.ftp.retrieveFile(serverImName, als.FileWriter(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
-        return fullImagePath, d
+        if type != 'real':
+            fullImagePath = self.saveDir+self.currentImage+".fits"
+            print("Image to grab SaveImName:", serverImName)
+            #self.ftp.list(".", fileList).addCallbacks(self.printFiles, self.ftpFail, callbackArgs=(fileList,))
+            d = self.ftp.retrieveFile(serverImName, als.FileWriter(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
+            return fullImagePath, d
+        else:
+            fullImagePath = path+serverImName
+            print("Real time image to grab:", serverImName)
+            d = self.ftp.retrieveFile(serverImName, als.FileWriter(path, serverImname), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
+            return fullImagePath, d
         #shutil.copyfile(path + serverImName, self.saveDir + self.currentImage + ".fits")
 
     def printFiles(self, results, fileList):

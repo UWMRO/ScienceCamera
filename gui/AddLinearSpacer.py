@@ -381,7 +381,7 @@ class FileWriter(protocol.Protocol):
         self.f = open(directory+fileName, 'wb')
 
     def dataReceived(self, data):
-        print("Byte size", len(data))
+        #print("Byte size", len(data))
         self.f.write(data)
 
     def connectionLost(self, reason):
