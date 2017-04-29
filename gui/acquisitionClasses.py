@@ -369,29 +369,47 @@ class Exposure(wx.Panel):
 
             logger.debug(path + name)
 
-            savedImage = self.copyImage2(path, name)
+            savedImage, d = self.copyImage2(path, name)
             print("Saved Image is:", savedImage)
+
+            d.addCallback(self.display, savedImage=savedImage, msg=msg)
             
             # get data
             #data = als.getData(path+name)
-            data = als.getData(savedImage)
-            stats_list = als.calcStats(data)
+            #data = als.getData(savedImage)
+            #stats_list = als.calcStats(data)
 
             # change the gui with thread safety
             # plots the image
-            wx.CallAfter(self.safePlot, data, stats_list)
+            #wx.CallAfter(self.safePlot, data, stats_list)
 
             # copy file to different folder
             #self.copyImage(path, name)
 
             # log the status
-            self.logFunction = self.logExposure
-            logString = als.getLogString("expose " + msg + "," + self.currentImage, 'post')
-            self.log(self.logFunction, logString)
+            #self.logFunction = self.logExposure
+            #logString = als.getLogString("expose " + msg + "," + self.currentImage, 'post')
+            #self.log(self.logFunction, logString)
             
         else:
             logger.info("Successfully Aborted")
 
+    def display(self, results, savedImage, msg):
+        data = als.getData(savedImage)
+        stats_list = als.calcStats(data)
+
+        # change the gui with thread safety
+        # plots the image
+        wx.CallAfter(self.safePlot, data, stats_list)
+
+        # copy file to different folder
+        #self.copyImage(path, name)
+
+        # log the status
+        self.logFunction = self.logExposure
+        logString = als.getLogString("expose " + msg + "," + self.currentImage, 'post')
+        self.log(self.logFunction, logString)
+                
     def safePlot(self, data, stats_list):
         """
         Used in conjunction with wx.CallAfter to update the embedded Matplotlib in the image window.
@@ -663,12 +681,12 @@ class Exposure(wx.Panel):
               current image name.  In the case of series images this current image name will be iterated.
               Returns nothing.
         """
-        fileList = FTPFileListProtocol()
+        #fileList = FTPFileListProtocol()
         fullImagePath = self.saveDir+self.currentImage+".fits"
         print("Image to grab SaveImName:", serverImName)
-        self.ftp.list(".", fileList).addCallbacks(self.printFiles, self.ftpFail, callbackArgs=(fileList,))
-        self.ftp.retrieveFile(serverImName, als.FileWriter(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
-        return fullImagePath
+        #self.ftp.list(".", fileList).addCallbacks(self.printFiles, self.ftpFail, callbackArgs=(fileList,))
+        d = self.ftp.retrieveFile(serverImName, als.FileWriter(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
+        return fullImagePath, d
         #shutil.copyfile(path + serverImName, self.saveDir + self.currentImage + ".fits")
 
     def printFiles(self, results, fileList):
