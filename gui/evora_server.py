@@ -860,7 +860,7 @@ class FTPThread(threading.Thread):
 
     def run(self):
         print("Creating FTP Server to run on port 5504")
-        p = Portal(FTPRealm("/home/mro/data/raw/"), [AllowAnonymousAccess()])
+        p = Portal(FTPRealm("/home/mro/storage/evora_data/"), [AllowAnonymousAccess()])
         f = FTPFactory(p)
         f.timeOut = None
         reactor.listenTCP(als.FTP_PORT, f)
