@@ -585,6 +585,7 @@ class Evora(object):
             # choose the largest negative delLogfileTime as the right logfile
             # that is, the closest negative number to zero
             if delTime > besttime and delTime < 0:
+                print("DIFFERENCE IN TIME:", delTime)
                 besttime = delTime
                 bestindex = i
         # whew! finally got the logfile we want
