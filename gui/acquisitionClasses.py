@@ -11,6 +11,7 @@ import shutil
 import os
 import wx  # get wxPython
 from twisted.protocols.ftp import FTPFileListProtocol
+from twisted.internet import reactor
 
 import numpy as np  # get NumPy
 
@@ -706,7 +707,9 @@ class Exposure(wx.Panel):
             fullImagePath = self.saveDir+self.currentImage+".fits"
             print("Image to grab SaveImName:", serverImName)
             #self.ftp.list(".", fileList).addCallbacks(self.printFiles, self.ftpFail, callbackArgs=(fileList,))
-            d = self.ftp.retrieveFile(serverImName, als.FileBuffer(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
+            d = self.ftp.retrieveFile(serverImName, thread.start_new_thread(als.FileBuffer, args=(self.saveDir, self.currentImage+".fits")), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
+            #d = reactor.callFromThread(self.ftp.retrieveFile, serverImName, als.FileBuffer(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
+            
             return fullImagePath, d
         else:
             fullImagePath = "/tmp/"+serverImName
