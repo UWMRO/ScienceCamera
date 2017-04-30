@@ -12,6 +12,8 @@ from __future__ import absolute_import
 __author__ = "Tristan J. Hillis"
 
 ## Imports
+import glob
+import os
 import subprocess
 import sys
 import time
@@ -493,9 +495,9 @@ class Evora(object):
 
         return header
 
-    def getHeader2(self, attributes):
+    def getHeader_2(self, attributes, tcc):
         """
-        Pre: Takes in a list of attributes: [imType, binning, itime]
+        Pre: Takes in a list of attributes: [imType, binning, itime], tcc is ether 'gtcc' or 'heimdall'
         Post: Returns an AstroPy header object to be used for writing to.
         """
         imType, binning, itime, filter = attributes[0], attributes[1], attributes[2], attributes[3]
@@ -536,9 +538,92 @@ class Evora(object):
         # JD
         # HJD
         # LJD
+        if tcc == "heimdall":
+            pass
+        else: # gtcc
+            print("ACCESSING LOG FILES")
+            LogfileList = glob.glob("/home/mro/mnt/gtcc"+'/????-??-??T??:??:??')
+            print("FOUND %d LOGS" % len(LogfileList))
+            ObsTime = time.strptime(dateObs+' UTC', "%Y-%m-%dT%H:%M:%S %Z")
+            LogfileName = self.ChooseLogfile(LogfileList, ObsTime)
+            print("LOG FILE NAME:", LogfileName)
+            ra, dec, epoch, lst, ha, za = self.ParseLogfile(LogfileName, ObsTime)
+            print(ra,dec,epoch,lst,ha,za)
+
+            header.append(card=("RA", ra, "Right Ascension"))
+            header.append(card=("DEC", dec, "Declination"))
+            header.append(card=("EPOCH", epoch, "Epoch for RA and Dec (years)"))
+            header.append(card=("ST", lst, "local sidereal time (hours)"))
+            header.append(card=("HA", ha, "Hour Angle"))
+            header.append(card=("ZD", za, "Zenith Angle"))
         
         return header
 
+    def ChooseLogfile(self, LogfileList, ObsTime):
+        """
+        Code provided by add_headers v4.1 written by Oliver Frasier
+
+        Choose the right logfile for the time of the observation,
+        The logfiles are named according to their creation date, but they don't
+        necessarilly come though in order. We'll return the name of the last
+        one made before the exposure.
+        """
+        nlogs = len(LogfileList)
+        ObsTime = time.mktime(ObsTime) # convert to float representation
+        besttime = -ObsTime # set a start time way in the past
+        bestindex = 0
+        for i in range(nlogs):
+            # make a time from the logfile name
+            LogfileTime = time.mktime(
+                time.strptime(                     
+                  os.path.basename( LogfileList[i] )
+                  +' UTC', "%Y-%m-%dT%H:%M:%S %Z" # this is the format
+                )
+              )
+            # what's the delta between this and the observation
+            delTime = LogfileTime - ObsTime
+            # choose the largest negative delLogfileTime as the right logfile
+            # that is, the closest negative number to zero
+            if delTime > besttime and delTime < 0:
+                besttime = delTime
+                bestindex = i
+        # whew! finally got the logfile we want
+        return LogfileList[bestindex]
+
+    def ParseLogfile(self, LogfileName, ObsTime):
+        """
+        Code provided by add_headers v4.1 written by Oliver Frasier
+
+        Find the line in the logfile closest in time to the observation,
+        parse it, and return it.
+        Logfile format is:
+
+        UTDate&Time RA Dec Epoch LST Hour-angle Zenith-angle fslide:position
+
+        We treat everything as a string.
+        """
+        Log = open(LogfileName)
+        # now we need to find the smallest time increment between
+        # Obstime and the time recorded on each line of the logfile
+        # we'll read each line in, then compare
+        data = Log.readline().split() 
+        Time = time.strptime(data[0]+' UTC', "%Y-%m-%dT%H:%M:%S %Z")
+        delTime = abs( time.mktime(Time) - time.mktime(ObsTime) )
+        # move through and compare each line of the logfile
+        for newline in Log:    
+            newdata = newline.split()
+            newTime = time.strptime( newdata[0]+' UTC', "%Y-%m-%dT%H:%M:%S %Z" )
+            newdelTime = abs( time.mktime(newTime) - time.mktime(ObsTime) )
+            # this newdelTime should be smaller than delTime
+            # since we should be moving closer to the right line.
+            # if it's not, then we've gone too far
+            if newdelTime > delTime:
+                break
+            delTime = newdelTime
+            data = newdata
+        #filter = data[7].rsplit(':',1)[1] # pull out just the filter number
+        return data[1], data[2], data[3], data[4], data[5], data[6]#, filter
+    
     
     def expose(self, imType=None, expnum=None, itime=2, binning=1, filter="", readTime=3):
         """
@@ -581,7 +666,8 @@ class Evora(object):
         logger.debug("Adjusted Exposure Time: " + str([results, expTime, accTime, kTime]))
 
         attributes = [imType, binning, itime, filter]
-        header = self.getHeader(attributes)
+        #header = self.getHeader(attributes)
+        header = self.getHeader_2(attributes, 'gtcc')
 
         logger.debug('StartAcquisition: ' + str(andor.StartAcquisition()))
 

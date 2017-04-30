@@ -380,7 +380,7 @@ class Exposure(wx.Panel):
             self.logFunction = self.logExposure
             logString = als.getLogString("expose " + msg + "," + self.currentImage, 'post')
 
-            savedImage, d = self.copyImage2(path, name, 'single')
+            savedImage, d = self.transferImage(path, name, 'single')
             print("Saved Image is:", savedImage)
 
             d.addCallback(self.display, savedImage=savedImage, logString=logString)
@@ -466,7 +466,7 @@ class Exposure(wx.Panel):
             path = path.split("/")
             name = path[-1]
             path = "/".join(path[:-1]) + "/"
-            fullImPath, d = self.copyImage2(path, name, 'real')
+            fullImPath, d = self.transferImage(path, name, 'real')
             d.addCallback(self.display, savedImage=fullImPath, logString=None) 
             
             #data = als.getData(path)
@@ -555,7 +555,7 @@ class Exposure(wx.Panel):
             logString = als.getLogString("seriesSent " + dataMsg + "," + self.currentImage, 'post')
             #self.log(self.logFunction, logString)
 
-            savedImage, d = self.copyImage2(directory, name, 'series')
+            savedImage, d = self.transferImage(directory, name, 'series')
             print("Saved Image is:", savedImage)
             d.addCallback(self.display, savedImage=savedImage, logString=logString)
 
@@ -693,10 +693,10 @@ class Exposure(wx.Panel):
         logger.info("entered log")
         logfunc(logmsg)
 
-    def copyImage2(self, path, serverImName, type):
+    def transferImage(self, path, serverImName, type):
         """
         Pre: Takes in the diretory path to the original image file name as "path" as well as the 
-             name of the orignal image as serverImName as strings.
+             name of the orignal image as serverImName as strings.  type is passed in as the exposure type.
         Post: The orignally created image is copied into a hard coded directory with the global
               current image name.  In the case of series images this current image name will be iterated.
               Returns nothing.
@@ -729,17 +729,19 @@ class Exposure(wx.Panel):
     def ftpFail(self, error):
         print("Failed retrieving file. Error was:")
         print(error)
-        
+
+    """
+    Deprecated
     def copyImage(self, path, serverImName):
-        """
+        
         Pre: Takes in the diretory path to the original image file name as "path" as well as the 
              name of the orignal image as serverImName as strings.
         Post: The orignally created image is copied into a hard coded directory with the global
               current image name.  In the case of series images this current image name will be iterated.
               Returns nothing.
-        """
+        
         shutil.copyfile(path + serverImName, self.saveDir + self.currentImage + ".fits")
-
+    """
     def checkForImageCounter(self, name):
         """
         Note: This method is only ever entered if there actually is a name as well as there will never
