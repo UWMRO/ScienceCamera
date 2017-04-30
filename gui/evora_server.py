@@ -527,12 +527,12 @@ class Evora(object):
         header.append(card=("READTIME", readTime, "Pixel readout time"))
 
         # NEEDED header keywords
-        # RA / Right Ascension
-        # DEC / Declination
-        # EPOCH / Epoch for RA and Dec (years)
-        # ST / local sidereal time (hours)
-        # HA / Hour Angle
-        # ZD / Zenith Angle
+        #Done# RA / Right Ascension
+        #Done# DEC / Declination
+        #Done# EPOCH / Epoch for RA and Dec (years)
+        #Done# ST / local sidereal time (hours)
+        #Done# HA / Hour Angle
+        #Done# ZD / Zenith Angle
         # AIRMASS
         # UTMIDDLE
         # JD
@@ -546,16 +546,17 @@ class Evora(object):
             print("FOUND %d LOGS" % len(LogfileList))
             ObsTime = time.strptime(dateObs+' UTC', "%Y-%m-%dT%H:%M:%S %Z")
             LogfileName = self.ChooseLogfile(LogfileList, ObsTime)
-            print("LOG FILE NAME:", LogfileName)
-            ra, dec, epoch, lst, ha, za = self.ParseLogfile(LogfileName, ObsTime)
-            print(ra,dec,epoch,lst,ha,za)
+            if LogfileName is not None:
+                print("LOG FILE NAME:", LogfileName)
+                ra, dec, epoch, lst, ha, za = self.ParseLogfile(LogfileName, ObsTime)
+                print(ra,dec,epoch,lst,ha,za)
 
-            header.append(card=("RA", ra, "Right Ascension"))
-            header.append(card=("DEC", dec, "Declination"))
-            header.append(card=("EPOCH", epoch, "Epoch for RA and Dec (years)"))
-            header.append(card=("ST", lst, "local sidereal time (hours)"))
-            header.append(card=("HA", ha, "Hour Angle"))
-            header.append(card=("ZD", za, "Zenith Angle"))
+                header.append(card=("RA", ra, "Right Ascension"))
+                header.append(card=("DEC", dec, "Declination"))
+                header.append(card=("EPOCH", epoch, "Epoch for RA and Dec (years)"))
+                header.append(card=("ST", lst, "local sidereal time (hours)"))
+                header.append(card=("HA", ha, "Hour Angle"))
+                header.append(card=("ZD", za, "Zenith Angle"))
         
         return header
 
@@ -589,7 +590,10 @@ class Evora(object):
                 besttime = delTime
                 bestindex = i
         # whew! finally got the logfile we want
-        return LogfileList[bestindex]
+        if besttime > -1800: # difference of 30 minutes
+            return LogfileList[bestindex]
+        else:
+            return None
 
     def ParseLogfile(self, LogfileName, ObsTime):
         """
