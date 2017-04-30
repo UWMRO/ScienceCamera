@@ -813,8 +813,9 @@ class Evora(object):
 
         # write headers
         attributes = [imType, binning, itime, filter]
-        header = self.getHeader(attributes)
-
+        #header = self.getHeader(attributes)
+        header = self.getHeader_2(attributes, 'gtcc')
+        
         logger.debug('StartAcquisition: ' + str(andor.StartAcquisition()))
 
         status = andor.GetStatus()
@@ -848,7 +849,8 @@ class Evora(object):
                     
                     protocol.sendData("seriesSent"+str(counter)+" "+str(counter)+","+str(itime)+","+filename)
                     # make a new header and write time to it for new exposure.
-                    header = self.getHeader(attributes)
+                    #header = self.getHeader(attributes)
+                    header = self.getHeader_2(attributes, 'gtcc')
 
                     if(counter == numexp):
                         logger.info("entered abort")
