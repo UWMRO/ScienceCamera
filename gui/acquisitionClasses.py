@@ -706,7 +706,7 @@ class Exposure(wx.Panel):
             fullImagePath = self.saveDir+self.currentImage+".fits"
             print("Image to grab SaveImName:", serverImName)
             #self.ftp.list(".", fileList).addCallbacks(self.printFiles, self.ftpFail, callbackArgs=(fileList,))
-            d = self.ftp.retrieveFile(serverImName, als.FileWriter(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
+            d = self.ftp.retrieveFile(serverImName, als.FileBuffer(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
             return fullImagePath, d
         else:
             fullImagePath = "/tmp/"+serverImName

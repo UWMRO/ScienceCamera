@@ -10,11 +10,13 @@ import os
 from datetime import datetime
 from datetime import date
 import sys
+import shutil
 
 # Third-party imports
 import wx  # get wxPython
 from astropy.io import fits
 import numpy as np
+from io import BytesIO
 
 from twisted.internet import protocol
 
@@ -388,6 +390,27 @@ class FileWriter(protocol.Protocol):
         print("Writing closed and done")
         self.f.close()
 
+class FileBuffer(protocol.Protocol):
+
+    def __init__(self, directory, fileName):
+        """
+        Pass full directory in for the file to be saved with just the fileName
+        """
+        self.fileName = directory+fileName
+        self.buffer = BytesIO()
+
+    def dataReceived(self, data):
+        #print("Byte size", len(data))
+        self.buffer.write(data)
+
+    def connectionLost(self, reason):
+        print("Writing closed and done")
+        # save buffer
+        self.buffer.seek(0)
+        with open(self.fileName, 'wb') as f:
+            shutil.copyfileobj(self.buffer, f, length=131072)
+
+        
     
 # Deprecated code
 class SampleTimer(object):
