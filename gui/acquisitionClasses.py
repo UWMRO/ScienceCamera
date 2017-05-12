@@ -714,7 +714,7 @@ class Exposure(wx.Panel):
         else:
             fullImagePath = "/tmp/"+serverImName
             print("Real time image to grab:", serverImName)
-            d = self.ftp.retrieveFile(serverImName, als.FileWriter("/tmp/", serverImName), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
+            d = self.ftp.retrieveFile(serverImName, als.FileBuffer("/tmp/", serverImName), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
             return fullImagePath, d
         #shutil.copyfile(path + serverImName, self.saveDir + self.currentImage + ".fits")
 
