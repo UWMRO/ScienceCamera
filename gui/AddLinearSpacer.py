@@ -396,6 +396,7 @@ class FileBuffer(protocol.Protocol):
         """
         Pass full directory in for the file to be saved with just the fileName
         """
+        self.time = 0 - time.clock()
         self.fileName = directory+fileName
         self.buffer = BytesIO()
 
@@ -410,8 +411,9 @@ class FileBuffer(protocol.Protocol):
         with open(self.fileName, 'wb') as f:
             shutil.copyfileobj(self.buffer, f, length=131072)
 
-        
-    
+        self.time += time.clock()
+        print("TIME TO GET:", self.time)
+
 # Deprecated code
 class SampleTimer(object):
     """
