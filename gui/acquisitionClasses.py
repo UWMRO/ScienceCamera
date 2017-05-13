@@ -62,7 +62,7 @@ class ImageQueueWatcher(threading.Thread, object):
                 print("ImageQueueWatcher WAITING")
                 self.exposeClass.imageAddedEvent.wait()
             while self.exposeClass.imageQueue.qsize() > 0:
-                line = self.exposeClass.imageQueue.get().split(";")
+                line = str(self.exposeClass.imageQueue.get()).split(";")
                 image_path = line[0]
                 image_name = line[1]
                 image_type = line[2]
