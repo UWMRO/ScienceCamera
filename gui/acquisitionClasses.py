@@ -82,6 +82,110 @@ class ImageQueueWatcher(threading.Thread, object):
         """ This is a dummy method to supress the failure to retrieve that happens at the end of a real time exposure.
         """
         pass # do nothing
+    
+class ProgressTimer(object):
+    """
+    Synopsis
+    --------
+    This class abstracts away a threading.Timer object with updating a wxpython progress bar (wx.Gauge).
+
+    IMPORTANT: Any method not run by the main thread should ONLY ever update the wx.Gauge with wx.CallAfter.
+    """
+
+    def __init__(self, exposureClass):
+        self.timer = None
+        self.exposureClass = exposureClass
+        self.gauge = exposureClass.parent.parent.parent.expGauge
+        self.interval = 0 # holds the time interval, in milliseconds
+            
+    def start(self, exposureTime):
+        """ Pass an image exposure time, add a hard-coded readout time, and start the time with the 
+        total exposure time.  The wx.Gauge will need to be primed.
+
+        Parameters
+        ----------
+        exposureTime : float
+                       This is the time of the image exposure in seconds.
+
+        Return
+        ------
+        None
+        """
+        exposureTime += self._getReadoutTime()
+        
+        # Determine how fast timer should be.
+        integer_ticks = 0
+        if time <= 0.5: # 10 millisecond intervals
+            integer_ticks = int(exposureTime / 10**-2) # divide by 10 milliseconds
+            self.interval = 10
+        elif time <= 10: # 50 millisecond intervals
+            integer_ticks = int(exposureTime / (5*10**-2))
+            self.interval = 50
+        else: # Any time greater than 10 seconds have 100 millisecond intervals
+            integer_ticks = int(exposureTime / 10**-1)
+            self.interval = 100
+        self.gauge.SetRange(integer_ticks)
+        
+        # pass the time in and start
+        self.timer = threading.Timer(self.interval/10**3, self.update)
+        wx.CallAfter(self.gauge.SetValue, 1) # do first tick
+        self.timer.start()
+        
+        return None
+
+    def stop(self):
+        """ Stop the timer and reset the wx.Gauge to the beginning.
+
+        Parameters
+        ----------
+        None
+
+        Return
+        ------
+        None
+        """
+        self.timer.cancel()
+        wx.CallAfter(self.gauge.SetValue, 0)
+        
+        return None
+
+    def update(self):
+        """ Update the wx.Gauge's value and do so with wx.CallAfter to be thread safe.
+
+        Parameters
+        ----------
+        None
+
+        Return
+        ------
+        None
+        """
+        # Update gauge with value until it hits max-1
+        max = self.gauge.GetRange()
+        current = self.gauge.GetValue()
+        if current < max:
+            wx.CallAfter(self.gauge.SetValue, current+1)
+        else: # do nothing when we reach the end
+            self.gauge.Pulse()
+            pass
+        
+        self.timer = threading.Timer(self.interval/10**3, self.update)    
+        self.timer.start()
+        
+        return None
+
+    def _getReadoutTime(self):
+        """
+        Reads the binning type and the readout speed to determine the overall
+        readout time.
+        """
+        times_2x2 = [0.0886, 0.154, 0.343, 5.8]  # exposure times in seconds
+        binning = self.exposureClass.parent.parent.parent.binning # string (1 : 1x1, 2 : 2x2)
+        readout_speed = self.exposureClass.parent.parent.parent.readoutIndex# (0 : 5.0 MHz, 1 : 3.0 MHz, 2 : 1.0 MHz, 3 : 0.05 MHz)
+
+        return times_2x2[readout_speed]
+        
+
 #### Class that handles widgets related to exposure
 class Exposure(wx.Panel):
     """
@@ -104,6 +208,8 @@ class Exposure(wx.Panel):
         self.seriesImageNumber = None  # initialize a series image number
         self.currentImage = None  # initializes to keep track of the current image name class wide
         self.logFunction = None  # keeps an instance of the function that will be used to log the status
+
+        self.timer_2 = ProgressTimer(self)
         
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
@@ -266,7 +372,8 @@ class Exposure(wx.Panel):
 
                     d = self.protocol.sendCommand(command)
                     d.addCallback(self.expose_callback_thread)
-                    self.exposeTimer(itime)
+                    self.timer_2.start(itime)
+                    #self.exposeTimer(itime)
                     #thread.start_new_thread(self.exposeTimer, (itime,))
 
             if imType == 2:  # real time exposure
@@ -406,19 +513,19 @@ class Exposure(wx.Panel):
 
         ## complete progress bar for image acquisition
         # check to see if timer is still going and stop it (callback might come in early)
-        if(self.timer.IsRunning()):
-            self.timer.Stop()
-        
+        #if(self.timer.IsRunning()):
+        #    self.timer.Stop()
+        self.timer_2.stop()
         # finish out gauge and then reset it
-        self.parent.parent.parent.expGauge.SetValue(self.endTimer)
+        #self.parent.parent.parent.expGauge.SetValue(self.endTimer)
 
         # get success;
         success = int(results[0])  # 1 for true 0 for false
         #print success
 
         # at the end of the callback reset the gauge (signifies a reset for exposure)
-        self.parent.parent.parent.expGauge.SetValue(0)
-        self.startTimer = 0
+        #self.parent.parent.parent.expGauge.SetValue(0)
+        #self.startTimer = 0
 
         logger.debug(str(self.parent.parent.parent.imageOpen))
         logger.info("opened window from exposeCallback method")
