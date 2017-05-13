@@ -73,10 +73,15 @@ class ImageQueueWatcher(threading.Thread, object):
                 savedImage, d = self.exposeClass.transferImage(image_path, image_name, image_type)
                 print("Plotting:", savedImage, "shortly.")
                 d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
+                d.addErrback(self.retreivalFail)
 
                 # Wait for plot to be done
                 self.exposeClass.donePlottingEvent.wait()
-                    
+
+    def retrievalFail(self, msg):
+        """ This is a dummy method to supress the failure to retrieve that happens at the end of a real time exposure.
+        """
+        pass # do nothing
 #### Class that handles widgets related to exposure
 class Exposure(wx.Panel):
     """
