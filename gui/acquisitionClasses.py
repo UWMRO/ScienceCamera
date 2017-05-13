@@ -307,7 +307,8 @@ class Exposure(wx.Panel):
         self.parent.parent.parent.expGauge.SetRange(self.endTimer)
 
         # start timer
-        wx.CallAfter(self.timer.Start, 50) # 50 millisecond intervals
+        self.timer.Start(10)
+        #wx.CallAfter(self.timer.Start, 10) # 50 millisecond intervals
 
     def onExposeTimer(self, event):
         """
@@ -407,6 +408,9 @@ class Exposure(wx.Panel):
         else:
             logger.info("Successfully Aborted")
 
+    def display_thread(self, results, savedImage, logString):
+        self.display(results, savedImage, logString)
+            
     def display(self, results, savedImage, logString):
         print("displaying saved image")
         data = als.getData(savedImage)
