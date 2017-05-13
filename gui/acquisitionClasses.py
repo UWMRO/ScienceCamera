@@ -72,7 +72,9 @@ class ImageQueueWatcher(threading.Thread, object):
                 savedImage, d = self.exposeClass.transferImage(image_path, image_name, image_type)
                 print("Plotting:", savedImage, "shortly.")
                 d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
-                
+
+                # Wait for plot to be done
+                self.exposeClass.donePlottingEvent.wait()
 
 #### Class that handles widgets related to exposure
 class Exposure(wx.Panel):
@@ -176,6 +178,7 @@ class Exposure(wx.Panel):
 
         # Setup work for Image Queue
         self.imageAddedEvent = threading.Event()
+        self.donePlottingEvent = threading.Event()
         self.imageQueue = ImageQueue(self.imageAddedEvent)
         self.imageThread = ImageQueueWatcher(self)
         self.imageThread.daemon = True
@@ -475,6 +478,9 @@ class Exposure(wx.Panel):
         #self.copyImage(path, name)
         if logString is not None:
             self.log(self.logFunction, logString)
+
+        self.donePlottingEvent.set()
+        self.donePlottingEvent.clear()
                 
     def safePlot(self, data, stats_list):
         """
