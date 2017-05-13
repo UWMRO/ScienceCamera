@@ -235,7 +235,7 @@ class Exposure(wx.Panel):
                 d.addCallback(self.realCallback)  # this will clear the image path queue
 
                 # start timer
-                self.exposeTimer(itime)
+                #self.exposeTimer(itime)
                 #thread.start_new_thread(self.exposeTimer, (itime,))
 
             if imType == 3:  # series exposure
@@ -467,7 +467,7 @@ class Exposure(wx.Panel):
 
             if(self.timer.IsRunning()):
                 self.timer.Stop()
-            self.parent.parent.parent.expGauge.SetValue(self.endTimer)
+            #self.parent.parent.parent.expGauge.SetValue(self.endTimer)
             
             # get stats
             path = path.split("/")
@@ -485,7 +485,7 @@ class Exposure(wx.Panel):
             self.parent.parent.parent.expGauge.SetValue(0)
             self.startTimer = 0
 
-            self.exposeTimer(self.timeToSend)
+            #self.exposeTimer(self.timeToSend)
             #thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
             
     def realCallback(self, msg):
