@@ -354,13 +354,13 @@ class Exposure(wx.Panel):
             expTime = float(time) + exposeTimes[1]  # trailing digit is readout time
         
         # get the max range for progress bar
-        self.endTimer = int(expTime / (50.0*10**-2)) # timer will update every 10 ms
+        self.endTimer = int(expTime / (1.0*10**-2)) # timer will update every 10 ms
         
         # set exposure progress bar range
         self.parent.parent.parent.expGauge.SetRange(self.endTimer)
 
         # start timer
-        self.timer.Start(100)
+        self.timer.Start(10)
         #wx.CallAfter(self.timer.Start, 10) # 50 millisecond intervals
 
     def onExposeTimer(self, event):
