@@ -95,7 +95,7 @@ class ProgressTimer(object):
     def __init__(self, exposureClass):
         self.timer = None
         self.exposureClass = exposureClass
-        self.gauge = exposureClass.parent.parent.parent.expGauge
+        self.gauge = None
         self.interval = 0 # holds the time interval, in milliseconds
             
     def start(self, exposureTime):
@@ -112,6 +112,9 @@ class ProgressTimer(object):
         None
         """
         exposureTime += self._getReadoutTime()
+
+        if self.gauge is None:
+            self.gauge = self.exposureClass.parent.parent.parent.expGauge
         
         # Determine how fast timer should be.
         integer_ticks = 0
