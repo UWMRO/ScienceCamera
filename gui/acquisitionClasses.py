@@ -67,7 +67,9 @@ class ImageQueueWatcher(threading.Thread, object):
                 image_name = line[1]
                 image_type = line[2]
                 logString = line[3]
-                print("Transfering:", type(image_name))
+                if logString == "None":
+                    logString = None
+                print("Transfering:", image_name)
 
                 savedImage, d = self.exposeClass.transferImage(image_path, image_name, image_type)
                 print("Plotting:", savedImage, "shortly.")
@@ -358,7 +360,7 @@ class Exposure(wx.Panel):
         self.parent.parent.parent.expGauge.SetRange(self.endTimer)
 
         # start timer
-        self.timer.Start(10)
+        self.timer.Start(100)
         #wx.CallAfter(self.timer.Start, 10) # 50 millisecond intervals
 
     def onExposeTimer(self, event):
@@ -530,7 +532,10 @@ class Exposure(wx.Panel):
             path = path.split("/")
             name = path[-1]
             path = "/".join(path[:-1]) + "/"
-            fullImPath, d = self.transferImage(path, name, 'real')
+            #fullImPath, d = self.transferImage(path, name, 'real')
+            line = "%s;%s;single;%s" % (path, name, str(None))
+            self.imageQueue.addImage(line)
+            
             #d.addCallback(self.display, savedImage=fullImPath, logString=None) 
             
             #data = als.getData(path)
