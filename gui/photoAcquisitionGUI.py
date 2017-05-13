@@ -72,7 +72,8 @@ class Evora(wx.Frame):
         self.imageOpen = False # keep track of whether the image window is open
         self.window = None # holds the image window
         self.logFunction = None
-
+        self.expGauge = None # prime variable
+        
         panel = wx.Panel(self)
         notebook = wx.Notebook(panel)
 
