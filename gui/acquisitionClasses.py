@@ -402,7 +402,8 @@ class Exposure(wx.Panel):
                 d.addCallback(self.realCallback)  # this will clear the image path queue
 
                 # start timer
-                self.exposeTimer(itime)
+                #self.exposeTimer(itime)
+                self.timer_2.start(itime)
                 #thread.start_new_thread(self.exposeTimer, (itime,))
 
             if imType == 3:  # series exposure
@@ -445,7 +446,8 @@ class Exposure(wx.Panel):
                             d.addCallback(self.seriesCallback)
 
                             # start timer
-                            self.exposeTimer(itime)
+                            self.timer_2.start(itime)
+                            #self.exposeTimer(itime)
                             #thread.start_new_thread(self.exposeTimer, (itime,))
 
                     else:
@@ -658,10 +660,12 @@ class Exposure(wx.Panel):
             # change the gui with thread safety
             #wx.CallAfter(self.safePlot, data, stats_list)
 
-            self.parent.parent.parent.expGauge.SetValue(0)
-            self.startTimer = 0
+            #self.parent.parent.parent.expGauge.SetValue(0)
+            #self.startTimer = 0
 
-            self.exposeTimer(self.timeToSend)
+            self.timer_2.stop()
+            self.timer_2.start(self.timeToSend)
+            #self.exposeTimer(self.timeToSend)
             #thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
             
     def realCallback(self, msg):
@@ -711,9 +715,10 @@ class Exposure(wx.Panel):
         for i in fullPath[:-1]:
             directory += i + "/"
 
-        if(self.timer.IsRunning()):
-            self.timer.Stop()
-        self.parent.parent.parent.expGauge.SetValue(self.endTimer)
+        #if(self.timer.IsRunning()):
+        #    self.timer.Stop()
+        self.timer_2.stop()
+        #self.parent.parent.parent.expGauge.SetValue(self.endTimer)
         # no abort then display the image
         if(imNum <= int(self.seriesImageNumber)):
             logger.info("Entered to display series image")
@@ -754,11 +759,12 @@ class Exposure(wx.Panel):
 
             if self.seriesImageNumber is not None:
                 if imNum < int(self.seriesImageNumber):
-                    self.exposeTimer(time)
+                    #self.exposeTimer(time)
+                    self.timer_2.start(time)
                     #thread.start_new_thread(self.exposeTimer, (time,))
                     
-        self.parent.parent.parent.expGauge.SetValue(0)
-        self.startTimer = 0
+        #self.parent.parent.parent.expGauge.SetValue(0)
+        #self.startTimer = 0
                     
     def seriesCallback(self, msg):
         msg = msg.split(",")
@@ -778,15 +784,15 @@ class Exposure(wx.Panel):
             self.stopExp.Enable(False)
             
         # stop timer if running
-        if self.timer.IsRunning():
-            self.timer.Stop()
-
+        #if self.timer.IsRunning():
+        #    self.timer.Stop()
+        self.timer_2.stop()
         # finish out the gauge
-        self.parent.parent.parent.expGauge.SetValue(self.endTimer)
+        #self.parent.parent.parent.expGauge.SetValue(self.endTimer)
 
         # restart gauge and the timer count
-        self.parent.parent.parent.expGauge.SetValue(0)
-        self.startTimer = 0
+        #self.parent.parent.parent.expGauge.SetValue(0)
+        #self.startTimer = 0
 
         dataMsg = ",".join(msg)
         self.logFunction = self.logExposure
