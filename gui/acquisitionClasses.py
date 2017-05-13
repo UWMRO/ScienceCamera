@@ -53,7 +53,6 @@ class ImageQueueWatcher(threading.Thread, object):
     def __init__(self, exposeClass):
         threading.Thread.__init__(self)
         self.exposeClass = exposeClass
-        self.next = False
 
     def run(self):
         queue_size = 0
@@ -76,11 +75,8 @@ class ImageQueueWatcher(threading.Thread, object):
                 d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
 
                 # Wait for plot to be done
-                if self.exposeClass.abort:
-                    self.exposeClass.donePlottingEvent.wait()
-                if not self.exposeClass.abort:
-                    self.exposeClass.imageQueue.empty()
-
+                self.exposeClass.donePlottingEvent.wait()
+                    
 #### Class that handles widgets related to exposure
 class Exposure(wx.Panel):
     """
@@ -561,6 +557,12 @@ class Exposure(wx.Panel):
 
         # change the ftp server directory to default
         self.ftp.cdup().addCallback(self.ftpCWD)
+
+        # release ImageQueueWatcher if it is stuck waiting for an image to display and empty Queue
+        self.imageQueue.empty()
+        self.donePlottingEvent.set()
+        self.donePlottingEvent.clear()
+
         
         self.logFunction = self.logExposure
         logString = als.getLogString("real " + msg, 'post')
