@@ -67,8 +67,10 @@ class ImageQueueWatcher(threading.Thread, object):
                 image_name = line[1]
                 image_type = line[2]
                 logString = line[3]
+                print("Transfering:", image_name)
 
                 savedImage, d = self.exposeClass.transferImage(image_path, image_name, image_type)
+                print("Plotting:", savedImage, "shortly.")
                 d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
                 
 
@@ -176,6 +178,8 @@ class Exposure(wx.Panel):
         self.imageAddedEvent = threading.Event()
         self.imageQueue = ImageQueue(self.imageAddedEvent)
         self.imageThread = ImageQueueWatcher(self)
+        self.imageThread.daemon = True
+        self.imageThread.start()
         
     def nameText(self, event):
         """
