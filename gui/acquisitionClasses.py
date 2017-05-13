@@ -111,6 +111,7 @@ class ProgressTimer(object):
         ------
         None
         """
+        exposureTime = float(exposureTime)
         exposureTime += self._getReadoutTime()
 
         if self.gauge is None:
