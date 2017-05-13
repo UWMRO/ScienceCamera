@@ -548,7 +548,7 @@ class Exposure(wx.Panel):
             self.parent.parent.parent.expGauge.SetValue(0)
             self.startTimer = 0
 
-            #self.exposeTimer(self.timeToSend)
+            self.exposeTimer(self.timeToSend)
             #thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
             
     def realCallback(self, msg):
