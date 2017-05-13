@@ -322,7 +322,7 @@ class Exposure(wx.Panel):
                             # set up all callbacks for series
                             for i in range(int(self.seriesImageNumber)):
                                 d = self.protocol.addDeferred("seriesSent" + str(i+1))
-                                d.addCallback(self.displaySeriesImage_thread)
+                                d.addCallback(self.displaySeriesImage)
 
                             command = "series " + str(line)
                             logString = als.getLogString(command, 'pre')
