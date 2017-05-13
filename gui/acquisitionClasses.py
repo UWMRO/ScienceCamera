@@ -19,6 +19,7 @@ import numpy as np  # get NumPy
 import EnhancedStatusBar
 import AddLinearSpacer as als  # get useful methods
 import MyLogger
+from Queue import Queue
 
 __author__ = "Tristan J. Hillis"
 
@@ -32,6 +33,44 @@ This set of classes handles everything in the imaging tab.
 
 # Global Variables
 logger = MyLogger.myLogger("acquisitionClasses.py", "client")
+
+class ImageQueue(Queue, object):
+    def __init__(self, event):
+        super(ImageQueue, self).__init__()
+        self.event = event
+
+    def addImage(self, image):
+        self.put(image)
+        self.event.set()
+        self.event.clear()
+
+#### Thread Image Queue Watcher
+class ImageQueueWatcher(threading.Thread, object):
+    """
+    This class will watch the image queue in the class Exposure and retrieve the image files via
+    the ftp server as they come into the Queue.  This makes it so the ftp is not saturated by requests.
+    """
+    def __init__(self, exposeClass):
+        threading.Thread.__init__(self)
+        self.exposeClass = exposeClass
+        self.next = False
+
+    def run(self):
+        queue_size = 0
+        while True:
+            if self.exposeClass.imageQueue.qsize() == 0:
+                print("ImageQueueWatcher WAITING")
+                self.exposeClass.imageAddedEvent.wait()
+            while self.exposeClass.imageQueue.qsize() > 0:
+                line = self.exposeClass.imageQueue.get().split(";")
+                image_path = line[0]
+                image_name = line[1]
+                image_type = line[2]
+                logString = line[3]
+
+                savedImage, d = self.exposeClass.transferImage(image_path, image_name, image_type)
+                d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
+                
 
 #### Class that handles widgets related to exposure
 class Exposure(wx.Panel):
@@ -55,7 +94,7 @@ class Exposure(wx.Panel):
         self.seriesImageNumber = None  # initialize a series image number
         self.currentImage = None  # initializes to keep track of the current image name class wide
         self.logFunction = None  # keeps an instance of the function that will be used to log the status
-
+        
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
         self.horzSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -133,6 +172,11 @@ class Exposure(wx.Panel):
         self.SetSizer(self.vertSizer)
         self.vertSizer.Fit(self)
 
+        # Setup work for Image Queue
+        self.imageAddedEvent = threading.Event()
+        self.imageQueue = ImageQueue(self.imageAddedEvent)
+        self.imageThread = ImageQueueWatcher(self)
+        
     def nameText(self, event):
         """
         Executes on the even that anything new is type into the name text box and sets it to
@@ -383,10 +427,13 @@ class Exposure(wx.Panel):
             self.logFunction = self.logExposure
             logString = als.getLogString("expose " + msg + "," + self.currentImage, 'post')
 
-            savedImage, d = self.transferImage(path, name, 'single')
-            print("Saved Image is:", savedImage)
+            line = "%s;%s;single;%s" % (path, name, logString)
+            self.imageQueue.addImage(line)
+            
+            #savedImage, d = self.transferImage(path, name, 'single')
+            #print("Saved Image is:", savedImage)
 
-            d.addCallback(self.display, savedImage=savedImage, logString=logString)
+            #d.addCallback(self.display, savedImage=savedImage, logString=logString)
             
             # get data
             #data = als.getData(path+name)
@@ -840,7 +887,7 @@ class Exposure(wx.Panel):
         self.abort = False
 
         logger.info("Stop Exposure")
-
+        
         
 # Class that handles Radio boxes for image types and exposure types
 class TypeSelection(wx.Panel):

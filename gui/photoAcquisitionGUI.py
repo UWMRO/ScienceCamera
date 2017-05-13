@@ -1096,6 +1096,8 @@ class FilterForwarder(basic.LineReceiver):
         filterInstance.filterConnection = False
 
 
+
+
 class FilterClient(protocol.ClientFactory):
     """
     Makes a filter wheel client instance.
