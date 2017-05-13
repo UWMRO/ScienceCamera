@@ -474,7 +474,7 @@ class Exposure(wx.Panel):
             name = path[-1]
             path = "/".join(path[:-1]) + "/"
             fullImPath, d = self.transferImage(path, name, 'real')
-            d.addCallback(self.display, savedImage=fullImPath, logString=None) 
+            #d.addCallback(self.display, savedImage=fullImPath, logString=None) 
             
             #data = als.getData(path)
             #stats_list = als.calcStats(data)
