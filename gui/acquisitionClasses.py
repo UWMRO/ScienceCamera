@@ -67,7 +67,7 @@ class ImageQueueWatcher(threading.Thread, object):
                 image_name = line[1]
                 image_type = line[2]
                 logString = line[3]
-                print("Transfering:", image_name)
+                print("Transfering:", type(image_name))
 
                 savedImage, d = self.exposeClass.transferImage(image_path, image_name, image_type)
                 print("Plotting:", savedImage, "shortly.")

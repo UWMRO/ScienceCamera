@@ -304,7 +304,7 @@ class Evora(wx.Frame):
         #self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
         # add filter connection
         self.connection = port_dict[str(als.CAMERA_PORT)] = reactor.connectTCP(als.HEIMDALL_IP, als.CAMERA_PORT, EvoraClient(app.frame1))
-        prot_dict[str(als.FTP_PORT)] = reactor.connectTCP(als.HEIMDALL_IP, als.FTP_PORT, FileClientFactory(app.frame1))
+        port_dict[str(als.FTP_PORT)] = reactor.connectTCP(als.HEIMDALL_IP, als.FTP_PORT, FileClientFactory(app.frame1))
 
     def onConnectCallback(self, msg):
         """
