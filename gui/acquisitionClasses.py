@@ -220,7 +220,8 @@ class Exposure(wx.Panel):
                 
                 # start callback that looks for a path leading to a real image
                 d = self.protocol.addDeferred("realSent")
-                d.addCallback(self.displayRealImage_thread)
+                #d.addCallback(self.displayRealImage_thread)
+                d.addCallback(self.displayRealImage)
 
                 command = "real " + line
                 logString = als.getLogString(command, 'pre')
@@ -457,7 +458,7 @@ class Exposure(wx.Panel):
         if self.abort:  # means that abort can be called.
             # add a new deffered object to set up for another incoming image
             d = self.protocol.addDeferred("realSent")
-            d.addCallback(self.displayRealImage_thread)
+            #d.addCallback(self.displayRealImage_thread)
             d.addCallback(self.displayRealImage)
 
             if(self.timer.IsRunning()):
