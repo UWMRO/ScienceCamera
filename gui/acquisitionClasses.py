@@ -76,7 +76,8 @@ class ImageQueueWatcher(threading.Thread, object):
                 d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
 
                 # Wait for plot to be done
-                self.exposeClass.donePlottingEvent.wait()
+                if self.exposeClass.abort:
+                    self.exposeClass.donePlottingEvent.wait()
 
 #### Class that handles widgets related to exposure
 class Exposure(wx.Panel):
