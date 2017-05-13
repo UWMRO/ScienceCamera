@@ -382,7 +382,9 @@ class Evora(wx.Frame):
         
         self.joinThreads("temp", demonized=True)
         self.connection.disconnect() # this is the acutal disconnection from the server'
-
+        ftp = port_dict['5504']
+        ftp.disconnect()
+        
         self.connected = False
         self.enableConnections(True, False, False)
         self.disableButtons('disconnect', True)
