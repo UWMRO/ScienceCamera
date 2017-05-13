@@ -73,7 +73,7 @@ class ImageQueueWatcher(threading.Thread, object):
                 savedImage, d = self.exposeClass.transferImage(image_path, image_name, image_type)
                 print("Plotting:", savedImage, "shortly.")
                 d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
-                d.addErrback(self.retreivalFail)
+                d.addErrback(self.retrievalFail)
 
                 # Wait for plot to be done
                 self.exposeClass.donePlottingEvent.wait()
