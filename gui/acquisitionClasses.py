@@ -288,7 +288,7 @@ class Exposure(wx.Panel):
                 d.addCallback(self.realCallback)  # this will clear the image path queue
 
                 # start timer
-                #self.exposeTimer(itime)
+                self.exposeTimer(itime)
                 #thread.start_new_thread(self.exposeTimer, (itime,))
 
             if imType == 3:  # series exposure
@@ -533,7 +533,7 @@ class Exposure(wx.Panel):
             name = path[-1]
             path = "/".join(path[:-1]) + "/"
             #fullImPath, d = self.transferImage(path, name, 'real')
-            line = "%s;%s;single;%s" % (path, name, str(None))
+            line = "%s;%s;real;%s" % (path, name, str(None))
             self.imageQueue.addImage(line)
             
             #d.addCallback(self.display, savedImage=fullImPath, logString=None) 
@@ -624,15 +624,18 @@ class Exposure(wx.Panel):
             logString = als.getLogString("seriesSent " + dataMsg + "," + self.currentImage, 'post')
             #self.log(self.logFunction, logString)
 
-            savedImage, d = self.transferImage(directory, name, 'series')
-            print("Saved Image is:", savedImage)
-            d.addCallback(self.display, savedImage=savedImage, logString=logString)
+            #savedImage, d = self.transferImage(directory, name, 'series')
+            #print("Saved Image is:", savedImage)
+            #d.addCallback(self.display, savedImage=savedImage, logString=logString)
+
+            line = "%s;%s;series;%s" % (path, name, logString)
+            self.imageQueue.addImage(line)
 
 
             if self.seriesImageNumber is not None:
                 if imNum < int(self.seriesImageNumber):
-                    #self.exposeTimer(time)
-                    thread.start_new_thread(self.exposeTimer, (time,))
+                    self.exposeTimer(time)
+                    #thread.start_new_thread(self.exposeTimer, (time,))
                     
         self.parent.parent.parent.expGauge.SetValue(0)
         self.startTimer = 0
