@@ -306,7 +306,7 @@ class Exposure(wx.Panel):
         self.parent.parent.parent.expGauge.SetRange(self.endTimer)
 
         # start timer
-        wx.CallAfter(self.timer.Start, 500) # 50 millisecond intervals
+        wx.CallAfter(self.timer.Start, 50) # 50 millisecond intervals
 
     def onExposeTimer(self, event):
         """
@@ -458,6 +458,7 @@ class Exposure(wx.Panel):
             # add a new deffered object to set up for another incoming image
             d = self.protocol.addDeferred("realSent")
             d.addCallback(self.displayRealImage_thread)
+            d.addCallback(self.displayRealImage)
 
             if(self.timer.IsRunning()):
                 self.timer.Stop()
@@ -480,7 +481,7 @@ class Exposure(wx.Panel):
             self.startTimer = 0
 
             self.exposeTimer(self.timeToSend)
-            thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
+            #thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
             
     def realCallback(self, msg):
         """
@@ -563,8 +564,8 @@ class Exposure(wx.Panel):
 
             if self.seriesImageNumber is not None:
                 if imNum < int(self.seriesImageNumber):
-                    self.exposeTimer(time)
-                    #thread.start_new_thread(self.exposeTimer, (time,))
+                    #self.exposeTimer(time)
+                    thread.start_new_thread(self.exposeTimer, (time,))
                     
         self.parent.parent.parent.expGauge.SetValue(0)
         self.startTimer = 0
