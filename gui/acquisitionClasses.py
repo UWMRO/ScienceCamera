@@ -165,11 +165,10 @@ class ProgressTimer(object):
         # Update gauge with value until it hits max-1
         max = self.gauge.GetRange()
         current = self.gauge.GetValue()
-        if current < max:
+        if current < max+1:
             wx.CallAfter(self.gauge.SetValue, current+1)
         else: # do nothing when we reach the end
             self.gauge.Pulse()
-            pass
         
         self.timer = threading.Timer(self.interval/10**3, self.update)    
         self.timer.start()
