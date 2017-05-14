@@ -111,8 +111,9 @@ class ProgressTimer(object):
         ------
         None
         """
+        if self.gauge == None:
+            self.gauge = exposureTime.parent.parent.parent.expGauge
         exposureTime = float(exposureTime)
-        
         
         # Determine how fast timer should be.
         integer_ticks = 0
