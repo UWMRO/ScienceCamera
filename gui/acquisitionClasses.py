@@ -164,8 +164,9 @@ class ProgressTimer(object):
         """
         # Update gauge with value until it hits max-1
         max = self.gauge.GetRange()
+        print(max)
         current = self.gauge.GetValue()
-        if current < max+1:
+        if current < max:
             wx.CallAfter(self.gauge.SetValue, current+1)
         else: # do nothing when we reach the end
             self.gauge.Pulse()
