@@ -112,7 +112,7 @@ class ProgressTimer(object):
         None
         """
         if self.gauge == None:
-            self.gauge = exposureTime.parent.parent.parent.expGauge
+            self.gauge = self.exposureClass.parent.parent.parent.expGauge
         exposureTime = float(exposureTime)
         
         # Determine how fast timer should be.
