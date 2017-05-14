@@ -785,6 +785,11 @@ class Exposure(wx.Panel):
         #if self.timer.IsRunning():
         #    self.timer.Stop()
         self.timer_2.stop()
+
+        self.imageQueue.empty()
+        self.donePlottingEvent.set()
+        self.donePlottingEvent.clear()
+
         # finish out the gauge
         #self.parent.parent.parent.expGauge.SetValue(self.endTimer)
 
@@ -799,7 +804,7 @@ class Exposure(wx.Panel):
         logger.debug("Completed real time series with exit: " + str(msg))
 
     def abort_callback(self, msg):
-        self.parent.parent.parent.expGauge.SetValue(0)  # redundancy to clear the exposure gauge
+        #self.parent.parent.parent.expGauge.SetValue(0)  # redundancy to clear the exposure gauge
         self.logFunction = self.logExposure
         logString = als.getLogString("abort " + msg, 'post')
         self.log(self.logFunction, logString)
@@ -1024,6 +1029,11 @@ class Exposure(wx.Panel):
             
         #self.parent.parent.parent.expGauge.SetValue(0)
         self.timer_2.stop()
+
+        self.imageQueue.empty()
+        self.donePlottingEvent.set()
+        self.donePlottingEvent.clear()
+
             
         self.expButton.Enable(True)
         self.stopExp.Enable(False)
