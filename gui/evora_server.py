@@ -17,6 +17,7 @@ import os
 import subprocess
 import sys
 import time
+import pandas as pd
 import Queue
 import thread
 import threading
@@ -539,7 +540,22 @@ class Evora(object):
         # HJD
         # LJD
         if tcc == "heimdall":
-            pass
+            obsTime = time.strptime(dateObs+" UTC", "%Y-%m-%dT%H:%M:%S %Z")
+            logFileList = glob.glob("/home/mro/storage/tcc_data/positionlogs/*.txt")
+            file = self.heimdallChooseLogFile(logFileList, obsTime)
+            if file is not None:
+                results = self.heimdallParseLogFile(file, obsTime)
+                if results is not None:
+                    ra, dec, epoch, lst, ha = results
+
+                    print("FROM HEIMDALL LOGS:", results)
+                    
+                    header.append(card=("RA", ra, "Right Ascension"))
+                    header.append(card=("DEC", dec, "Declination"))
+                    header.append(card=("EPOCH", epoch, "Epoch for RA and Dec (years)"))
+                    header.append(card=("ST", lst, "local sidereal time (hours)"))
+                    header.append(card=("HA", ha, "Hour Angle"))
+                    
         else: # gtcc
             print("ACCESSING LOG FILES")
             LogfileList = glob.glob("/home/mro/mnt/gtcc"+'/????-??-??T??:??:??')
@@ -560,6 +576,82 @@ class Evora(object):
         
         return header
 
+
+    def heimdallChooseLogFile(self, logFileList, obsTime):
+        """
+        Parameters
+        ----------
+        logFileList : list
+                      List of path names to log files.  Log file names should be the UT date in {year/month/day}.txt
+        obsTime : time object
+                  This is time object of the header keyword OBS-TIME.
+
+        Returns
+        -------
+        string : Returns the path to the log file that corresponds to the obsTime date.
+                 OR if an index wasn't found then None is returned.
+        """
+        #print(obsTime)
+        dateFile = str(obsTime.tm_year) + str(obsTime.tm_mon) + str(obsTime.tm_mday) + ".txt"
+        #dateFile = time.strftime("%Y%m%d", obsTime) + ".log"
+        #print(dateFile)
+
+        logFileList = np.asarray(logFileList)
+        files_nopaths = np.asarray([f.split("/")[-1] for f in logFileList])
+
+        try:
+            idx = np.where(files_nopaths == dateFile)[0][0]
+            return logFileList[idx]
+        except IndexError:
+            return None
+
+    def heimdallParseLogFile(self, logFile, obsTime):
+        """ This file takes a log file reads it and finds the closest time to the obsTime and will output the following:
+        RA, DEC, Epoch, LST, HA, ZA, Airmass, HJD, and MJD
+
+        Parameters
+        ----------
+        logFile : string
+                  Full path to the TCC log file.
+        obsTime : time object
+                  Contains the observation time in a flexible format
+
+        Return
+        ------
+        tuple : (ra, dec, epoch, lst, ha)
+                If no best time is found then None is returned.
+        """
+        log = pd.read_csv(logFile, delim_whitespace=True, header=None, names=['time','ra', 'dec', 'epoch', 'lst'])
+
+        # Create array of decimal time values
+        times = [time.strptime(curr_time + " UTC", "%Y%m%dT%H:%M:%S %Z") for curr_time in log['time'].values]
+        times_deci = np.asarray([time.mktime(t) for t in times])
+        obsTime_deci = time.mktime(obsTime)
+        #print(times[0])
+        #print(time.strftime("%Y%m%dT%H:%M:%S %Z",times[0]))
+        #print(times_deci)
+        #print(obsTime_deci)
+        dif = times_deci - obsTime_deci
+        val = dif[dif <= 0][-1]
+
+        try:
+            idx = np.where(dif == val)[0][0]
+            #print(dif)
+            #print(idx)
+            #print(dif[idx])
+
+            # now that we have the best idx we grab the relevant data
+            ra = log['ra'][idx]
+            dec = log['dec'][idx]
+            epoch = log['epoch'][idx]
+            lst = log['lst'][idx]
+            ha = lst - ra
+            print(log['time'][idx], ra, dec, epoch, lst, ha)
+
+            return (ra, dec, epoch, lst, ha)
+        except IndexError:
+            return None
+    
     def ChooseLogfile(self, LogfileList, ObsTime):
         """
         Code provided by add_headers v4.1 written by Oliver Frasier
@@ -672,7 +764,7 @@ class Evora(object):
 
         attributes = [imType, binning, itime, filter]
         #header = self.getHeader(attributes)
-        header = self.getHeader_2(attributes, 'gtcc')
+        header = self.getHeader_2(attributes, 'tcc')
 
         logger.debug('StartAcquisition: ' + str(andor.StartAcquisition()))
 
@@ -814,7 +906,7 @@ class Evora(object):
         # write headers
         attributes = [imType, binning, itime, filter]
         #header = self.getHeader(attributes)
-        header = self.getHeader_2(attributes, 'gtcc')
+        header = self.getHeader_2(attributes, 'tcc')
         
         logger.debug('StartAcquisition: ' + str(andor.StartAcquisition()))
 
@@ -850,7 +942,7 @@ class Evora(object):
                     protocol.sendData("seriesSent"+str(counter)+" "+str(counter)+","+str(itime)+","+filename)
                     # make a new header and write time to it for new exposure.
                     #header = self.getHeader(attributes)
-                    header = self.getHeader_2(attributes, 'gtcc')
+                    header = self.getHeader_2(attributes, 'tcc')
 
                     if(counter == numexp):
                         logger.info("entered abort")
