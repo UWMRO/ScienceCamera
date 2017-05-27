@@ -75,6 +75,7 @@ class ImageQueueWatcher(threading.Thread, object):
                 #print("Plotting:", savedImage, "shortly.")
                 self.exposeClass.transferDone.wait()
                 print("Done transfering: %s" % savedImage)
+                print("Transfer queue:", self.exposeClass.imageQueue) 
                 #d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
                 #d.addErrback(self.retrievalFail)
                 
