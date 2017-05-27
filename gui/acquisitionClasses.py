@@ -76,9 +76,10 @@ class ImageQueueWatcher(threading.Thread, object):
                 d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
                 d.addErrback(self.retrievalFail)
                 
-            time.sleep(0.01)
+
                 # Wait for plot to be done
-                #self.exposeClass.donePlottingEvent.wait()
+                self.exposeClass.donePlottingEvent.wait()
+            time.sleep(0.01)
 
     def retrievalFail(self, msg):
         """ This is a dummy method to supress the failure to retrieve that happens at the end of a real time exposure.
