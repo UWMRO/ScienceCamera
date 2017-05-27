@@ -1309,8 +1309,8 @@ class TempControl(wx.Panel):
         temp = str(int(round(float(temp))))
         mode = int(msg.split(",")[0])
         targetTemp = msg.split(",")[3]
-        if self.current_mode is not None:
-            self.current_mode = mode
+#        if self.current_mode is not None:
+#            self.current_mode = mode
 
         #self.parent.parent.parent.stats.SetStatusText("Current Temp:            " + temp + " C", 0)
         wx.CallAfter(self.parent.parent.parent.stats.SetStatusText, "              " + temp + " C", 0)
