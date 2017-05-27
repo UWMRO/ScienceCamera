@@ -405,7 +405,7 @@ class Exposure(wx.Panel):
 
                 # start timer
                 #self.exposeTimer(itime)
-                self.timer_2.start(itime)
+                #self.timer_2.start(itime)
                 #thread.start_new_thread(self.exposeTimer, (itime,))
 
             if imType == 3:  # series exposure
@@ -642,8 +642,8 @@ class Exposure(wx.Panel):
             #d.addCallback(self.displayRealImage_thread)
             d.addCallback(self.displayRealImage)
 
-            if(self.timer.IsRunning()):
-                self.timer.Stop()
+            #if(self.timer.IsRunning()):
+            #    self.timer.Stop()
             #self.parent.parent.parent.expGauge.SetValue(self.endTimer)
             
             # get stats
@@ -665,8 +665,8 @@ class Exposure(wx.Panel):
             #self.parent.parent.parent.expGauge.SetValue(0)
             #self.startTimer = 0
 
-            self.timer_2.stop()
-            self.timer_2.start(self.timeToSend)
+            #self.timer_2.stop()
+            #self.timer_2.start(self.timeToSend)
             #self.exposeTimer(self.timeToSend)
             #thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
             
