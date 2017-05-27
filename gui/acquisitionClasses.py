@@ -100,10 +100,10 @@ class PlotterWatcher(threading.Thread, object):
         queue_size = 0
         while True:
             if self.exposeClass.plotQueue.qsize() == 0:
-                print("ImageQueueWatcher WAITING")            
+                print("PlotImageQueue WAITING")            
                 self.exposeClass.plotImageEvent.wait()
 
-            while self.exposeClass.plotQueue.qsize() == 0:
+            while self.exposeClass.plotQueue.qsize() > 0:
                 imageName, transferStatus, logString = self.exposeClass.plotQueue.get()
 
                 if transferStatus is True:
