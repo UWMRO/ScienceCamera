@@ -728,6 +728,7 @@ class Evora(object):
         This handles a single exposure and no more.  Inputs are the image type integration time, binning type
         filter type, as a string, and the index for the specified horizontal readout time.
         """
+        elapse_time = 0 - time.clock()
         if expnum is None:
             self.num += 1
             expnum = self.num
@@ -793,6 +794,8 @@ class Evora(object):
             filename = als.getImagePath('expose')
             hdu.writeto(filename,clobber=True)
             logger.debug("wrote: {}".format(filename))
+        elapse_time += time.clock()
+        print("Took %.3f seconds." % elapse_time)
         return "expose " + str(success) + ","+str(filename) + "," + str(itime)
 
     def realTimeExposure(self, protocol, imType, itime, binning=1):

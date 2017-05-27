@@ -214,7 +214,9 @@ class ProgressTimer(object):
         readout time.
         """
         times_2x2 = [0.0886, 0.154, 0.343, 5.8]  # exposure times in seconds
+        #times_1x1 = 
         binning = self.exposureClass.parent.parent.parent.binning # string (1 : 1x1, 2 : 2x2)
+        
         readout_speed = self.exposureClass.parent.parent.parent.readoutIndex # (0 : 5.0 MHz, 1 : 3.0 MHz, 2 : 1.0 MHz, 3 : 0.05 MHz)
 
         return times_2x2[readout_speed]
