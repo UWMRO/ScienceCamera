@@ -58,8 +58,8 @@ class ImageQueueWatcher(threading.Thread, object):
         queue_size = 0
         while True:
             if self.exposeClass.imageQueue.qsize() == 0:
-                #print("ImageQueueWatcher WAITING")            
-                #self.exposeClass.imageAddedEvent.wait()
+                print("ImageQueueWatcher WAITING")            
+                self.exposeClass.imageAddedEvent.wait()
                 pass
             while self.exposeClass.imageQueue.qsize() > 0:
                 line = str(self.exposeClass.imageQueue.get()).split(";")
@@ -72,14 +72,15 @@ class ImageQueueWatcher(threading.Thread, object):
                 print("Transfering:", image_name)
 
                 savedImage, d = self.exposeClass.transferImage(image_path, image_name, image_type)
-                print("Plotting:", savedImage, "shortly.")
-                d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
-                d.addErrback(self.retrievalFail)
+                #print("Plotting:", savedImage, "shortly.")
+                self.exposeClass.transferDone.wait()
+                print("Done transfering: %s" % savedImage)
+                #d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
+                #d.addErrback(self.retrievalFail)
                 
-
                 # Wait for plot to be done
-                self.exposeClass.donePlottingEvent.wait()
-            time.sleep(0.01)
+                #self.exposeClass.donePlottingEvent.wait()
+            #time.sleep(0.01)
             #print("Running...")
 
     def retrievalFail(self, msg):
@@ -87,6 +88,13 @@ class ImageQueueWatcher(threading.Thread, object):
         """
         print("FAILED TO RETRIEVE")
         pass # do nothing
+
+class PlotterWatcher(Thread, object)
+    def __init__(self, exposeClass):
+        threading.Thread.__init__(self)
+        self.exposeClass = exposeClass
+    def run(self):
+        
     
 class ProgressTimer(object):
     """
@@ -298,6 +306,7 @@ class Exposure(wx.Panel):
         # Setup work for Image Queue
         self.imageAddedEvent = threading.Event()
         self.donePlottingEvent = threading.Event()
+        self.transferDone = threading.Event()
         self.imageQueue = ImageQueue(self.imageAddedEvent)
         self.imageThread = ImageQueueWatcher(self)
         self.imageThread.daemon = True
@@ -938,9 +947,13 @@ class Exposure(wx.Panel):
 
     
     def ftpDone(self, msg):
+        self.transferDone.set()
+        self.transferDone.clear()
         print("DONE Retrieving:", msg)
         
     def ftpFail(self, error):
+        self.transferDone.set()
+        self.transferDone.clear()
         print("Failed retrieving file. Error was:")
         print(error)
 
