@@ -594,8 +594,8 @@ class Exposure(wx.Panel):
 
             # change the gui with thread safety
             # plots the image
-            wx.CallAfter(self.safePlot, data, stats_list)
-
+            #wx.CallAfter(self.safePlot, data, stats_list)
+            self.safePlot(data, stats_list)
             # copy file to different folder
             #self.copyImage(path, name)
             if logString is not None:
@@ -622,7 +622,8 @@ class Exposure(wx.Panel):
         plotInstance.panel.updatePassedStats(stats_list)
         plotInstance.panel.plotImage(data, sliderVal, plotInstance.currMap)
         plotInstance.panel.updateScreenStats()
-        plotInstance.panel.refresh()
+        wx.CallAfter(plotInstance.panel.refresh())
+        #plotInstance.panel.refresh()
 
     def displayRealImage_thread(self, msg):
         """
