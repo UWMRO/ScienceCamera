@@ -89,12 +89,12 @@ class ImageQueueWatcher(threading.Thread, object):
         print("FAILED TO RETRIEVE")
         pass # do nothing
 
-class PlotterWatcher(Thread, object)
+class PlotterWatcher(Thread, object):
     def __init__(self, exposeClass):
         threading.Thread.__init__(self)
         self.exposeClass = exposeClass
     def run(self):
-        
+        pass
     
 class ProgressTimer(object):
     """
