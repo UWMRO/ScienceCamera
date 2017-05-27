@@ -78,7 +78,7 @@ class ImageQueueWatcher(threading.Thread, object):
                 
 
                 # Wait for plot to be done
-                #self.exposeClass.donePlottingEvent.wait()
+                self.exposeClass.donePlottingEvent.wait()
             time.sleep(0.01)
             #print("Running...")
 
@@ -624,6 +624,9 @@ class Exposure(wx.Panel):
         plotInstance.panel.updateScreenStats()
         wx.CallAfter(plotInstance.panel.refresh())
         #plotInstance.panel.refresh()
+        self.donePlottingEvent.set()
+        self.donePlottingEvent.clear()
+
 
     def displayRealImage_thread(self, msg):
         """
