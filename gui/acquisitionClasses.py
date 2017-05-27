@@ -1033,7 +1033,7 @@ class Exposure(wx.Panel):
         #    self.timer.Stop()
             
         #self.parent.parent.parent.expGauge.SetValue(0)
-        self.timer_2.stop()
+        #self.timer_2.stop()
 
         self.imageQueue.empty()
         self.donePlottingEvent.set()
