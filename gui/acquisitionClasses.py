@@ -58,8 +58,9 @@ class ImageQueueWatcher(threading.Thread, object):
         queue_size = 0
         while True:
             if self.exposeClass.imageQueue.qsize() == 0:
-                print("ImageQueueWatcher WAITING")
-                self.exposeClass.imageAddedEvent.wait()
+                #print("ImageQueueWatcher WAITING")            
+                #self.exposeClass.imageAddedEvent.wait()
+                pass
             while self.exposeClass.imageQueue.qsize() > 0:
                 line = str(self.exposeClass.imageQueue.get()).split(";")
                 image_path = line[0]
@@ -74,9 +75,10 @@ class ImageQueueWatcher(threading.Thread, object):
                 print("Plotting:", savedImage, "shortly.")
                 d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
                 d.addErrback(self.retrievalFail)
-
+                
+            time.sleep(0.01)
                 # Wait for plot to be done
-                self.exposeClass.donePlottingEvent.wait()
+                #self.exposeClass.donePlottingEvent.wait()
 
     def retrievalFail(self, msg):
         """ This is a dummy method to supress the failure to retrieve that happens at the end of a real time exposure.
