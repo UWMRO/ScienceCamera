@@ -85,6 +85,7 @@ class ImageQueueWatcher(threading.Thread, object):
     def retrievalFail(self, msg):
         """ This is a dummy method to supress the failure to retrieve that happens at the end of a real time exposure.
         """
+        print("FAILED TO RETRIEVE")
         pass # do nothing
     
 class ProgressTimer(object):
@@ -588,18 +589,17 @@ class Exposure(wx.Panel):
             
     def display(self, results, savedImage, logString):
         print("displaying saved image")
-        if self.abort:
-            data = als.getData(savedImage)
-            stats_list = als.calcStats(data)
+        data = als.getData(savedImage)
+        stats_list = als.calcStats(data)
 
-            # change the gui with thread safety
-            # plots the image
-            #wx.CallAfter(self.safePlot, data, stats_list)
-            self.safePlot(data, stats_list)
-            # copy file to different folder
-            #self.copyImage(path, name)
-            if logString is not None:
-                self.log(self.logFunction, logString)
+        # change the gui with thread safety
+        # plots the image
+        #wx.CallAfter(self.safePlot, data, stats_list)
+        self.safePlot(data, stats_list)
+        # copy file to different folder
+        #self.copyImage(path, name)
+        if logString is not None:
+            self.log(self.logFunction, logString)
 
         #self.donePlottingEvent.set()
         #self.donePlottingEvent.clear()
