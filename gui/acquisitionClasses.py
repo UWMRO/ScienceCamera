@@ -34,13 +34,13 @@ This set of classes handles everything in the imaging tab.
 # Global Variables
 logger = MyLogger.myLogger("acquisitionClasses.py", "client")
 
-class ImageQueue(Queue, object):
+class EventQueue(Queue, object):
     def __init__(self, event):
-        super(ImageQueue, self).__init__()
+        super(EventQueue, self).__init__()
         self.event = event
 
-    def addImage(self, image):
-        self.put(image)
+    def addImage(self, item):
+        self.put(item)
         self.event.set()
         self.event.clear()
 
@@ -75,7 +75,9 @@ class ImageQueueWatcher(threading.Thread, object):
                 #print("Plotting:", savedImage, "shortly.")
                 self.exposeClass.transferDone.wait()
                 print("Done transfering: %s" % savedImage)
-                print("Transfer queue:", self.exposeClass.imageQueue) 
+                #print("Transfer queue:", self.exposeClass.imageQueue)
+                print("TRANSFER STATUS:", self.exposeClass.transferStatus)
+                self.exposeClass.plotQueue.put((savedImage, self.exposeClass.transferStatus, logString))
                 #d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
                 #d.addErrback(self.retrievalFail)
                 
@@ -95,7 +97,21 @@ class PlotterWatcher(threading.Thread, object):
         threading.Thread.__init__(self)
         self.exposeClass = exposeClass
     def run(self):
-        pass
+        queue_size = 0
+        while True:
+            if self.exposeClass.plotQueue.qsize() == 0:
+                print("ImageQueueWatcher WAITING")            
+                self.exposeClass.plotImageEvent.wait()
+
+            while self.exposeClass.plotQueue.qsize() == 0:
+                imageName, transferStatus, logString = self.exposeClass.plotQueue.get()
+
+                if transferStatus is True:
+                    self.exposeClass.display(None, imageName, logString)
+                    self.exposeClass.donePlottingEvent.wait()
+                else:
+                    print("Transfer went wrong not plotting") # likely due to an abort
+
     
 class ProgressTimer(object):
     """
@@ -308,10 +324,19 @@ class Exposure(wx.Panel):
         self.imageAddedEvent = threading.Event()
         self.donePlottingEvent = threading.Event()
         self.transferDone = threading.Event()
-        self.imageQueue = ImageQueue(self.imageAddedEvent)
+        self.imageQueue = EventQueue(self.imageAddedEvent)
         self.imageThread = ImageQueueWatcher(self)
         self.imageThread.daemon = True
         self.imageThread.start()
+        self.transferStatus = False # If if transfer is successfull and False otherwise no trnasfer yet.
+
+        # Setup plotter queue
+        self.plotImageEvent = threading.Event()
+        self.donePlottingEvent = threading.Event()
+        self.plotQueue = EventQueue(self.plotImageEvent)
+        self.plotWatcher = PlotterWatcher(self)
+        self.plotWatcher.daemon = True
+        self.plotWatcher.start()
         
     def nameText(self, event):
         """
@@ -604,8 +629,8 @@ class Exposure(wx.Panel):
 
         # change the gui with thread safety
         # plots the image
-        #wx.CallAfter(self.safePlot, data, stats_list)
-        self.safePlot(data, stats_list)
+        wx.CallAfter(self.safePlot, data, stats_list)
+        #self.safePlot(data, stats_list)
         # copy file to different folder
         #self.copyImage(path, name)
         if logString is not None:
@@ -632,8 +657,8 @@ class Exposure(wx.Panel):
         plotInstance.panel.updatePassedStats(stats_list)
         plotInstance.panel.plotImage(data, sliderVal, plotInstance.currMap)
         plotInstance.panel.updateScreenStats()
-        wx.CallAfter(plotInstance.panel.refresh())
-        #plotInstance.panel.refresh()
+        #wx.CallAfter(plotInstance.panel.refresh())
+        plotInstance.panel.refresh()
         self.donePlottingEvent.set()
         self.donePlottingEvent.clear()
 
@@ -950,13 +975,14 @@ class Exposure(wx.Panel):
     def ftpDone(self, msg):
         self.transferDone.set()
         self.transferDone.clear()
+        self.transferStatus = True
         print("DONE Retrieving:", msg)
         
     def ftpFail(self, error):
         self.transferDone.set()
         self.transferDone.clear()
-        print("Failed retrieving file. Error was:")
-        print(error)
+        self.transferStatus = False
+        print("Failed retrieving file. Error was:", error)
 
     """
     Deprecated
