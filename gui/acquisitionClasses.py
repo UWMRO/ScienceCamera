@@ -78,7 +78,7 @@ class ImageQueueWatcher(threading.Thread, object):
                 
 
                 # Wait for plot to be done
-                self.exposeClass.donePlottingEvent.wait()
+                #self.exposeClass.donePlottingEvent.wait()
             time.sleep(0.01)
             print("Running...")
 
@@ -588,20 +588,21 @@ class Exposure(wx.Panel):
             
     def display(self, results, savedImage, logString):
         print("displaying saved image")
-        data = als.getData(savedImage)
-        stats_list = als.calcStats(data)
+        if self.abort:
+            data = als.getData(savedImage)
+            stats_list = als.calcStats(data)
 
-        # change the gui with thread safety
-        # plots the image
-        wx.CallAfter(self.safePlot, data, stats_list)
+            # change the gui with thread safety
+            # plots the image
+            wx.CallAfter(self.safePlot, data, stats_list)
 
-        # copy file to different folder
-        #self.copyImage(path, name)
-        if logString is not None:
-            self.log(self.logFunction, logString)
+            # copy file to different folder
+            #self.copyImage(path, name)
+            if logString is not None:
+                self.log(self.logFunction, logString)
 
-        self.donePlottingEvent.set()
-        self.donePlottingEvent.clear()
+        #self.donePlottingEvent.set()
+        #self.donePlottingEvent.clear()
                 
     def safePlot(self, data, stats_list):
         """
