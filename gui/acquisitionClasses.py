@@ -323,7 +323,7 @@ class Exposure(wx.Panel):
 
         # Setup work for Image Queue
         self.imageAddedEvent = threading.Event()
-        self.donePlottingEvent = threading.Event()
+        #self.donePlottingEvent = threading.Event()
         self.transferDone = threading.Event()
         self.imageQueue = EventQueue(self.imageAddedEvent)
         self.imageThread = ImageQueueWatcher(self)
@@ -720,8 +720,8 @@ class Exposure(wx.Panel):
 
         # release ImageQueueWatcher if it is stuck waiting for an image to display and empty Queue
         self.imageQueue.empty()
-        self.donePlottingEvent.set()
-        self.donePlottingEvent.clear()
+        #self.donePlottingEvent.set()
+        #self.donePlottingEvent.clear()
 
         
         self.logFunction = self.logExposure
@@ -834,8 +834,8 @@ class Exposure(wx.Panel):
         self.timer_2.stop()
 
         self.imageQueue.empty()
-        self.donePlottingEvent.set()
-        self.donePlottingEvent.clear()
+        #self.donePlottingEvent.set()
+        #self.donePlottingEvent.clear()
 
         # finish out the gauge
         #self.parent.parent.parent.expGauge.SetValue(self.endTimer)
@@ -1083,8 +1083,8 @@ class Exposure(wx.Panel):
         #self.timer_2.stop()
 
         self.imageQueue.empty()
-        self.donePlottingEvent.set()
-        self.donePlottingEvent.clear()
+        #self.donePlottingEvent.set()
+        #self.donePlottingEvent.clear()
 
             
         self.expButton.Enable(True)
