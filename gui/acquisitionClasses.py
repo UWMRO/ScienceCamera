@@ -1136,6 +1136,7 @@ class TempControl(wx.Panel):
         self.logFunction = None
         self.currTemp = None
         self.prevMode = None
+        self.current_mode = None
 
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
@@ -1308,6 +1309,8 @@ class TempControl(wx.Panel):
         temp = str(int(round(float(temp))))
         mode = int(msg.split(",")[0])
         targetTemp = msg.split(",")[3]
+        if self.current_mode is not None:
+            self.current_mode = mode
 
         #self.parent.parent.parent.stats.SetStatusText("Current Temp:            " + temp + " C", 0)
         wx.CallAfter(self.parent.parent.parent.stats.SetStatusText, "      Temp: " + temp + " C", 0)
@@ -1317,24 +1320,48 @@ class TempControl(wx.Panel):
         # 20035 is NotStabalized
         # 20036 is Stabalized
         # 20034 is Off  
-        
-        if mode != 20034 and not self.stopCool.IsEnabled():
-            logger.info("Enter")
-            self.stopCool.Enable(True)
-        #if self.prevMode is None or self.prevMode != mode:
-            #print("MAKING NEW BITMAP")
-        if mode == 20034 and float(temp) >= 0:
-            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('greenCirc.png'))
-        if mode == 20037 or (mode == 20034 and float(temp) < 0):
-            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('redCirc.png'))
-        if mode == 20035:
-            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('yellowCirc.png'))
-        if mode == 20036:
-            bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('blueCirc.png'))
-        
-        self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT,
-                                                      verticalalignment=EnhancedStatusBar.ESB_ALIGN_BOTTOM)
-         #   self.prevMode = mode
+
+        if mode != self.current_mode:
+            self.current_mode = mode
+            bmp_ctrl = None
+            if mode != 20034 and not self.stopCool.IsEnabled():
+                logger.info("Enter")
+                self.stopCool.Enable(True)
+            #if self.prevMode is None or self.prevMode != mode:
+                #print("MAKING NEW BITMAP")
+            if mode == 20034 and float(temp) >= 0:
+                #bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('greenCirc.png'))
+                bmp = wx.Bitmap("greenBar.bmp")
+                bmp.SetWidth(40)
+                bmp_ctrl = wx.StaticBitmap(self.parent.parent.parent.stats, -1, bmp)
+                #self.parent.parent.parent.stats.AddWidget(bmp_ctrl, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
+
+
+            if mode == 20037 or (mode == 20034 and float(temp) < 0):
+                #bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('redCirc.png'))
+                bmp = wx.Bitmap("redBar.bmp")
+                bmp.SetWidth(40)
+                bmp_ctrl = wx.StaticBitmap(self.parent.parent.parent.stats, -1, bmp)
+                #self.parent.parent.parent.stats.AddWidget(bmp_ctrl, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
+
+            if mode == 20035:
+                #bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('yellowCirc.png'))
+                bmp = wx.Bitmap("yellowBar.bmp")
+                bmp.SetWidth(40)
+                bmp_ctrl = wx.StaticBitmap(self.parent.parent.parent.stats, -1, bmp)
+                #self.parent.parent.parent.stats.AddWidget(bmp_ctrl, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
+
+            if mode == 20036:
+                #bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('blueCirc.png'))
+                bmp = wx.Bitmap("blueBar.bmp")
+                bmp.SetWidth(40)
+                bmp_ctrl = wx.StaticBitmap(self.parent.parent.parent.stats, -1, bmp)
+                #self.parent.parent.parent.stats.AddWidget(bmp_ctrl, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
+
+            #self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT,
+            #                                              verticalalignment=EnhancedStatusBar.ESB_ALIGN_BOTTOM)
+             #   self.prevMode = mode
+            self.parent.parent.parent.stats.AddWidget(bmp_ctrl, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
         
     def logTemp(self, logmsg):
         """

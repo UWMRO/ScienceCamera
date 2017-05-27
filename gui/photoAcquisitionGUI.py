@@ -64,6 +64,10 @@ class Evora(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, None, -1, "Evora Acquisition GUI", size=(600, 450))
 
+        # width and height in pixels
+        self.width = 600
+        self.height = 450
+        
         self.protocol = None # client protocol
         self.ftp = None
         self.connection = None
@@ -157,13 +161,36 @@ class Evora(wx.Frame):
         ## Status Bar:  include temperature, binning type, gauge for exposure
         self.stats = EnhancedStatusBar.EnhancedStatusBar(self)
         self.stats.SetSize((23,-1))
-        self.stats.SetFieldsCount(3)
+        self.stats.SetFieldsCount(4)
+        #self.stats.SetStatusWidths([int(self.width*(1/10)),int(self.width*(2/10)),int(self.width*(5/10)),int(self.width*(5/10)),int(self.width*(5/10))])
         self.SetStatusBar(self.stats)
-        self.stats.SetStatusText("      Temp:  ... C", 0)
-        self.stats.SetStatusText("Binning Type: 2x2", 2)
-        self.stats.SetStatusText("Exp. Status:", 1)
-        self.expGauge = wx.Gauge(self.stats, id=1, range=100, size=(110, -1))
+        self.stats.SetStatusText("Current Temp:  ... C", 0)
+
+        self.stats.SetStatusText("  Exp:", 1)
+        self.stats.SetStatusText("   Binning Type: 2x2", 2)
+        self.stats.SetStatusText("Filter:DISCONNECTED", 3)
+        self.expGauge = wx.Gauge(self.stats, id=1, range=100, size=(100, -1))
         self.stats.AddWidget(self.expGauge, pos=1, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+
+        rect = self.stats.GetFieldRect(0)
+        print(rect.Get())
+        h = rect.GetHeight()
+        w = rect.GetWidth()
+        
+        
+        #bmp = wx.Bitmap("greenBar.bmp")
+        #bmp.SetHeight()
+        #bmp.SetWidth(40)
+        """
+        dc = wx.MemoryDC(bmp)
+        text = "Temp: ... C"
+        w, h = dc.GetSize()
+        tw, th = dc.GetTextExtent(text)
+        dc.DrawText(text, (w-tw)/2, (h-th)/2)
+        del dc
+        """
+        #bmp_ctrl = wx.StaticBitmap(self.stats, -1, bmp)
+        #self.stats.AddWidget(bmp_ctrl, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
         
         # size panels
         sizer = wx.BoxSizer()
@@ -183,6 +210,7 @@ class Evora(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onConnect, id=1130)
         self.Bind(wx.EVT_MENU, self.onDisconnect, id=1131)
         self.Bind(wx.EVT_MENU, self.onShutdown, id=1132)
+
         self.Bind(wx.EVT_MENU, self.onFilterConnect, id=1110)
         self.Bind(wx.EVT_MENU, self.onRefresh, id=1111)
         self.Bind(wx.EVT_MENU, self.onFilterDisconnect, id=1112)
