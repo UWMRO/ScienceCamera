@@ -1313,7 +1313,7 @@ class TempControl(wx.Panel):
             self.current_mode = mode
 
         #self.parent.parent.parent.stats.SetStatusText("Current Temp:            " + temp + " C", 0)
-        wx.CallAfter(self.parent.parent.parent.stats.SetStatusText, "                  " + temp + " C", 0)
+        wx.CallAfter(self.parent.parent.parent.stats.SetStatusText, "              " + temp + " C", 0)
         
         ## based on temp change bitmap color
         # 20037 is NotReached
