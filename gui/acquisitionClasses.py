@@ -39,7 +39,7 @@ class EventQueue(Queue, object):
         super(EventQueue, self).__init__()
         self.event = event
 
-    def addImage(self, item):
+    def addItem(self, item):
         self.put(item)
         self.event.set()
         self.event.clear()
@@ -77,7 +77,7 @@ class ImageQueueWatcher(threading.Thread, object):
                 print("Done transfering: %s" % savedImage)
                 #print("Transfer queue:", self.exposeClass.imageQueue)
                 print("TRANSFER STATUS:", self.exposeClass.transferStatus)
-                self.exposeClass.plotQueue.put((savedImage, self.exposeClass.transferStatus, logString))
+                self.exposeClass.plotQueue.addItem((savedImage, self.exposeClass.transferStatus, logString))
                 #d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
                 #d.addErrback(self.retrievalFail)
                 
@@ -594,7 +594,7 @@ class Exposure(wx.Panel):
             logString = als.getLogString("expose " + msg + "," + self.currentImage, 'post')
 
             line = "%s;%s;single;%s" % (path, name, logString)
-            self.imageQueue.addImage(line)
+            self.imageQueue.addItem(line)
             
             #savedImage, d = self.transferImage(path, name, 'single')
             #print("Saved Image is:", savedImage)
@@ -695,7 +695,7 @@ class Exposure(wx.Panel):
             path = "/".join(path[:-1]) + "/"
             #fullImPath, d = self.transferImage(path, name, 'real')
             line = "%s;%s;real;%s" % (path, name, str(None))
-            self.imageQueue.addImage(line)
+            self.imageQueue.addItem(line)
             
             #d.addCallback(self.display, savedImage=fullImPath, logString=None) 
             
@@ -800,7 +800,7 @@ class Exposure(wx.Panel):
             #d.addCallback(self.display, savedImage=savedImage, logString=logString)
 
             line = "%s;%s;series;%s" % (path, name, logString)
-            self.imageQueue.addImage(line)
+            self.imageQueue.addItem(line)
 
 
             if self.seriesImageNumber is not None:
