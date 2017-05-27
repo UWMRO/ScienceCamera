@@ -1313,7 +1313,7 @@ class TempControl(wx.Panel):
             self.current_mode = mode
 
         #self.parent.parent.parent.stats.SetStatusText("Current Temp:            " + temp + " C", 0)
-        wx.CallAfter(self.parent.parent.parent.stats.SetStatusText, "      Temp: " + temp + " C", 0)
+        wx.CallAfter(self.parent.parent.parent.stats.SetStatusText, "          " + temp + " C", 0)
         
         ## based on temp change bitmap color
         # 20037 is NotReached
@@ -1322,6 +1322,7 @@ class TempControl(wx.Panel):
         # 20034 is Off  
 
         if mode != self.current_mode:
+            print("UPDATING COLORS")
             self.current_mode = mode
             bmp_ctrl = None
             if mode != 20034 and not self.stopCool.IsEnabled():

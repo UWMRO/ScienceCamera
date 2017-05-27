@@ -168,7 +168,7 @@ class Evora(wx.Frame):
 
         self.stats.SetStatusText("  Exp:", 1)
         self.stats.SetStatusText("   Binning Type: 2x2", 2)
-        self.stats.SetStatusText("Filter:DISCONNECTED", 3)
+        self.stats.SetStatusText("Filter: offline", 3)
         self.expGauge = wx.Gauge(self.stats, id=1, range=100, size=(100, -1))
         self.stats.AddWidget(self.expGauge, pos=1, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
 
