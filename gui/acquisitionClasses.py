@@ -676,9 +676,6 @@ class Exposure(wx.Panel):
         """
         self.protocol.removeDeferred("realSent")  # Remove floating deffered object
 
-        # change the ftp server directory to default
-        self.ftp.cdup().addCallback(self.ftpCWD)
-
         # release ImageQueueWatcher if it is stuck waiting for an image to display and empty Queue
         self.imageQueue.empty()
         self.donePlottingEvent.set()
@@ -691,6 +688,10 @@ class Exposure(wx.Panel):
 
         logger.debug("Completed real time series with exit: " + msg)
 
+        # change the ftp server directory to default
+        self.ftp.cdup().addCallback(self.ftpCWD)
+
+        
 
     def displaySeriesImage_thread(self, msg):
         """
