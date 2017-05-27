@@ -105,6 +105,7 @@ class PlotterWatcher(threading.Thread, object):
 
             while self.exposeClass.plotQueue.qsize() > 0:
                 imageName, transferStatus, logString = self.exposeClass.plotQueue.get()
+                print("IN PLOT THREAD:", imageName, transferStatus, logString)
 
                 if transferStatus == True:
                     self.exposeClass.display(None, imageName, logString)
