@@ -504,7 +504,7 @@ class Exposure(wx.Panel):
 
                             # start timer
                         
-                            if self.timer_2._getReadoutTime(itime) > 1.0:
+                            if self.timer_2._getReadoutTime() + itime > 1.0:
                                 self.timer_2.start(itime)
                             else:
                                 self.timer_2.start(0)
