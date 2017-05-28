@@ -280,7 +280,7 @@ class Exposure(wx.Panel):
 
         self.expValue = wx.TextCtrl(self, id=2003, size=(45, -1), value="0", style=wx.TE_READONLY)
         
-        self.expButton = wx.Button(self, id=2004, label="Expose", size=(60, -1))
+        self.expButton = wx.Button(self, id=2004, label="Expose", size=(65, -1))
         self.stopExp = wx.Button(self, id=2005, label="Abort", size=(60, -1))
         self.setDirButton = wx.Button(self, id=2006, label="Set Dir.", size=(60, -1))
         self.stopExp.Enable(False)
