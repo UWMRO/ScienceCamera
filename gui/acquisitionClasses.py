@@ -1490,7 +1490,7 @@ class FilterControl(wx.Panel):
         self.vertSizer.Fit(self)
 
     def loadingDot(self, event):
-
+        maxDots = 4
         def numberOfDots(string):
             num = 0
             for s in string[::-1]:
@@ -1501,10 +1501,10 @@ class FilterControl(wx.Panel):
         statusBar = self.parent.parent.parent.stats
         s = statusBar.GetStatusText(3)
         dotNum = numberOfDots(s)
-        if dotNum < 3:
+        if dotNum < maxDots:
             s += "."
         else:
-            s = s[:-3]
+            s = s[:maxDots]
 
         statusBar.SetStatusText(s, 3)
         
@@ -1544,7 +1544,7 @@ class FilterControl(wx.Panel):
             logString = als.getLogString("filter move " + str(self.filterName[pos]), 'pre')
             self.log(self.logFunction, logString)
 
-            self.loadingDotsTimer.Start(100)
+            self.loadingDotsTimer.Start(350)
             d = self.protocol2.addDeferred("findPos")
             d.addCallback(self.findPosCallback)
 
@@ -1596,7 +1596,7 @@ class FilterControl(wx.Panel):
         logger.info("homing...")
 
         self.statusBar.SetStatusText("Filter:  HOMING", 3)
-        self.loadingDotsTimer.Start(500)
+        self.loadingDotsTimer.Start(350)
         
         self.enableButtons(False)
 
@@ -1621,8 +1621,6 @@ class FilterControl(wx.Panel):
         pos = int(msg)
         logger.debug("position: " + str(pos))
         filter = self.filterName[pos]
-        self.iterateDotLoad()
-
         
         self.logFunction = self.logFilter
         if self.targetFilter is not None and self.targetFilter != pos:
@@ -1630,7 +1628,7 @@ class FilterControl(wx.Panel):
             self.log(self.logFunction, logString)
 
             #self.statusBar.SetStatusText("Filter:  %s" % (filter+self.loadingDots), 3)
-            wx.CallAfter(self.statusBar.SetStatusText, "Filter:  %s" % filter, 3)
+            wx.CallAfter(self.statusBar.SetStatusText, "Filter:    %s" % filter, 3)
             
         # set drop down menu to the correct filter
         elif self.targetFilter == pos and self.adjusting:  # Kill the getFilter sequence when adjusting
@@ -1644,7 +1642,7 @@ class FilterControl(wx.Panel):
             self.targetFilter = None
 
             #self.statusBar.SetStatusText("Filter:  %s" % (filter+self.loadingDots), 3)
-            wx.CallAfter(self.statusBar.SetStatusText, "Filter:  %s" % filter, 3)
+            wx.CallAfter(self.statusBar.SetStatusText, "Filter:    %s" % filter, 3)
             
         else:
             self.watch = False
@@ -1658,7 +1656,7 @@ class FilterControl(wx.Panel):
             self.loadingDotsTimer.Stop()
 
             #self.statusBar.SetStatusText("Filter:   %s" % filter, 3)
-            wx.CallAfter(self.statusBar.SetStatusText, "Filter:   %s" % filter, 3)
+            wx.CallAfter(self.statusBar.SetStatusText, "Filter:     %s" % filter, 3)
         logger.debug("Filter position is " + filter)
 
     def getFilterCallback_thread(self, msg):
@@ -1667,11 +1665,6 @@ class FilterControl(wx.Panel):
         """
         thread.start_new_thread(self.getFilterCallback, (msg,))
 
-    def iterateDotLoad(self):
-        if self.loadingDots != "....":
-            self.loadingDots += "."
-        else:
-            self.loadingDots = "."
     def filterWatch(self):
         """
         Pre: No input.

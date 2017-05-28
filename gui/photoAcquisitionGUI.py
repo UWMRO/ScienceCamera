@@ -1105,6 +1105,7 @@ class FilterForwarder(basic.LineReceiver):
         ## Add a "callback" that will close down the gui functionality when camera connection is closed.
         filterInstance = self.gui.takeImage.filterInstance
         filterInstance.filterConnection = False
+        self.gui.stats.SetStatusText("Filter: offline", 3)
 
 
 
