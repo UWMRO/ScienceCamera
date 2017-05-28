@@ -458,7 +458,7 @@ class Exposure(wx.Panel):
                 self.log(self.logFunction, logString)
 
                 # change ftp server to the tmp folder
-                self.ftp.cwd("tmp/").addCallback(self.ftpCWD)
+                #self.ftp.cwd("tmp/").addCallback(self.ftpCWD)
                 
                 # send command to start realtime exposure
                 d = self.protocol.sendCommand(command) 
@@ -741,7 +741,7 @@ class Exposure(wx.Panel):
         """
         Called when the camera has been aborted during a real time series exposure.
         """
-        self.protocol.removeDeferred("realSent")  # Remove floating deffered object
+        #self.protocol.removeDeferred("realSent")  # Remove floating deffered object
 
         # release ImageQueueWatcher if it is stuck waiting for an image to display and empty Queue
         self.imageQueue.empty()
@@ -756,9 +756,9 @@ class Exposure(wx.Panel):
         self.log(self.logFunction, logString)
 
         logger.debug("Completed real time series with exit: " + msg)
-
+        self.realSentCount = 1
         # change the ftp server directory to default
-        self.ftp.cdup().addCallback(self.ftpCWD)
+        #self.ftp.cdup().addCallback(self.ftpCWD)
 
         
 

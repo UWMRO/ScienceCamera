@@ -302,7 +302,7 @@ def getImagePath(type):
     time = datetime.today()
     fileName = time.strftime("image_%Y%m%d_%H%M%S_%f.fits")
     if(type == 'real'):
-        return "/home/mro/storage/evora_data/tmp/" + fileName
+        return "/home/mro/storage/evora_data/" + fileName
     else:
         return saveDirectory + fileName
 
