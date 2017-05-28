@@ -557,7 +557,7 @@ class Evora(object):
                     header.append(card=("ST", lst, "local sidereal time (hours)"))
                     header.append(card=("HA", ha, "Hour Angle"))
                     header.append(card=("ZD", za, "Zenith Angle"))
-                    header.append(card=("AIRMASS", airmass, "Airmass")
+                    header.append(card=("AIRMASS", airmass, "Airmass"))
 
                     
                     
