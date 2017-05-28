@@ -1616,7 +1616,7 @@ class FilterControl(wx.Panel):
             d = self.protocol2.sendCommand("getFilter")
             d.addCallback(self.getFilterCallback)
         else:
-            self.statusBar.SetStatusText("Filter: Homing FAILED")
+            self.statusBar.SetStatusText("Filter: FAILED")
         
         self.enableButtons(True)
 
