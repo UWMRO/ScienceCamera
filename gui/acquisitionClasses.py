@@ -1629,7 +1629,8 @@ class FilterControl(wx.Panel):
             logString = als.getLogString("filter getFilter report " + filter, 'post')
             self.log(self.logFunction, logString)
 
-            self.statusBar.SetStatusText("Filter:  %s" % (filter+self.loadingDots), 3)
+            #self.statusBar.SetStatusText("Filter:  %s" % (filter+self.loadingDots), 3)
+            wx.CallAfter(self.statusBar.SetStatusText, "Filter:  %s" % (filter+self.loadingDots), 3)
             
         # set drop down menu to the correct filter
         elif self.targetFilter == pos and self.adjusting:  # Kill the getFilter sequence when adjusting
@@ -1642,7 +1643,8 @@ class FilterControl(wx.Panel):
             self.filterSelection = str(self.filterMenu.GetValue())
             self.targetFilter = None
 
-            self.statusBar.SetStatusText("Filter:  %s" % (filter+self.loadingDots), 3)
+            #self.statusBar.SetStatusText("Filter:  %s" % (filter+self.loadingDots), 3)
+            wx.CallAfter(self.statusBar.SetStatusText, "Filter:  %s" % (filter+self.loadingDots), 3)
             
         else:
             self.watch = False
@@ -1655,7 +1657,8 @@ class FilterControl(wx.Panel):
             self.targetFilter = None
             #self.loadingDotsTimer.Stop()
 
-            self.statusBar.SetStatusText("Filter:   %s" % filter, 3)
+            #self.statusBar.SetStatusText("Filter:   %s" % filter, 3)
+            wx.CallAfter(self.statusBar.SetStatusText, "Filter:   %s" % filter, 3)
         logger.debug("Filter position is " + filter)
 
     def getFilterCallback_thread(self, msg):
