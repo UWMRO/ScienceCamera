@@ -723,7 +723,7 @@ class Exposure(wx.Panel):
             path = "/".join(path[:-1]) + "/"
             #fullImPath, d = self.transferImage(path, name, 'real')
             line = "%s;%s;real;%s" % (path, name, str(None))
-            self.imageQueue.addItem(line)
+            #self.imageQueue.addItem(line)
             
             #d.addCallback(self.display, savedImage=fullImPath, logString=None) 
             
