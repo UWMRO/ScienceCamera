@@ -458,7 +458,7 @@ class Exposure(wx.Panel):
                 d.addCallback(self.realCallback)  # this will clear the image path queue
 
                 # start timer
-                if itime <= 1.5:
+                if itime < 2.5:
                     self.timer_2.start(0)
                 else:
                     self.timer_2.start(itime)
@@ -503,7 +503,10 @@ class Exposure(wx.Panel):
                             d.addCallback(self.seriesCallback)
 
                             # start timer
-                            self.timer_2.start(itime)
+                            if itime > 1.0:
+                                self.timer_2.start(itime)
+                            else:
+                                self.timer_2(0)
 
                     else:
                         dialog = wx.MessageDialog(None, "Entry was not a valid integer!", "", wx.OK | wx.ICON_ERROR)
@@ -706,7 +709,7 @@ class Exposure(wx.Panel):
             # change the gui with thread safety
             #wx.CallAfter(self.safePlot, data, stats_list)
 
-            if float(self.timeToSend) >= 1.5:
+            if float(self.timeToSend) >= 2:
                 self.timer_2.stop()
                 self.timer_2.start(self.timeToSend)
             
@@ -760,7 +763,6 @@ class Exposure(wx.Panel):
         for i in fullPath[:-1]:
             directory += i + "/"
 
-        self.timer_2.stop()
         # no abort then display the image
         if(imNum <= int(self.seriesImageNumber)):
             logger.info("Entered to display series image")
@@ -787,7 +789,10 @@ class Exposure(wx.Panel):
 
             if self.seriesImageNumber is not None:
                 if imNum < int(self.seriesImageNumber):
-                    self.timer_2.start(time)
+                    if time > 1.0:
+                        self.timer_2.stop()
+                        self.timer_2.start(time)
+
                                         
     def seriesCallback(self, msg):
         msg = msg.split(",")
