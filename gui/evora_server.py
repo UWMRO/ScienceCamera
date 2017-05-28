@@ -551,7 +551,7 @@ class Evora(object):
 
                     airmass = 1.0 / np.sin(np.radians((90-za) + 244/(165+47*(90-za)**1.1)))
 
-                    astroTime = Time(dateObs)
+                    astroTime = Time(dateObs, scale='utc')
                     print("FROM HEIMDALL LOGS:", results)
                     
                     header.append(card=("RA", ra, "Right Ascension"))
