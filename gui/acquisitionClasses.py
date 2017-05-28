@@ -200,6 +200,7 @@ class ProgressTimer(object):
         """
         # Update gauge with value until it hits max-1
         max = self.gauge.GetRange()
+        print(max)
         current = self.gauge.GetValue()
         
         if current < max and max > 1:
