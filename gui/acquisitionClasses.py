@@ -1504,7 +1504,7 @@ class FilterControl(wx.Panel):
         if dotNum < maxDots:
             s += "."
         else:
-            s = s[:maxDots]
+            s = s[:-maxDots]
 
         statusBar.SetStatusText(s, 3)
         
