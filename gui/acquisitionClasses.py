@@ -452,9 +452,8 @@ class Exposure(wx.Panel):
                 #d.addCallback(self.displayRealImage)
                 #d = self.protocol.addDeferred("realSent"+self.nextRealSentCount())
                 #d.addCallback(self.displayRealImage)
-                dl = self.makeDeferredList()
-                dl.addCallback(self.displayRealImage)
-
+                self.makeRealTimeDeferreds()
+                
                 command = "real " + line
                 logString = als.getLogString(command, 'pre')
                 self.log(self.logFunction, logString)
@@ -526,15 +525,14 @@ class Exposure(wx.Panel):
     def ftpCWD(self, msg):
         print("Changed FTP server directory:", msg)
 
-    def makeDeferredList(self):
+    def makeRealTimeDeferreds(self):
         deferreds = []
         for i in range(0, 100):
             count = self.nextRealSentCount()
             print("realSent"+count)
             d = self.protocol.addDeferred("realSent"+count)
-            deferreds.append(d)
-        dl = defer.DeferredList(deferreds)
-        return dl
+            d.addCallback(self.displayRealImage)
+
         
     def nextRealSentCount(self):
         self.realSentCount += 1
