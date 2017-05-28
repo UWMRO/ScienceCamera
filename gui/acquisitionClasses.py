@@ -969,6 +969,7 @@ class Exposure(wx.Panel):
         self.transferDone.set()
         self.transferDone.clear()
         self.transferStatus = True
+        print("DONE WITH RETRIVING")
         print("DONE Retrieving:", msg)
         
     def ftpFail(self, error):
