@@ -151,7 +151,7 @@ class ProgressTimer(object):
         integer_ticks = 0
         if time == 0:
             integer_ticks = 1
-            self.interval = 100
+            self.interval = 300
         elif time <= 0.5: # 10 millisecond intervals
             integer_ticks = int(exposureTime / 10**-2) # divide by 10 milliseconds
             self.interval = 10
@@ -200,7 +200,6 @@ class ProgressTimer(object):
         """
         # Update gauge with value until it hits max-1
         max = self.gauge.GetRange()
-        print(max)
         current = self.gauge.GetValue()
         
         if current < max and max > 2:
