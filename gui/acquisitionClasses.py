@@ -763,7 +763,7 @@ class Exposure(wx.Panel):
         directory = ""
         for i in fullPath[:-1]:
             directory += i + "/"
-        self.timer_2.stop()
+        #self.timer_2.stop()
         # no abort then display the image
         if(imNum <= int(self.seriesImageNumber)):
             logger.info("Entered to display series image")
@@ -790,7 +790,7 @@ class Exposure(wx.Panel):
 
             if self.seriesImageNumber is not None:
                 if imNum < int(self.seriesImageNumber):
-                    if time+self.timer_2._getReadoutTime > 1.0:
+                    if time+self.timer_2._getReadoutTime => 1.0:
                         self.timer_2.stop()
                         self.timer_2.start(time)
 
