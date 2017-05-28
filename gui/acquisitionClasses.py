@@ -433,8 +433,6 @@ class Exposure(wx.Panel):
                     d = self.protocol.sendCommand(command)
                     d.addCallback(self.expose_callback_thread)
                     self.timer_2.start(itime)
-                    #self.exposeTimer(itime)
-                    #thread.start_new_thread(self.exposeTimer, (itime,))
 
             if imType == 2:  # real time exposure
                 self.expButton.Enable(False)
@@ -459,10 +457,7 @@ class Exposure(wx.Panel):
                 d.addCallback(self.realCallback)  # this will clear the image path queue
 
                 # start timer
-                #self.exposeTimer(itime)
-                #self.timer_2.start(itime)
                 self.timer_2.start(0)
-                #thread.start_new_thread(self.exposeTimer, (itime,))
 
             if imType == 3:  # series exposure
                 dialog = wx.TextEntryDialog(None, "How many exposure?", "Entry", "1", wx.OK | wx.CANCEL)
@@ -505,8 +500,6 @@ class Exposure(wx.Panel):
 
                             # start timer
                             self.timer_2.start(itime)
-                            #self.exposeTimer(itime)
-                            #thread.start_new_thread(self.exposeTimer, (itime,))
 
                     else:
                         dialog = wx.MessageDialog(None, "Entry was not a valid integer!", "", wx.OK | wx.ICON_ERROR)
@@ -576,19 +569,10 @@ class Exposure(wx.Panel):
 
         ## complete progress bar for image acquisition
         # check to see if timer is still going and stop it (callback might come in early)
-        #if(self.timer.IsRunning()):
-        #    self.timer.Stop()
         self.timer_2.stop()
-        # finish out gauge and then reset it
-        #self.parent.parent.parent.expGauge.SetValue(self.endTimer)
 
         # get success;
         success = int(results[0])  # 1 for true 0 for false
-        #print success
-
-        # at the end of the callback reset the gauge (signifies a reset for exposure)
-        #self.parent.parent.parent.expGauge.SetValue(0)
-        #self.startTimer = 0
 
         logger.debug(str(self.parent.parent.parent.imageOpen))
         logger.info("opened window from exposeCallback method")
@@ -701,10 +685,6 @@ class Exposure(wx.Panel):
             d = self.protocol.addDeferred("realSent")
             #d.addCallback(self.displayRealImage_thread)
             d.addCallback(self.displayRealImage)
-
-            #if(self.timer.IsRunning()):
-            #    self.timer.Stop()
-            #self.parent.parent.parent.expGauge.SetValue(self.endTimer)
             
             # get stats
             path = path.split("/")
@@ -722,13 +702,8 @@ class Exposure(wx.Panel):
             # change the gui with thread safety
             #wx.CallAfter(self.safePlot, data, stats_list)
 
-            #self.parent.parent.parent.expGauge.SetValue(0)
-            #self.startTimer = 0
-
             #self.timer_2.stop()
             #self.timer_2.start(self.timeToSend)
-            #self.exposeTimer(self.timeToSend)
-            #thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
             
     def realCallback(self, msg):
         """
@@ -780,20 +755,10 @@ class Exposure(wx.Panel):
         for i in fullPath[:-1]:
             directory += i + "/"
 
-        #if(self.timer.IsRunning()):
-        #    self.timer.Stop()
         self.timer_2.stop()
-        #self.parent.parent.parent.expGauge.SetValue(self.endTimer)
         # no abort then display the image
         if(imNum <= int(self.seriesImageNumber)):
             logger.info("Entered to display series image")
-
-            # get stats
-            #data = als.getData(path)
-            #stats_list = als.calcStats(data)
-            
-            # change the gui with thread safety
-            #wx.CallAfter(self.safePlot, data, stats_list)
             
             # copy image over (counter looks like "_XXX.fits")
             logger.debug("current image name: " + self.currentImage)
@@ -807,16 +772,9 @@ class Exposure(wx.Panel):
                 if imNum > 1: 
                     self.iterateImageCounter(self.currentImage)
 
-            #self.copyImage(directory, name)
-
             self.logFunction = self.logExposure
             dataMsg = ",".join(msg)
             logString = als.getLogString("seriesSent " + dataMsg + "," + self.currentImage, 'post')
-            #self.log(self.logFunction, logString)
-
-            #savedImage, d = self.transferImage(directory, name, 'series')
-            #print("Saved Image is:", savedImage)
-            #d.addCallback(self.display, savedImage=savedImage, logString=logString)
 
             line = "%s;%s;series;%s" % (path, name, logString)
             self.imageQueue.addItem(line)
@@ -824,13 +782,8 @@ class Exposure(wx.Panel):
 
             if self.seriesImageNumber is not None:
                 if imNum < int(self.seriesImageNumber):
-                    #self.exposeTimer(time)
                     self.timer_2.start(time)
-                    #thread.start_new_thread(self.exposeTimer, (time,))
-                    
-        #self.parent.parent.parent.expGauge.SetValue(0)
-        #self.startTimer = 0
-                    
+                                        
     def seriesCallback(self, msg):
         msg = msg.split(",")
         exitNumber = int(msg[1])  # server will send which count the series loop ended on
@@ -840,7 +793,6 @@ class Exposure(wx.Panel):
                 self.protocol.removeDeferred(key)
 
         # reset series image number
-        #self.seriesImageNumber = None
         logger.debug(str(self.protocol._deferreds))
         
         self.abort = False
@@ -848,21 +800,8 @@ class Exposure(wx.Panel):
         if self.stopExp.IsEnabled():
             self.stopExp.Enable(False)
             
-        # stop timer if running
-        #if self.timer.IsRunning():
-        #    self.timer.Stop()
         self.timer_2.stop()
-
         self.imageQueue.empty()
-        #self.donePlottingEvent.set()
-        #self.donePlottingEvent.clear()
-
-        # finish out the gauge
-        #self.parent.parent.parent.expGauge.SetValue(self.endTimer)
-
-        # restart gauge and the timer count
-        #self.parent.parent.parent.expGauge.SetValue(0)
-        #self.startTimer = 0
 
         dataMsg = ",".join(msg)
         self.logFunction = self.logExposure
@@ -969,24 +908,18 @@ class Exposure(wx.Panel):
               current image name.  In the case of series images this current image name will be iterated.
               Returns nothing.
         """
-        #fileList = FTPFileListProtocol()
         if type != 'real':
             fullImagePath = self.saveDir+self.currentImage+".fits"
             print("Image to grab SaveImName:", serverImName)
-            #self.ftp.list(".", fileList).addCallbacks(self.printFiles, self.ftpFail, callbackArgs=(fileList,))
             d = self.ftp.retrieveFile(serverImName, als.FileBuffer(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
-            #d = reactor.callFromThread(self.ftp.retrieveFile, serverImName, als.FileBuffer(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
-            
             return fullImagePath, d
         else:
             fullImagePath = "/tmp/"+serverImName
             print("Real time image to grab:", serverImName)
             d = self.ftp.retrieveFile(serverImName, als.FileBuffer("/tmp/", serverImName), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
             return fullImagePath, d
-        #shutil.copyfile(path + serverImName, self.saveDir + self.currentImage + ".fits")
 
     def printFiles(self, results, fileList):
-        #print("MESSAGE:", results)
         for file in fileList.files:
             print('    %s: %d bytes, %s' \
               % (file['filename'], file['size'], file['date']))
@@ -1096,16 +1029,8 @@ class Exposure(wx.Panel):
         d = self.protocol.sendCommand("abort")
         d.addCallback(self.abort_callback)
         
-        #if(self.timer.IsRunning()):
-        #    self.timer.Stop()
-            
-        #self.parent.parent.parent.expGauge.SetValue(0)
         self.timer_2.stop()
-
         self.imageQueue.empty()
-        #self.donePlottingEvent.set()
-        #self.donePlottingEvent.clear()
-
             
         self.expButton.Enable(True)
         self.stopExp.Enable(False)
