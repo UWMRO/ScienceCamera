@@ -546,8 +546,9 @@ class Evora(object):
             if file is not None:
                 results = self.heimdallParseLogFile(file, obsTime)
                 if results is not None:
-                    ra, dec, epoch, lst, ha = results
+                    ra, dec, epoch, lst, ha, za = results
 
+                    airmass = 1.0 / np.sin(np.radians((90-za) + 244/(165+47*(90-za)**1.1)))
                     print("FROM HEIMDALL LOGS:", results)
                     
                     header.append(card=("RA", ra, "Right Ascension"))
@@ -555,6 +556,11 @@ class Evora(object):
                     header.append(card=("EPOCH", epoch, "Epoch for RA and Dec (years)"))
                     header.append(card=("ST", lst, "local sidereal time (hours)"))
                     header.append(card=("HA", ha, "Hour Angle"))
+                    header.append(card=("ZD", za, "Zenith Angle"))
+                    header.append(card=("AIRMASS", airmass, "Airmass")
+
+                    
+                    
                     
         else: # gtcc
             print("ACCESSING LOG FILES")
@@ -621,7 +627,7 @@ class Evora(object):
         tuple : (ra, dec, epoch, lst, ha)
                 If no best time is found then None is returned.
         """
-        log = pd.read_csv(logFile, delim_whitespace=True, header=None, names=['time','ra', 'dec', 'epoch', 'lst'])
+        log = pd.read_csv(logFile, delim_whitespace=True, header=None, names=['time','ra', 'dec', 'epoch', 'lst', 'za'])
 
         # Create array of decimal time values
         times = [time.strptime(curr_time + " UTC", "%Y%m%dT%H:%M:%S %Z") for curr_time in log['time'].values]
@@ -645,10 +651,11 @@ class Evora(object):
             dec = log['dec'][idx]
             epoch = log['epoch'][idx]
             lst = log['lst'][idx]
+            za = log['za'][idx]
             ha = lst - ra
-            print(log['time'][idx], ra, dec, epoch, lst, ha)
+            print(log['time'][idx], ra, dec, epoch, lst, ha, za)
 
-            return (ra, dec, epoch, lst, ha)
+            return (ra, dec, epoch, lst, ha, za)
         except IndexError:
             return None
     
