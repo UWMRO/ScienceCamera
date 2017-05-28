@@ -1395,8 +1395,9 @@ class TempControl(wx.Panel):
         logger.info("entered log")
         logfunc(logmsg) 
 
+    
 class FilterControl(wx.Panel):
-
+    
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
@@ -1438,13 +1439,14 @@ class FilterControl(wx.Panel):
 
         self.statusBox = wx.StaticBox(self, id=2041, label="Filter Status", size=(150,150), style=wx.ALIGN_CENTER)
         self.statusBoxSizer = wx.StaticBoxSizer(self.statusBox, wx.VERTICAL)
-
+        
         self.filterText = wx.StaticText(self, id=2042, label="Filter Type")
         self.filterMenu = wx.ComboBox(self, id=2043, choices=self.filterName, size=(60, -1), style=wx.CB_READONLY)
         self.filterButton = wx.Button(self, id=2044, label="Rotate", size=(70, -1))
         self.homeButton = wx.Button(self, id=2046, label="Home", size=(70,-1))
         self.statusBox = wx.TextCtrl(self, id=2045, style=wx.TE_READONLY|wx.TE_MULTILINE, size=(200,100))
         self.enableButtons(False)
+        self.loadingDotsTimer = wx.Timer(self, id=2047)
 
         #### Line Up Smaller Sub Sizers
 
@@ -1481,11 +1483,32 @@ class FilterControl(wx.Panel):
         self.Bind(wx.EVT_COMBOBOX, self.onFilterSelection, id=2043)
         self.Bind(wx.EVT_BUTTON, self.onRotate, id=2044)
         self.Bind(wx.EVT_BUTTON, self.onHome, id=2046)
+        self.Bind(wx.EVT_TIMER, self.loadingDot, id=2047)
         ##
 
         self.SetSizer(self.vertSizer)
         self.vertSizer.Fit(self)
 
+    def loadingDot(self, event):
+
+        def numberOfDots(string):
+            num = 0
+            for s in string[::-1]:
+                if s == ".":
+                    num += 1
+            return num
+        
+        statusBar = self.parent.parent.parent.stats
+        s = statusBar.GetStatusText(3)
+        dotNum = numberOfDots(s)
+        if dotNum < 3:
+            s += "."
+        else:
+            s = s[:-3]
+
+        statusBar.SetStatusText(s, 3)
+        
+        
     def onFilterSelection(self, event):
         """
         Sets global filter selection when the user selects from the drop down menu.
@@ -1557,8 +1580,8 @@ class FilterControl(wx.Panel):
 
         self.logFunction = self.logFilter
         logString = als.getLogString("filter findPos None", 'post')
-        self.log(self.logFunction, logString)
-
+        self.log(self.logFunction, logString)        
+        
     def onHome(self, event):
         """
         Starts the homing sequence for the filter.
@@ -1571,6 +1594,8 @@ class FilterControl(wx.Panel):
         d.addCallback(self.homingCallback)
         logger.info("homing...")
 
+        self.statusBar.SetStatusText("Filter:  HOMING", 3)
+        
         self.enableButtons(False)
 
     def homingCallback(self, msg):
