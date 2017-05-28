@@ -706,7 +706,7 @@ class Exposure(wx.Panel):
             # change the gui with thread safety
             #wx.CallAfter(self.safePlot, data, stats_list)
 
-            print(self.timeToSend)
+            print(type(self.timeToSend))
             if self.timeToSend >= 1.5:
                 self.timer_2.stop()
                 self.timer_2.start(self.timeToSend)
