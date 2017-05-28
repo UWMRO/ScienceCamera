@@ -165,7 +165,8 @@ class ProgressTimer(object):
         
         # pass the time in and start
         self.timer = threading.Timer(self.interval/10**3, self.update)
-        wx.CallAfter(self.gauge.SetValue, 1) # do first tick
+        if integer_ticks != 1:
+            wx.CallAfter(self.gauge.SetValue, 1) # do first tick
         self.timer.start()
         
         return None
@@ -201,7 +202,7 @@ class ProgressTimer(object):
         max = self.gauge.GetRange()
         current = self.gauge.GetValue()
         
-        if current < max:
+        if current < max and max > 1:
             wx.CallAfter(self.gauge.SetValue, current+1)
         else: # do nothing when we reach the end
             self.gauge.Pulse()
