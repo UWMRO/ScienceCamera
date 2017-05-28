@@ -530,6 +530,7 @@ class Exposure(wx.Panel):
         deferreds = []
         for i in range(0, 100):
             count = self.nextRealSentCount()
+            print("realSent"+count)
             d = self.protocol.addDeferred("realSent"+count)
             deferreds.append(d)
         dl = defer.DeferredList(deferreds)
