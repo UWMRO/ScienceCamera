@@ -452,8 +452,7 @@ class Exposure(wx.Panel):
                 #d.addCallback(self.displayRealImage)
                 #d = self.protocol.addDeferred("realSent"+self.nextRealSentCount())
                 #d.addCallback(self.displayRealImage)
-                self.makeRealTimeDeferreds()
-                
+                self.makeRealTimeDeferreds()                
                 command = "real " + line
                 logString = als.getLogString(command, 'pre')
                 self.log(self.logFunction, logString)
@@ -952,9 +951,11 @@ class Exposure(wx.Panel):
             d = self.ftp.retrieveFile(serverImName, als.FileBuffer(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
             return fullImagePath, d
         else:
-            fullImagePath = "/tmp/"+serverImName
+            #fullImagePath = "/tmp/"+serverImName
+            fullImagePath = self.saveDir+serverImName
             print("Real time image to grab:", serverImName)
-            d = self.ftp.retrieveFile(serverImName, als.FileBuffer("/tmp/", serverImName), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
+            #d = self.ftp.retrieveFile(serverImName, als.FileBuffer("/tmp/", serverImName), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
+            d = self.ftp.retrieveFile(serverImName, als.FileBuffer(self.saveDir, serverImName), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
             return fullImagePath, d
 
     def printFiles(self, results, fileList):
