@@ -12,6 +12,7 @@ import os
 import wx  # get wxPython
 from twisted.protocols.ftp import FTPFileListProtocol
 from twisted.internet import reactor
+from twisted.internet import defer
 
 import numpy as np  # get NumPy
 
@@ -253,12 +254,14 @@ class Exposure(wx.Panel):
         self.parent = parent  # gives access to the higher classes
         self.startTimer = 0  # keeps track of the timer count in ints
         self.endTimer = 0  # keeps track of the max timer count as an int
-        self.saveDir = "/home/mro/data/raw/"  # Default directory to save images to.
+        self.saveDir = "/home/mro/data/"  # Default directory to save images to.
 
         self.abort = False  # tells you if the abort button is active (i.e. True if you can abort and False if not)
         self.seriesImageNumber = None  # initialize a series image number
         self.currentImage = None  # initializes to keep track of the current image name class wide
         self.logFunction = None  # keeps an instance of the function that will be used to log the status
+
+        self.realSentCount = 0
 
         self.timer_2 = ProgressTimer(self)
         
@@ -347,7 +350,7 @@ class Exposure(wx.Panel):
         self.imageThread = ImageQueueWatcher(self)
         self.imageThread.daemon = True
         self.imageThread.start()
-        self.transferStatus = False # If if transfer is successfull and False otherwise no trnasfer yet.
+        self.transferStatus = False # If transfer is successful then True otherwise False.
 
         # Setup plotter queue
         self.plotImageEvent = threading.Event()
@@ -442,9 +445,15 @@ class Exposure(wx.Panel):
                 line = " ".join(line[1:])
                 
                 # start callback that looks for a path leading to a real image
-                d = self.protocol.addDeferred("realSent")
+                #d = self.protocol.addDeferred("realSent"+self.nextRealSentCount())
                 #d.addCallback(self.displayRealImage_thread)
-                d.addCallback(self.displayRealImage)
+                #d.addCallback(self.displayRealImage)
+                #d = self.protocol.addDeferred("realSent"+self.nextRealSentCount())
+                #d.addCallback(self.displayRealImage)
+                #d = self.protocol.addDeferred("realSent"+self.nextRealSentCount())
+                #d.addCallback(self.displayRealImage)
+                dl = self.makeDeferredList()
+                dl.addCallback(self.displayRealImage)
 
                 command = "real " + line
                 logString = als.getLogString(command, 'pre')
@@ -516,7 +525,20 @@ class Exposure(wx.Panel):
 
     def ftpCWD(self, msg):
         print("Changed FTP server directory:", msg)
-                        
+
+    def makeDeferredList(self):
+        deferreds = []
+        for i in range(0, 100):
+            count = self.nextRealSentCount()
+            d = self.protocol.addDeferred("realSent"+count)
+            deferreds.append(d)
+        dl = defer.DeferredList(d)
+        return dl
+        
+    def nextRealSentCount(self):
+        self.realSentCount += 1
+        return str(self.realSentCount)
+        
     def exposeTimer(self, time):
         """
         This function, given some time, will start the wxPython Timer object and will set it to call
@@ -690,9 +712,12 @@ class Exposure(wx.Panel):
         # no abort then display the image
         if self.abort:  # means that abort can be called.
             # add a new deffered object to set up for another incoming image
-            d = self.protocol.addDeferred("realSent")
+            #d = self.protocol.addDeferred("realSent")
             #d.addCallback(self.displayRealImage_thread)
-            d.addCallback(self.displayRealImage)
+            #d.addCallback(self.displayRealImage)
+            # add two new deffereds
+            #d = self.protocol.addDeferred("realSent"+self.nextRealSentCount())
+            #d.addCallback(self.displayRealImage
             
             # get stats
             path = path.split("/")
