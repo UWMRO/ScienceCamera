@@ -159,5 +159,5 @@ if __name__ == "__main__":
 
     reactor.listenTCP(als.FTP_GET_PORT, fileServerFactory)
 
-    reactory.run()
+    reactor.run()
     
