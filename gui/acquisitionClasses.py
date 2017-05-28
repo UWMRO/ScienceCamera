@@ -213,6 +213,7 @@ class ProgressTimer(object):
         Reads the binning type and the readout speed to determine the overall
         readout time.
         """
+        exposeType = self.exposureClass.parent.typeInstance.exposeType.GetStringSelection()
         times_2x2 = [0.14, 0.23, 0.42, 6.06]  # exposure times in seconds
         times_1x1 = [0.302, 0.61, 1.51, 23.0]
         times = None
@@ -222,8 +223,12 @@ class ProgressTimer(object):
             times = times_1x1
         else:
             times = times_2x2
-        
-        readout_speed = self.exposureClass.parent.parent.parent.readoutIndex # (0 : 5.0 MHz, 1 : 3.0 MHz, 2 : 1.0 MHz, 3 : 0.05 MHz)
+
+        readout_speed = None
+        if exposeType == "Real Time":
+            readout_speed = 1
+        else:
+            readout_speed = self.exposureClass.parent.parent.parent.readoutIndex # (0 : 5.0 MHz, 1 : 3.0 MHz, 2 : 1.0 MHz, 3 : 0.05 MHz)
 
         return times[readout_speed]
         
@@ -452,7 +457,7 @@ class Exposure(wx.Panel):
 
                 # start timer
                 #self.exposeTimer(itime)
-                #self.timer_2.start(itime)
+                self.timer_2.start(itime)
                 #thread.start_new_thread(self.exposeTimer, (itime,))
 
             if imType == 3:  # series exposure
@@ -716,8 +721,8 @@ class Exposure(wx.Panel):
             #self.parent.parent.parent.expGauge.SetValue(0)
             #self.startTimer = 0
 
-            #self.timer_2.stop()
-            #self.timer_2.start(self.timeToSend)
+            self.timer_2.stop()
+            self.timer_2.start(self.timeToSend)
             #self.exposeTimer(self.timeToSend)
             #thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
             
@@ -1089,7 +1094,7 @@ class Exposure(wx.Panel):
         #    self.timer.Stop()
             
         #self.parent.parent.parent.expGauge.SetValue(0)
-        #self.timer_2.stop()
+        self.timer_2.stop()
 
         self.imageQueue.empty()
         #self.donePlottingEvent.set()
