@@ -503,10 +503,11 @@ class Exposure(wx.Panel):
                             d.addCallback(self.seriesCallback)
 
                             # start timer
-                            if itime > 1.0:
+                        
+                            if self.timer_2._getReadoutTime(itime) > 1.0:
                                 self.timer_2.start(itime)
                             else:
-                                self.timer_2(0)
+                                self.timer_2.start(0)
 
                     else:
                         dialog = wx.MessageDialog(None, "Entry was not a valid integer!", "", wx.OK | wx.ICON_ERROR)
