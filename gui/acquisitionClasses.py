@@ -1544,6 +1544,7 @@ class FilterControl(wx.Panel):
             logString = als.getLogString("filter move " + str(self.filterName[pos]), 'pre')
             self.log(self.logFunction, logString)
 
+            self.loadingDotsTimer.Start(100)
             d = self.protocol2.addDeferred("findPos")
             d.addCallback(self.findPosCallback)
 
@@ -1595,7 +1596,7 @@ class FilterControl(wx.Panel):
         logger.info("homing...")
 
         self.statusBar.SetStatusText("Filter:  HOMING", 3)
-        self.loadingDotsTimer.Start(100)
+        self.loadingDotsTimer.Start(500)
         
         self.enableButtons(False)
 
@@ -1652,6 +1653,7 @@ class FilterControl(wx.Panel):
             self.filterMenu.SetSelection(pos)
             self.filterSelection = str(self.filterMenu.GetValue())
             self.targetFilter = None
+            self.loadingDotsTimer.Stop()
 
             self.statusBar.SetStatusText("Filter:   %s" % filter, 3)
         logger.debug("Filter position is " + filter)
