@@ -213,13 +213,19 @@ class ProgressTimer(object):
         Reads the binning type and the readout speed to determine the overall
         readout time.
         """
-        times_2x2 = [0.0886, 0.154, 0.343, 5.8]  # exposure times in seconds
-        #times_1x1 = 
+        times_2x2 = [0.14, 0.23, 0.42, 6.06]  # exposure times in seconds
+        times_1x1 = [0.302, 0.61, 1.51, 23.0]
+        times = None
+        
         binning = self.exposureClass.parent.parent.parent.binning # string (1 : 1x1, 2 : 2x2)
+        if binning == '1':
+            times = times_1x1
+        else:
+            times = times_2x2
         
         readout_speed = self.exposureClass.parent.parent.parent.readoutIndex # (0 : 5.0 MHz, 1 : 3.0 MHz, 2 : 1.0 MHz, 3 : 0.05 MHz)
 
-        return times_2x2[readout_speed]
+        return times[readout_speed]
         
 
 #### Class that handles widgets related to exposure
