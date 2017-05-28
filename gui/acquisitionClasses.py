@@ -1409,7 +1409,7 @@ class FilterControl(wx.Panel):
         self.watch = False
         self.adjusting = False
 
-        self.statusBar = self.parent.parent.parent.stats
+        self.statusBar = None
         self.loadingDots = ""
 
         self.watchFilterTime = 10  # every second when moving filter position
@@ -1595,6 +1595,7 @@ class FilterControl(wx.Panel):
         logger.info("homing...")
 
         self.statusBar.SetStatusText("Filter:  HOMING", 3)
+        self.loadingDotsTimer.start(100)
         
         self.enableButtons(False)
 

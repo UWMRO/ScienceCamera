@@ -1063,7 +1063,7 @@ class FilterForwarder(basic.LineReceiver):
         
         self.gui = self.factory.gui
         self.gui.takeImage.filterInstance.protocol2 = self
-        self.gui.takeImage.filterInstance.statusBar = self.stats
+        self.gui.takeImage.filterInstance.statusBar = self.gui.stats
 
         logger.info("connection made to filter")
 
