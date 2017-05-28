@@ -1408,6 +1408,9 @@ class FilterControl(wx.Panel):
         self.watch = False
         self.adjusting = False
 
+        self.statusBar = self.parent.parent.parent.stats
+        self.loadingDots = ""
+
         self.watchFilterTime = 10  # every second when moving filter position
         self.targetFilter = None  # keep track globally of the target filter
 
@@ -1590,11 +1593,15 @@ class FilterControl(wx.Panel):
         pos = int(msg)
         logger.debug("position: " + str(pos))
         filter = self.filterName[pos]
+        self.iterateDotLoad()
 
+        
         self.logFunction = self.logFilter
         if self.targetFilter is not None and self.targetFilter != pos:
             logString = als.getLogString("filter getFilter report " + filter, 'post')
             self.log(self.logFunction, logString)
+
+            self.statusBar.SetStatusText("Filter:  %s" % (filter+self.loadingDots), 3)
             
         # set drop down menu to the correct filter
         elif self.targetFilter == pos and self.adjusting:  # Kill the getFilter sequence when adjusting
@@ -1606,6 +1613,8 @@ class FilterControl(wx.Panel):
             self.filterMenu.SetSelection(pos)
             self.filterSelection = str(self.filterMenu.GetValue())
             self.targetFilter = None
+
+            self.statusBar.SetStatusText("Filter:  %s" % (filter+self.loadingDots), 3)
             
         else:
             self.watch = False
@@ -1616,6 +1625,8 @@ class FilterControl(wx.Panel):
             self.filterMenu.SetSelection(pos)
             self.filterSelection = str(self.filterMenu.GetValue())
             self.targetFilter = None
+
+            self.statusBar.SetStatusText("Filter:   %s" % filter, 3)
         logger.debug("Filter position is " + filter)
 
     def getFilterCallback_thread(self, msg):
@@ -1624,6 +1635,11 @@ class FilterControl(wx.Panel):
         """
         thread.start_new_thread(self.getFilterCallback, (msg,))
 
+    def iterateDotLoad(self):
+        if self.loadingDots != "....":
+            self.loadingDots += "."
+        else:
+            self.loadingDots = "."
     def filterWatch(self):
         """
         Pre: No input.
