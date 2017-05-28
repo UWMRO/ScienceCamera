@@ -165,7 +165,7 @@ class ProgressTimer(object):
         
         # pass the time in and start
         self.timer = threading.Timer(self.interval/10**3, self.update)
-        if integer_ticks != 1:
+        if integer_ticks > 0:
             wx.CallAfter(self.gauge.SetValue, 1) # do first tick
         self.timer.start()
         
