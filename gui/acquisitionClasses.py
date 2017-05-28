@@ -149,12 +149,15 @@ class ProgressTimer(object):
         
         # Determine how fast timer should be.
         integer_ticks = 0
-        if time <= 0.5: # 10 millisecond intervals
+        if time == 0:
+            integer_ticks = 1
+            self.interval = 100
+        elif time <= 0.5: # 10 millisecond intervals
             integer_ticks = int(exposureTime / 10**-2) # divide by 10 milliseconds
             self.interval = 10
         elif time <= 10: # 50 millisecond intervals
-            integer_ticks = int(exposureTime / (5*10**-2))
-            self.interval = 50
+            integer_ticks = int(exposureTime / (8*10**-2))
+            self.interval = 80
         else: # Any time greater than 10 seconds have 100 millisecond intervals
             integer_ticks = int(exposureTime / 10**-1)
             self.interval = 100
@@ -457,7 +460,8 @@ class Exposure(wx.Panel):
 
                 # start timer
                 #self.exposeTimer(itime)
-                self.timer_2.start(itime)
+                #self.timer_2.start(itime)
+                self.timer_2.start(0)
                 #thread.start_new_thread(self.exposeTimer, (itime,))
 
             if imType == 3:  # series exposure
@@ -721,8 +725,8 @@ class Exposure(wx.Panel):
             #self.parent.parent.parent.expGauge.SetValue(0)
             #self.startTimer = 0
 
-            self.timer_2.stop()
-            self.timer_2.start(self.timeToSend)
+            #self.timer_2.stop()
+            #self.timer_2.start(self.timeToSend)
             #self.exposeTimer(self.timeToSend)
             #thread.start_new_thread(self.exposeTimer, (self.timeToSend,))
             
@@ -737,6 +741,8 @@ class Exposure(wx.Panel):
         #self.donePlottingEvent.set()
         #self.donePlottingEvent.clear()
 
+
+        self.timer_2.stop()
         
         self.logFunction = self.logExposure
         logString = als.getLogString("real " + msg, 'post')
