@@ -27,6 +27,7 @@ from datetime import date
 import andor
 import numpy as np
 from astropy.io import fits
+from astropy.time import Time
 import AddLinearSpacer as als
 import MyLogger
 
@@ -549,6 +550,8 @@ class Evora(object):
                     ra, dec, epoch, lst, ha, za = results
 
                     airmass = 1.0 / np.sin(np.radians((90-za) + 244/(165+47*(90-za)**1.1)))
+
+                    astroTime = Time(time.strptime(dateObs, "%Y-%m-%dT%H:%M:%S"))
                     print("FROM HEIMDALL LOGS:", results)
                     
                     header.append(card=("RA", ra, "Right Ascension"))
@@ -558,7 +561,9 @@ class Evora(object):
                     header.append(card=("HA", ha, "Hour Angle"))
                     header.append(card=("ZD", za, "Zenith Angle"))
                     header.append(card=("AIRMASS", airmass, "Airmass"))
-
+                    header.append(card=("JD", str(astroTime.jd), "Julian Date"))
+                    header.append(card=("MJD", str(astroTime.mjd), "Modified Julian Date"))
+                                  
                     
                     
                     
