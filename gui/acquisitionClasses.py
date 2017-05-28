@@ -1612,8 +1612,11 @@ class FilterControl(wx.Panel):
         self.log(self.logFunction, logString)
 
         self.loadingDotsTimer.Stop()
-        d = self.protocol2.sendCommand("getFilter")
-        d.addCallback(self.getFilterCallback)
+        if int(msg) == 1:
+            d = self.protocol2.sendCommand("getFilter")
+            d.addCallback(self.getFilterCallback)
+        else:
+            self.statusBar.SetStatusText("Filter: Homing FAILED")
         
         self.enableButtons(True)
 
