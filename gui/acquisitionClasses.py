@@ -1595,7 +1595,7 @@ class FilterControl(wx.Panel):
         logger.info("homing...")
 
         self.statusBar.SetStatusText("Filter:  HOMING", 3)
-        self.loadingDotsTimer.start(100)
+        self.loadingDotsTimer.Start(100)
         
         self.enableButtons(False)
 
@@ -1610,6 +1610,7 @@ class FilterControl(wx.Panel):
         logString = als.getLogString("filter getFilter", 'pre')
         self.log(self.logFunction, logString)
 
+        self.loadingDotsTimer.Stop()
         d = self.protocol2.sendCommand("getFilter")
         d.addCallback(self.getFilterCallback)
         
