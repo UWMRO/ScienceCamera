@@ -1409,7 +1409,7 @@ class FilterControl(wx.Panel):
         self.watch = False
         self.adjusting = False
 
-        self.statusBar = self.parent.parent.parent.parent.stats
+        self.statusBar = self.parent.parent.parent.stats
         self.loadingDots = ""
 
         self.watchFilterTime = 10  # every second when moving filter position
