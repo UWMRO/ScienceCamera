@@ -789,8 +789,11 @@ class Exposure(wx.Panel):
 
 
             if self.seriesImageNumber is not None:
+                print("MAKES IT THIS FAR")
                 if imNum < int(self.seriesImageNumber):
-                    if time+self.timer_2._getReadoutTime => 1.0:
+                    print("KEEP GOING")
+                    if time+self.timer_2._getReadoutTime >= 1.0:
+                        print("MADE IT")
                         self.timer_2.stop()
                         self.timer_2.start(time)
 
