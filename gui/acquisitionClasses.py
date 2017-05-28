@@ -458,7 +458,10 @@ class Exposure(wx.Panel):
                 d.addCallback(self.realCallback)  # this will clear the image path queue
 
                 # start timer
-                self.timer_2.start(0)
+                if itime <= 1.5:
+                    self.timer_2.start(0)
+                else:
+                    self.timer_2.start(itime)
 
             if imType == 3:  # series exposure
                 dialog = wx.TextEntryDialog(None, "How many exposure?", "Entry", "1", wx.OK | wx.CANCEL)
@@ -703,8 +706,9 @@ class Exposure(wx.Panel):
             # change the gui with thread safety
             #wx.CallAfter(self.safePlot, data, stats_list)
 
-            #self.timer_2.stop()
-            #self.timer_2.start(self.timeToSend)
+            if self.timeToSend >= 1.5:
+                self.timer_2.stop()
+                self.timer_2.start(self.timeToSend)
             
     def realCallback(self, msg):
         """
