@@ -78,7 +78,7 @@ class ImageQueueWatcher(threading.Thread, object):
                 print("Done transfering: %s" % savedImage)
                 #print("Transfer queue:", self.exposeClass.imageQueue)
                 print("TRANSFER STATUS:", self.exposeClass.transferStatus)
-                self.exposeClass.plotQueue.addItem((savedImage, self.exposeClass.transferStatus, logString))
+                #self.exposeClass.plotQueue.addItem((savedImage, self.exposeClass.transferStatus, logString))
                 #d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
                 #d.addErrback(self.retrievalFail)
                 
@@ -723,7 +723,7 @@ class Exposure(wx.Panel):
             path = "/".join(path[:-1]) + "/"
             #fullImPath, d = self.transferImage(path, name, 'real')
             line = "%s;%s;real;%s" % (path, name, str(None))
-            #self.imageQueue.addItem(line)
+            self.imageQueue.addItem(line)
             
             #d.addCallback(self.display, savedImage=fullImPath, logString=None) 
             
