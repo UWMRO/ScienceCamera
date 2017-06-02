@@ -72,13 +72,15 @@ class ImageQueueWatcher(threading.Thread, object):
                     logString = None
                 print("Transfering:", image_name)
 
-                savedImage, d = self.exposeClass.transferImage(image_path, image_name, image_type)
+                #savedImage, d = self.exposeClass.transferImage(image_path, image_name, image_type)
+                self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % (image_name, image_path, self.exposeClass.currentImage+".fits", image_type)).addCallback(self.transferCallback)
+                
                 #print("Plotting:", savedImage, "shortly.")
                 self.exposeClass.transferDone.wait()
-                print("Done transfering: %s" % savedImage)
+                #print("Done transfering: %s" % savedImage)
                 #print("Transfer queue:", self.exposeClass.imageQueue)
-                print("TRANSFER STATUS:", self.exposeClass.transferStatus)
-                self.exposeClass.plotQueue.addItem((savedImage, self.exposeClass.transferStatus, logString))
+                #print("TRANSFER STATUS:", self.exposeClass.transferStatus)
+                #self.exposeClass.plotQueue.addItem((savedImage, self.exposeClass.transferStatus, logString))
                 #d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
                 #d.addErrback(self.retrievalFail)
                 
@@ -87,6 +89,11 @@ class ImageQueueWatcher(threading.Thread, object):
             #time.sleep(0.01)
             #print("Running...")
 
+    def transferCallback(self, msg):
+        self.exposeClass.plotQueue.addItem((msg, True, None))
+        self.exposeClass.transferDone.set()
+        self.exposeClass.transferDone.clear()
+    
     def retrievalFail(self, msg):
         """ This is a dummy method to supress the failure to retrieve that happens at the end of a real time exposure.
         """
@@ -251,6 +258,7 @@ class Exposure(wx.Panel):
 
         self.protocol = None  # gives access to the Evora client protocol
         self.ftp = None # Gives access to FTP client protocol
+        self.ftpLayer = None
         self.parent = parent  # gives access to the higher classes
         self.startTimer = 0  # keeps track of the timer count in ints
         self.endTimer = 0  # keeps track of the max timer count as an int

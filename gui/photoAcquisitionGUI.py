@@ -1110,6 +1110,66 @@ class FilterForwarder(basic.LineReceiver):
         self.gui.stats.SetStatusText("Filter: offline", 3)
 
 
+class TransferForwarder(basic.LineReceiver):
+    """
+    Handles outgoing/incoming data with filter server.
+    """
+    def __init__(self):
+        self.output = None
+        self._deferreds = {}
+        self.gui = None
+
+    def dataReceived(self, data):
+        """
+        Handles incoming data and executes the appropriate twisted callback method.
+        """
+        logger.debug("Receieved from transfer server (5505): " + data)        
+            
+        
+        # if there is more than one line that was received 
+        sep_data = data.rsplit()  # split for multiple lines
+        size = len(sep_data) # size of sep_data will always be even (key followed by data pair)
+        for i in range(0, size, 2):
+            singular_sep_data = [sep_data[i], sep_data[i+1]]
+
+            # run singular_sep_data command one at a time
+            if singular_sep_data[0] in self._deferreds:
+                self._deferreds.pop(singular_sep_data[0]).callback(singular_sep_data[1])
+        
+    def sendCommand(self, data):
+        logger.debug("Sending to transfer image: " +  str(data))
+        self.sendLine(data)
+        d = self._deferreds[data.split(" ")[0]] = defer.Deferred()
+        return d
+
+    def connectionMade(self):
+        """
+        Executes when conncetion is made to filter.
+        """        
+        self.gui.takeImage.exposureInstance.ftpLayer = self
+        logger.info("Connection made to transfer images.")
+
+    def addDeferred(self, string):
+        """
+        This is used for creating deferred objects when expecting to receive data.
+        """
+        d = self._deferreds[string] = defer.Deferred()
+        return d
+
+    def removeDeferred(self, string):
+        """
+        Used to get rid of any trailing deferred obejcts (e.g. realSent after an abort)
+        """
+        if(string in self._deferreds):
+            self._deferreds.pop(string)
+
+    def connectionLost(self, reason):
+        """
+        Called when connection is lost to the filter server.
+        """
+        ## Add a "callback" that will close down the gui functionality when camera connection is closed.
+        print("Lost connectiont to transfer server.")
+        
 class FilterClient(protocol.ClientFactory):
     """
     Makes a filter wheel client instance.
@@ -1140,6 +1200,37 @@ class FilterClient(protocol.ClientFactory):
 
         logger.warning("connection failed on port 5503")
 
+class TransferClient(protocol.ClientFactory):
+    """
+    Makes a filter wheel client instance.
+    """
+    def __init__(self, gui):
+        self.gui = gui
+        self.protocol = FilterForwarder
+
+    def clientConnectionLost(self, transport, reason):
+        """
+        Executes when client has lost connection normally.
+        """
+        filterInstance = self.gui.takeImage.filterInstance
+        filterInstance.logFunction = filterInstance.logFilter
+        logString = als.getLogString("filter connectLost 1", 'post')
+        filterInstance.log(filterInstance.logFunction, logString)
+
+        logger.info("connection lost normally on port 5503")
+        
+    def clientConnectionFailed(self, transport, reason):
+        """
+        Executes when client has lost connection unexpectedly.
+        """
+        filterInstance = self.gui.takeImage.filterInstance
+        filterInstance.logFunction = filterInstance.logFilter
+        logString = als.getLogString("filter connectFailed 1", 'post')
+        filterInstance.log(filterInstance.logFunction, logString)
+
+        logger.warning("connection failed on port 5503")
+
+        
 class FileClient(FTPClient, object):
 
     def __init__(self, factory, username, password, passive):

@@ -168,15 +168,13 @@ class FileClientFactory(protocol.ClientFactory):
         print("Connection failed:", reason)
 
 
-if __name__ == "__main__":
-    #reactor.connectTCP(als.HEIMDALL_IP, als.FTP_TRANSFER_PORT, ftpFactory)
- 
+if __name__ == "__main__": 
     ftpFactory = FileClientFactory()
-    #ftpFactory.protocol = FileClient(ftpFactory, 'anonymous', 'mro@uw.edu', 0)
+
     fileServerFactory = FileServerClient()
     
     
-    reactor.connectTCP("localhost", als.FTP_TRANSFER_PORT, ftpFactory)     
+    reactor.connectTCP(als.HEIMDALL_IP, als.FTP_TRANSFER_PORT, ftpFactory)     
     reactor.listenTCP(als.FTP_GET_PORT, fileServerFactory)
 
     reactor.run()
