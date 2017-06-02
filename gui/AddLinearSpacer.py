@@ -402,7 +402,7 @@ class FileBuffer(protocol.Protocol):
         self.buffer = BytesIO()
 
     def dataReceived(self, data):
-        print("Byte size", len(data))
+        #print("Byte size", len(data))
         self.buffer.write(data)
 
     def connectionLost(self, reason):
