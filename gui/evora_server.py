@@ -1064,7 +1064,7 @@ class FTPThread(threading.Thread):
         p = Portal(FTPRealm("/home/mro/storage/evora_data/"), [AllowAnonymousAccess()])
         f = FTPFactory(p)
         f.timeOut = None
-        reactor.listenTCP(als.FTP_PORT, f)
+        reactor.listenTCP(als.FTP_TRANSFER_PORT, f)
 
 class FilterThread(threading.Thread):
     def __init__(self):
