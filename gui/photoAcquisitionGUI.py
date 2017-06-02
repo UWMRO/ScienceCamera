@@ -1139,7 +1139,7 @@ class TransferForwarder(basic.LineReceiver):
         
     def sendCommand(self, data):
         logger.debug("Sending to transfer image: " +  str(data))
-        self.sendLine(data)
+        self.sendLine(str(data))
         d = self._deferreds[data.split(" ")[0]] = defer.Deferred()
         return d
 
