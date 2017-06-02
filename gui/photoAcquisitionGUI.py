@@ -1207,7 +1207,7 @@ class TransferClient(protocol.ClientFactory):
     """
     def __init__(self, gui):
         self.gui = gui
-        self.protocol = FilterForwarder
+        self.protocol = TransferForwarder
 
     def clientConnectionLost(self, transport, reason):
         """
