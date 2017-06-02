@@ -1110,8 +1110,6 @@ class FilterForwarder(basic.LineReceiver):
         self.gui.stats.SetStatusText("Filter: offline", 3)
 
 
-
-
 class FilterClient(protocol.ClientFactory):
     """
     Makes a filter wheel client instance.
@@ -1155,7 +1153,6 @@ class FileClient(FTPClient, object):
         # Main wx.Frame
         gui.ftp = self
         gui.takeImage.exposureInstance.ftp = self
-        
         
 class FileClientFactory(protocol.ClientFactory):
     def __init__(self, gui):
