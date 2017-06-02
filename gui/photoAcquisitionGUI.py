@@ -1146,7 +1146,8 @@ class TransferForwarder(basic.LineReceiver):
     def connectionMade(self):
         """
         Executes when conncetion is made to filter.
-        """        
+        """
+        self.gui = self.factory.gui
         self.gui.takeImage.exposureInstance.ftpLayer = self
         logger.info("Connection made to transfer images.")
 
