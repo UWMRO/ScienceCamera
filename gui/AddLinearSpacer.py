@@ -120,7 +120,7 @@ def calcStats(data):
 def getLogString(command, prePost):
     """
     Pre: Takes in command that is either sent to or from the server.  Parses that command and constructs
-         a string for reporting in any particular status box.  Must pass in as prePost whether the command
+        a string for reporting in any particular status box.  Must pass in as prePost whether the command
          is pre-server exectution or post server exection.
     Post: Returns a string that is used to report in a status box through the GUI, e.g. the log box in the
           log tab.  If string is not made then it returns None.

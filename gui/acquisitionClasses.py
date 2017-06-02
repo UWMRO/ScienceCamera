@@ -73,7 +73,7 @@ class ImageQueueWatcher(threading.Thread, object):
                 print("Transfering:", image_name)
 
                 #savedImage, d = self.exposeClass.transferImage(image_path, image_name, image_type)
-                self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % (image_name, image_path,
+                self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % (image_name, self.exposeClass.saveDir,
                                                                            self.exposeClass.currentImage+".fits",
                                                                            image_type)).addCallback(self.transferCallback)
                 
