@@ -30,7 +30,7 @@ class FileServer(basic.LineReceiver):
         If you send more than one line then the callback to start the gui will completely fail.
         """
         self.factory.clients.append(self)
-        self.sendMessage("Welcome to the file server") # activate the callback to give full control to the camera.
+        #self.sendMessage("Welcome to the file server") # activate the callback to give full control to the camera.
 
     def connectionLost(self, reason):
         """
