@@ -14,6 +14,9 @@ from twisted.protocols.ftp import FTPClient
 import AddLinearSpacer as als
 
 
+#Global variables
+ftp = None
+
 class FileServer(basic.LineReceiver):
     """
     This is the Evora camera server code using Twisted's convienience object of basic.LineReceiver.
@@ -41,7 +44,7 @@ class FileServer(basic.LineReceiver):
         sends the resulting data off.
         """
         print("received " + line)
-        parser = Parser(self.factory)
+        parser = Parser(self)
         results = parser.parse(line)
         self.sendData(results)
 
@@ -65,14 +68,13 @@ class FileServerClient(protocol.ServerFactory):
     This makes up the twistedPython factory that defines the protocol and stores
     a list of the clients connect.
     """
-    def __init__(self, ftpProtocol):
-        self.protocol = None
-        self.ftpProtocol = ftpProtocol
+    def __init__(self):
+        self.protocol = FileServer
         self.clients = []
 
-    def buildProtocol(self, addr):
-        self.protocol = FileServer()
-        return self.protocol
+#    def buildProtocol(self, addr):
+#        self.protocol = FileServer()
+#        return self.protocol
 
     def clientConnectionLost(self, transport, reason):
         print("Connection to File server lost normally:", reason)
@@ -87,35 +89,45 @@ class Parser(object):
     driver code.
     """
     
-    def __init__(self, factory):
+    def __init__(self, protocol):
         """
         Trickles down the protocol for potential usage as well as defines an instance of Evora (the object
         that holds the driver code).
         """
-        self.protocol = factory.protocol
-        self.ftpProtocol = factory.ftpProtocol
+        self.protocol = protocol
 
     def parse(self, input=None):
         """
-        Receive an input and splits it up and based on the first argument will execute the right method 
+        Receive an input and splitps it up and based on the first argument will execute the right method 
         (e.g. input=connect will run the Evora startup routine).
         """
+        global ftp
         input = input.split()
         if input[0] == 'get':
             """
             Retrieve file.
+            >>> get fileName saveDirectory saveName
             """
             serverImageName = input[1]
             savePath = input[2]
             saveName = input[3]
-            type = input[4]
-            self.ftpProtocol.retrieveFile(serverImageName, als.FileBuffer(savePath, saveName), offset=0).addCallbacks(self.transferDone, self.transferFail)
-            return None
+            #type = input[4]
+            print(serverImageName, savePath, saveName)
+            d = ftp.retrieveFile(serverImageName, als.FileBuffer(savePath, saveName), offset=0)
+            d.addCallback(self.transferDone, file=savePath+saveName)
+            d.addErrback(self.transferFail)
+            return "Attempting to start transfer"
 
-    def transferDone(self):
-        self.protocol.sendData("done")
+        if input[0] == 'test':
 
-    def transferFail(self):
+            ftp.pwd().addCallback(self.done)
+
+    def done(self, msg):
+        print(msg)
+    def transferDone(self, msg, file):
+        self.protocol.sendData("get %s" % file)
+
+    def transferFail(self, msg):
         pass
         
 
@@ -127,15 +139,20 @@ class FileClient(FTPClient, object):
         self.factory = factory
 
     def connectionMade(self):
+        global ftp
+        ftp = self
         # Pass the protocol to the gui when connection is made to FTP Sever
-
+        #self.factory.protocol = self
         # Main wx.Frame
+        
         print("CONNECTION MADE")
         
         
 class FileClientFactory(protocol.ClientFactory):
     def __init__(self):
         self.protocol = None
+        #self.protocol = None
+        #self.protocol = self.buildProtocol('localhost')
 
     def buildProtocol(self, addr):
         # The username and passwd are meaningless but needed
@@ -152,12 +169,16 @@ class FileClientFactory(protocol.ClientFactory):
 
 
 if __name__ == "__main__":
+    #reactor.connectTCP(als.HEIMDALL_IP, als.FTP_TRANSFER_PORT, ftpFactory)
+ 
     ftpFactory = FileClientFactory()
-    reactor.connectTCP(als.HEIMDALL_IP, als.FTP_TRANSFER_PORT, ftpFactory)
-
-    fileServerFactory = FileServerClient(ftpFactory.protocol)
-
+    #ftpFactory.protocol = FileClient(ftpFactory, 'anonymous', 'mro@uw.edu', 0)
+    fileServerFactory = FileServerClient()
+    
+    
+    reactor.connectTCP("localhost", als.FTP_TRANSFER_PORT, ftpFactory)     
     reactor.listenTCP(als.FTP_GET_PORT, fileServerFactory)
 
     reactor.run()
+
     
