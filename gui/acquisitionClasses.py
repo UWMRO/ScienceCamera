@@ -120,7 +120,7 @@ class PlotterWatcher(threading.Thread, object):
 
                 if transferStatus == True:
                     self.exposeClass.display(None, imageName, logString)
-                    self.exposeClass.donePlottingEvent.wait()
+                    #self.exposeClass.donePlottingEvent.wait()
                 else:
                     print("Transfer went wrong not plotting") # likely due to an abort
 
