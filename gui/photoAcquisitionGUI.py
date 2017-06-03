@@ -313,7 +313,7 @@ class Evora(wx.Frame):
         """
         When connect is selected under the Camera menu this will set twisted to connect to port 5502
         """
-        global port_dict
+        global port_dict, ftpClientProc
         logger.info("Connect command pressed")
         #reactor.run()
         #self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
@@ -321,6 +321,8 @@ class Evora(wx.Frame):
         self.connection = port_dict[str(als.CAMERA_PORT)] = reactor.connectTCP(als.HEIMDALL_IP, als.CAMERA_PORT, EvoraClient(app.frame1))
         #port_dict[str(als.FTP_TRANSFER_PORT)] = reactor.connectTCP(als.HEIMDALL_IP, als.FTP_TRANSFER_PORT, FileClientFactory(app.frame1))
         port_dict[str(als.FTP_GET_PORT)] = reactor.connectTCP('localhost', als.FTP_GET_PORT, TransferClient(app.frame1))
+        ftpClientProc = subprocess.Popen("~/ScienceCamera/gui/transferImages.py", shell=True, preexec_fn=os.setsid, stdout=subprocess.STDOUT)
+        
 
     def onConnectCallback(self, msg):
         """
@@ -1276,13 +1278,10 @@ class FileClientFactory(protocol.ClientFactory):
         print("Connection failed:", reason)
         
 if __name__ == "__main__":
-    global ftpClientProc
     ## Deprecated
     #log.startLogging(sys.stdout)
     #sys.stdout = als.Logger(sys.stdout)
     #sys.stderr = als.Logger(sys.stderr)
-
-    ftpClientProc = subprocess.Popen("~/ScienceCamera/gui/transferImages.py", shell=True, preexec_fn=os.setsid, stdout=subprocess.STDOUT)
     
     app = wx.App(False)
     app.frame1 = Evora()
