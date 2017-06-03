@@ -59,7 +59,7 @@ class ImageQueueWatcher(threading.Thread, object):
         queue_size = 0
         while True:
             if self.exposeClass.imageQueue.qsize() == 0:
-                #print("ImageQueueWatcher WAITING")            
+                print("ImageQueueWatcher WAITING")            
                 self.exposeClass.imageAddedEvent.wait()
                 pass
             while self.exposeClass.imageQueue.qsize() > 0:
@@ -94,8 +94,8 @@ class ImageQueueWatcher(threading.Thread, object):
         
     def transferCallback(self, msg):
         self.exposeClass.plotQueue.addItem((msg, True, None))
-        #self.exposeClass.transferDone.set()
-        #self.exposeClass.transferDone.clear()
+        self.exposeClass.transferDone.set()
+        self.exposeClass.transferDone.clear()
     
     def retrievalFail(self, msg):
         """ This is a dummy method to supress the failure to retrieve that happens at the end of a real time exposure.
@@ -124,7 +124,7 @@ class PlotterWatcher(threading.Thread, object):
                     #self.exposeClass.donePlottingEvent.wait()
                 else:
                     print("Transfer went wrong not plotting") # likely due to an abort
-
+            time.sleep(0.01)
     
 class ProgressTimer(object):
     """
