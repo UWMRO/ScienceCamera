@@ -78,19 +78,20 @@ class ImageQueueWatcher(threading.Thread, object):
                                                                            image_type)).addCallback(self.transferCallback)
                 
                 #print("Plotting:", savedImage, "shortly.")
-                #self.exposeClass.transferDone.wait()
-                #print("Done transfering: %s" % savedImage)
-                #print("Transfer queue:", self.exposeClass.imageQueue)
-                #print("TRANSFER STATUS:", self.exposeClass.transferStatus)
-                #self.exposeClass.plotQueue.addItem((savedImage, self.exposeClass.transferStatus, logString))
-                #d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
-                #d.addErrback(self.retrievalFail)
+                print("Size of queue", self.exposeClass.imageQueue.qsize())
+                    self.exposeClass.transferDone.wait()
+                    #print("Done transfering: %s" % savedImage)
+                    #print("Transfer queue:", self.exposeClass.imageQueue)
+                    #print("TRANSFER STATUS:", self.exposeClass.transferStatus)
+                    #self.exposeClass.plotQueue.addItem((savedImage, self.exposeClass.transferStatus, logString))
+                    #d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
+                    #d.addErrback(self.retrievalFail)
                 
                 # Wait for plot to be done
-                #self.exposeClass.donePlottingEvent.wait()
-            #time.sleep(0.01)
-            #print("Running...")
-
+                    #self.exposeClass.donePlottingEvent.wait()
+                    #time.sleep(0.01)
+                    #print("Running...")
+        
     def transferCallback(self, msg):
         self.exposeClass.plotQueue.addItem((msg, True, None))
         #self.exposeClass.transferDone.set()
