@@ -76,7 +76,7 @@ class ImageQueueWatcher(threading.Thread, object):
                 if image_type != 'real':
                     self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % (image_name, self.exposeClass.saveDir,
                                                                                self.exposeClass.currentImage+".fits",
-                                                                               image_type)).addCallback(self.transferCallback)
+                                                                               image_type)).addCallback(self.transferCallback, logString=logString)
                     #self.exposeClass.plotQueue.addItem((self.exposeClass+image_name, True, logString))
                     #savedImage = self.exposeClass.saveDir+self.exposeClass.currentImage+".fits"
                     #shutil.copyfile("/home/mro/heimdall/%s" % image_name, savedImage)
@@ -106,7 +106,7 @@ class ImageQueueWatcher(threading.Thread, object):
                     #print("Running...")
                 time.sleep(0.01)
         
-    def transferCallback(self, msg, imageName, logString):
+    def transferCallback(self, msg, logString):
         #self.exposeClass.plotQueue.addItem((msg, True, None))
         self.exposeClass.transferDone.set()
         self.exposeClass.transferDone.clear()
