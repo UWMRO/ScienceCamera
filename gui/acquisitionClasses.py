@@ -108,13 +108,13 @@ class PlotterWatcher(threading.Thread, object):
         threading.Thread.__init__(self)
         self.exposeClass = exposeClass
     def run(self):
-        queue_size = 0
         while True:
             if self.exposeClass.plotQueue.qsize() == 0:
-                print("PlotImageQueue WAITING")            
+                #print("PlotImageQueue WAITING")
+                pass
                 #self.exposeClass.plotImageEvent.wait()
 
-            print("TRIGGERED")
+            #print("TRIGGERED")
             while self.exposeClass.plotQueue.qsize() > 0:
                 imageName, transferStatus, logString = self.exposeClass.plotQueue.get()
                 print("IN PLOT THREAD:", imageName, transferStatus, logString)
