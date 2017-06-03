@@ -254,7 +254,7 @@ class Evora(wx.Frame):
             port_dict.pop('5503').disconnect()
 
         # Kill transfer client
-        os.killpg(os.getpgid(ftpClientProc.pid), signal.SIGTERM)
+        os.killpg(os.getpgid(ftpClientProc.pid), signal.SIGKILL)
             
         if(self.imageOpen):
             logger.info("destroying image frame")
@@ -321,7 +321,7 @@ class Evora(wx.Frame):
         self.connection = port_dict[str(als.CAMERA_PORT)] = reactor.connectTCP(als.HEIMDALL_IP, als.CAMERA_PORT, EvoraClient(app.frame1))
         #port_dict[str(als.FTP_TRANSFER_PORT)] = reactor.connectTCP(als.HEIMDALL_IP, als.FTP_TRANSFER_PORT, FileClientFactory(app.frame1))
         port_dict[str(als.FTP_GET_PORT)] = reactor.connectTCP('localhost', als.FTP_GET_PORT, TransferClient(app.frame1))
-        ftpClientProc = subprocess.Popen("./transferImages.py", shell=True, preexec_fn=os.setsid)
+
         
 
     def onConnectCallback(self, msg):
@@ -1282,7 +1282,7 @@ if __name__ == "__main__":
     #log.startLogging(sys.stdout)
     #sys.stdout = als.Logger(sys.stdout)
     #sys.stderr = als.Logger(sys.stderr)
-    
+    ftpClientProc = subprocess.Popen("./transferImages.py", shell=True, preexec_fn=os.setsid)    
     app = wx.App(False)
     app.frame1 = Evora()
     app.frame1.Show()
