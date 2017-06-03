@@ -83,7 +83,7 @@ class ImageQueueWatcher(threading.Thread, object):
                 else:
                     #self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % (image_name, self.exposeClass.saveDir,image_name,
                     #                                                           image_type)).addCallback(self.transferCallback)
-                    saveImage = "/tmp/"+self.image_name
+                    saveImage = "/tmp/"+image_name
                     shutil.copyfile("/home/mro/heimdall/%s" % image_name, savedImage)
 
                 self.exposeClass.plotQueue.addItem((savedImage, True, logString))
