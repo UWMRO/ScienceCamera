@@ -398,6 +398,8 @@ class Evora(wx.Frame):
         self.enableConnections(True, False, False)
         self.disableButtons('disconnect', True)
 
+        self.takeImage.tempInstance..current_mode = None
+
     def onShutdown(self, event):
         """
         Runs when camera shutdown command is pressed in the Camera menu.  Checks to see if the camera temp is 
