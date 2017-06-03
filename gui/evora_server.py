@@ -870,7 +870,7 @@ class Evora(object):
                     logger.debug("wrote: {}".format(filename))
                     data = np.zeros(width//binning*height//binning, dtype='uint16')
 
-                    protocol.sendData("realSent %s" % (workingImNum,filename))
+                    protocol.sendData("realSent %s" % filename)
                     #print("Sending", "realSent%d" % (workingImNum))
                     workingImNum += 1
                     end = time.time()
