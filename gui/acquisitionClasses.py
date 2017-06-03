@@ -78,8 +78,8 @@ class ImageQueueWatcher(threading.Thread, object):
                                                                            image_type)).addCallback(self.transferCallback)
                 
                 #print("Plotting:", savedImage, "shortly.")
-                print("Size of queue", self.exposeClass.imageQueue.qsize())
-                self.exposeClass.transferDone.wait()
+                #print("Size of queue", self.exposeClass.imageQueue.qsize())
+                #self.exposeClass.transferDone.wait()
                     #print("Done transfering: %s" % savedImage)
                     #print("Transfer queue:", self.exposeClass.imageQueue)
                     #print("TRANSFER STATUS:", self.exposeClass.transferStatus)
@@ -91,6 +91,7 @@ class ImageQueueWatcher(threading.Thread, object):
                     #self.exposeClass.donePlottingEvent.wait()
                     #time.sleep(0.01)
                     #print("Running...")
+                time.sleep(0.01)
         
     def transferCallback(self, msg):
         self.exposeClass.plotQueue.addItem((msg, True, None))
