@@ -716,8 +716,8 @@ class Exposure(wx.Panel):
         plotInstance.panel.updateScreenStats()
         #wx.CallAfter(plotInstance.panel.refresh())
         plotInstance.panel.refresh()
-        self.donePlottingEvent.set()
-        self.donePlottingEvent.clear()
+        #self.donePlottingEvent.set()
+        #self.donePlottingEvent.clear()
 
 
     def displayRealImage_thread(self, msg):
