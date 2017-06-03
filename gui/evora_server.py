@@ -1054,7 +1054,7 @@ class Logger(object):
         d = datetime.today()
         string = d.strftime(" [%b %m, %y, %H:%M:%S] ")
         return string
-
+"""
 class FTPThread(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -1065,7 +1065,7 @@ class FTPThread(threading.Thread):
         f = FTPFactory(p)
         f.timeOut = None
         reactor.listenTCP(als.FTP_TRANSFER_PORT, f)
-
+"""
 class FilterThread(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -1093,9 +1093,9 @@ if __name__ == "__main__":
         reactor.listenTCP(als.CAMERA_PORT, EvoraClient())
 
         # Once the camera server starts start the ftp server
-        ftp_server = FTPThread()
-        ftp_server.daemon = True
-        ftp_server.run()
+        #ftp_server = FTPThread()
+        #ftp_server.daemon = True
+        #ftp_server.run()
 
         #filter_server = FilterThread()
         #filter_server.daemon = True
