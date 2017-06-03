@@ -469,7 +469,7 @@ class Exposure(wx.Panel):
                 self.stopExp.Enable(True)
                 self.abort = True
                 line = " ".join(line[1:])
-                
+
                 # start callback that looks for a path leading to a real image
                 d = self.protocol.addDeferred("realSent")
                 #d.addCallback(self.displayRealImage_thread)
@@ -486,15 +486,7 @@ class Exposure(wx.Panel):
                 # change ftp server to the tmp folder
                 #self.ftp.cwd("tmp/").addCallback(self.ftpCWD)
                 
-                # send command to start realtime exposure
-                d = self.protocol.sendCommand(command) 
-                d.addCallback(self.realCallback)  # this will clear the image path queue
-                
-                # start timer
-                if itime < 2.5:
-                    self.timer_2.start(0)
-                else:
-                    self.timer_2.start(itime)
+                self.ftpLayer.sendCommand("cwd tmp/").addCallback(self.startRealTime, command=command, itime=itime)
                 
             if imType == 3:  # series exposure
                 dialog = wx.TextEntryDialog(None, "How many exposure?", "Entry", "1", wx.OK | wx.CANCEL)
@@ -546,6 +538,17 @@ class Exposure(wx.Panel):
                         dialog = wx.MessageDialog(None, "Entry was not a valid integer!", "", wx.OK | wx.ICON_ERROR)
                         dialog.ShowModal()
                         dialog.Destroy()
+
+    def startRealTime(self, msg, command, itime):
+        # send command to start realtime exposure
+        d = self.protocol.sendCommand(command) 
+        d.addCallback(self.realCallback)  # this will clear the image path queue
+        
+        # start timer
+        if itime < 2.5:
+            self.timer_2.start(0)
+        else:
+            self.timer_2.start(itime)
 
     def ftpCWD(self, msg):
         print("Changed FTP server directory:", msg)
@@ -782,12 +785,16 @@ class Exposure(wx.Panel):
         self.log(self.logFunction, logString)
 
         logger.debug("Completed real time series with exit: " + msg)
-        self.realSentCount = 1
+        #self.realSentCount = 1
         # change the ftp server directory to default
         #self.ftp.cdup().addCallback(self.ftpCWD)
-
+        d = self.ftpLayer.sendCommand("cdup")
+        d.addCallback(self.done)
         
+    def done(self, msg):
+        print(msg)
 
+            
     def displaySeriesImage_thread(self, msg):
         """
         Executes displaySeriesImage in anther thread when the callback is executed via the main thread.

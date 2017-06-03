@@ -128,8 +128,15 @@ class Parser(object):
             #print("Transfers:", numberOfTransfers)
             return None
 
-        if input[0] == 'test':
+        if input[0] == 'cwd':
+            ftp.cwd(input[0]).addCallback(self.done)
+            return "cwd None"
 
+        if input[0] == 'cdup':
+            ftp.cdup().addCallback(self.done)
+            return 'cdup None'
+    
+        if input[0] == 'test':
             ftp.pwd().addCallback(self.done)
 
     def done(self, msg):
