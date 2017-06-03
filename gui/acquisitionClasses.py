@@ -79,7 +79,7 @@ class ImageQueueWatcher(threading.Thread, object):
                 
                 #print("Plotting:", savedImage, "shortly.")
                 print("Size of queue", self.exposeClass.imageQueue.qsize())
-                    self.exposeClass.transferDone.wait()
+                self.exposeClass.transferDone.wait()
                     #print("Done transfering: %s" % savedImage)
                     #print("Transfer queue:", self.exposeClass.imageQueue)
                     #print("TRANSFER STATUS:", self.exposeClass.transferStatus)
