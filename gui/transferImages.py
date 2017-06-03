@@ -199,7 +199,7 @@ class QueueWatcher(threading.Thread):
 
                 d.addCallback(parser.transferDone, file=savePath+saveName)
                 d.addErrback(parser.transferFail)
-                imageGot.wait()
+                imageGet.wait()
             time.sleep(0.01)
         
 if __name__ == "__main__": 
