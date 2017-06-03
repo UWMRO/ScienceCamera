@@ -453,6 +453,7 @@ class Evora(wx.Frame):
         self.connection.disconnect()
         self.connected = False
         self.enableConnections(True, False, False)
+        self.takeImage.tempInstance.current_mode = None
 
     def enableConnections(self, con, discon, shut):
         """
