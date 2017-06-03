@@ -207,7 +207,8 @@ if __name__ == "__main__":
 
     fileServerFactory = FileServerClient()
 
-    
+    t = QueueWatcher()
+    t.start()
     
     reactor.connectTCP(als.HEIMDALL_IP, als.FTP_TRANSFER_PORT, ftpFactory)     
     reactor.listenTCP(als.FTP_GET_PORT, fileServerFactory)
