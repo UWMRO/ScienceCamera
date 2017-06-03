@@ -129,7 +129,7 @@ class Parser(object):
             return None
 
         if input[0] == 'cwd':
-            ftp.cwd(input[0]).addCallback(self.done)
+            ftp.cwd(input[1]).addCallback(self.done)
             return "cwd None"
 
         if input[0] == 'cdup':
