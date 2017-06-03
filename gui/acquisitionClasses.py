@@ -83,7 +83,7 @@ class ImageQueueWatcher(threading.Thread, object):
 
                 else:
                     self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % (image_name, self.exposeClass.saveDir,image_name,
-                                                                               image_type)).addCallback(self.transferCallback)
+                                                                               image_type)).addCallback(self.transferCallback, logString=logString)
                     #self.exposeClass.plotQueue.addItem((self.exposeClass+image_name, True, logString))
                     #saveImage = "/tmp/"image_name
                     #shutil.copyfile("/home/mro/heimdall/%s" % image_name, savedImage)
@@ -106,10 +106,11 @@ class ImageQueueWatcher(threading.Thread, object):
                     #print("Running...")
                 time.sleep(0.01)
         
-    def transferCallback(self, msg):
-        self.exposeClass.plotQueue.addItem((msg, True, None))
+    def transferCallback(self, msg, imageName, logString):
+        #self.exposeClass.plotQueue.addItem((msg, True, None))
         self.exposeClass.transferDone.set()
         self.exposeClass.transferDone.clear()
+        self.exposeClass.display(None, msg, logString)
     
     def retrievalFail(self, msg):
         """ This is a dummy method to supress the failure to retrieve that happens at the end of a real time exposure.
@@ -378,12 +379,12 @@ class Exposure(wx.Panel):
         self.transferStatus = False # If transfer is successful then True otherwise False.
 
         # Setup plotter queue
-        self.plotImageEvent = threading.Event()
-        self.donePlottingEvent = threading.Event()
-        self.plotQueue = EventQueue(self.plotImageEvent)
-        self.plotWatcher = PlotterWatcher(self)
-        self.plotWatcher.daemon = True
-        self.plotWatcher.start()
+        #self.plotImageEvent = threading.Event()
+        #self.donePlottingEvent = threading.Event()
+        #self.plotQueue = EventQueue(self.plotImageEvent)
+        #self.plotWatcher = PlotterWatcher(self)
+        #self.plotWatcher.daemon = True
+        #self.plotWatcher.start()
         
     def nameText(self, event):
         """
