@@ -16,6 +16,7 @@ import AddLinearSpacer as als
 
 #Global variables
 ftp = None
+numberOfTransfers = 0
 
 class FileServer(basic.LineReceiver):
     """
@@ -101,7 +102,7 @@ class Parser(object):
         Receive an input and splitps it up and based on the first argument will execute the right method 
         (e.g. input=connect will run the Evora startup routine).
         """
-        global ftp
+        global ftp, numberOfTransfers
         input = input.split()
         if input[0] == 'get':
             """
@@ -114,9 +115,11 @@ class Parser(object):
             #type = input[4]
             print(serverImageName, savePath, saveName)
             d = ftp.retrieveFile(serverImageName, als.FileBuffer(savePath, saveName), offset=0)
+            numberOfTransfers += 1
             d.addCallback(self.transferDone, file=savePath+saveName)
             d.addErrback(self.transferFail)
-            return "Attempting to start transfer"
+            print("Transfers:", numberOfTransfers)
+            return None
 
         if input[0] == 'test':
 
@@ -125,6 +128,8 @@ class Parser(object):
     def done(self, msg):
         print(msg)
     def transferDone(self, msg, file):
+        global numberOfTransfers
+        numberOfTransfers -= 1
         self.protocol.sendData("get %s" % file)
 
     def transferFail(self, msg):
