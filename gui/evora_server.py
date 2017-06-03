@@ -55,6 +55,7 @@ t = None
 isAborted = None  # tracks globally when the abort has been called.  Every call to the parser
                   # is an new instance
 logger = MyLogger.myLogger("evora_server.py", "server")
+ftp_server = None
 # Get gregorian date, local
 #d = date.today()
 #logFile = open("/home/mro/ScienceCamera/gui/logs/log_server_" + d.strftime("%Y%m%d") + ".log", "a")
@@ -1082,15 +1083,20 @@ class FilterThread(threading.Thread):
         server_pipe.wait()
         time.sleep(10)
 
+def kill(signal, frame):
+    os.killpg(os.getgid(ftp_server.pid, signal.SIGKILL))
+    sys.exit(0)
+        
 if __name__ == "__main__":
     filter_server = None
-    ftp_server = None
     try:
         #sys.stdout = Logger(sys.stdout)
         #sys.stderr = Logger(sys.stderr)
 
         #ep = Evora()
         #ep.startup()
+
+        signal.signal(signal.SIGINT, kill)
         
         reactor.suggestThreadPoolSize(30)
         reactor.listenTCP(als.CAMERA_PORT, EvoraClient())
@@ -1108,7 +1114,8 @@ if __name__ == "__main__":
         #print("Server ready.")
         reactor.run()
     except KeyboardInterrupt:
-        os.killpg(os.getpgid(ftp_server.pid), signal.SIGKILL)
+        #os.killpg(os.getpgid(ftp_server.pid), signal.SIGKILL)
         #filter_server.on = False
         #filter_server.stop()
-        sys.exit(0)
+        #sys.exit(0)
+        print("Hello")
