@@ -398,7 +398,7 @@ class Evora(wx.Frame):
         self.enableConnections(True, False, False)
         self.disableButtons('disconnect', True)
 
-        self.takeImage.tempInstance..current_mode = None
+        self.takeImage.tempInstance.current_mode = None
 
     def onShutdown(self, event):
         """
