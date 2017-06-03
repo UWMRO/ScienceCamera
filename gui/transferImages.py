@@ -10,6 +10,10 @@ from twisted.protocols.ftp import FTPFactory
 from twisted.protocols.ftp import FTPFileListProtocol
 from twisted.protocols.ftp import FTPClient
 
+from Queue import Queue
+import threading
+import time
+
 # GUI element imports
 import AddLinearSpacer as als
 
@@ -17,6 +21,8 @@ import AddLinearSpacer as als
 #Global variables
 ftp = None
 numberOfTransfers = 0
+imageQueue = Queue()
+imageGet = threading.Event()
 
 class FileServer(basic.LineReceiver):
     """
@@ -112,13 +118,15 @@ class Parser(object):
             serverImageName = input[1]
             savePath = input[2]
             saveName = input[3]
+            inputs = (self, serverImageName, savePath, saveName)
+            imageQueue.put(inputs)
             #type = input[4]
-            print(serverImageName, savePath, saveName)
-            d = ftp.retrieveFile(serverImageName, als.FileBuffer(savePath, saveName), offset=0)
+            #print(serverImageName, savePath, saveName)
+            #d = ftp.retrieveFile(serverImageName, als.FileBuffer(savePath, saveName), offset=0)
             numberOfTransfers += 1
-            d.addCallback(self.transferDone, file=savePath+saveName)
-            d.addErrback(self.transferFail)
-            print("Transfers:", numberOfTransfers)
+            #d.addCallback(self.transferDone, file=savePath+saveName)
+            #d.addErrback(self.transferFail)
+            #print("Transfers:", numberOfTransfers)
             return None
 
         if input[0] == 'test':
@@ -131,8 +139,13 @@ class Parser(object):
         global numberOfTransfers
         numberOfTransfers -= 1
         self.protocol.sendData("get %s" % file)
+        imageGet.set()
+        imageGet.clear()
 
     def transferFail(self, msg):
+        imageGet.set()
+        imageGet.clear()
+
         pass
         
 
@@ -172,11 +185,28 @@ class FileClientFactory(protocol.ClientFactory):
     def clientConnectionFailed(self, transport, reason):
         print("Connection failed:", reason)
 
+class QueueWatcher(threading.Thread):
 
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        while True:
+            # get from queue
+            while imageQueue.qsize() > 0:
+                parser, serverImName, savePath, saveName = imageQueue.get()
+                d = ftp.retrieveFile(serverImName, als.FileBuffer(savePath, saveName), offset=0)
+
+                d.addCallback(parser.transferDone, file=savePath+saveName)
+                d.addErrback(parser.transferFail)
+                imageGot.wait()
+            time.sleep(0.01)
+        
 if __name__ == "__main__": 
     ftpFactory = FileClientFactory()
 
     fileServerFactory = FileServerClient()
+
     
     
     reactor.connectTCP(als.HEIMDALL_IP, als.FTP_TRANSFER_PORT, ftpFactory)     
