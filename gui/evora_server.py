@@ -14,6 +14,7 @@ __author__ = "Tristan J. Hillis"
 ## Imports
 import glob
 import os
+import signal
 import subprocess
 import sys
 import time
@@ -1083,15 +1084,19 @@ class FilterThread(threading.Thread):
 
 if __name__ == "__main__":
     filter_server = None
+    ftp_server = None
     try:
         #sys.stdout = Logger(sys.stdout)
         #sys.stderr = Logger(sys.stderr)
 
         #ep = Evora()
         #ep.startup()
+        
         reactor.suggestThreadPoolSize(30)
         reactor.listenTCP(als.CAMERA_PORT, EvoraClient())
 
+        ftp_server = subprocess.Popen("./evora_ftp_server.py", shell=True, preexec_fn=os.setsid)
+        
         # Once the camera server starts start the ftp server
         #ftp_server = FTPThread()
         #ftp_server.daemon = True
@@ -1103,6 +1108,7 @@ if __name__ == "__main__":
         #print("Server ready.")
         reactor.run()
     except KeyboardInterrupt:
+        os.killpg(os.getpgid(ftp_server.pid), signal.SIGKILL)
         #filter_server.on = False
         #filter_server.stop()
         sys.exit(0)
