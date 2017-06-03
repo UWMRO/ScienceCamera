@@ -1,7 +1,10 @@
 #!/usr/bin/env python2
 from __future__ import absolute_import, division, print_function
 
+import os
 import Queue
+import signal
+import subprocess
 import sys
 import thread
 import threading
@@ -52,6 +55,7 @@ __author__ = "Tristan J. Hillis"
 ## Global Variables
 app = None  # reference to Evora app
 port_dict = {}  # dictionary storing different connections that may be open.
+ftpClientProc = None
 logger = MyLogger.myLogger("photoAcquisitionGUI.py", "client")
 
 ## Getting to parents (i.e. different classes)
@@ -249,6 +253,9 @@ class Evora(wx.Frame):
             logger.info("killing F. server connection")
             port_dict.pop('5503').disconnect()
 
+        # Kill transfer client
+        os.killpg(os.getpgid(ftpClientProc.pid), signal.SIGTERM)
+            
         if(self.imageOpen):
             logger.info("destroying image frame")
             self.imageOpen = False
@@ -1269,11 +1276,14 @@ class FileClientFactory(protocol.ClientFactory):
         print("Connection failed:", reason)
         
 if __name__ == "__main__":
+    global ftpClientProc
     ## Deprecated
     #log.startLogging(sys.stdout)
     #sys.stdout = als.Logger(sys.stdout)
     #sys.stderr = als.Logger(sys.stderr)
 
+    ftpClientProc = subprocess.Popen("~/ScienceCamera/gui/transferImages.py", shell=True, preexec_fn=os.setsid, stdout=subprocess.STDOUT)
+    
     app = wx.App(False)
     app.frame1 = Evora()
     app.frame1.Show()
