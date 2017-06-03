@@ -321,7 +321,7 @@ class Evora(wx.Frame):
         self.connection = port_dict[str(als.CAMERA_PORT)] = reactor.connectTCP(als.HEIMDALL_IP, als.CAMERA_PORT, EvoraClient(app.frame1))
         #port_dict[str(als.FTP_TRANSFER_PORT)] = reactor.connectTCP(als.HEIMDALL_IP, als.FTP_TRANSFER_PORT, FileClientFactory(app.frame1))
         port_dict[str(als.FTP_GET_PORT)] = reactor.connectTCP('localhost', als.FTP_GET_PORT, TransferClient(app.frame1))
-        ftpClientProc = subprocess.Popen("./transferImages.py", shell=True, preexec_fn=os.setsid, stdout=subprocess.STDOUT)
+        ftpClientProc = subprocess.Popen("./transferImages.py", shell=True, preexec_fn=os.setsid)
         
 
     def onConnectCallback(self, msg):
