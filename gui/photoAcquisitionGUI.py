@@ -724,7 +724,8 @@ class DrawImage(wx.Panel):
         self.upper = self.median + deviation
         self.lower = self.median - deviation
 
-        self.plot = self.axes.imshow(data, vmin=self.lower, vmax=self.upper, origin='lower')
+        data = np.fliplr(data)
+        self.plot = self.axes.imshow(data, vmin=self.lower, vmax=self.upper, origin='upper')
         #self.axes.invert_xaxis()
         
         self.plot.set_clim(vmin=self.lower, vmax=self.upper)
