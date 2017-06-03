@@ -471,14 +471,14 @@ class Exposure(wx.Panel):
                 line = " ".join(line[1:])
                 
                 # start callback that looks for a path leading to a real image
-                #d = self.protocol.addDeferred("realSent"+self.nextRealSentCount())
+                d = self.protocol.addDeferred("realSent")
                 #d.addCallback(self.displayRealImage_thread)
-                #d.addCallback(self.displayRealImage)
+                d.addCallback(self.displayRealImage)
                 #d = self.protocol.addDeferred("realSent"+self.nextRealSentCount())
                 #d.addCallback(self.displayRealImage)
                 #d = self.protocol.addDeferred("realSent"+self.nextRealSentCount())
                 #d.addCallback(self.displayRealImage)
-                self.makeRealTimeDeferreds()                
+                #self.makeRealTimeDeferreds()                
                 command = "real " + line
                 logString = als.getLogString(command, 'pre')
                 self.log(self.logFunction, logString)
@@ -489,13 +489,13 @@ class Exposure(wx.Panel):
                 # send command to start realtime exposure
                 d = self.protocol.sendCommand(command) 
                 d.addCallback(self.realCallback)  # this will clear the image path queue
-                """
+                
                 # start timer
                 if itime < 2.5:
                     self.timer_2.start(0)
                 else:
                     self.timer_2.start(itime)
-                """
+                
             if imType == 3:  # series exposure
                 dialog = wx.TextEntryDialog(None, "How many exposure?", "Entry", "1", wx.OK | wx.CANCEL)
                 answer = dialog.ShowModal()
@@ -736,9 +736,9 @@ class Exposure(wx.Panel):
         # no abort then display the image
         if self.abort:  # means that abort can be called.
             # add a new deffered object to set up for another incoming image
-            #d = self.protocol.addDeferred("realSent")
+            d = self.protocol.addDeferred("realSent")
             #d.addCallback(self.displayRealImage_thread)
-            #d.addCallback(self.displayRealImage)
+            d.addCallback(self.displayRealImage)
             # add two new deffereds
             #d = self.protocol.addDeferred("realSent"+self.nextRealSentCount())
             #d.addCallback(self.displayRealImage
@@ -758,11 +758,11 @@ class Exposure(wx.Panel):
             
             # change the gui with thread safety
             #wx.CallAfter(self.safePlot, data, stats_list)
-            """
-            if float(self.timeToSend) >= 2:
+            
+            if float(self.timeToSend) >= 2.5:
                 self.timer_2.stop()
                 self.timer_2.start(self.timeToSend)
-            """
+            
     def realCallback(self, msg):
         """
         Called when the camera has been aborted during a real time series exposure.
