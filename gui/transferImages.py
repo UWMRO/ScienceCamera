@@ -123,7 +123,6 @@ class Parser(object):
             #type = input[4]
             #print(serverImageName, savePath, saveName)
             #d = ftp.retrieveFile(serverImageName, als.FileBuffer(savePath, saveName), offset=0)
-            numberOfTransfers += 1
             #d.addCallback(self.transferDone, file=savePath+saveName)
             #d.addErrback(self.transferFail)
             #print("Transfers:", numberOfTransfers)

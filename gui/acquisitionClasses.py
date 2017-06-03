@@ -71,15 +71,22 @@ class ImageQueueWatcher(threading.Thread, object):
                 if logString == "None":
                     logString = None
                 print("Transfering:", image_name)
-
+                saveImage = None
                 #savedImage, d = self.exposeClass.transferImage(image_path, image_name, image_type)
                 if image_type != 'real':
-                    self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % (image_name, self.exposeClass.saveDir,
-                                                                               self.exposeClass.currentImage+".fits",
-                                                                               image_type)).addCallback(self.transferCallback)
+                    #self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % (image_name, self.exposeClass.saveDir,
+                    #                                                           self.exposeClass.currentImage+".fits",
+                    #                                                           image_type)).addCallback(self.transferCallback)
+                    savedImage = self.exposeClass.saveDir+self.exposeClass.currentImage+".fits"
+                    shutil.copyfile("/home/mro/heimdall/%s" % image_name, savedImage)
+
                 else:
-                    self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % (image_name, self.exposeClass.saveDir,image_name,
-                                                                               image_type)).addCallback(self.transferCallback)
+                    #self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % (image_name, self.exposeClass.saveDir,image_name,
+                    #                                                           image_type)).addCallback(self.transferCallback)
+                    saveImage = "/tmp/"+self.image_name
+                    shutil.copyfile("/home/mro/heimdall/%s" % image_name, savedImage)
+
+                self.exposeClass.plotQueue.addItem((savedImage, True, logString))
                     
                 #print("Plotting:", savedImage, "shortly.")
                 #print("Size of queue", self.exposeClass.imageQueue.qsize())
