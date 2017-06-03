@@ -1084,7 +1084,7 @@ class FilterThread(threading.Thread):
         time.sleep(10)
 
 def kill(signal, frame):
-    os.killpg(os.getgid(ftp_server.pid, signal.SIGKILL))
+    os.killpg(os.getgid(ftp_server.pid), signal.SIGKILL)
     sys.exit(0)
         
 if __name__ == "__main__":
