@@ -521,8 +521,8 @@ class Evora(object):
         header.append(card=("ACQMODE", "Single Scan", "Acquisition mode"))
         header.append(card=("READMODE", "Image", "Readout mode"))
         header.append(card=("INSTRUME", "evora", "Instrument used for imaging"))
-        header.append(card=("LATITUDE", 120.744466667, "Decimal degrees of MRO latitude"))
-        header.append(card=("LONGITUD", 46.9528, "Decimal degress of MRO longitude"))
+        header.append(card=("LONGITUD", 120.744466667, "Decimal degrees of MRO latitude"))
+        header.append(card=("LATITUDE", 46.9528, "Decimal degress of MRO longitude"))
 
         # get readout time and temp
         temp = andor.GetTemperatureStatus()[1]
