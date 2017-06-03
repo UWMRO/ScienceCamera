@@ -473,13 +473,13 @@ class Exposure(wx.Panel):
                 # send command to start realtime exposure
                 d = self.protocol.sendCommand(command) 
                 d.addCallback(self.realCallback)  # this will clear the image path queue
-
+                """
                 # start timer
                 if itime < 2.5:
                     self.timer_2.start(0)
                 else:
                     self.timer_2.start(itime)
-
+                """
             if imType == 3:  # series exposure
                 dialog = wx.TextEntryDialog(None, "How many exposure?", "Entry", "1", wx.OK | wx.CANCEL)
                 answer = dialog.ShowModal()
@@ -742,11 +742,11 @@ class Exposure(wx.Panel):
             
             # change the gui with thread safety
             #wx.CallAfter(self.safePlot, data, stats_list)
-
+            """
             if float(self.timeToSend) >= 2:
                 self.timer_2.stop()
                 self.timer_2.start(self.timeToSend)
-            
+            """
     def realCallback(self, msg):
         """
         Called when the camera has been aborted during a real time series exposure.
