@@ -1083,7 +1083,7 @@ class FilterThread(threading.Thread):
         server_pipe.wait()
         time.sleep(10)
 
-def kill(signal, frame):
+def kill(sig, frame):
     os.killpg(os.getpgid(ftp_server.pid), signal.SIGKILL)
     sys.exit(0)
         
