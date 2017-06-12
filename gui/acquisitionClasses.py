@@ -1166,7 +1166,7 @@ class TypeSelection(wx.Panel):
             self.exposeClass.expValue.SetValue("0")
         else:
             self.exposeClass.expValue.SetWindowStyle(wx.TE_RICH)
-            if self.exposeClass.timeToSend == "0":
+            if self.exposeClass.timeToSend == "0" and self.tempTime is not None:
                 self.exposeClass.timeToSend = self.tempTime
             self.exposeClass.expValue.SetValue(str(self.exposeClass.timeToSend))
 
