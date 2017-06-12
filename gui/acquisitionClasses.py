@@ -60,7 +60,6 @@ class ImageQueueWatcher(threading.Thread, object):
         queue_size = 0
         while True:
             if self.exposeClass.imageQueue.qsize() == 0:
-                print("ImageQueueWatcher WAITING")            
                 self.exposeClass.imageAddedEvent.wait()
                 pass
             while self.exposeClass.imageQueue.qsize() > 0:
@@ -71,7 +70,6 @@ class ImageQueueWatcher(threading.Thread, object):
                 logString = line[3]
                 if logString == "None":
                     logString = None
-                print("Transfering:", image_name)
                 saveImage = None
                 #savedImage, d = self.exposeClass.transferImage(image_path, image_name, image_type)
                 if image_type != 'real':
@@ -83,8 +81,9 @@ class ImageQueueWatcher(threading.Thread, object):
                     #shutil.copyfile("/home/mro/heimdall/%s" % image_name, savedImage)
 
                 else:
-                    self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % (image_name, self.exposeClass.saveDir,image_name,
-                                                                               image_type)).addCallback(self.transferCallback, logString=logString)
+                    self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % \
+                                                          (image_name, "/tmp/", image_name, image_type)) \
+                                                          .addCallback(self.transferCallback, logString=logString)
                     #self.exposeClass.plotQueue.addItem((self.exposeClass+image_name, True, logString))
                     #saveImage = "/tmp/"image_name
                     #shutil.copyfile("/home/mro/heimdall/%s" % image_name, savedImage)
@@ -1386,7 +1385,7 @@ class TempControl(wx.Panel):
         # 20036 is Stabalized
         # 20034 is Off  
 
-        if mode != self.current_mode or (float(targetTemp) > 0 and float(targetTemp) - float(temp) > 15 ):
+        if mode != self.current_mode or (float(targetTemp) > 0 and float(targetTemp) - float(temp) > 15):
             print("UPDATING COLORS")
             self.current_mode = mode
             bmp_ctrl = None
