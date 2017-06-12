@@ -1467,6 +1467,7 @@ class FilterControl(wx.Panel):
         self.filterConnection = False
         self.watch = False
         self.adjusting = False
+        self.currentFilter = None
 
         self.statusBar = None
         self.loadingDots = ""
@@ -1574,6 +1575,15 @@ class FilterControl(wx.Panel):
         Sets global filter selection when the user selects from the drop down menu.
         """
         self.filterSelection = self.filterMenu.GetValue()
+        print(self.currentFilter)
+        if self.filterSelection != self.currentFilter and self.filterButton.IsEnabled():
+            als.SetButtonColor(self.filterButton, 'white', 'green')
+            #self.filterButton.SetBackgroundColour('green')
+            #self.filterButton.SetForegroundColour('white')
+        else:
+            als.SetButtonColor(self.filterButton, None, None)
+            #self.filterButton.SetBackgroundColour(None)
+            #self.filterButton.SetForegroundColour(None)
 
         logger.debug("selection: " + self.filterSelection)
 
@@ -1720,11 +1730,14 @@ class FilterControl(wx.Panel):
             self.filterSelection = str(self.filterMenu.GetValue())
             self.targetFilter = None
             self.loadingDotsTimer.Stop()
+            
+            self.currentFilter = filter
+            als.SetButtonColor(self.filterButton, None, None)
 
             #self.statusBar.SetStatusText("Filter:   %s" % filter, 3)
             wx.CallAfter(self.statusBar.SetStatusText, "Filter:     %s" % filter, 3)
         logger.debug("Filter position is " + filter)
-
+        
     def getFilterCallback_thread(self, msg):
         """
         This is to release the main thread from completing the callback chain.

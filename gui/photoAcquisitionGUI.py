@@ -525,6 +525,8 @@ class Evora(wx.Frame):
         filterSub.Enable(1110, True)
         filterSub.Enable(1112, False)
         self.takeImage.filterInstance.filterButton.Enable(False)
+        self.takeImage.filterInstance.filterButton.SetForegroundColour(None)
+        self.takeImage.filterInstance.filterButton.SetBackgroundColour(None)
         self.takeImage.filterInstance.homeButton.Enable(False)
 
     def logMain(self, logmsg):

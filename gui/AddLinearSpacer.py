@@ -70,6 +70,10 @@ def AddLinearSpacer(boxsizer, pixelSpacing):
     elif orientation == wx.VERTICAL:
         boxsizer.Add((0, pixelSpacing))
 
+def SetButtonColor(btn, fore, back):
+    btn.SetForegroundColour(fore)
+    btn.SetBackgroundColour(back)
+        
 
 def isNumber(string):
     """
