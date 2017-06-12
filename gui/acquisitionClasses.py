@@ -425,9 +425,9 @@ class Exposure(wx.Panel):
             dialog.ShowModal()
             dialog.Destroy()
 
-        print("NAME:", self.nameToSend)
+        print("NAME:", repr(self.nameToSend))
             
-        if self.nameToSend is "":
+        if str(self.nameToSend) == "":
             dialog = wx.MessageDialog(None, "No name was given...will not expose", "",
                                       wx.OK | wx.ICON_ERROR)
             dialog.ShowModal()
