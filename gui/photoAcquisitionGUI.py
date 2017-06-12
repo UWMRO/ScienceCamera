@@ -117,7 +117,7 @@ class Evora(wx.Frame):
         filterSub = wx.Menu()
         filterSub.Append(1110, "&Connect", "Connect to the filter")
         filterSub.Append(1112, "&Disconnect", "Disconnect from filter")
-        filterSub.Append(1111, "&Refresh", "Refresh filter list")
+        filterSub.Append(1111, "&Browse", "Browse filter list")
         filterSub.Enable(1112, False)
 
         binningSub = wx.Menu()
@@ -279,7 +279,20 @@ class Evora(wx.Frame):
         This will simply refresh the filter list so that the menu gets displayed correctly.  
         This is should only be used when the file "filter.txt" has been edited.
         """
-        self.takeImage.filterInstance.refreshList()
+        openFileDialog = wx.FileDialog(self, "Open Filter File", "", "", "Filter List (*.txt)|*.txt", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+        
+        if openFileDialog.ShowModal() == wx.ID_CANCEL:
+            return
+        
+        if self.takeImage.filterInstance.populateFilterList(openFileDialog.GetPath()):
+            self.takeImage.filterInstance.refreshList()
+        else:
+            dialog = wx.MessageDialog(None, "Something is wrong with the format of your filter file!", "", wx.OK | wx.ICON_ERROR)
+            dialog.ShowModal()
+            dialog.Destroy()
+        
+
+        #self.takeImage.filterInstance.refreshList()
 
     def on1x1(self, event):
         """

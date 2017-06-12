@@ -14,6 +14,7 @@ from twisted.protocols.ftp import FTPFileListProtocol
 from twisted.internet import reactor
 from twisted.internet import defer
 
+import pandas as pd
 import numpy as np  # get NumPy
 
 # allows widgets to be inserted into wxPython status bar probably won't work on wxPython 3.x
@@ -1068,28 +1069,16 @@ class Exposure(wx.Panel):
         If the dir. does not exist it will warn the user and ask them to make it rather than setting anything.
         If the dir. does exist then future images will be saved into it.
         """
-        dialog = wx.TextEntryDialog(None, "Point to new directory.  Currently set to %s" % self.saveDir,
-                                    "Set Save Directory", "%s" % self.saveDir, wx.OK | wx.CANCEL)
+        #dialog = wx.TextEntryDialog(None, "Point to new directory.  Currently set to %s" % self.saveDir,
+        #                           "Set Save Directory", "%s" % self.saveDir, wx.OK | wx.CANCEL)
+        dialog = wx.DirDialog(self, "Choose a save directory", defaultPath="~/data")
         answer = dialog.ShowModal()
         dialog.Destroy()
         
         if answer == wx.ID_OK:
-            setTo = str(dialog.GetValue())
-            
-            if os.path.isdir(setTo):
-                dialog = wx.MessageDialog(None, "Found directory!", "", wx.OK | wx.ICON_INFORMATION)
-                dialog.ShowModal()
-                dialog.Destroy()
-                self.saveDir = setTo
-                
-                if self.saveDir[-1] != '/':
-                    self.saveDir += "/"
-                logger.debug("Directory: " + self.saveDir)
-            else:
-                dialog = wx.MessageDialog(None, "Directory not found please take a moment to create it and try again.",
-                                          "", wx.OK | wx.ICON_INFORMATION)
-                dialog.ShowModal()
-                dialog.Destroy()
+            setTo = str(dialog.GetPath()) + "/"
+            self.saveDir = setTo
+            logger.debug("Directory: " + self.saveDir)            
 
     def onStop(self, event):
         """
@@ -1110,7 +1099,6 @@ class Exposure(wx.Panel):
         self.abort = False
 
         logger.info("Stop Exposure")
-        
         
 # Class that handles Radio boxes for image types and exposure types
 class TypeSelection(wx.Panel):
@@ -1167,12 +1155,14 @@ class TypeSelection(wx.Panel):
         index = self.imageType.GetSelection()
         
         if index == 0:
+            tempTime = self.exposeClass.timeToSend
             self.exposeClass.expValue.SetWindowStyle(wx.TE_READONLY)
             self.exposeClass.expValue.SetValue("0")
+            self.exposeClass.timeToSend = tempTime
             
         else:
             self.exposeClass.expValue.SetWindowStyle(wx.TE_RICH)
-            self.exposeClass.expValue.SetValue("")
+            self.exposeClass.expValue.SetValue(self.exposeClass.timeToSend)
 
         logger.info(self.imageType.GetStringSelection())
 
@@ -1184,12 +1174,13 @@ class TypeSelection(wx.Panel):
         index = self.exposeType.GetSelection()
         
         if index == 1:
+            tempName = self.exposeClass.nameToSend # store the user name that will be restored later
             self.exposeClass.nameField.SetWindowStyle(wx.TE_READONLY)
             self.exposeClass.nameField.SetValue("No name needed")
+            self.exposeClass.nameToSend = tempName # restore user name
         else:
-            
             self.exposeClass.nameField.SetWindowStyle(wx.TE_RICH)
-            self.exposeClass.nameField.SetValue("")
+            self.exposeClass.nameField.SetValue(self.exposeClass.nameToSend)
 
         logger.info(self.exposeType.GetStringSelection())
 
@@ -1484,9 +1475,10 @@ class FilterControl(wx.Panel):
         self.buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
 
         ## Variables
-        self.filterNum, self.filterName = np.genfromtxt("filters.txt", dtype='str', usecols=[0,1], unpack=True)
-        self.filterName = self.filterName.tolist()
-        self.filterNum = self.filterNum.astype(int).tolist()
+        filters = pd.read_csv(".currentFilters.txt")
+        self.filterNum, self.filterName = filters['position'].values, filters['filter'].values.tolist()
+        #self.filterName = self.filterName.tolist()
+        #self.filterNum = self.filterNum.astype(int).tolist()
         self.filterMap = {}
         for i in range(len(self.filterName)):
             self.filterMap[self.filterName[i]] = self.filterNum[i]
@@ -1737,6 +1729,27 @@ class FilterControl(wx.Panel):
             d.addCallback(self.getFilterCallback_thread)
             time.sleep(self.watchFilterTime)
 
+    def populateFilterList(self, file):
+        try:
+            # test to see if it imports
+            filters = pd.read_csv(".currentFilters.txt")
+            newNum, newName = filters['position'].values.tolist(), filters['filter'].values.tolist()
+            print("Testing suff")
+            if (True in filters['position'].isnull()) or (True in filters['filter'].isnull()):
+                print("Stop")
+                return False
+
+            print("Don't do it")
+            f = open(file, 'r')
+            curr_list = open(".currentFilters.txt", 'w')
+            for line in f:
+                curr_list.write(line)
+
+            curr_list.close()
+            f.close()
+            return True
+        except KeyError:
+            return False
     def refreshList(self):
         """
         When "Refresh" is clicked in the filter sub-menu of the file menu this function is called.
@@ -1747,11 +1760,12 @@ class FilterControl(wx.Panel):
         self.filterMenu.Clear()
 
         # grab new filters in the assumed to be changed file
-        newNum, newName = np.genfromtxt('filters.txt', dtype='str', usecols=[0,1], unpack=True)
+        filters = pd.read_csv(".currentFilters.txt")
+        newNum, newName = filters['position'].values.tolist(), filters['filter'].values.tolist()
 
         # update variables
-        self.filterName = newName.tolist()
-        self.filterNum = newNum.astype(int).tolist()
+        self.filterName = newName
+        self.filterNum = newNum
         self.filterMap = {}
         for i in range(len(newNum)):
             self.filterMap[newName[i]] = newNum[i]
