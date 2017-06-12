@@ -1079,8 +1079,8 @@ class Exposure(wx.Panel):
         if answer == wx.ID_OK:
             setTo = str(dialog.GetPath()) + "/"
             self.saveDir = setTo
-            self.parent.saveDirectoryText.SetLabel("Saving -> %s" % self.saveDir)
-            self.parent.Layout()
+            self.parent.saveDirectoryText.SetLabel(u"Saving \u2192 %s" % self.saveDir)
+            self.parent.Layout() # This recenters the static text
             logger.debug("Directory: " + self.saveDir)
             
 
@@ -1165,9 +1165,10 @@ class TypeSelection(wx.Panel):
             self.exposeClass.expValue.SetWindowStyle(wx.TE_READONLY)
             self.exposeClass.expValue.SetValue("0")
         else:
-            self.exposeClass.expValue.SetWindowStyle(wx.TE_RICH)
             if self.exposeClass.timeToSend == "0" and self.tempTime is not None:
                 self.exposeClass.timeToSend = self.tempTime
+
+            self.exposeClass.expValue.SetWindowStyle(wx.TE_RICH)
             self.exposeClass.expValue.SetValue(str(self.exposeClass.timeToSend))
 
         logger.info(self.imageType.GetStringSelection())
@@ -1186,11 +1187,10 @@ class TypeSelection(wx.Panel):
 
         else:
             if self.tempName is not None and self.exposeClass.nameToSend == "No name needed":
-                print("MADE IT HERE")
                 self.exposeClass.nameToSend = self.tempName
+                
             self.exposeClass.nameField.SetWindowStyle(wx.TE_RICH)
             self.exposeClass.nameField.SetValue(self.exposeClass.nameToSend)
-        print(self.exposeClass.nameToSend)
         logger.info(self.exposeType.GetStringSelection())
 
 
