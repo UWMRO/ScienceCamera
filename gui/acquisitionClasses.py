@@ -1119,6 +1119,8 @@ class TypeSelection(wx.Panel):
         # Global Variables
         self.parent = parent
         self.exposeClass = self.parent.exposureInstance # give access to Exposure class variables
+        self.tempTime = None
+        self.tempName = None
 
         ### Main Sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
@@ -1159,13 +1161,13 @@ class TypeSelection(wx.Panel):
         index = self.imageType.GetSelection()
         
         if index == 0:
-            tempTime = self.exposeClass.timeToSend
+            self.tempTime = self.exposeClass.timeToSend
             self.exposeClass.expValue.SetWindowStyle(wx.TE_READONLY)
             self.exposeClass.expValue.SetValue("0")
-            self.exposeClass.timeToSend = tempTime
-            
         else:
             self.exposeClass.expValue.SetWindowStyle(wx.TE_RICH)
+            if self.exposeClass.timeToSend == "0":
+                self.exposeClass.timeToSend = self.tempTime
             self.exposeClass.expValue.SetValue(str(self.exposeClass.timeToSend))
 
         logger.info(self.imageType.GetStringSelection())
