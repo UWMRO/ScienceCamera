@@ -1488,14 +1488,14 @@ class FilterControl(wx.Panel):
         self.filterBox = wx.StaticBox(self, id=2040, label="Filter Controls", size=(100,100), style=wx.ALIGN_CENTER)
         self.filBoxSizer = wx.StaticBoxSizer(self.filterBox, wx.VERTICAL)
 
-        self.statusBox = wx.StaticBox(self, id=2041, label="Filter Status", size=(150,150), style=wx.ALIGN_CENTER)
-        self.statusBoxSizer = wx.StaticBoxSizer(self.statusBox, wx.VERTICAL)
+        #self.statusBox = wx.StaticBox(self, id=2041, label="Filter Status", size=(150,150), style=wx.ALIGN_CENTER)
+        #self.statusBoxSizer = wx.StaticBoxSizer(self.statusBox, wx.VERTICAL)
         
         self.filterText = wx.StaticText(self, id=2042, label="Filter Type")
         self.filterMenu = wx.ComboBox(self, id=2043, choices=self.filterName, size=(60, -1), style=wx.CB_READONLY)
         self.filterButton = wx.Button(self, id=2044, label="Rotate", size=(70, -1))
         self.homeButton = wx.Button(self, id=2046, label="Home", size=(70,-1))
-        self.statusBox = wx.TextCtrl(self, id=2045, style=wx.TE_READONLY|wx.TE_MULTILINE, size=(200,100))
+        #self.statusBox = wx.TextCtrl(self, id=2045, style=wx.TE_READONLY|wx.TE_MULTILINE, size=(200,100))
         self.enableButtons(False)
         self.loadingDotsTimer = wx.Timer(self, id=2047)
 
@@ -1518,12 +1518,12 @@ class FilterControl(wx.Panel):
         self.filBoxSizer.Add(self.subVert, flag=wx.ALIGN_CENTER)
         self.filBoxSizer.Add((0,30))
 
-        self.statusBoxSizer.Add(self.statusBox, flag=wx.ALIGN_CENTER)
+        #self.statusBoxSizer.Add(self.statusBox, flag=wx.ALIGN_CENTER)
 
         #### Line up larger chunks with main sizers
         self.vertSizer.Add(self.filBoxSizer)
-        als.AddLinearSpacer(self.vertSizer, 15)
-        self.vertSizer.Add(self.statusBoxSizer)
+        #als.AddLinearSpacer(self.vertSizer, 15)
+        #self.vertSizer.Add(self.statusBoxSizer)
 
         ## Variables
         self.filterSelection = ""
@@ -1667,19 +1667,22 @@ class FilterControl(wx.Panel):
             d = self.protocol2.sendCommand("getFilter")
             d.addCallback(self.getFilterCallback)
         else:
-            self.statusBar.SetStatusText("Filter: FAILED")
+            self.statusBar.SetStatusText("Filter: FAILED", 3)
         
         self.enableButtons(True)
 
     def getFilterCallback(self, msg):
         pos = int(msg)
+        if pos > 5:
+            self.statusBar.SetStatusText("Filter: FAILED", 3)
+            return
         logger.debug("position: " + str(pos))
         filter = self.filterName[pos]
         
         self.logFunction = self.logFilter
         if self.targetFilter is not None and self.targetFilter != pos:
-            logString = als.getLogString("filter getFilter report " + filter, 'post')
-            self.log(self.logFunction, logString)
+            #logString = als.getLogString("filter getFilter report " + filter, 'post')
+            #self.log(self.logFunction, logString)
 
             #self.statusBar.SetStatusText("Filter:  %s" % (filter+self.loadingDots), 3)
             wx.CallAfter(self.statusBar.SetStatusText, "Filter:    %s" % filter, 3)
@@ -1688,8 +1691,8 @@ class FilterControl(wx.Panel):
         elif self.targetFilter == pos and self.adjusting:  # Kill the getFilter sequence when adjusting
             self.watch = False
             self.logFunction = self.logFilter
-            logString = als.getLogString("filter getFilter finding " + filter + "," + str(pos), 'post')
-            self.log(self.logFunction, logString)
+            #logString = als.getLogString("filter getFilter finding " + filter + "," + str(pos), 'post')
+            #self.log(self.logFunction, logString)
             
             self.filterMenu.SetSelection(pos)
             self.filterSelection = str(self.filterMenu.GetValue())
@@ -1701,8 +1704,8 @@ class FilterControl(wx.Panel):
         else:
             self.watch = False
             self.logFunction = self.logFilter
-            logString = als.getLogString("filter getFilter set " + filter + "," + str(pos), 'post')
-            self.log(self.logFunction, logString)
+            #logString = als.getLogString("filter getFilter set " + filter + "," + str(pos), 'post')
+            #self.log(self.logFunction, logString)
             
             self.filterMenu.SetSelection(pos)
             self.filterSelection = str(self.filterMenu.GetValue())
@@ -1789,7 +1792,7 @@ class FilterControl(wx.Panel):
 
     def logFilter(self, logmsg):
         logger.info("logging from exposure class")
-        self.sendToStatus(logmsg)
+        #self.sendToStatus(logmsg)
         logInstance = self.parent.parent.parent.log.logInstance
         wx.CallAfter(logInstance.threadSafeLogStatus, logmsg)
 

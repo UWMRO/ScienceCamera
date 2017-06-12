@@ -843,6 +843,7 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
         ### Sub sizer
         self.expTempSizer = wx.BoxSizer(wx.VERTICAL)
         self.controlHorz = wx.BoxSizer(wx.HORIZONTAL)
+        self.tempFilterSizer = wx.BoxSizer(wx.HORIZONTAL)
 
         self.filterInstance = ac.FilterControl(self)
         self.tempInstance = ac.TempControl(self)
@@ -850,19 +851,24 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
         self.typeInstance = ac.TypeSelection(self)
 
         ## place sub sizers
-        self.expTempSizer.Add(self.exposureInstance, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.expTempSizer, 8)
-        self.expTempSizer.Add(self.tempInstance, flag=wx.ALIGN_CENTER)
+        #self.expTempSizer.Add(self.exposureInstance, flag=wx.ALIGN_CENTER)
+        #als.AddLinearSpacer(self.expTempSizer, 8)
+        #self.expTempSizer.Add(self.tempInstance, flag=wx.ALIGN_CENTER)
 
-        self.controlHorz.Add(self.expTempSizer, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.controlHorz, 50)
-        self.controlHorz.Add(self.filterInstance, flag=wx.ALIGN_CENTER)
+        #self.controlHorz.Add(self.expTempSizer, flag=wx.ALIGN_CENTER)
+        #als.AddLinearSpacer(self.controlHorz, 50)
+        #self.controlHorz.Add(self.filterInstance, flag=wx.ALIGN_CENTER)
+        self.tempFilterSizer.Add(self.tempInstance, flag=wx.ALIGN_CENTER)
+        als.AddLinearSpacer(self.tempFilterSizer, 20)
+        self.tempFilterSizer.Add(self.filterInstance, flag=wx.ALIGN_CENTER)
 
         ### place main Sizer
         als.AddLinearSpacer(self.topbox, 20)
         self.topbox.Add(self.typeInstance, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.topbox, 20)
-        self.topbox.Add(self.controlHorz, flag=wx.ALIGN_CENTER)
+        als.AddLinearSpacer(self.topbox, 10)
+        self.topbox.Add(self.exposureInstance, flag=wx.ALIGN_CENTER)
+        als.AddLinearSpacer(self.topbox, 10)
+        self.topbox.Add(self.tempFilterSizer, flag=wx.ALIGN_CENTER)
 
         # comes last
         self.SetSizer(self.topbox)
