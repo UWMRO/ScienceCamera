@@ -394,6 +394,7 @@ class Exposure(wx.Panel):
         the global variable self.nameToSend for sending to Evora.
         """
         self.nameToSend = self.nameField.GetValue()
+        self.expButton.SetDefault()
 
     def onExpTime(self, event):
         """
@@ -401,6 +402,7 @@ class Exposure(wx.Panel):
         passes it to the global variable self.timeToSend for sending to Evora.
         """
         self.timeToSend = self.expValue.GetValue()
+        self.expButton.SetDefault()
 
     def onExpose(self, event):
         """
@@ -423,6 +425,8 @@ class Exposure(wx.Panel):
             dialog.ShowModal()
             dialog.Destroy()
 
+        print("NAME:", self.nameToSend)
+            
         if self.nameToSend is "":
             dialog = wx.MessageDialog(None, "No name was given...will not expose", "",
                                       wx.OK | wx.ICON_ERROR)
