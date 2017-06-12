@@ -1180,11 +1180,13 @@ class TypeSelection(wx.Panel):
         index = self.exposeType.GetSelection()
         
         if index == 1:
-            tempName = self.exposeClass.nameToSend # store the user name that will be restored later
+            self.tempName = self.exposeClass.nameToSend # store the user name that will be restored later
             self.exposeClass.nameField.SetWindowStyle(wx.TE_READONLY)
             self.exposeClass.nameField.SetValue("No name needed")
-            self.exposeClass.nameToSend = tempName # restore user name
         else:
+            if self.tempName is not None and self.exposeClass.nameToSend == "No name needed":
+                print("MADE IT HERE")
+                self.exposeClass.nameToSend = self.tempName
             self.exposeClass.nameField.SetWindowStyle(wx.TE_RICH)
             self.exposeClass.nameField.SetValue(self.exposeClass.nameToSend)
 
