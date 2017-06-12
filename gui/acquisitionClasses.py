@@ -1190,7 +1190,7 @@ class TypeSelection(wx.Panel):
                 self.exposeClass.nameToSend = self.tempName
             self.exposeClass.nameField.SetWindowStyle(wx.TE_RICH)
             self.exposeClass.nameField.SetValue(self.exposeClass.nameToSend)
-        print(self.exposeClass.nameToSent)
+        print(self.exposeClass.nameToSend)
         logger.info(self.exposeType.GetStringSelection())
 
 
