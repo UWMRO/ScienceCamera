@@ -171,7 +171,7 @@ class Evora(wx.Frame):
         self.stats.SetStatusText("Current Temp:  ... C", 0)
 
         self.stats.SetStatusText("  Exp:", 1)
-        self.stats.SetStatusText("   Binning Type: 2x2", 2)
+        self.stats.SetStatusText(u"   Binning Type: 2\u27152", 2)
         self.stats.SetStatusText("Filter: offline", 3)
         self.expGauge = wx.Gauge(self.stats, id=1, range=100, size=(100, -1))
         self.stats.AddWidget(self.expGauge, pos=1, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
@@ -850,6 +850,9 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
         self.exposureInstance = ac.Exposure(self)
         self.typeInstance = ac.TypeSelection(self)
 
+        self.saveDirectoryText = wx.StaticText(self, id=2000, label=u"Saving \u2192 %s" % self.exposureInstance.saveDir)
+        self.saveDirectoryText.SetForegroundColour('blue')
+
         ## place sub sizers
         #self.expTempSizer.Add(self.exposureInstance, flag=wx.ALIGN_CENTER)
         #als.AddLinearSpacer(self.expTempSizer, 8)
@@ -859,11 +862,13 @@ class TakeImage(wx.Panel): ## first tab; with photo imaging
         #als.AddLinearSpacer(self.controlHorz, 50)
         #self.controlHorz.Add(self.filterInstance, flag=wx.ALIGN_CENTER)
         self.tempFilterSizer.Add(self.tempInstance, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.tempFilterSizer, 20)
+        als.AddLinearSpacer(self.tempFilterSizer, 50)
         self.tempFilterSizer.Add(self.filterInstance, flag=wx.ALIGN_CENTER)
 
         ### place main Sizer
-        als.AddLinearSpacer(self.topbox, 20)
+        als.AddLinearSpacer(self.topbox, 10)
+        self.topbox.Add(self.saveDirectoryText, flag=wx.ALIGN_CENTER)
+        als.AddLinearSpacer(self.topbox, 10)
         self.topbox.Add(self.typeInstance, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.topbox, 10)
         self.topbox.Add(self.exposureInstance, flag=wx.ALIGN_CENTER)

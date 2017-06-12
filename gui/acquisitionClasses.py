@@ -306,16 +306,16 @@ class Exposure(wx.Panel):
         #### Widgets
         self.expTime = wx.StaticText(self, id=2000, label="Exposure Time (s)")
         self.name = wx.StaticText(self, id=2001, label="Save Name")
-        self.nameField = wx.TextCtrl(self, id=2002, size=(150, -1))
+        self.nameField = wx.TextCtrl(self, id=2002, size=(200, -1))
 
-        self.expValue = wx.TextCtrl(self, id=2003, size=(45, -1), value="0", style=wx.TE_READONLY)
+        self.expValue = wx.TextCtrl(self, id=2003, size=(50, -1), value="0", style=wx.TE_READONLY)
         
-        self.expButton = wx.Button(self, id=2004, label="Expose", size=(65, -1))
-        self.stopExp = wx.Button(self, id=2005, label="Abort", size=(60, -1))
-        self.setDirButton = wx.Button(self, id=2006, label="Set Dir.", size=(60, -1))
+        self.expButton = wx.Button(self, id=2004, label="Expose", size=(80, -1))
+        self.stopExp = wx.Button(self, id=2005, label="Abort", size=(75, -1))
+        self.setDirButton = wx.Button(self, id=2006, label="Set Dir.", size=(75, -1))
         self.stopExp.Enable(False)
 
-        self.expBox = wx.StaticBox(self, id=2006, label="Exposure Controls", size=(100, 100), style=wx.ALIGN_CENTER)
+        self.expBox = wx.StaticBox(self, id=2006, label="Exposure Controls", size=(200, 100), style=wx.ALIGN_CENTER)
         self.expBoxSizer = wx.StaticBoxSizer(self.expBox, wx.VERTICAL)
 
         self.timer = wx.Timer(self, id=2007)
@@ -346,6 +346,8 @@ class Exposure(wx.Panel):
         self.expBoxSizer.Add(self.nameSizer, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.expBoxSizer, 5)
         self.expBoxSizer.Add(self.exposeSizer, flag=wx.ALIGN_CENTER)
+        #als.AddLinearSpacer(self.expBoxSizer, 5)
+        #self.expBoxSizer.Add(self.saveDirectoryText, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.expBoxSizer, 5)
         self.expBoxSizer.Add(self.buttonSizer, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.expBoxSizer, 5)
@@ -1078,7 +1080,10 @@ class Exposure(wx.Panel):
         if answer == wx.ID_OK:
             setTo = str(dialog.GetPath()) + "/"
             self.saveDir = setTo
-            logger.debug("Directory: " + self.saveDir)            
+            self.parent.saveDirectoryText.SetLabel("Saving -> %s" % self.saveDir)
+            self.parent.Layout()
+            logger.debug("Directory: " + self.saveDir)
+            
 
     def onStop(self, event):
         """
@@ -1162,7 +1167,7 @@ class TypeSelection(wx.Panel):
             
         else:
             self.exposeClass.expValue.SetWindowStyle(wx.TE_RICH)
-            self.exposeClass.expValue.SetValue(self.exposeClass.timeToSend)
+            self.exposeClass.expValue.SetValue(str(self.exposeClass.timeToSend))
 
         logger.info(self.imageType.GetStringSelection())
 
@@ -1381,7 +1386,7 @@ class TempControl(wx.Panel):
         # 20036 is Stabalized
         # 20034 is Off  
 
-        if mode != self.current_mode:
+        if mode != self.current_mode or (float(targetTemp) > 0 and float(targetTemp) - float(temp) > 15 ):
             print("UPDATING COLORS")
             self.current_mode = mode
             bmp_ctrl = None
@@ -1753,6 +1758,7 @@ class FilterControl(wx.Panel):
             return True
         except KeyError:
             return False
+
     def refreshList(self):
         """
         When "Refresh" is clicked in the filter sub-menu of the file menu this function is called.
@@ -1777,14 +1783,6 @@ class FilterControl(wx.Panel):
         # update GUI drop down filter menu
         for i in newName:
             self.filterMenu.Append(i)
-
-    def sendToStatus(self, string):
-        wx.CallAfter(self.threadSafeFilterStatus, string)
-
-    def threadSafeFilterStatus(self, string):
-        val = self.statusBox.GetValue()
-        self.statusBox.SetValue(val + string + "\n")
-        self.statusBox.SetInsertionPointEnd()
 
     def enableButtons(self, bool):
         self.filterButton.Enable(bool)
