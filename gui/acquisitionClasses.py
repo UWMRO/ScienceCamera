@@ -1071,7 +1071,7 @@ class Exposure(wx.Panel):
         """
         #dialog = wx.TextEntryDialog(None, "Point to new directory.  Currently set to %s" % self.saveDir,
         #                           "Set Save Directory", "%s" % self.saveDir, wx.OK | wx.CANCEL)
-        dialog = wx.DirDialog(self, "Choose a save directory", defaultPath="~/data")
+        dialog = wx.DirDialog(self, "Choose a save directory", defaultPath="/home/mro/data")
         answer = dialog.ShowModal()
         dialog.Destroy()
         
