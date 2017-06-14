@@ -71,75 +71,19 @@ class ImageQueueWatcher(threading.Thread, object):
                 if logString == "None":
                     logString = None
                 saveImage = None
-                #savedImage, d = self.exposeClass.transferImage(image_path, image_name, image_type)
+
                 if image_type != 'real':
                     self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % (image_name, self.exposeClass.saveDir,
                                                                                self.exposeClass.currentImage+".fits",
                                                                                image_type)).addCallback(self.transferCallback, logString=logString)
-                    #self.exposeClass.plotQueue.addItem((self.exposeClass+image_name, True, logString))
-                    #savedImage = self.exposeClass.saveDir+self.exposeClass.currentImage+".fits"
-                    #shutil.copyfile("/home/mro/heimdall/%s" % image_name, savedImage)
-
                 else:
                     self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % \
                                                           (image_name, "/tmp/", image_name, image_type)) \
                                                           .addCallback(self.transferCallback, logString=logString)
-                    #self.exposeClass.plotQueue.addItem((self.exposeClass+image_name, True, logString))
-                    #saveImage = "/tmp/"image_name
-                    #shutil.copyfile("/home/mro/heimdall/%s" % image_name, savedImage)
-
-
-                    
-                #print("Plotting:", savedImage, "shortly.")
-                #print("Size of queue", self.exposeClass.imageQueue.qsize())
-                #self.exposeClass.transferDone.wait()
-                    #print("Done transfering: %s" % savedImage)
-                    #print("Transfer queue:", self.exposeClass.imageQueue)
-                    #print("TRANSFER STATUS:", self.exposeClass.transferStatus)
-                    #self.exposeClass.plotQueue.addItem((savedImage, self.exposeClass.transferStatus, logString))
-                    #d.addCallback(self.exposeClass.display, savedImage=savedImage, logString=logString)
-                    #d.addErrback(self.retrievalFail)
-                
-                # Wait for plot to be done
-                    #self.exposeClass.donePlottingEvent.wait()
-                    #time.sleep(0.01)
-                    #print("Running...")
                 time.sleep(0.01)
         
     def transferCallback(self, msg, logString):
-        #self.exposeClass.plotQueue.addItem((msg, True, None))
-        self.exposeClass.transferDone.set()
-        self.exposeClass.transferDone.clear()
         self.exposeClass.display(None, msg, logString)
-    
-    def retrievalFail(self, msg):
-        """ This is a dummy method to supress the failure to retrieve that happens at the end of a real time exposure.
-        """
-        print("FAILED TO RETRIEVE")
-        pass # do nothing
-
-class PlotterWatcher(threading.Thread, object):
-    def __init__(self, exposeClass):
-        threading.Thread.__init__(self)
-        self.exposeClass = exposeClass
-    def run(self):
-        while True:
-            if self.exposeClass.plotQueue.qsize() == 0:
-                #print("PlotImageQueue WAITING")
-                pass
-                #self.exposeClass.plotImageEvent.wait()
-
-            #print("TRIGGERED")
-            while self.exposeClass.plotQueue.qsize() > 0:
-                imageName, transferStatus, logString = self.exposeClass.plotQueue.get()
-                print("IN PLOT THREAD:", imageName, transferStatus, logString)
-
-                if transferStatus == True:
-                    self.exposeClass.display(None, imageName, logString)
-                    #self.exposeClass.donePlottingEvent.wait()
-                else:
-                    print("Transfer went wrong not plotting") # likely due to an abort
-            time.sleep(0.01)
     
 class ProgressTimer(object):
     """
@@ -152,8 +96,10 @@ class ProgressTimer(object):
 
     def __init__(self, exposureClass):
         self.timer = None
+
         self.exposureClass = exposureClass
         self.gauge = None
+
         self.interval = 0 # holds the time interval, in milliseconds
             
     def start(self, exposureTime):
@@ -278,8 +224,7 @@ class Exposure(wx.Panel):
         self.ftp = None # Gives access to FTP client protocol
         self.ftpLayer = None
         self.parent = parent  # gives access to the higher classes
-        self.startTimer = 0  # keeps track of the timer count in ints
-        self.endTimer = 0  # keeps track of the max timer count as an int
+
         self.saveDir = "/home/mro/data/"  # Default directory to save images to.
 
         self.abort = False  # tells you if the abort button is active (i.e. True if you can abort and False if not)
@@ -289,7 +234,7 @@ class Exposure(wx.Panel):
 
         self.realSentCount = 0
 
-        self.timer_2 = ProgressTimer(self)
+        self.timer = ProgressTimer(self)
         
         ### Main sizers
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
@@ -316,10 +261,6 @@ class Exposure(wx.Panel):
 
         self.expBox = wx.StaticBox(self, id=2006, label="Exposure Controls", size=(200, 100), style=wx.ALIGN_CENTER)
         self.expBoxSizer = wx.StaticBoxSizer(self.expBox, wx.VERTICAL)
-
-        self.timer = wx.Timer(self, id=2007)
-        self.sampleTimer = wx.Timer(self, id=2008)
-        self.sampleTime = None
         #####
 
         ##### Line up smaller sub sizers
@@ -345,8 +286,6 @@ class Exposure(wx.Panel):
         self.expBoxSizer.Add(self.nameSizer, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.expBoxSizer, 5)
         self.expBoxSizer.Add(self.exposeSizer, flag=wx.ALIGN_CENTER)
-        #als.AddLinearSpacer(self.expBoxSizer, 5)
-        #self.expBoxSizer.Add(self.saveDirectoryText, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.expBoxSizer, 5)
         self.expBoxSizer.Add(self.buttonSizer, flag=wx.ALIGN_CENTER)
         als.AddLinearSpacer(self.expBoxSizer, 5)
@@ -364,7 +303,6 @@ class Exposure(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.onExpose, id=2004)  # bind self.expButton
         self.Bind(wx.EVT_BUTTON, self.onStop, id=2005)  # bind self.stopExp
         self.Bind(wx.EVT_BUTTON, self.onSetDir, id=2006) # bind self.setDirButton
-        self.Bind(wx.EVT_TIMER, self.onExposeTimer, id=2007)
         ###
 
         self.SetSizer(self.vertSizer)
@@ -372,21 +310,10 @@ class Exposure(wx.Panel):
 
         # Setup work for Image Queue
         self.imageAddedEvent = threading.Event()
-        #self.donePlottingEvent = threading.Event()
-        self.transferDone = threading.Event()
         self.imageQueue = EventQueue(self.imageAddedEvent)
         self.imageThread = ImageQueueWatcher(self)
         self.imageThread.daemon = True
         self.imageThread.start()
-        self.transferStatus = False # If transfer is successful then True otherwise False.
-
-        # Setup plotter queue
-        #self.plotImageEvent = threading.Event()
-        #self.donePlottingEvent = threading.Event()
-        #self.plotQueue = EventQueue(self.plotImageEvent)
-        #self.plotWatcher = PlotterWatcher(self)
-        #self.plotWatcher.daemon = True
-        #self.plotWatcher.start()
         
     def nameText(self, event):
         """
@@ -424,8 +351,6 @@ class Exposure(wx.Panel):
                                       "", wx.OK | wx.ICON_ERROR)
             dialog.ShowModal()
             dialog.Destroy()
-
-        print("NAME:", repr(self.nameToSend))
             
         if str(self.nameToSend) == "":
             dialog = wx.MessageDialog(None, "No name was given...will not expose", "",
@@ -448,7 +373,6 @@ class Exposure(wx.Panel):
             imType = int(line[0])
             itime = float(line[3])
 
-            #self.expButton.SetLabel("Abort")
             if imType == 1:  # single exposure
                 line = " ".join(line[1:])  # bring all the parameters together
                 overwrite = None
@@ -467,8 +391,8 @@ class Exposure(wx.Panel):
                     self.log(self.logFunction, logString)
 
                     d = self.protocol.sendCommand(command)
-                    d.addCallback(self.expose_callback_thread)
-                    self.timer_2.start(itime)
+                    d.addCallback(self.exposeCallback)
+                    self.timer.start(itime)
 
             if imType == 2:  # real time exposure
                 self.expButton.Enable(False)
@@ -478,20 +402,12 @@ class Exposure(wx.Panel):
 
                 # start callback that looks for a path leading to a real image
                 d = self.protocol.addDeferred("realSent")
-                #d.addCallback(self.displayRealImage_thread)
                 d.addCallback(self.displayRealImage)
-                #d = self.protocol.addDeferred("realSent"+self.nextRealSentCount())
-                #d.addCallback(self.displayRealImage)
-                #d = self.protocol.addDeferred("realSent"+self.nextRealSentCount())
-                #d.addCallback(self.displayRealImage)
-                #self.makeRealTimeDeferreds()                
+
                 command = "real " + line
                 logString = als.getLogString(command, 'pre')
                 self.log(self.logFunction, logString)
 
-                # change ftp server to the tmp folder
-                #self.ftp.cwd("tmp/").addCallback(self.ftpCWD)
-                
                 self.ftpLayer.sendCommand("cwd tmp/").addCallback(self.startRealTime, command=command, itime=itime)
                 
             if imType == 3:  # series exposure
@@ -534,11 +450,10 @@ class Exposure(wx.Panel):
                             d.addCallback(self.seriesCallback)
 
                             # start timer
-                        
-                            if self.timer_2._getReadoutTime() + itime > 1.0:
-                                self.timer_2.start(itime)
+                            if self.timer._getReadoutTime() + itime > 1.0:
+                                self.timer.start(itime)
                             else:
-                                self.timer_2.start(0)
+                                self.timer.start(0)
 
                     else:
                         dialog = wx.MessageDialog(None, "Entry was not a valid integer!", "", wx.OK | wx.ICON_ERROR)
@@ -552,68 +467,10 @@ class Exposure(wx.Panel):
         
         # start timer
         if itime < 2.5:
-            self.timer_2.start(0)
+            self.timer.start(0)
         else:
-            self.timer_2.start(itime)
-
-    def ftpCWD(self, msg):
-        print("Changed FTP server directory:", msg)
-
-    def makeRealTimeDeferreds(self):
-        deferreds = []
-        for i in range(0, 100):
-            count = self.nextRealSentCount()
-            print("realSent"+count)
-            d = self.protocol.addDeferred("realSent"+count)
-            d.addCallback(self.displayRealImage)
-
+            self.timer.start(itime)
         
-    def nextRealSentCount(self):
-        self.realSentCount += 1
-        return str(self.realSentCount)
-        
-    def exposeTimer(self, time):
-        """
-        This function, given some time, will start the wxPython Timer object and will set it to call
-        onExposeTimer every 10 milliseconds.
-        """
-        exposeTimes = [0.0886, 0.154, 0.343, 5.8]  # exposure times in seconds
-        if(self.parent.typeInstance.exposeType.GetSelection() != 1):  # check if exposure type is real time
-            expTime = float(time) + exposeTimes[self.parent.parent.parent.readoutIndex]  # trailing digit is readout time
-        else:  # real time has a set read time
-            expTime = float(time) + exposeTimes[1]  # trailing digit is readout time
-        
-        # get the max range for progress bar
-        self.endTimer = int(expTime / (1.0*10**-2)) # timer will update every 10 ms
-        
-        # set exposure progress bar range
-        self.parent.parent.parent.expGauge.SetRange(self.endTimer)
-
-        # start timer
-        self.timer.Start(10)
-        #wx.CallAfter(self.timer.Start, 10) # 50 millisecond intervals
-
-    def onExposeTimer(self, event):
-        """
-        This is called by the wxPython Timer object and updates the exposure gauge by an integer
-        value every 10 milliseconds.
-        """
-        if self.startTimer == self.endTimer:
-            self.timer.Stop()
-            self.startTimer = 0
-
-        else:
-            # get gauge value
-            val = self.parent.parent.parent.expGauge.GetValue()
-            wx.CallAfter(self.parent.parent.parent.expGauge.SetValue, val+1)
-            self.startTimer += 1
-
-    def expose_callback_thread(self, msg):
-        """
-        Used to execute the method self.exposeCallback in another thread.
-        """
-        thread.start_new_thread(self.exposeCallback, (msg,))
-
     def exposeCallback(self, msg):
         """
         Called when the client recieves the "expose" keyword from the server indicating the exposure is complete.
@@ -632,7 +489,7 @@ class Exposure(wx.Panel):
 
         ## complete progress bar for image acquisition
         # check to see if timer is still going and stop it (callback might come in early)
-        self.timer_2.stop()
+        self.timer.stop()
 
         # get success;
         success = int(results[0])  # 1 for true 0 for false
@@ -660,28 +517,6 @@ class Exposure(wx.Panel):
             line = "%s;%s;single;%s" % (path, name, logString)
             self.imageQueue.addItem(line)
             
-            #savedImage, d = self.transferImage(path, name, 'single')
-            #print("Saved Image is:", savedImage)
-
-            #d.addCallback(self.display, savedImage=savedImage, logString=logString)
-            
-            # get data
-            #data = als.getData(path+name)
-            #data = als.getData(savedImage)
-            #stats_list = als.calcStats(data)
-
-            # change the gui with thread safety
-            # plots the image
-            #wx.CallAfter(self.safePlot, data, stats_list)
-
-            # copy file to different folder
-            #self.copyImage(path, name)
-
-            # log the status
-            #self.logFunction = self.logExposure
-            #logString = als.getLogString("expose " + msg + "," + self.currentImage, 'post')
-
-            
         else:
             logger.info("Successfully Aborted")
 
@@ -689,21 +524,15 @@ class Exposure(wx.Panel):
         self.display(results, savedImage, logString)
             
     def display(self, results, savedImage, logString):
-        print("displaying saved image")
         data = als.getData(savedImage)
         stats_list = als.calcStats(data)
 
         # change the gui with thread safety
         # plots the image
         wx.CallAfter(self.safePlot, data, stats_list)
-        #self.safePlot(data, stats_list)
-        # copy file to different folder
-        #self.copyImage(path, name)
+        
         if logString is not None:
             self.log(self.logFunction, logString)
-
-        #self.donePlottingEvent.set()
-        #self.donePlottingEvent.clear()
                 
     def safePlot(self, data, stats_list):
         """
@@ -723,18 +552,8 @@ class Exposure(wx.Panel):
         plotInstance.panel.updatePassedStats(stats_list)
         plotInstance.panel.plotImage(data, sliderVal, plotInstance.currMap)
         plotInstance.panel.updateScreenStats()
-        #wx.CallAfter(plotInstance.panel.refresh())
         plotInstance.panel.refresh()
-        #self.donePlottingEvent.set()
-        #self.donePlottingEvent.clear()
 
-
-    def displayRealImage_thread(self, msg):
-        """
-        Used to excute the displaying of the real image when the client recieves there is a real
-        image waiting to be plotted.
-        """
-        thread.start_new_thread(self.displayRealImage, (msg,))
 
     def displayRealImage(self, msg):
         """
@@ -746,54 +565,37 @@ class Exposure(wx.Panel):
         if self.abort:  # means that abort can be called.
             # add a new deffered object to set up for another incoming image
             d = self.protocol.addDeferred("realSent")
-            #d.addCallback(self.displayRealImage_thread)
             d.addCallback(self.displayRealImage)
-            # add two new deffereds
-            #d = self.protocol.addDeferred("realSent"+self.nextRealSentCount())
-            #d.addCallback(self.displayRealImage
             
             # get stats
             path = path.split("/")
             name = path[-1]
             path = "/".join(path[:-1]) + "/"
-            #fullImPath, d = self.transferImage(path, name, 'real')
+
             line = "%s;%s;real;%s" % (path, name, str(None))
             self.imageQueue.addItem(line)
-            
-            #d.addCallback(self.display, savedImage=fullImPath, logString=None) 
-            
-            #data = als.getData(path)
-            #stats_list = als.calcStats(data)
-            
-            # change the gui with thread safety
-            #wx.CallAfter(self.safePlot, data, stats_list)
-            
+                        
             if float(self.timeToSend) >= 2.5:
-                self.timer_2.stop()
-                self.timer_2.start(self.timeToSend)
+                self.timer.stop()
+                self.timer.start(self.timeToSend)
             
     def realCallback(self, msg):
         """
         Called when the camera has been aborted during a real time series exposure.
         """
-        #self.protocol.removeDeferred("realSent")  # Remove floating deffered object
+        self.protocol.removeDeferred("realSent")  # Remove floating deffered object
 
         # release ImageQueueWatcher if it is stuck waiting for an image to display and empty Queue
         self.imageQueue.empty()
-        #self.donePlottingEvent.set()
-        #self.donePlottingEvent.clear()
 
-
-        self.timer_2.stop()
+        self.timer.stop()
         
         self.logFunction = self.logExposure
         logString = als.getLogString("real " + msg, 'post')
         self.log(self.logFunction, logString)
 
         logger.debug("Completed real time series with exit: " + msg)
-        #self.realSentCount = 1
-        # change the ftp server directory to default
-        #self.ftp.cdup().addCallback(self.ftpCWD)
+
         d = self.ftpLayer.sendCommand("cdup")
         d.addCallback(self.done)
         
@@ -854,10 +656,10 @@ class Exposure(wx.Panel):
                 print("MAKES IT THIS FAR")
                 if imNum < int(self.seriesImageNumber):
                     print("KEEP GOING")
-                    if time+self.timer_2._getReadoutTime() >= 1.0:
+                    if time+self.timer._getReadoutTime() >= 1.0:
                         print("MADE IT")
-                        self.timer_2.stop()
-                        self.timer_2.start(time)
+                        self.timer.stop()
+                        self.timer.start(time)
 
                                         
     def seriesCallback(self, msg):
@@ -876,7 +678,7 @@ class Exposure(wx.Panel):
         if self.stopExp.IsEnabled():
             self.stopExp.Enable(False)
             
-        self.timer_2.stop()
+        self.timer.stop()
         self.imageQueue.empty()
 
         dataMsg = ",".join(msg)
@@ -891,30 +693,6 @@ class Exposure(wx.Panel):
         logString = als.getLogString("abort " + msg, 'post')
         self.log(self.logFunction, logString)
         logger.debug("Aborted " + msg)
-
-    """
-    def openData(self, path, name):
-        
-        Deprecated
-        
-        print(als.printStamp() + "opening")
-        self.parent.parent.parent.expGauge.SetValue(0)
-        
-        print(als.printStamp() + str(self.parent.parent.parent.imageOpen))
-        # open image window 
-        if(not self.parent.parent.parent.imageOpen):
-            # create new window
-            self.parent.parent.parent.openImage("manual open")
-        print(als.printStamp() + "opened window")
-
-        self.parent.parent.parent.window.panel.clear()
-        data = self.parent.parent.parent.window.panel.getData(path+name)
-        print(als.printStamp() + "got data")
-        self.parent.parent.parent.window.panel.plotImage(data, 6.0, 'gray')
-        print(als.printStamp() + "plotted")
-        self.parent.parent.parent.window.panel.updateScreenStats()
-        self.parent.parent.parent.window.panel.refresh()
-    """
 
     def getAttributesToSend(self):
         """
@@ -976,59 +754,7 @@ class Exposure(wx.Panel):
         logger.info("entered log")
         logfunc(logmsg)
 
-    def transferImage(self, path, serverImName, type):
-        """
-        Pre: Takes in the diretory path to the original image file name as "path" as well as the 
-             name of the orignal image as serverImName as strings.  type is passed in as the exposure type.
-        Post: The orignally created image is copied into a hard coded directory with the global
-              current image name.  In the case of series images this current image name will be iterated.
-              Returns nothing.
-        """
-        if type != 'real':
-            fullImagePath = self.saveDir+self.currentImage+".fits"
-            print("Image to grab SaveImName:", serverImName)
-            d = self.ftp.retrieveFile(serverImName, als.FileBuffer(self.saveDir, self.currentImage+".fits"), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
-            return fullImagePath, d
-        else:
-            #fullImagePath = "/tmp/"+serverImName
-            fullImagePath = self.saveDir+serverImName
-            print("Real time image to grab:", serverImName)
-            #d = self.ftp.retrieveFile(serverImName, als.FileBuffer("/tmp/", serverImName), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
-            d = self.ftp.retrieveFile(serverImName, als.FileBuffer(self.saveDir, serverImName), offset=0).addCallbacks(self.ftpDone, self.ftpFail)
-            return fullImagePath, d
-
-    def printFiles(self, results, fileList):
-        for file in fileList.files:
-            print('    %s: %d bytes, %s' \
-              % (file['filename'], file['size'], file['date']))
-        print('Total: %d files' % (len(fileList.files)))
-
-    
-    def ftpDone(self, msg):
-        self.transferDone.set()
-        self.transferDone.clear()
-        self.transferStatus = True
-        print("DONE WITH RETRIVING")
-        print("DONE Retrieving:", msg)
         
-    def ftpFail(self, error):
-        self.transferDone.set()
-        self.transferDone.clear()
-        self.transferStatus = False
-        print("Failed retrieving file. Error was:", error)
-
-    """
-    Deprecated
-    def copyImage(self, path, serverImName):
-        
-        Pre: Takes in the diretory path to the original image file name as "path" as well as the 
-             name of the orignal image as serverImName as strings.
-        Post: The orignally created image is copied into a hard coded directory with the global
-              current image name.  In the case of series images this current image name will be iterated.
-              Returns nothing.
-        
-        shutil.copyfile(path + serverImName, self.saveDir + self.currentImage + ".fits")
-    """
     def checkForImageCounter(self, name):
         """
         Note: This method is only ever entered if there actually is a name as well as there will never
@@ -1099,7 +825,7 @@ class Exposure(wx.Panel):
         d = self.protocol.sendCommand("abort")
         d.addCallback(self.abort_callback)
         
-        self.timer_2.stop()
+        self.timer.stop()
         self.imageQueue.empty()
             
         self.expButton.Enable(True)
