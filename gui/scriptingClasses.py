@@ -41,7 +41,7 @@ class ScriptCommands(wx.Panel):
         # Global variables
         self.parent = parent
         self.protocol = None
-
+        
         # Main Sizer
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
 
