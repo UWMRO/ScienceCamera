@@ -560,7 +560,6 @@ class Evora(wx.Frame):
 
         
 class ImageWindow(wx.Frame):
-
     """
     Controls the image display window.
     """
@@ -590,6 +589,7 @@ class ImageWindow(wx.Frame):
 
         ### Put in matplotlib imshow window
         #self.panel.plotImage(self.data, 6.0, 'gray')  # for debugging
+        self.imageName = wx.StaticText(self, label="Image - N/A")
         self.devSlider = wx.Slider(self, id=-1, value=60, minValue=1, maxValue=200, size=(250,-1),\
                          style=wx.SL_HORIZONTAL)
         self.invert = wx.CheckBox(self, id=-1, label="Invert")
@@ -619,6 +619,8 @@ class ImageWindow(wx.Frame):
         self.sliderSizer.Add(self.invert, flag=wx.ALIGN_CENTER)
 
         ## Adjust major sizers
+        als.AddLinearSpacer(self.topSizer, 15)
+        self.topSizer.Add(self.imageName, flag=wx.ALIGN_CENTER)
         self.topSizer.Add(self.panel, proportion=1, flag=wx.EXPAND)
         self.topSizer.Add(self.sliderSizer, flag=wx.ALIGN_CENTER)
 
@@ -777,7 +779,7 @@ class DrawImage(wx.Panel):
         """
         return fits.getdata(image)
 
-    def updateScreenStats(self):
+    def updateScreenStats(self, imageName):
         """
         Updates the stats on the status bar.
         """
@@ -787,6 +789,9 @@ class DrawImage(wx.Panel):
         #self.parent.stats.SetStatusText("Mode: %.0f"%(self.mode), 3)
         self.parent.stats.SetStatusText("Median: %.0f"%(self.median), 3)
 
+        # Display static text
+        if imageName is not None:
+            pass
 
     def updatePassedStats(self, stats_list):  # list needs to be [min, max, mean, median]
         """
