@@ -66,7 +66,7 @@ logger = MyLogger.myLogger("photoAcquisitionGUI.py", "client")
 class Evora(wx.Frame):
 
     def __init__(self):
-        wx.Frame.__init__(self, None, -1, "Evora Acquisition GUI", size=(620, 500))
+        wx.Frame.__init__(self, None, -1, "Evora Acquisition GUI", size=(630, 500))
 
         # width and height in pixels
         self.width = 600
