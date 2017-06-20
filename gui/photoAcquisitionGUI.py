@@ -1127,11 +1127,13 @@ class FilterForwarder(basic.LineReceiver):
         logString = als.getLogString('filter connect', 'pre')
         filterInstance.log(filterInstance.logFunction, logString)
 
-        logString = als.getLogString('filter getFilter', 'pre')
-        filterInstance.log(filterInstance.logFunction, logString)
+        self.gui.stats.SetStatusText("Filter: NEED HOMING", 3)
+        ## Deprecated: When connection is made get the filter position. Replaced with just telling them to home.
+        #logString = als.getLogString('filter getFilter', 'pre')
+        #filterInstance.log(filterInstance.logFunction, logString)
 
-        d = self.sendCommand('getFilter')
-        d.addCallback(filterInstance.getFilterCallback)
+        #d = self.sendCommand('getFilter')
+        #d.addCallback(filterInstance.getFilterCallback)
 
         
     def addDeferred(self, string):
