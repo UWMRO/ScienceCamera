@@ -673,7 +673,7 @@ class ImageWindow(wx.Frame):
         if fileName[-1] in ["fits", "fit"]:
             data = als.getData(openFileDialog.GetPath())
             stats_list = als.calcStats(data)
-            self.parent.takeImage.exposureInstance.safePlot(data, stats_list)
+            self.parent.takeImage.exposureInstance.safePlot(data, stats_list, ".".join(fileName))
 
     def onInvert(self, event):
         """
@@ -791,7 +791,11 @@ class DrawImage(wx.Panel):
 
         # Display static text
         if imageName is not None:
-            pass
+            self.parent.imageName.SetLabel("Image - %s" % imageName)
+            self.parent.Layout()
+        else:
+            self.parent.imageName.SetLabel("Image - N/A")
+            self.parent.Layout()
 
     def updatePassedStats(self, stats_list):  # list needs to be [min, max, mean, median]
         """

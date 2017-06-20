@@ -83,7 +83,7 @@ class ImageQueueWatcher(threading.Thread, object):
                 time.sleep(0.01)
         
     def transferCallback(self, msg, logString):
-        self.exposeClass.display(None, msg, logString)
+        self.exposeClass.display(msg, logString)
     
 class ProgressTimer(object):
     """
@@ -421,7 +421,7 @@ class Exposure(wx.Panel):
                     if als.isInt(self.seriesImageNumber):
                         logger.debug("Number of image to be taken: " + str(int(self.seriesImageNumber)))
                         line[2] = self.seriesImageNumber
-                        line = " ".join(line[1:])
+                        line = " ".join(line[1:]) # join as line to send to server
                         
                         # check for overwrite
                         overwrite = None
@@ -519,22 +519,23 @@ class Exposure(wx.Panel):
             
         else:
             logger.info("Successfully Aborted")
-
-    def display_thread(self, results, savedImage, logString):
-        self.display(results, savedImage, logString)
             
-    def display(self, results, savedImage, logString):
+    def display(self, savedImage, logString):
         data = als.getData(savedImage)
         stats_list = als.calcStats(data)
 
+        imageName = None
+        if "/tmp/" not in savedImage:
+            imageName = savedImage.split("/")[-1]
+            
         # change the gui with thread safety
         # plots the image
-        wx.CallAfter(self.safePlot, data, stats_list)
+        wx.CallAfter(self.safePlot, data, stats_list, imageName)
         
         if logString is not None:
             self.log(self.logFunction, logString)
                 
-    def safePlot(self, data, stats_list):
+    def safePlot(self, data, stats_list, imageName):
         """
         Used in conjunction with wx.CallAfter to update the embedded Matplotlib in the image window.
         If the image window is closed it will open it and then plot, otherwise it is simply plotted.
@@ -551,7 +552,7 @@ class Exposure(wx.Panel):
 
         plotInstance.panel.updatePassedStats(stats_list)
         plotInstance.panel.plotImage(data, sliderVal, plotInstance.currMap)
-        plotInstance.panel.updateScreenStats()
+        plotInstance.panel.updateScreenStats(imageName)
         plotInstance.panel.refresh()
 
 
@@ -615,6 +616,7 @@ class Exposure(wx.Panel):
         """
         Called when the server sends that an image is ready to display.
         """
+        print("ENTERED DISPLAY SERIES IMAGE", msg)
         msg = msg.split(",")
 
         imNum = int(msg[0])
@@ -765,8 +767,7 @@ class Exposure(wx.Panel):
               standard format follows like *_XXX.fits where XXX goes from 001 an up.
         """
         if "_" in name:
-            name.split("_")
-            if als.isInt(name[-1]):
+            if len(name[-1]) >= 3 and als.isInt(name[-1]):
                 return True
             else:
                 return False
