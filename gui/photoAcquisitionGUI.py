@@ -409,7 +409,7 @@ class Evora(wx.Frame):
         # Update temperature bitmap in status bar.
         bitmap = wx.StaticBitmap(self.stats, -1, size=(90, 17))
         self.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
-        self.stats.SetStatusText("      Temp:  ... C", 0)
+        self.stats.SetStatusText("Current Temp:  ... C", 0)
         
         self.joinThreads("temp", demonized=True)
         self.connection.disconnect() # this is the acutal disconnection from the server'
