@@ -589,7 +589,7 @@ class ImageWindow(wx.Frame):
 
         ### Put in matplotlib imshow window
         #self.panel.plotImage(self.data, 6.0, 'gray')  # for debugging
-        self.imageName = wx.StaticText(self, label="Image - N/A")
+        self.imageName = wx.StaticText(self, label="")
         self.devSlider = wx.Slider(self, id=-1, value=60, minValue=1, maxValue=200, size=(250,-1),\
                          style=wx.SL_HORIZONTAL)
         self.invert = wx.CheckBox(self, id=-1, label="Invert")
@@ -791,10 +791,10 @@ class DrawImage(wx.Panel):
 
         # Display static text
         if imageName is not None:
-            self.parent.imageName.SetLabel("Image - %s" % imageName)
+            self.parent.imageName.SetLabel("%s" % imageName)
             self.parent.Layout()
         else:
-            self.parent.imageName.SetLabel("Image - N/A")
+            self.parent.imageName.SetLabel("")
             self.parent.Layout()
 
     def updatePassedStats(self, stats_list):  # list needs to be [min, max, mean, median]

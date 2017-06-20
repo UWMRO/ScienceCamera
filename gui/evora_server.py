@@ -801,7 +801,8 @@ class Evora(object):
         logger.debug(str(result) + 'success={}'.format(result == 20002))
         filename = None
         if success == 1:
-            data=data.reshape(width//binning,height//binning)
+            data = data.reshape(width//binning,height//binning)
+            data = np.fliplr(data)
             logger.debug(str(data.shape) + " " + str(data.dtype))
             hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True, header=header)
             #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
