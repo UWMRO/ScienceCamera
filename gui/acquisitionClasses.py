@@ -766,6 +766,7 @@ class Exposure(wx.Panel):
         Post: Returns a boolean of whether the standard iterator is on the end of the image name.  That
               standard format follows like *_XXX.fits where XXX goes from 001 an up.
         """
+        name = name.split("_")
         if "_" in name:
             if len(name[-1]) >= 3 and als.isInt(name[-1]):
                 return True
