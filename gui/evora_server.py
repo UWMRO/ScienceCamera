@@ -551,7 +551,8 @@ class Evora(object):
                 if results is not None:
                     ra, dec, epoch, lst, ha, za = results
 
-                    airmass = 1.0 / np.sin(np.radians((90-za) + 244/(165+47*(90-za)**1.1)))
+                    airmass = 1.0 / np.cos(np.radians(za))
+                    #airmass = 1.0 / np.sin(np.radians((90-za) + 244/(165+47*(90-za)**1.1)))
 
                     astroTime = Time(dateObs, scale='utc')
                     print("FROM HEIMDALL LOGS:", results)
@@ -562,7 +563,7 @@ class Evora(object):
                     header.append(card=("ST", lst, "local sidereal time (hours)"))
                     header.append(card=("HA", ha, "Hour Angle"))
                     header.append(card=("ZD", za, "Zenith Angle"))
-                    header.append(card=("AIRMASS", airmass, "Airmass"))
+                    header.append(card=("AIRMASS", airmass, "Airmass (X = sec z)"))
                     header.append(card=("JD", str(astroTime.jd), "Julian Date"))
                     header.append(card=("MJD", str(astroTime.mjd), "Modified Julian Date"))
                                   
