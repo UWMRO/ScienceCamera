@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-#==>add usage docstring
 """
 #install for raspberrypi
 #libusb via aptget
@@ -16,16 +15,19 @@ from Phidgets.PhidgetException import PhidgetErrorCodes, PhidgetException
 from Phidgets.Events.Events import AttachEventArgs, DetachEventArgs, ErrorEventArgs, InputChangeEventArgs, CurrentChangeEventArgs, StepperPositionChangeEventArgs, VelocityChangeEventArgs
 from Phidgets.Devices.Stepper import Stepper
 from Phidgets.Phidget import PhidgetLogLevel
-import fw_io
+import serial
 import numpy as np
 
 
 class FilterMotor(object):
 	def __init__(self):
-		"""Add docs to all functions"""
                 self.motorProtocol = None
 		self.stepper = None
-		self.fw = fw_io.FWIO()
+
+                # code brought in my OJF
+                self.SerialPort = None
+                self.SerialPortAddress = '/dev/ttyACM0'
+                
 		self.dict = {"velocity":None, "amp":None, "acceleration":None, "currentPos":None, "power":None, "hall":None, "commandedPos":None, "filterDelta":6860, "ID":None, "home":False, "filterPos":None, "filterCount":None, "moving":False}
 
 	def DisplayDeviceInfo(self):
@@ -42,7 +44,9 @@ class FilterMotor(object):
 
 		self.setParm(20000,5000,0.9)
 
-		self.fw.openPort()
+                # code brought in by OJF
+                self.SerialPort=serial.Serial(self.SerialPortAddress, 9600, timeout = 2)
+
 		time.sleep(2)
 		print "Stepper Driver Connected"
 		self.status()
@@ -53,6 +57,8 @@ class FilterMotor(object):
 		self.motorPower(False)
 		self.stepper.closePhidget()
 		print "Stepper Driver Disconnected"
+                # line added by OJF
+                self.SerialPort.close()
 		return
 
 	def motorPower(self, val = False):
@@ -76,7 +82,11 @@ class FilterMotor(object):
 		self.dict['acceleration'] =self.stepper.getAcceleration(0)
 		self.dict['velocity'] = self.stepper.getVelocityLimit(0)
 		self.dict['amp'] = self.stepper.getCurrentLimit(0)
-		self.dict['hall'] = self.fw.getStatus()
+                
+                # request Hall effect sensor from Arduino
+                self.SerialPort.write('s')
+                self.dict['hall'] = self.SerialPort.readline().rstrip('\r\n').split(',')
+
 		self.dict['filterPos'] = int(self.dict['currentPos'])/int(self.dict['filterDelta'])
 		return self.dict
 
