@@ -1,6 +1,6 @@
-#Setting up the TelscopeServer from scratch
+# Setting up the TelscopeServer from scratch
 
-##Installing the OS
+## Installing the OS
 
 The OS we’ve chosen for the TelescopeServer is Raspbian, a Debian derivative made specifically for Raspberry Pis by the manufacturer. It’s relatively easy to install and should require about 10 minutes of work. Note: these instructions were made assuming you’re using a Mac computer. There should be equivalent software for PCs. This is a bare-bones version of the installation guide from the manufacturer website, which has plenty of detail if necessary.
 
@@ -14,14 +14,14 @@ https://www.balena.io/etcher/
 
 After installing the ZIP file (the image) and belenaEtcher, insert the SD card into your computer and open belenaEtcher. Select the image in your downloads folder and the drive where your SD card is. Then hit “Flash” and watch the magic happen.
 
-##Setting up the Pi
+## Setting up the Pi
 
 Once the image has been installed onto your SD card, insert it into the Raspberry Pi. You will now need to locate a power supply, monitor, keyboard, and mouse (usually in the TEG or UW Surplus). Wake up the Pi and create a password.
 
 Create a copy of the repository here in the home directory of the Pi. You won’t be able to run any of the Server software yet, since there are plenty of Python packages that need to be installed:
 
--twisted
--Phidgets
+- twisted
+- Phidgets
 
 Just use ‘pip install ___’ from the command line.
 
