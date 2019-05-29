@@ -86,13 +86,13 @@ class FilterWheelParser(object):
 if __name__ == "__main__":
     #ep = Evora()
     #ep.startup()
-    print ("You have just started the MRO Filter Wheel Server\n"\
+    print ("You have just started the MRO Telescope Server\n"\
                 "This product is currently under first year beta testing\n" \
                 "Please Report any bugs to:\n" \
                 "jlozo@uw.edu\n" \
                 "jwhueh@uw.edu \n" \
-                "Thank you and Enjoy your filter movement experience \n\n"
-		"You should now connect a client session to get started")
+                "Thank you and enjoy your science! \n\n"
+		"You should now connect a client session to get started.")
 
     reactor.suggestThreadPoolSize(30)
     reactor.listenTCP(5503, FilterWheelClient())
