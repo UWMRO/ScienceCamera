@@ -1,33 +1,16 @@
-#!/usr/bin/python2
-
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
-import sys
+#!/usr/bin/python3
 
 from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
 
-# For filter controls
-from FilterMotor import *
-import Queue
-import thread
-import threading
+from FilterWheel import *
 
-
-# port for filterwheel is 5503
-
+# Port for filterwheel is 5503
 
 class FilterWheelServer(basic.LineReceiver):
     def __init__(self):
-	self.f = FilterMotor()
-	self.fw = FilterWheelParser(self, self.f)
-	self.f.connDev()
-
-        # Pass protocol to FilterMotor.py
-        self.f.motorProtocol = self
-
+        self.f = FilterMotor(self) #Argument of self passes protocol to FilterMotor.py
+        self.fw = FilterWheelParser(self, self.f)
 
     def connectionMade(self):
         """
@@ -37,7 +20,7 @@ class FilterWheelServer(basic.LineReceiver):
 
     def connectionLost(self, reason):
         self.factory.clients.remove(self)
-	self.f.disconnDev()
+        self.f.disconnDev()
 
     def lineReceived(self, line):
         print("received", line)
@@ -52,49 +35,35 @@ class FilterWheelServer(basic.LineReceiver):
         for client in self.factory.clients:
             client.sendLine(message)
 
-
 class FilterWheelClient(protocol.ServerFactory):
     protocol = FilterWheelServer
     clients = []
 
-class FilterWheelParser(object):
+class FilterWheelParser():
     def __init__(self, protocol, f):
-        #self.f = FilterMotor()
-	self.f = f
+        self.f = f
         self.protocol = protocol
 
-
-    def parse(self, input=None):
-        print(input)
-        input = input.split()
+    def parse(self, userInput = None):
+        userInput = userInput.split()
+        
         if input[0] == 'disconnect':
             return self.f.disconnDev()
-        if input[0] == 'status':
-            return self.f.status()
-        if input[0] == 'getFilter':
-            return self.f.getFilterPosition()
-	if input[0] == 'power':
-	    return self.f.motorPower(bool(input[1]))
-	if input[0] == 'move':
-	    return "moved " + str(self.f.moveFilter(int(input[1])))
-	if input[0] == 'home':
-	    return self.f.home()
-        if input[0] == 'test':
-	    return 'test routine'
- 
+        elif input[0] == 'status':
+            return self.f.dict
+        elif input[0] == 'move':
+    	    return 'moved ' + str(self.f.moveFilter(int(userInput[1])))
+        elif input[0] == 'home':
+    	    return self.f.home()
+        else:
+            return "There's no command for that input!"
 
 if __name__ == "__main__":
     #ep = Evora()
     #ep.startup()
-    print ("You have just started the MRO Telescope Server\n"\
-                "This product is currently under first year beta testing\n" \
-                "Please Report any bugs to:\n" \
-                "jlozo@uw.edu\n" \
-                "jwhueh@uw.edu \n" \
-                "Thank you and enjoy your science! \n\n"
-		"You should now connect a client session to get started.")
+    print("You have started the MRO Telescope Server!\n \
+          You should now connect a client session to get started.")
 
     reactor.suggestThreadPoolSize(30)
     reactor.listenTCP(5503, FilterWheelClient())
     reactor.run()
-
