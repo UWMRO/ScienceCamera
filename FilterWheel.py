@@ -4,7 +4,7 @@ import serial
 from Phidget22.Phidget import *
 from Phidget22.Devices.Stepper import *
 
-class FilterMotor:
+class FilterWheel:
     def __init__(self, motorProtocol):
         'Sets up a dictionary and motor protocol and initializes the stepper and serial port.'
         self.dict = {"acceleration": 20000, "velocityLimit": 5000, "ampLimit": 0.9, "filterPos": None, "hallData": None, "homed": False}
@@ -64,11 +64,12 @@ class FilterMotor:
             self.home()
             
         print("Moving to filter position %d" % num)
+        
+        if num >= self.dict['filterPos']:
+            swaps = abs(num - self.dict['filterPos'])
+        else:
+            swaps = 6 - self.dict['filterPos'] + num
             
-        if num - self.dict['filterPos'] < 0: 
-            self.stepper.setVelocityLimit(-self.dict['velocity'])
-                
-        swaps = abs(num - self.dict['filterPos'])
         while swaps != 0:
             while self.getHallData(0) == 0:
                 pass

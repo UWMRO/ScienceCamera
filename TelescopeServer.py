@@ -7,10 +7,10 @@ from FilterWheel import *
 
 # Port for filterwheel is 5503
 
-class FilterWheelServer(basic.LineReceiver):
+class TelescopeServer(basic.LineReceiver):
     def __init__(self):
-        self.f = FilterMotor(self) #Argument of self passes protocol to FilterMotor.py
-        self.fw = FilterWheelParser(self, self.f)
+        self.fw = FilterWheel(self) #Argument of self passes protocol to FilterWheel.py
+        self.tp = TelescopeParser(self, self.fw)
 
     def connectionMade(self):
         """
@@ -20,11 +20,11 @@ class FilterWheelServer(basic.LineReceiver):
 
     def connectionLost(self, reason):
         self.factory.clients.remove(self)
-        self.f.disconnDev()
+        self.fw.disconnDev()
 
     def lineReceived(self, line):
         print("received", line)
-        d = threads.deferToThread(self.fw.parse, line)
+        d = threads.deferToThread(self.tp.parse, line)
         d.addCallback(self.sendData)
 
     def sendData(self, data):
@@ -35,26 +35,26 @@ class FilterWheelServer(basic.LineReceiver):
         for client in self.factory.clients:
             client.sendLine(message)
 
-class FilterWheelClient(protocol.ServerFactory):
-    protocol = FilterWheelServer
+class TelescopeClient(protocol.ServerFactory):
+    protocol = TelescopeServer
     clients = []
 
-class FilterWheelParser():
-    def __init__(self, protocol, f):
-        self.f = f
+class TelescopeParser():
+    def __init__(self, protocol, fw):
+        self.fw = fw
         self.protocol = protocol
 
     def parse(self, userInput = None):
         userInput = userInput.split()
         
         if input[0] == 'disconnect':
-            return self.f.disconnDev()
+            return self.fw.disconnDev()
         elif input[0] == 'status':
-            return self.f.dict
+            return self.fw.dict
         elif input[0] == 'move':
-    	    return 'moved ' + str(self.f.moveFilter(int(userInput[1])))
+    	    return 'moved ' + str(self.fw.moveFilter(int(userInput[1])))
         elif input[0] == 'home':
-    	    return self.f.home()
+    	    return self.fw.home()
         else:
             return "There's no command for that input!"
 
@@ -65,5 +65,5 @@ if __name__ == "__main__":
           You should now connect a client session to get started.")
 
     reactor.suggestThreadPoolSize(30)
-    reactor.listenTCP(5503, FilterWheelClient())
+    reactor.listenTCP(5503, TelescopeClient())
     reactor.run()
