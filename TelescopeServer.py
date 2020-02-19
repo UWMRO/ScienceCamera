@@ -9,58 +9,48 @@ from FilterWheel import *
 
 class TelescopeServer(basic.LineReceiver):
     def __init__(self):
-        self.fw = FilterWheel(self) #Argument of self passes protocol to FilterWheel.py
-        self.tp = TelescopeParser(self, self.fw)
+        'Creates a filterwheel motor.'
+        self.fw = FilterWheel()
 
     def connectionMade(self):
-        """
-        If you send more than one line then the callback to start the gui will completely fail.
-        """
+        '''Opens communication with Evora. If more than one line is sent, the callback 
+        to start the gui will fail.'''
         self.factory.clients.append(self)
 
     def connectionLost(self, reason):
-        self.factory.clients.remove(self)
+        'Disconnects filterwheel motor and removes connection with Evora.'
         self.fw.disconnDev()
+        self.factory.clients.remove(self)
 
     def lineReceived(self, line):
+        'Parses a message, and sends a message back to Evora.'
         print("received", line)
-        d = threads.deferToThread(self.tp.parse, line)
+        d = threads.deferToThread(self.parse, line)
         d.addCallback(self.sendData)
 
     def sendData(self, data):
+        'Used to send a message to Evora.'
         if data is not None:
-            self.sendMessage(str(data))
-
-    def sendMessage(self, message):
-        for client in self.factory.clients:
-            client.sendLine(message)
+            for client in self.factory.clients:
+                client.sendLine(str(data))
+                
+    def parse(self, message = None):
+        '''Parses a message and returns a message to be sent back to Evora, which
+        expects specific return messages.'''
+        message = message.split()
+        
+        if message[0] == 'home':
+    	    return self.fw.home()
+        if message[0] == 'move':
+    	    return 'moved ' + self.fw.moveFilter(int(message[1]))
+        if message[0] == 'getFilter':
+            return 'getFilter ' + self.fw.getFilterPos()
 
 class TelescopeClient(protocol.ServerFactory):
     protocol = TelescopeServer
     clients = []
-
-class TelescopeParser():
-    def __init__(self, protocol, fw):
-        self.fw = fw
-        self.protocol = protocol
-
-    def parse(self, userInput = None):
-        userInput = userInput.split()
         
-        if input[0] == 'disconnect':
-            return self.fw.disconnDev()
-        elif input[0] == 'status':
-            return self.fw.dict
-        elif input[0] == 'move':
-    	    return 'moved ' + str(self.fw.moveFilter(int(userInput[1])))
-        elif input[0] == 'home':
-    	    return self.fw.home()
-        else:
-            return "There's no command for that input!"
-
 if __name__ == "__main__":
-    #ep = Evora()
-    #ep.startup()
     print("You have started the MRO Telescope Server!\n \
           You should now connect a client session to get started.")
 
