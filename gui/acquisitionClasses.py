@@ -317,9 +317,11 @@ class Exposure(wx.Panel):
         
     def nameText(self, event):
         """
-        Executes on the even that anything new is type into the name text box and sets it to
+        Executes on the event that anything new is type into the name text box and sets it to
         the global variable self.nameToSend for sending to Evora.
         """
+        if " " in self.nameField.GetValue():
+            self.nameField.SetValue(self.nameField.GetValue().replace(" ", "_"))
         self.nameToSend = self.nameField.GetValue()
         self.expButton.SetDefault()
 
