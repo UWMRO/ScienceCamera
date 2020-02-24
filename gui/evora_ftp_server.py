@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 from __future__ import print_function, division, absolute_import
 
-from twisted.protocols import basic
 from twisted.internet import reactor
 
 # ftp server imports

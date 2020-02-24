@@ -13,10 +13,10 @@ class ScriptStatus(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
-        ## Main Sizer
+        # Main Sizer
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
 
-        ## Widgets
+        # Widgets
         self.statusBox = wx.StaticBox(self, label="Script Activity", size=(400, 150))
         self.statusBoxSizer = wx.StaticBoxSizer(self.statusBox, wx.VERTICAL)
 
@@ -34,22 +34,21 @@ class ScriptStatus(wx.Panel):
 
 
 class ScriptCommands(wx.Panel):
-
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
         # Global variables
         self.parent = parent
         self.protocol = None
-        
+
         # Main Sizer
         self.vertSizer = wx.BoxSizer(wx.VERTICAL)
 
-        ## subsizers
+        # subsizers
         self.subVert = wx.BoxSizer(wx.VERTICAL)
         self.buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        ## Widgets
+        # Widgets
         self.commandFrame = wx.StaticBox(self, id=3000, label="Command Prompt", size=(350, 50))
         self.commandFrameSizer = wx.StaticBoxSizer(self.commandFrame, wx.VERTICAL)
 
@@ -57,7 +56,7 @@ class ScriptCommands(wx.Panel):
         self.upButton = wx.Button(self, id=3002, label="Upload")
         self.button.Enable(False)
         self.upButton.Enable(False)
-        self.commandBox = wx.TextCtrl(self, id=3003, size=(350, -1), style=wx.TE_PROCESS_ENTER|wx.TE_READONLY) 
+        self.commandBox = wx.TextCtrl(self, id=3003, size=(350, -1), style=wx.TE_PROCESS_ENTER | wx.TE_READONLY)
 
         # adjust subsizers
         self.buttonSizer.Add(self.button, flag=wx.ALIGN_CENTER)
@@ -73,12 +72,12 @@ class ScriptCommands(wx.Panel):
         # adjust main sizers
         self.vertSizer.Add(self.commandFrameSizer, flag=wx.ALIGN_CENTER)
 
-        ## Variables
+        # Variables
         self.command = ""
 
-        ## Bindings
+        # Bindings
         self.Bind(wx.EVT_TEXT, self.getCommand, id=3003)
-        #self.Bind(wx.EVT_TEXT_ENTER, self.onOk, id=3003)
+        # self.Bind(wx.EVT_TEXT_ENTER, self.onOk, id=3003)
         self.Bind(wx.EVT_BUTTON, self.onOk, id=3001)
         self.Bind(wx.EVT_BUTTON, self.onUpload, id=3002)
         ##
@@ -98,7 +97,7 @@ class ScriptCommands(wx.Panel):
         if self.command is "":
             print("No command")
         else:
-            #print(self.command)
+            # print(self.command)
             runList = self.parseCommand(self.command)  # parses user command
             self.executeCommand(runList)  # executes user command
 
@@ -120,7 +119,7 @@ class ScriptCommands(wx.Panel):
         Pre: Pass in a message to be logged.
         Post: Sends log message to status box as well as logs to file.
         """
-        print("logging from scripting class") 
+        print("logging from scripting class")
         self.sendToStatus(logmsg)
         logInstance = self.parent.parent.parent.log.logInstance
         wx.CallAfter(logInstance.threadSafeLogStatus, logmsg)
@@ -151,7 +150,7 @@ class ScriptCommands(wx.Panel):
 
                 exposeClass = self.parent.parent.parent.takeImage.exposureInstance
                 exposeClass.seriesImageNumber = int(number)
-                exposeClass.logFunction = self.logScript # point to the correct log function that prints to log tab and script status
+                exposeClass.logFunction = self.logScript  # point to the correct log function that prints to log tab and script status
 
                 # example runList (['series', 'bias', int(number), 'basename'])
                 if(imtype == 'bias'):
@@ -160,7 +159,7 @@ class ScriptCommands(wx.Panel):
                     exposeClass.currentImage = basename
                     overwrite = None
                     if(als.checkForFile("/data/copyfile/" + self.currentImage + "_001.fits")):
-                        dialog = wx.MessageDialog(None, "Do you want to change temperature during exposure?", "", wx.OK | wx.CANCEL|wx.ICON_QUESTION)
+                        dialog = wx.MessageDialog(None, "Do you want to change temperature during exposure?", "", wx.OK | wx.CANCEL | wx.ICON_QUESTION)
                         overwrite = dialog.ShowModal()
                         dialog.Destroy()
 
@@ -186,7 +185,7 @@ class ScriptCommands(wx.Panel):
 
                     overwrite = None
                     if(als.checkForFile("/data/copyfile/" + self.currentImage + "_001.fits")):
-                        dialog = wx.MessageDialog(None, "Do you want to change temperature during exposure?", "", wx.OK | wx.CANCEL|wx.ICON_QUESTION)
+                        dialog = wx.MessageDialog(None, "Do you want to change temperature during exposure?", "", wx.OK | wx.CANCEL | wx.ICON_QUESTION)
                         overwrite = dialog.ShowModal()
                         dialog.Destroy()
 
@@ -229,7 +228,7 @@ class ScriptCommands(wx.Panel):
                                + "order, are time=XX in seconds, number=XX as an int, and basename=imagename."
                 self.sendToStatus(helpString)
 
-            ### Deal with set commands
+            # Deal with set commands
             # command: set temp XX
             if(sendCommand == 'setTEC'):
                 temp = int(runList[1])

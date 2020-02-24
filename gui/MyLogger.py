@@ -5,6 +5,7 @@ from __future__ import division
 import logging
 from datetime import date
 
+
 def myLogger(loggerName, fileName=None):
     """
     This returns a custom python logger.
@@ -28,10 +29,9 @@ def myLogger(loggerName, fileName=None):
     if fileName is not None:
         # Get gregorian date, local
         d = date.today()
-        FH = logging.FileHandler("logs/" + fileName + "_" +  d.strftime("%Y%m%d") + ".log")  # create file handler
+        FH = logging.FileHandler("logs/" + fileName + "_" + d.strftime("%Y%m%d") + ".log")  # create file handler
         FH.setLevel(logging.DEBUG)  # set handler level to debug
         FH.setFormatter(FORMATTER)  # add formatter to fh
         LOGGER.addHandler(FH)  # add file handler to logger
 
     return LOGGER
-
