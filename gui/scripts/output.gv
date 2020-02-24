@@ -1,0 +1,189 @@
+digraph {
+	subgraph cluster_0 {
+		"resetAndor.py"
+		"transferImages.py"
+		"MyLogger.py"
+		"AddLinearSpacer.py"
+		"transfer.py"
+		"scriptingClasses.py"
+		"logClasses.py"
+		"evora_server.py"
+		"acquisitionClasses.py"
+		"EnhancedStatusBar.py"
+		"tel.py"
+		"controlClasses.py"
+		"photoAcquisitionGUI.py"
+		"andor.py"
+		"evora_test_client.py"
+		"evora_ftp_server.py"
+	}
+	subgraph cluster_2 {
+		twisted
+		Queue
+		time
+		GUI
+		AddLinearSpacer
+		logging
+		"Third-party"
+		wx
+		astropy
+		numpy
+		MyLogger
+		paramiko
+		thread
+		pandas
+		andor
+		from
+		""
+		EnhancedStatusBar
+		matplotlib
+		acquisitionClasses
+		logClasses
+		scriptingClasses
+		sys
+		import
+		ftp
+	}
+	subgraph cluster_1 {
+		os
+		re
+		subprocess
+		__future__
+		threading
+		datetime
+		shutil
+		io
+		glob
+		signal
+		telnetlib
+		webbrowser
+		this
+	}
+	os -> "resetAndor.py"
+	re -> "resetAndor.py"
+	subprocess -> "resetAndor.py"
+	__future__ -> "transferImages.py"
+	twisted -> "transferImages.py"
+	twisted -> "transferImages.py"
+	twisted -> "transferImages.py"
+	Queue -> "transferImages.py"
+	threading -> "transferImages.py"
+	time -> "transferImages.py"
+	GUI -> "transferImages.py"
+	AddLinearSpacer -> "transferImages.py"
+	__future__ -> "MyLogger.py"
+	__future__ -> "MyLogger.py"
+	logging -> "MyLogger.py"
+	datetime -> "MyLogger.py"
+	__future__ -> "AddLinearSpacer.py"
+	__future__ -> "AddLinearSpacer.py"
+	threading -> "AddLinearSpacer.py"
+	time -> "AddLinearSpacer.py"
+	os -> "AddLinearSpacer.py"
+	datetime -> "AddLinearSpacer.py"
+	shutil -> "AddLinearSpacer.py"
+	io -> "AddLinearSpacer.py"
+	"Third-party" -> "AddLinearSpacer.py"
+	wx -> "AddLinearSpacer.py"
+	astropy -> "AddLinearSpacer.py"
+	numpy -> "AddLinearSpacer.py"
+	twisted -> "AddLinearSpacer.py"
+	MyLogger -> "AddLinearSpacer.py"
+	__future__ -> "transfer.py"
+	__future__ -> "transfer.py"
+	__future__ -> "transfer.py"
+	paramiko -> "transfer.py"
+	os -> "transfer.py"
+	__future__ -> "scriptingClasses.py"
+	__future__ -> "scriptingClasses.py"
+	__future__ -> "scriptingClasses.py"
+	wx -> "scriptingClasses.py"
+	AddLinearSpacer -> "scriptingClasses.py"
+	thread -> "scriptingClasses.py"
+	__future__ -> "logClasses.py"
+	__future__ -> "logClasses.py"
+	__future__ -> "logClasses.py"
+	wx -> "logClasses.py"
+	AddLinearSpacer -> "logClasses.py"
+	__future__ -> "evora_server.py"
+	__future__ -> "evora_server.py"
+	__future__ -> "evora_server.py"
+	glob -> "evora_server.py"
+	os -> "evora_server.py"
+	signal -> "evora_server.py"
+	subprocess -> "evora_server.py"
+	time -> "evora_server.py"
+	pandas -> "evora_server.py"
+	threading -> "evora_server.py"
+	datetime -> "evora_server.py"
+	andor -> "evora_server.py"
+	numpy -> "evora_server.py"
+	astropy -> "evora_server.py"
+	astropy -> "evora_server.py"
+	AddLinearSpacer -> "evora_server.py"
+	MyLogger -> "evora_server.py"
+	twisted -> "evora_server.py"
+	twisted -> "evora_server.py"
+	from -> "evora_server.py"
+	"" -> "evora_server.py"
+	__future__ -> "acquisitionClasses.py"
+	__future__ -> "acquisitionClasses.py"
+	__future__ -> "acquisitionClasses.py"
+	time -> "acquisitionClasses.py"
+	thread -> "acquisitionClasses.py"
+	threading -> "acquisitionClasses.py"
+	wx -> "acquisitionClasses.py"
+	pandas -> "acquisitionClasses.py"
+	EnhancedStatusBar -> "acquisitionClasses.py"
+	AddLinearSpacer -> "acquisitionClasses.py"
+	MyLogger -> "acquisitionClasses.py"
+	Queue -> "acquisitionClasses.py"
+	"" -> "acquisitionClasses.py"
+	wx -> "EnhancedStatusBar.py"
+	telnetlib -> "tel.py"
+	time -> "tel.py"
+	wx -> "controlClasses.py"
+	__future__ -> "photoAcquisitionGUI.py"
+	os -> "photoAcquisitionGUI.py"
+	signal -> "photoAcquisitionGUI.py"
+	subprocess -> "photoAcquisitionGUI.py"
+	threading -> "photoAcquisitionGUI.py"
+	webbrowser -> "photoAcquisitionGUI.py"
+	wx -> "photoAcquisitionGUI.py"
+	matplotlib -> "photoAcquisitionGUI.py"
+	matplotlib -> "photoAcquisitionGUI.py"
+	numpy -> "photoAcquisitionGUI.py"
+	astropy -> "photoAcquisitionGUI.py"
+	matplotlib -> "photoAcquisitionGUI.py"
+	twisted -> "photoAcquisitionGUI.py"
+	twisted -> "photoAcquisitionGUI.py"
+	twisted -> "photoAcquisitionGUI.py"
+	twisted -> "photoAcquisitionGUI.py"
+	GUI -> "photoAcquisitionGUI.py"
+	acquisitionClasses -> "photoAcquisitionGUI.py"
+	AddLinearSpacer -> "photoAcquisitionGUI.py"
+	EnhancedStatusBar -> "photoAcquisitionGUI.py"
+	logClasses -> "photoAcquisitionGUI.py"
+	MyLogger -> "photoAcquisitionGUI.py"
+	scriptingClasses -> "photoAcquisitionGUI.py"
+	sys -> "andor.py"
+	"" -> "andor.py"
+	"" -> "andor.py"
+	"" -> "andor.py"
+	"" -> "andor.py"
+	"" -> "andor.py"
+	"" -> "andor.py"
+	"" -> "andor.py"
+	__future__ -> "evora_test_client.py"
+	twisted -> "evora_test_client.py"
+	import -> "evora_test_client.py"
+	this -> "evora_test_client.py"
+	__future__ -> "evora_ftp_server.py"
+	twisted -> "evora_ftp_server.py"
+	ftp -> "evora_ftp_server.py"
+	twisted -> "evora_ftp_server.py"
+	twisted -> "evora_ftp_server.py"
+	twisted -> "evora_ftp_server.py"
+	twisted -> "evora_ftp_server.py"
+	AddLinearSpacer -> "evora_ftp_server.py"
+}
