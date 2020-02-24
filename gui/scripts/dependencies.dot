@@ -1,0 +1,198 @@
+digraph {
+    label="Python Dependencies";
+
+    subgraph cluster_0 {
+        label="Standard library";
+        __future__;
+        threading;
+        re;
+        time;
+        os;
+        datetime;
+        shutil;
+        telnetlib;
+        logging;
+        glob;
+        signal;
+        subprocess;
+        webbrowser;
+        Queue;
+        thread;
+    }
+
+    subgraph cluster_1 {
+        label="Dependencies";
+        wx;
+        astropy;
+        numpy;
+        io;
+        twisted;
+        pandas;
+        matplotlib;
+        paramiko;
+    }
+
+    subgraph cluster_2 {
+        label="MRO files";
+        AddLinearSpacer;
+        controlClasses;
+        EnhancedStatusBar;
+        evora_ftp_server;
+        logClasses;
+        tel;
+        MyLogger;
+        evora_server;
+        photoAcquisitionGUI;
+        transfer;
+        acquisitionClasses;
+        evora_test_client;
+        resetAndor;
+        transferImages;
+        andor;
+        scriptingClasses;
+    }
+
+    // AddLinearSpacer.py
+    // stdlib
+    __future__ -> AddLinearSpacer[color=blue];
+    threading -> AddLinearSpacer[color=blue];
+    time -> AddLinearSpacer[color=blue];
+    os -> AddLinearSpacer[color=blue];
+    datetime -> AddLinearSpacer[color=blue];
+    shutil -> AddLinearSpacer[color=blue];
+
+    // deps
+    wx -> AddLinearSpacer;
+    astropy -> AddLinearSpacer;
+    numpy -> AddLinearSpacer;
+    io -> AddLinearSpacer;
+    twisted -> AddLinearSpacer;
+
+
+    // controlClasses.py
+    wx -> controlClasses;
+
+
+    // EnhancedStatusBar.py
+    wx -> EnhancedStatusBar;
+
+
+    // evora_ftp_server.py
+    __future__ -> evora_ftp_server[color=blue];
+    twisted -> evora_ftp_server;
+    AddLinearSpacer -> evora_ftp_server[color=red];
+
+
+    // logClasses.py
+    __future__ -> logClasses[color=blue];
+    wx -> logClasses;
+    AddLinearSpacer -> logClasses[color=red];
+
+
+    // tel.py
+    telnetlib -> tel[color=blue];
+    time -> tel[color=blue];
+
+
+    // MyLogger.py
+    __future__ -> MyLogger[color=blue];
+    logging -> MyLogger[color=blue];
+    datetime -> MyLogger[color=blue];
+
+
+    // evora_server.py
+    // stdlib
+    glob -> evora_server[color=blue];
+    os -> evora_server[color=blue];
+    signal -> evora_server[color=blue];
+    subprocess -> evora_server[color=blue];
+    time -> evora_server[color=blue];
+    threading -> evora_server[color=blue];
+    datetime -> evora_server[color=blue];
+
+    // deps
+    pandas -> evora_server;
+    numpy -> evora_server;
+    astropy -> evora_server;
+    twisted -> evora_server;
+
+    // MRO files
+    andor -> evora_server[color=red];
+    AddLinearSpacer -> evora_server[color=red];
+    MyLogger -> evora_server[color=red];
+
+
+    // photoAcquisitionGUI.py
+    // stdlib
+    os -> photoAcquisitionGUI[color=blue];
+    signal -> photoAcquisitionGUI[color=blue];
+    subprocess -> photoAcquisitionGUI[color=blue];
+    threading -> photoAcquisitionGUI[color=blue];
+    webbrowser -> photoAcquisitionGUI[color=blue];
+
+    // deps
+    wx -> photoAcquisitionGUI;
+    matplotlib -> photoAcquisitionGUI;
+    numpy -> photoAcquisitionGUI;
+    astropy -> photoAcquisitionGUI;
+    twisted -> photoAcquisitionGUI;
+
+    // MRO files
+    acquisitionClasses -> photoAcquisitionGUI[color=red];
+    AddLinearSpacer -> photoAcquisitionGUI[color=red];
+    EnhancedStatusBar -> photoAcquisitionGUI[color=red];
+    logClasses -> photoAcquisitionGUI[color=red];
+    MyLogger -> photoAcquisitionGUI[color=red];
+    scriptingClasses -> photoAcquisitionGUI[color=red];
+
+
+    // transfer.py
+    __future__ -> transfer[color=blue];
+    os -> transfer[color=blue];
+    paramiko -> transfer;
+
+    
+    // acquisitionClasses.py
+    // stdlib
+    __future__ -> acquisitionClasses[color=blue];
+    time -> acquisitionClasses[color=blue];
+    thread -> acquisitionClasses[color=blue];
+    threading -> acquisitionClasses[color=blue];
+    Queue -> acquisitionClasses[color=blue];
+
+    // deps
+    wx -> acquisitionClasses;
+    pandas -> acquisitionClasses;
+
+    // MRO files
+    EnhancedStatusBar -> acquisitionClasses[color=red];
+    AddLinearSpacer -> acquisitionClasses[color=red];
+    MyLogger -> acquisitionClasses[color=red];
+
+
+    // evora_test_client.py
+    __future__ -> evora_test_client[color=blue];
+    twisted -> evora_test_client;
+
+
+    // resetAndor.py
+    os -> resetAndor[color=blue];
+    re -> resetAndor[color=blue];
+    subprocess -> resetAndor[color=blue];
+
+
+    // transferImages.py
+    __future__ -> transferImages[color=blue];
+    twisted -> transferImages;
+    Queue -> transferImages[color=blue];
+    threading -> transferImages[color=blue];
+    time -> transferImages[color=blue];
+    AddLinearSpacer -> transferImages[color=red];
+
+
+    // scriptingClasses.py
+    __future__ -> scriptingClasses[color=blue];
+    wx -> scriptingClasses;
+    thread -> scriptingClasses[color=blue];
+    AddLinearSpacer -> scriptingClasses[color=red];
+}

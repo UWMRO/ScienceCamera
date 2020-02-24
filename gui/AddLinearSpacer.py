@@ -9,12 +9,12 @@ import time
 import os
 from datetime import datetime
 import shutil
+from io import BytesIO
 
 # Third-party imports
 import wx  # get wxPython
 from astropy.io import fits
 import numpy as np
-from io import BytesIO
 
 from twisted.internet import protocol
 
