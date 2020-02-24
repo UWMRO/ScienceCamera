@@ -11,9 +11,10 @@ from __future__ import absolute_import
 
 __author__ = "Tristan J. Hillis"
 
-## Imports
+# Imports
 import wx
 import AddLinearSpacer as als
+
 
 class logBox(wx.Panel):
     """
@@ -23,28 +24,27 @@ class logBox(wx.Panel):
         wx.Panel.__init__(self, parent)
 
         # Main Sizers
-        #self.vertSizer = wx.BoxSizer(wx.VERTICAL)
+        # self.vertSizer = wx.BoxSizer(wx.VERTICAL)
 
         # subsizers
 
         # widgets
-        self.logFrame = wx.StaticBox(self, label = "Event Log", size=(500, 300), style=wx.ALIGN_CENTER)
+        self.logFrame = wx.StaticBox(self, label="Event Log", size=(500, 300), style=wx.ALIGN_CENTER)
         self.logFrameSizer = wx.StaticBoxSizer(self.logFrame, wx.VERTICAL)
 
-        self.logBox = wx.TextCtrl(self, size=(500,300), style=wx.TE_READONLY|wx.TE_MULTILINE)
+        self.logBox = wx.TextCtrl(self, size=(500, 300), style=wx.TE_READONLY | wx.TE_MULTILINE)
 
         # adjust subsizers
-        self.logFrameSizer.Add(self.logBox, proportion=1, flag=wx.ALIGN_CENTER|wx.EXPAND)
+        self.logFrameSizer.Add(self.logBox, proportion=1, flag=wx.ALIGN_CENTER | wx.EXPAND)
 
         # adjust main sizers
-        #self.vertSizer.Add(self.logFrameSizer, flag=wx.ALIGN_CENTER)
+        # self.vertSizer.Add(self.logFrameSizer, flag=wx.ALIGN_CENTER)
 
         self.SetSizer(self.logFrameSizer)
         self.logFrameSizer.Fit(self)
 
-
     def threadSafeLogStatus(self, string):
-        """ 
+        """
         Note: This should be called with with wx.CallAfter to update a GUI element.
         Pre: Takes in a string.
         Post: Displays that string in the log status box in the log tab of the gui.
