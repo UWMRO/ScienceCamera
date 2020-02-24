@@ -1,10 +1,13 @@
 #!/usr/bin/env python2
 from __future__ import print_function, division, absolute_import
 
+from twisted.internet import defer, protocol, reactor, threads
 from twisted.protocols import basic
-from twisted.internet import protocol, reactor
+from twisted.python import log
 
 # FTP Client Things
+from twisted.protocols.ftp import FTPFactory
+from twisted.protocols.ftp import FTPFileListProtocol
 from twisted.protocols.ftp import FTPClient
 
 from Queue import Queue
@@ -15,12 +18,11 @@ import time
 import AddLinearSpacer as als
 
 
-# Global variables
+#Global variables
 ftp = None
 numberOfTransfers = 0
 imageQueue = Queue()
 imageGet = threading.Event()
-
 
 class FileServer(basic.LineReceiver):
     """
@@ -29,13 +31,13 @@ class FileServer(basic.LineReceiver):
     and the resulting data is sent back to the client.  This a threaded server so that long
     running functions in the parser don't hang the whole server.
     """
-
+    
     def connectionMade(self):
         """
         If you send more than one line then the callback to start the gui will completely fail.
         """
         self.factory.clients.append(self)
-        # self.sendMessage("Welcome to the file server") # activate the callback to give full control to the camera.
+        #self.sendMessage("Welcome to the file server") # activate the callback to give full control to the camera.
 
     def connectionLost(self, reason):
         """
@@ -68,7 +70,6 @@ class FileServer(basic.LineReceiver):
         for client in self.factory.clients:
             client.sendLine(message)
 
-
 class FileServerClient(protocol.ServerFactory):
     """
     This makes up the twistedPython factory that defines the protocol and stores
@@ -94,7 +95,7 @@ class Parser(object):
     This object parses incoming data lines from the client and executes the respective hardware
     driver code.
     """
-
+    
     def __init__(self, protocol):
         """
         Trickles down the protocol for potential usage as well as defines an instance of Evora (the object
@@ -104,7 +105,7 @@ class Parser(object):
 
     def parse(self, input=None):
         """
-        Receive an input and splitps it up and based on the first argument will execute the right method
+        Receive an input and splitps it up and based on the first argument will execute the right method 
         (e.g. input=connect will run the Evora startup routine).
         """
         global ftp, numberOfTransfers
@@ -119,12 +120,12 @@ class Parser(object):
             saveName = input[3]
             inputs = (self, serverImageName, savePath, saveName)
             imageQueue.put(inputs)
-            # type = input[4]
-            # print(serverImageName, savePath, saveName)
-            # d = ftp.retrieveFile(serverImageName, als.FileBuffer(savePath, saveName), offset=0)
-            # d.addCallback(self.transferDone, file=savePath+saveName)
-            # d.addErrback(self.transferFail)
-            # print("Transfers:", numberOfTransfers)
+            #type = input[4]
+            #print(serverImageName, savePath, saveName)
+            #d = ftp.retrieveFile(serverImageName, als.FileBuffer(savePath, saveName), offset=0)
+            #d.addCallback(self.transferDone, file=savePath+saveName)
+            #d.addErrback(self.transferFail)
+            #print("Transfers:", numberOfTransfers)
             return None
 
         if input[0] == 'cwd':
@@ -134,13 +135,12 @@ class Parser(object):
         if input[0] == 'cdup':
             ftp.cdup().addCallback(self.done)
             return 'cdup None'
-
+    
         if input[0] == 'test':
             ftp.pwd().addCallback(self.done)
 
     def done(self, msg):
         print(msg)
-
     def transferDone(self, msg, file):
         global numberOfTransfers
         numberOfTransfers -= 1
@@ -153,7 +153,7 @@ class Parser(object):
         imageGet.clear()
 
         pass
-
+        
 
 class FileClient(FTPClient, object):
 
@@ -166,31 +166,30 @@ class FileClient(FTPClient, object):
         global ftp
         ftp = self
         # Pass the protocol to the gui when connection is made to FTP Sever
-        # self.factory.protocol = self
+        #self.factory.protocol = self
         # Main wx.Frame
-
+        
         print("CONNECTION MADE")
-
-
+        
+        
 class FileClientFactory(protocol.ClientFactory):
     def __init__(self):
         self.protocol = None
-        # self.protocol = None
-        # self.protocol = self.buildProtocol('localhost')
+        #self.protocol = None
+        #self.protocol = self.buildProtocol('localhost')
 
     def buildProtocol(self, addr):
         # The username and passwd are meaningless but needed
         user = 'anonymous'
-        passwd = 'mro@uw.edu'  # again this is meaningless
+        passwd = 'mro@uw.edu' # again this is meaningless
         self.protocol = FileClient(self, username=user, password=passwd, passive=1)
         return self.protocol
-
+    
     def clientConnectionLost(self, transport, reason):
         print("Connection to FTP server lost normally:", reason)
 
     def clientConnectionFailed(self, transport, reason):
         print("Connection failed:", reason)
-
 
 class QueueWatcher(threading.Thread):
 
@@ -208,17 +207,18 @@ class QueueWatcher(threading.Thread):
                 d.addErrback(parser.transferFail)
                 imageGet.wait()
             time.sleep(0.01)
-
-
-if __name__ == "__main__":
+        
+if __name__ == "__main__": 
     ftpFactory = FileClientFactory()
 
     fileServerFactory = FileServerClient()
 
     t = QueueWatcher()
     t.start()
-
-    reactor.connectTCP(als.HEIMDALL_IP, als.FTP_TRANSFER_PORT, ftpFactory)
+    
+    reactor.connectTCP(als.HEIMDALL_IP, als.FTP_TRANSFER_PORT, ftpFactory)     
     reactor.listenTCP(als.FTP_GET_PORT, fileServerFactory)
 
     reactor.run()
+
+    

@@ -2,12 +2,14 @@
 from __future__ import print_function
 from __future__ import division
 
-# Imports
+## Imports
 # Core Imports
 import threading
 import time
 import os
 from datetime import datetime
+from datetime import date
+import sys
 import shutil
 
 # Third-party imports
@@ -29,7 +31,7 @@ File Description: This file contains a set of functions that the GUI or server c
 """
 
 
-# Global Variables
+## Global Variables
 HEIMDALL_IP = "192.168.1.10"
 GTCC_IP = "192.168.1.11"
 FILTER_PI_IP = "192.168.1.30"
@@ -40,12 +42,13 @@ FTP_GET_PORT = 5505
 FILTER_PORT = 5503
 
 
+
 # Deprecated
 import MyLogger
 logger = MyLogger.myLogger("AddLinearSpacer.py", "client")
 # Get gregorian date, local
-# d = date.today()
-# logFile = open("/home/mro/ScienceCamera/gui/logs/log_gui_" + d.strftime("%Y%m%d") + ".log", "a")
+#d = date.today()
+#logFile = open("/home/mro/ScienceCamera/gui/logs/log_gui_" + d.strftime("%Y%m%d") + ".log", "a")
 
 
 def AddLinearSpacer(boxsizer, pixelSpacing):
@@ -67,11 +70,10 @@ def AddLinearSpacer(boxsizer, pixelSpacing):
     elif orientation == wx.VERTICAL:
         boxsizer.Add((0, pixelSpacing))
 
-
 def SetButtonColor(btn, fore, back):
     btn.SetForegroundColour(fore)
     btn.SetBackgroundColour(back)
-
+        
 
 def isNumber(string):
     """
@@ -101,7 +103,7 @@ def isInt(string):
 def getData(path):
     """
     This function will open a fits file, get the data as a 2x2 numpy array, and return it.
-    """
+    """ 
     return fits.getdata(path)
 
 
@@ -187,7 +189,7 @@ def getLogString(command, prePost):
         if(key == 'series'):
             results = stats[0]
             return "Done take series images..."
-        if(key == 'seriesSent'):
+        if(key == 'seriesSent'):            
             name = stats[-1]
             itime = float(stats[1])
             return "\"%s\" completed with time %.2f sec" % (name, itime)
@@ -233,7 +235,7 @@ def getLogString(command, prePost):
                 else:
                     return "Failed to home, try again..."
             if(key2 == 'move'):
-                if(bool(stats[0])):
+                if(bool(stats[0]) == True):
                     return "Successfully moved filter..."
                 else:
                     return "Failed to move filter..."
@@ -266,7 +268,7 @@ def timeStamp():
     Post: Returns a string with the current date and time.
     """
     time = datetime.today()
-    # stamp = "[%s/%s/%s, " % (time.month, time.day, time.year)
+    #stamp = "[%s/%s/%s, " % (time.month, time.day, time.year)
     hour = ""
     minute = ""
     second = ""
@@ -350,7 +352,6 @@ def iterateImageCounter(name):
     logger.debug("Iterated to: " + name)
     return name
 
-
 def printStamp():
     """
     Pre: User needs nothing to pass in.
@@ -359,7 +360,6 @@ def printStamp():
     day = datetime.today()
     string = day.strftime("[%b %m, %y, %H:%M:%S]")
     return string + " "
-
 
 class Logger(object):
     """
@@ -372,14 +372,12 @@ class Logger(object):
     def write(self, message):
         self.terminal.flush()
         self.terminal.write(message)
-        # disabled becuase logfile definition is commented out
-        # logFile.write(message)
+        logFile.write(message)
 
     def stamp(self):
         d = datetime.today()
         string = d.strftime("[%b %m, %y, %H:%M:%S]")
         return string
-
 
 class FileWriter(protocol.Protocol):
 
@@ -390,15 +388,15 @@ class FileWriter(protocol.Protocol):
         self.f = open(directory+fileName, 'wb')
 
     def dataReceived(self, data):
-        # print("Byte size", len(data))
+        #print("Byte size", len(data))
         self.f.write(data)
 
     def connectionLost(self, reason):
         print("Writing closed and done")
         self.f.close()
 
-
 class FileBuffer(protocol.Protocol):
+
     def __init__(self, directory, fileName):
         """
         Pass full directory in for the file to be saved with just the fileName
@@ -408,7 +406,7 @@ class FileBuffer(protocol.Protocol):
         self.buffer = BytesIO()
 
     def dataReceived(self, data):
-        # print("Byte size", len(data))
+        #print("Byte size", len(data))
         self.buffer.write(data)
 
     def connectionLost(self, reason):
@@ -420,7 +418,6 @@ class FileBuffer(protocol.Protocol):
 
         self.time += time.clock()
         print("TIME TO GET:", self.time)
-
 
 # Deprecated code
 class SampleTimer(object):
