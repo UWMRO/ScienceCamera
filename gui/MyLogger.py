@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
-from __future__ import print_function
-from __future__ import division
+from __future__ import print_function, division
 
 import logging
 from datetime import date

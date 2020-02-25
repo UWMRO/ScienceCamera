@@ -1,7 +1,6 @@
 #! /user/bin/python
-from __future__ import division  # this handles truncation 10/3. ==> 10/3
-from __future__ import print_function
-from __future__ import absolute_import  # where it looks in the path for modules
+# division handles truncation 10/3. ==> 10/3, absolute_import changes where in path is checked for modules
+from __future__ import division, print_function, absolute_import  # this handles truncation 10/3. ==> 10/3
 
 """
 transfer.py

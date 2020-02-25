@@ -1,9 +1,7 @@
 #!/usr/bin/python2
 
-# Python 3 like changes
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
+# Python3-like changes
+from __future__ import print_function, division, absolute_import
 
 # Comment on documentation:
 # When reading the doc strings if "Pre:" is present then this stands for "precondition", or the conditions in order to invoke something.

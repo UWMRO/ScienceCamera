@@ -304,11 +304,11 @@ class Evora(wx.Frame):
         id = event.GetId()
         if id == 1140:
             self.readoutIndex = 3
-        if id == 1141:
+        elif id == 1141:
             self.readoutIndex = 2
-        if id == 1142:
+        elif id == 1142:
             self.readoutIndex = 1
-        if id == 1143:
+        elif id == 1143:
             self.readoutIndex = 0
         logger.debug("setting readout index to index " + str(self.readoutIndex))
 
@@ -616,7 +616,7 @@ class ImageWindow(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.onClose)
 
         # Set Icon
-        ico = wx.Icon("img/evora_logo_circ.ico", wx.BITMAP_TYPE_ICO)
+        ico = wx.Icon("evora_logo_circ.ico", wx.BITMAP_TYPE_ICO)
         self.SetIcon(ico)
 
         self.SetSizer(self.topSizer)
@@ -665,12 +665,12 @@ class ImageWindow(wx.Frame):
         Called when invert check box is clicked.  Inverts the gray scale on the displayed fits image.
         """
         value = event.IsChecked()
-        if value is True:
+        if value:
             logger.info("Inverting image gray scale")
             self.panel.updateCmap("gray_r")
             self.panel.refresh()
             self.currMap = 'gray_r'
-        if value is False:
+        if not value:
             logger.info("Changing image to regular gray scale")
             self.panel.updateCmap('gray')
             self.panel.refresh()
