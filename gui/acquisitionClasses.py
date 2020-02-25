@@ -752,10 +752,7 @@ class Exposure(wx.Panel):
         """
         if "_" in name:
             name = name.split("_")
-            if len(name[-1]) >= 3 and als.isInt(name[-1]):
-                return True
-            else:
-                return False
+            return len(name[-1]) >= 3 and als.isInt(name[-1]):
         else:
             return False
 
