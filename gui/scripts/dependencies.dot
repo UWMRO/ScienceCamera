@@ -18,6 +18,7 @@ digraph {
         webbrowser;
         Queue;
         thread;
+        io;
     }
 
     subgraph cluster_1 {
@@ -25,7 +26,6 @@ digraph {
         wx;
         astropy;
         numpy;
-        io;
         twisted;
         pandas;
         matplotlib;
