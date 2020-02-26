@@ -72,31 +72,6 @@ def SetButtonColor(btn, fore, back):
     btn.SetBackgroundColour(back)
 
 
-def isNumber(string):
-    """
-    Takes in a string and trys to convert it to a float, upon success it returns True and if
-    it fails then it returns false.  Useful in the usage of when I want to test is a string
-    is a number or not.
-    """
-    try:
-        float(string)
-        return True
-    except ValueError:
-        return False
-
-
-def isInt(string):
-    """
-    Takes in a string and trys to convert it to an int.  If successful it returns True otherwise
-    it captures the error and returns False.
-    """
-    try:
-        int(string)
-        return True
-    except ValueError:
-        return False
-
-
 def getData(path):
     """
     This function will open a fits file, get the data as a 2x2 numpy array, and return it.
@@ -320,7 +295,7 @@ def checkForImageCounter(name):
     """
     if "_" in name:
         name.split("_")
-        if isInt(name[-1]):
+        if (name[-1]).isdigit():
             return True
         else:
             return False

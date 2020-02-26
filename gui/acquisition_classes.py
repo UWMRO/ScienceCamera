@@ -328,7 +328,7 @@ class Exposure(wx.Panel):
         to Evora.
         """
         lessThanZero = True
-        if als.isNumber(self.timeToSend):
+        if self.timeToSend.isnumeric():
             if(float(self.timeToSend) < 0):
                 dialog = wx.MessageDialog(None, "Exposure time can not be less than 0...will not expose", "", wx.OK | wx.ICON_ERROR)
                 dialog.ShowModal()
@@ -351,7 +351,7 @@ class Exposure(wx.Panel):
 
         # if statement here is more for redundancy.  The above MessageDialogs let the user their input is incorrect,
         # else they will enter this if statement just fine.
-        if als.isNumber(self.timeToSend) and self.nameToSend is not "" and lessThanZero:
+        if self.timeToSend.isnumeric() and self.nameToSend is not "" and lessThanZero:
 
             line = self.getAttributesToSend().split()
 
@@ -407,7 +407,7 @@ class Exposure(wx.Panel):
                 if answer == wx.ID_OK:
                     self.seriesImageNumber = dialog.GetValue()
 
-                    if als.isInt(self.seriesImageNumber):
+                    if self.seriesImageNumber.isdigit():
                         logger.debug("Number of image to be taken: " + str(int(self.seriesImageNumber)))
                         line[2] = self.seriesImageNumber
                         line = " ".join(line[1:])  # join as line to send to server
@@ -752,7 +752,7 @@ class Exposure(wx.Panel):
         """
         if "_" in name:
             name = name.split("_")
-            return len(name[-1]) >= 3 and als.isInt(name[-1]):
+            return len(name[-1]) >= 3 and (name[-1]).isdigit()
         else:
             return False
 
@@ -975,7 +975,7 @@ class TempControl(wx.Panel):
         When the cool button is pressed this will check if the entered temperature meets certain requirements, then
         it will send the command to the Evora server to set the TEC cooler.
         """
-        if als.isNumber(self.tempToSend):  # Is temp a float?
+        if self.tempToSend.isnumeric():  # Is temp a float?
 
             if float(self.tempToSend) >= -100.0 and float(self.tempToSend) <= -10.0:  # Is it within the hardware bounds?
 
