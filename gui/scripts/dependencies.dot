@@ -34,59 +34,59 @@ digraph {
 
     subgraph cluster_2 {
         label="MRO files";
-        AddLinearSpacer;
-        controlClasses;
-        EnhancedStatusBar;
+        add_linear_spacer;
+        control_classes;
+        enhanced_status_bar;
         evora_ftp_server;
-        logClasses;
+        log_classes;
         tel;
-        MyLogger;
+        my_logger;
         evora_server;
-        photoAcquisitionGUI;
+        photo_acquisition_gui;
         transfer;
         acquisitionClasses;
         evora_test_client;
-        resetAndor;
-        transferImages;
+        reset_andor;
+        transfer_images;
         andor;
-        scriptingClasses;
+        scripting_Classes;
     }
 
-    // AddLinearSpacer.py
+    // add_linear_spacer.py
     // stdlib
-    __future__ -> AddLinearSpacer[color=blue];
-    threading -> AddLinearSpacer[color=blue];
-    time -> AddLinearSpacer[color=blue];
-    os -> AddLinearSpacer[color=blue];
-    datetime -> AddLinearSpacer[color=blue];
-    shutil -> AddLinearSpacer[color=blue];
+    __future__ -> add_linear_spacer[color=blue];
+    threading -> add_linear_spacer[color=blue];
+    time -> add_linear_spacer[color=blue];
+    os -> add_linear_spacer[color=blue];
+    datetime -> add_linear_spacer[color=blue];
+    shutil -> add_linear_spacer[color=blue];
 
     // deps
-    wx -> AddLinearSpacer;
-    astropy -> AddLinearSpacer;
-    numpy -> AddLinearSpacer;
-    io -> AddLinearSpacer;
-    twisted -> AddLinearSpacer;
+    wx -> add_linear_spacer;
+    astropy -> add_linear_spacer;
+    numpy -> add_linear_spacer;
+    io -> add_linear_spacer;
+    twisted -> add_linear_spacer;
 
 
-    // controlClasses.py
-    wx -> controlClasses;
+    // control_classes.py
+    wx -> control_classes;
 
 
-    // EnhancedStatusBar.py
-    wx -> EnhancedStatusBar;
+    // enhanced_status_bar.py
+    wx -> enhanced_status_bar;
 
 
     // evora_ftp_server.py
     __future__ -> evora_ftp_server[color=blue];
     twisted -> evora_ftp_server;
-    AddLinearSpacer -> evora_ftp_server[color=red];
+    add_linear_spacer -> evora_ftp_server[color=red];
 
 
-    // logClasses.py
-    __future__ -> logClasses[color=blue];
-    wx -> logClasses;
-    AddLinearSpacer -> logClasses[color=red];
+    // log_classes.py
+    __future__ -> log_classes[color=blue];
+    wx -> log_classes;
+    add_linear_spacer -> log_classes[color=red];
 
 
     // tel.py
@@ -94,10 +94,10 @@ digraph {
     time -> tel[color=blue];
 
 
-    // MyLogger.py
-    __future__ -> MyLogger[color=blue];
-    logging -> MyLogger[color=blue];
-    datetime -> MyLogger[color=blue];
+    // my_logger.py
+    __future__ -> my_logger[color=blue];
+    logging -> my_logger[color=blue];
+    datetime -> my_logger[color=blue];
 
 
     // evora_server.py
@@ -118,32 +118,32 @@ digraph {
 
     // MRO files
     andor -> evora_server[color=red];
-    AddLinearSpacer -> evora_server[color=red];
-    MyLogger -> evora_server[color=red];
+    add_linear_spacer -> evora_server[color=red];
+    my_logger -> evora_server[color=red];
 
 
-    // photoAcquisitionGUI.py
+    // photo_acquisition_gui.py
     // stdlib
-    os -> photoAcquisitionGUI[color=blue];
-    signal -> photoAcquisitionGUI[color=blue];
-    subprocess -> photoAcquisitionGUI[color=blue];
-    threading -> photoAcquisitionGUI[color=blue];
-    webbrowser -> photoAcquisitionGUI[color=blue];
+    os -> photo_acquisition_gui[color=blue];
+    signal -> photo_acquisition_gui[color=blue];
+    subprocess -> photo_acquisition_gui[color=blue];
+    threading -> photo_acquisition_gui[color=blue];
+    webbrowser -> photo_acquisition_gui[color=blue];
 
     // deps
-    wx -> photoAcquisitionGUI;
-    matplotlib -> photoAcquisitionGUI;
-    numpy -> photoAcquisitionGUI;
-    astropy -> photoAcquisitionGUI;
-    twisted -> photoAcquisitionGUI;
+    wx -> photo_acquisition_gui;
+    matplotlib -> photo_acquisition_gui;
+    numpy -> photo_acquisition_gui;
+    astropy -> photo_acquisition_gui;
+    twisted -> photo_acquisition_gui;
 
     // MRO files
-    acquisitionClasses -> photoAcquisitionGUI[color=red];
-    AddLinearSpacer -> photoAcquisitionGUI[color=red];
-    EnhancedStatusBar -> photoAcquisitionGUI[color=red];
-    logClasses -> photoAcquisitionGUI[color=red];
-    MyLogger -> photoAcquisitionGUI[color=red];
-    scriptingClasses -> photoAcquisitionGUI[color=red];
+    acquisitionClasses -> photo_acquisition_gui[color=red];
+    add_linear_spacer -> photo_acquisition_gui[color=red];
+    enhanced_status_bar -> photo_acquisition_gui[color=red];
+    log_classes -> photo_acquisition_gui[color=red];
+    my_logger -> photo_acquisition_gui[color=red];
+    scripting_Classes -> photo_acquisition_gui[color=red];
 
 
     // transfer.py
@@ -165,9 +165,9 @@ digraph {
     pandas -> acquisitionClasses;
 
     // MRO files
-    EnhancedStatusBar -> acquisitionClasses[color=red];
-    AddLinearSpacer -> acquisitionClasses[color=red];
-    MyLogger -> acquisitionClasses[color=red];
+    enhanced_status_bar -> acquisitionClasses[color=red];
+    add_linear_spacer -> acquisitionClasses[color=red];
+    my_logger -> acquisitionClasses[color=red];
 
 
     // evora_test_client.py
@@ -175,24 +175,24 @@ digraph {
     twisted -> evora_test_client;
 
 
-    // resetAndor.py
-    os -> resetAndor[color=blue];
-    re -> resetAndor[color=blue];
-    subprocess -> resetAndor[color=blue];
+    // reset_andor.py
+    os -> reset_andor[color=blue];
+    re -> reset_andor[color=blue];
+    subprocess -> reset_andor[color=blue];
 
 
-    // transferImages.py
-    __future__ -> transferImages[color=blue];
-    twisted -> transferImages;
-    Queue -> transferImages[color=blue];
-    threading -> transferImages[color=blue];
-    time -> transferImages[color=blue];
-    AddLinearSpacer -> transferImages[color=red];
+    // transfer_images.py
+    __future__ -> transfer_images[color=blue];
+    twisted -> transfer_images;
+    Queue -> transfer_images[color=blue];
+    threading -> transfer_images[color=blue];
+    time -> transfer_images[color=blue];
+    add_linear_spacer -> transfer_images[color=red];
 
 
-    // scriptingClasses.py
-    __future__ -> scriptingClasses[color=blue];
-    wx -> scriptingClasses;
-    thread -> scriptingClasses[color=blue];
-    AddLinearSpacer -> scriptingClasses[color=red];
+    // scripting_Classes.py
+    __future__ -> scripting_Classes[color=blue];
+    wx -> scripting_Classes;
+    thread -> scripting_Classes[color=blue];
+    add_linear_spacer -> scripting_Classes[color=red];
 }
