@@ -2,9 +2,9 @@ import os
 import datetime
 import numpy as np
 from astropy.io import fits
-import MyLogger
+import my_logger
 
-logger = MyLogger.myLogger("fits_utils.py", "client")
+logger = my_logger.myLogger("fits_utils.py", "client")
 
 
 def getdata(path):
