@@ -3,7 +3,7 @@
 from __future__ import print_function, division, absolute_import
 
 import wx
-import AddLinearSpacer as als
+import add_linear_spacer as als
 import thread
 
 

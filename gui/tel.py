@@ -20,4 +20,4 @@ tn.write("shutdown\r\n")
 
 tn.write("exit\n")"""
 print(tn.read_all())
-telnet.sock.close()
+tn.sock.close()

@@ -11,7 +11,7 @@ __author__ = "Tristan J. Hillis"
 
 # Imports
 import wx
-import AddLinearSpacer as als
+import add_linear_spacer as als
 
 
 class logBox(wx.Panel):

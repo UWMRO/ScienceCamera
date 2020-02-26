@@ -23,11 +23,12 @@ import andor
 import numpy as np
 from astropy.io import fits
 from astropy.time import Time
-import AddLinearSpacer as als
-import MyLogger
-
 from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
+
+# MRO files
+import add_linear_spacer as als
+import my_logger
 
 # For filter controls
 # from FilterMotor import filtermotor

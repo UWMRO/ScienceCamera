@@ -8,7 +8,7 @@ from twisted.protocols.ftp import FTPFactory, FTPRealm
 from twisted.cred.portal import Portal
 from twisted.cred.checkers import AllowAnonymousAccess
 
-import AddLinearSpacer as als
+import add_linear_spacer as als
 
 p = Portal(FTPRealm("/home/mro/storage/evora_data/"), [AllowAnonymousAccess()])
 f = FTPFactory(p)

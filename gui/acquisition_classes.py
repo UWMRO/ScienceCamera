@@ -10,9 +10,9 @@ import wx  # get wxPython
 import pandas as pd
 
 # allows widgets to be inserted into wxPython status bar probably won't work on wxPython 3.x
-import EnhancedStatusBar
-import AddLinearSpacer as als  # get useful methods
-import MyLogger
+import enhanced_status_bar
+import add_linear_spacer as als  # get useful methods
+import my_logger
 from Queue import Queue
 
 __author__ = "Tristan J. Hillis"
