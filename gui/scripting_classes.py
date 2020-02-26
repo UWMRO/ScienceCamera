@@ -3,8 +3,9 @@
 from __future__ import print_function, division, absolute_import
 
 import wx
-import add_linear_spacer as als
 import thread
+import fits_utils
+import add_linear_spacer as als
 
 
 class ScriptStatus(wx.Panel):
@@ -156,7 +157,7 @@ class ScriptCommands(wx.Panel):
                     basename = str(runList[3])
                     exposeClass.currentImage = basename
                     overwrite = None
-                    if als.checkForFile("/data/copyfile/" + self.currentImage + "_001.fits"):
+                    if fits_utils.check_for_file("/data/copyfile/" + self.currentImage + "_001.fits"):
                         dialog = wx.MessageDialog(None, "Do you want to change temperature during exposure?", "", wx.OK | wx.CANCEL | wx.ICON_QUESTION)
                         overwrite = dialog.ShowModal()
                         dialog.Destroy()
@@ -182,7 +183,7 @@ class ScriptCommands(wx.Panel):
                     exposeClass.currentImage = basename
 
                     overwrite = None
-                    if als.checkForFile("/data/copyfile/" + self.currentImage + "_001.fits"):
+                    if fits_utils.check_for_file("/data/copyfile/" + self.currentImage + "_001.fits"):
                         dialog = wx.MessageDialog(None, "Do you want to change temperature during exposure?", "", wx.OK | wx.CANCEL | wx.ICON_QUESTION)
                         overwrite = dialog.ShowModal()
                         dialog.Destroy()

@@ -5,16 +5,12 @@ from __future__ import print_function, division
 # Core Imports
 import threading
 import time
-import os
 from datetime import datetime
 import shutil
 from io import BytesIO
 
 # Third-party imports
-import wx  # get wxPython
-from astropy.io import fits
-import numpy as np
-
+import wx
 from twisted.internet import protocol
 
 __author__ = "Tristan J. Hillis"
@@ -28,7 +24,7 @@ File Description: This file contains a set of functions that the GUI or server c
 """
 
 
-# Global Variables
+# Global constants
 HEIMDALL_IP = "192.168.1.10"
 GTCC_IP = "192.168.1.11"
 FILTER_PI_IP = "192.168.1.30"
@@ -41,7 +37,7 @@ FILTER_PORT = 5503
 
 # Deprecated
 import MyLogger
-logger = MyLogger.myLogger("AddLinearSpacer.py", "client")
+logger = MyLogger.myLogger("add_linear_spacer.py", "client")
 # Get gregorian date, local
 # d = date.today()
 # logFile = open("/home/mro/ScienceCamera/gui/logs/log_gui_" + d.strftime("%Y%m%d") + ".log", "a")
@@ -70,27 +66,6 @@ def AddLinearSpacer(boxsizer, pixelSpacing):
 def SetButtonColor(btn, fore, back):
     btn.SetForegroundColour(fore)
     btn.SetBackgroundColour(back)
-
-
-def getData(path):
-    """
-    This function will open a fits file, get the data as a 2x2 numpy array, and return it.
-    """
-    return fits.getdata(path)
-
-
-def calcStats(data):
-    """
-    This function calculates the standard statistics of a FITS image of min, max, mean, and median.
-    A list of these stats is returned so that these stats can then be displayed at the bottom
-    of the image GUI window.
-    """
-    stats_list = []
-    stats_list.append(min(data.flat))
-    stats_list.append(max(data.flat))
-    stats_list.append(np.mean(data.flat))
-    stats_list.append(np.median(data.flat))
-    return stats_list
 
 
 def getLogString(command, prePost):
@@ -258,71 +233,6 @@ def timeStamp():
         second += str(time.second)
     stamp = "[%s:%s:%s]" % (hour, minute, second)
     return stamp
-
-
-def checkForFile(path):
-    """
-    Pre: User specifies a path to a file.
-    Post: This method will chekc if the specified file exists and return a boolean.
-    """
-    boolean = os.path.isfile(path)
-    return boolean
-
-
-def getImagePath(type):
-    """
-    Pre: No inputs.
-    Post: Returns the file path /data/forTCC/ plus an image name with a time stamp
-          with accuracy of milliseconds.
-    """
-    saveDirectory = "/home/mro/storage/evora_data/"
-    time = datetime.today()
-    fileName = time.strftime("image_%Y%m%d_%H%M%S_%f.fits")
-    if(type == 'real'):
-        return "/home/mro/storage/evora_data/tmp/" + fileName
-    else:
-        return saveDirectory + fileName
-
-
-def checkForImageCounter(name):
-    """
-    Note: This method is only ever entered if there actually is a name as well as there will never
-    be a .fits at the end.
-    Pre: Takes in an image name as a string and sees if the standard iterator is on the end of the image
-    name.
-    Post: Returns a boolean of whether the standard iterator is on the end of the image name.  That
-              standard format follows like *_XXX.fits where XXX goes from 001 an up.
-    """
-    if "_" in name:
-        name.split("_")
-        if (name[-1]).isdigit():
-            return True
-        else:
-            return False
-    else:
-        return False
-
-
-def iterateImageCounter(name):
-    """
-    Note: This method is only invoked if the current image name has been checked to have a counter.
-    Pre: Takes in an image name with a counter.
-    Post: Gets the counter and iterates it, and then is used to edit self.currentImage to have an iterated count string
-          in the standard format.
-    """
-    temp = name.split('_')
-    count = int(temp[-1])
-    logger.debug(str(count))
-    count += 1
-    if(count < 10):
-        temp[-1] = "00" + str(count)
-    elif(count < 100):
-        temp[-1] = "0" + str(count)
-    else:
-        temp[-1] = str(count)
-    name = "_".join(temp[:])
-    logger.debug("Iterated to: " + name)
-    return name
 
 
 def printStamp():

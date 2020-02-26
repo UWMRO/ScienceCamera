@@ -9,7 +9,6 @@ import webbrowser
 
 import wx
 import matplotlib
-matplotlib.use("WXAgg")
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -19,7 +18,6 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 # always goes after wxreactor install
 
 from twisted.internet import wxreactor
-wxreactor.install()
 from twisted.internet import defer, protocol, reactor
 from twisted.protocols import basic
 
@@ -27,13 +25,16 @@ from twisted.protocols import basic
 from twisted.protocols.ftp import FTPClient
 
 # GUI element imports
-import acquisitionClasses as ac
-import AddLinearSpacer as als
-import EnhancedStatusBar
-import logClasses as lc
-import MyLogger
-import scriptingClasses as sc
+import acquisition_classes as ac
+import add_linear_spacer as als
+import enhanced_status_bar
+import log_classes as lc
+import my_logger
+import scripting_classes as sc
+import fits_utils
 
+matplotlib.use("WXAgg")
+wxreactor.install()
 """
 # Comment on documentation:
 # When reading the doc strings if "Pre:" is present then this stands for "precondition", or the conditions in order to invoke something.
@@ -47,7 +48,7 @@ __author__ = "Tristan J. Hillis"
 app = None  # reference to Evora app
 port_dict = {}  # dictionary storing different connections that may be open.
 ftpClientProc = None
-logger = MyLogger.myLogger("photoAcquisitionGUI.py", "client")
+logger = my_logger.myLogger("photoAcquisitionGUI.py", "client")
 
 # Getting to parents (i.e. different classes)
 # Three parents will get to the Evora class and out of the notebook
@@ -155,7 +156,7 @@ class Evora(wx.Frame):
         self.SetMenuBar(self.menuBar)
 
         # Status Bar:  include temperature, binning type, gauge for exposure
-        self.stats = EnhancedStatusBar.EnhancedStatusBar(self)
+        self.stats = enhanced_status_bar.EnhancedStatusBar(self)
         self.stats.SetSize((23, -1))
         self.stats.SetFieldsCount(4)
         # self.stats.SetStatusWidths([int(self.width*(1/10)),int(self.width*(2/10)),int(self.width*(5/10)),int(self.width*(5/10)),int(self.width*(5/10))])
@@ -166,7 +167,7 @@ class Evora(wx.Frame):
         self.stats.SetStatusText(u"   Binning Type: 2\u27152", 2)
         self.stats.SetStatusText("Filter: offline", 3)
         self.expGauge = wx.Gauge(self.stats, id=1, range=100, size=(100, -1))
-        self.stats.AddWidget(self.expGauge, pos=1, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        self.stats.AddWidget(self.expGauge, pos=1, horizontalalignment=enhanced_status_bar.ESB_ALIGN_RIGHT)
 
         # size panels
         sizer = wx.BoxSizer()
@@ -394,7 +395,7 @@ class Evora(wx.Frame):
 
         # Update temperature bitmap in status bar.
         bitmap = wx.StaticBitmap(self.stats, -1, size=(90, 17))
-        self.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        self.stats.AddWidget(bitmap, pos=0, horizontalalignment=enhanced_status_bar.ESB_ALIGN_RIGHT)
         self.stats.SetStatusText("Current Temp:  ... C", 0)
 
         self.joinThreads("temp", demonized=True)
@@ -445,7 +446,7 @@ class Evora(wx.Frame):
         self.takeImage.tempInstance.isConnected = False
 
         bitmap = wx.StaticBitmap(self.stats, -1, size=(90, 17))
-        self.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_RIGHT)
+        self.stats.AddWidget(bitmap, pos=0, horizontalalignment=enhanced_status_bar.ESB_ALIGN_RIGHT)
         self.stats.SetStatusText("Current Temp:            ... C", 0)
 
         self.joinThreads("temp", demonized=False)
@@ -656,8 +657,8 @@ class ImageWindow(wx.Frame):
         fileName = fileName.split(".")
 
         if fileName[-1] in ["fits", "fit"]:
-            data = als.getData(openFileDialog.GetPath())
-            stats_list = als.calcStats(data)
+            data = fits_utils.getdata(openFileDialog.GetPath())
+            stats_list = fits_utils.calcstats(data)
             self.parent.takeImage.exposureInstance.safePlot(data, stats_list, ".".join(fileName))
 
     def onInvert(self, event):
@@ -1317,4 +1318,4 @@ if __name__ == "__main__":
     reactor.registerWxApp(app)
     # reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
     reactor.run()
-    app.MainLoop() 
+    app.MainLoop()

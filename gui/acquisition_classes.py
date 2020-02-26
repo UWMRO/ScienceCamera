@@ -10,8 +10,8 @@ import wx  # get wxPython
 import pandas as pd
 
 # allows widgets to be inserted into wxPython status bar probably won't work on wxPython 3.x
-import enhanced_status_bar
 import add_linear_spacer as als  # get useful methods
+import fits_utils
 import my_logger
 from Queue import Queue
 
@@ -26,7 +26,7 @@ This set of classes handles everything in the imaging tab.
 """
 
 # Global Variables
-logger = MyLogger.myLogger("acquisitionClasses.py", "client")
+logger = my_logger.myLogger("acquisitionClasses.py", "client")
 
 
 class EventQueue(Queue, object):
@@ -366,7 +366,7 @@ class Exposure(wx.Panel):
                 line = " ".join(line[1:])  # bring all the parameters together
                 overwrite = None
 
-                if als.checkForFile(self.saveDir + self.currentImage + ".fits"):
+                if fits_utils.check_for_file(self.saveDir + self.currentImage + ".fits"):
                     dialog = wx.MessageDialog(None, "File already exists do you want to overwrite?", "", wx.OK | wx.CANCEL | wx.ICON_QUESTION)
                     overwrite = dialog.ShowModal()
                     dialog.Destroy()
@@ -414,8 +414,8 @@ class Exposure(wx.Panel):
 
                         # check for overwrite
                         overwrite = None
-                        if (self.checkForImageCounter(self.currentImage) and als.checkForFile(self.saveDir + self.currentImage + ".fits"))\
-                           or (not self.checkForImageCounter(self.currentImage) and als.checkForFile(self.saveDir + self.currentImage + "_001.fits")):
+                        if (self.checkForImageCounter(self.currentImage) and fits_utils.check_for_file(self.saveDir + self.currentImage + ".fits"))\
+                                or (not self.checkForImageCounter(self.currentImage) and fits_utils.check_for_file(self.saveDir + self.currentImage + "_001.fits")):
 
                             dialog = wx.MessageDialog(None, "File already exists do you want to overwrite?", "", wx.OK | wx.CANCEL | wx.ICON_QUESTION)
                             overwrite = dialog.ShowModal()
@@ -510,8 +510,8 @@ class Exposure(wx.Panel):
             logger.info("Successfully Aborted")
 
     def display(self, savedImage, logString):
-        data = als.getData(savedImage)
-        stats_list = als.calcStats(data)
+        data = fits_utils.getdata(savedImage)
+        stats_list = fits_utils.calcstats(data)
 
         imageName = None
         if "/tmp/" not in savedImage:

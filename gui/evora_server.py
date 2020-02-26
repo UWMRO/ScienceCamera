@@ -28,6 +28,7 @@ from twisted.internet import protocol, reactor, threads
 
 # MRO files
 import add_linear_spacer as als
+import fits_utils
 import my_logger
 
 # For filter controls
@@ -41,7 +42,7 @@ import my_logger
 acquired = None
 t = None
 isAborted = None  # tracks globally when the abort has been called. Every call to the parser is an new instance
-logger = MyLogger.myLogger("evora_server.py", "server")
+logger = my_logger.myLogger("evora_server.py", "server")
 ftp_server = None
 # Get gregorian date, local
 # d = date.today()
@@ -789,7 +790,7 @@ class Evora(object):
             logger.debug(str(data.shape) + " " + str(data.dtype))
             hdu = fits.PrimaryHDU(data, do_not_scale_image_data=True, uint=True, header=header)
             # filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
-            filename = als.getImagePath('expose')
+            filename = fits_utils.get_image_path('expose')
             hdu.writeto(filename, clobber=True)
             logger.debug("wrote: {}".format(filename))
         elapse_time += time.clock()
@@ -849,7 +850,7 @@ class Evora(object):
                     logger.debug(str(data.shape) + " " + str(data.dtype))
                     hdu = fits.PrimaryHDU(data, do_not_scale_image_data=True, uint=True)
                     # filename = time.strftime('/tmp/image_%Y%m%d_%H%M%S.fits')
-                    filename = als.getImagePath('real')
+                    filename = fits_utils.get_image_path('real')
                     hdu.writeto(filename, clobber=True)
                     logger.debug("wrote: {}".format(filename))
                     data = np.zeros(width//binning*height//binning, dtype='uint16')
@@ -934,7 +935,7 @@ class Evora(object):
 
                     hdu = fits.PrimaryHDU(data, do_not_scale_image_data=True, uint=True, header=header)
                     # filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
-                    filename = als.getImagePath('series')
+                    filename = fits_utils.get_image_path('series')
                     hdu.writeto(filename, clobber=True)
 
                     logger.debug("wrote: {}".format(filename))
@@ -1007,7 +1008,7 @@ class Evora(object):
 
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
                     #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
-                    filename = als.getImagePath('series')
+                    filename = fits_utils.get_image_path('series')
                     hdu.writeto(filename,clobber=True)
 
                     print("wrote: {}".format(filename))
