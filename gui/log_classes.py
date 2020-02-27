@@ -11,7 +11,7 @@ __author__ = "Tristan J. Hillis"
 
 # Imports
 import wx
-import add_linear_spacer as als
+import log_utils
 
 
 class logBox(wx.Panel):
@@ -47,7 +47,7 @@ class logBox(wx.Panel):
         Pre: Takes in a string.
         Post: Displays that string in the log status box in the log tab of the gui.
         """
-        msg = als.timeStamp() + " " + string
+        msg = log_utils.time_stamp() + " " + string
         val = self.logBox.GetValue()
         self.logBox.SetValue(val + msg + "\n")
         self.logBox.SetInsertionPointEnd()

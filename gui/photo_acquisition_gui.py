@@ -26,12 +26,13 @@ from twisted.protocols.ftp import FTPClient
 
 # GUI element imports
 import acquisition_classes as ac
-import add_linear_spacer as als
+import gui_elements as gui
 import enhanced_status_bar
 import log_classes as lc
 import my_logger
 import scripting_classes as sc
 import fits_utils
+import log_utils
 
 matplotlib.use("WXAgg")
 wxreactor.install()
@@ -322,9 +323,9 @@ class Evora(wx.Frame):
         # reactor.run()
         # self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
         # add filter connection
-        self.connection = port_dict[str(als.CAMERA_PORT)] = reactor.connectTCP(als.HEIMDALL_IP, als.CAMERA_PORT, EvoraClient(app.frame1))
-        # port_dict[str(als.FTP_TRANSFER_PORT)] = reactor.connectTCP(als.HEIMDALL_IP, als.FTP_TRANSFER_PORT, FileClientFactory(app.frame1))
-        port_dict[str(als.FTP_GET_PORT)] = reactor.connectTCP('localhost', als.FTP_GET_PORT, TransferClient(app.frame1))
+        self.connection = port_dict[str(gui.CAMERA_PORT)] = reactor.connectTCP(gui.HEIMDALL_IP, gui.CAMERA_PORT, EvoraClient(app.frame1))
+        # port_dict[str(gui.FTP_TRANSFER_PORT)] = reactor.connectTCP(gui.HEIMDALL_IP, gui.FTP_TRANSFER_PORT, FileClientFactory(app.frame1))
+        port_dict[str(gui.FTP_GET_PORT)] = reactor.connectTCP('localhost', gui.FTP_GET_PORT, TransferClient(app.frame1))
 
     def onConnectCallback(self, msg):
         """
@@ -342,7 +343,7 @@ class Evora(wx.Frame):
         status = int(msg.split(",")[0])
 
         self.logFunction = self.logMain
-        logString = als.getLogString('status ' + str(status), 'post')
+        logString = log_utils.get_log_str('status ' + str(status), 'post')
         self.logMethod(self.logFunction, logString)
 
         logger.debug("status from connect callback: " + str(status))
@@ -372,7 +373,7 @@ class Evora(wx.Frame):
         When connect is sent to the server and is done this will set the state of the GUI.
         """
         self.logFunction = self.logMain
-        logString = als.getLogString('connect ' + msg, 'post')
+        logString = log_utils.get_log_str('connect ' + msg, 'post')
         self.logMethod(self.logFunction, logString)
 
         self.connected = True  # boolean to tell if connected to server
@@ -440,7 +441,7 @@ class Evora(wx.Frame):
         When the camera sends it has shutdown successfully then this runs and locks down the GUI.
         """
         self.logFunction = self.logMain
-        logString = als.getLogString("shutdown " + msg, 'post')
+        logString = log_utils.get_log_str("shutdown " + msg, 'post')
         self.logMethod(self.logFunction, logString)
 
         self.takeImage.tempInstance.isConnected = False
@@ -485,7 +486,7 @@ class Evora(wx.Frame):
         """
         # send command on filter setup
         logger.info("Connect pressed in Filter menu")
-        port_dict[str(als.FILTER_PORT)] = reactor.connectTCP(als.FILTER_PI_IP, als.FILTER_PORT, FilterClient(app.frame1))
+        port_dict[str(gui.FILTER_PORT)] = reactor.connectTCP(gui.FILTER_PI_IP, gui.FILTER_PORT, FilterClient(app.frame1))
 
         # lock the connect button up and unlock the disconnect
         filterSub = self.menuBar.GetMenu(2)  # second index
@@ -599,13 +600,13 @@ class ImageWindow(wx.Frame):
 
         #  Adjust sub sizers
         self.sliderSizer.Add(self.text, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.sliderSizer, 10)
+        gui.AddLinearSpacer(self.sliderSizer, 10)
         self.sliderSizer.Add(self.devSlider, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.sliderSizer, 20)
+        gui.AddLinearSpacer(self.sliderSizer, 20)
         self.sliderSizer.Add(self.invert, flag=wx.ALIGN_CENTER)
 
         # Adjust major sizers
-        als.AddLinearSpacer(self.topSizer, 15)
+        gui.AddLinearSpacer(self.topSizer, 15)
         self.topSizer.Add(self.imageName, flag=wx.ALIGN_CENTER)
         self.topSizer.Add(self.panel, proportion=1, flag=wx.EXPAND)
         self.topSizer.Add(self.sliderSizer, flag=wx.ALIGN_CENTER)
@@ -851,24 +852,24 @@ class TakeImage(wx.Panel):  # first tab; with photo imaging
 
         # place sub sizers
         # self.expTempSizer.Add(self.exposureInstance, flag=wx.ALIGN_CENTER)
-        # als.AddLinearSpacer(self.expTempSizer, 8)
+        # gui.AddLinearSpacer(self.expTempSizer, 8)
         # self.expTempSizer.Add(self.tempInstance, flag=wx.ALIGN_CENTER)
 
         # self.controlHorz.Add(self.expTempSizer, flag=wx.ALIGN_CENTER)
-        # als.AddLinearSpacer(self.controlHorz, 50)
+        # gui.AddLinearSpacer(self.controlHorz, 50)
         # self.controlHorz.Add(self.filterInstance, flag=wx.ALIGN_CENTER)
         self.tempFilterSizer.Add(self.tempInstance, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.tempFilterSizer, 50)
+        gui.AddLinearSpacer(self.tempFilterSizer, 50)
         self.tempFilterSizer.Add(self.filterInstance, flag=wx.ALIGN_CENTER)
 
         # place main Sizer
-        als.AddLinearSpacer(self.topbox, 10)
+        gui.AddLinearSpacer(self.topbox, 10)
         self.topbox.Add(self.saveDirectoryText, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.topbox, 10)
+        gui.AddLinearSpacer(self.topbox, 10)
         self.topbox.Add(self.typeInstance, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.topbox, 10)
+        gui.AddLinearSpacer(self.topbox, 10)
         self.topbox.Add(self.exposureInstance, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.topbox, 10)
+        gui.AddLinearSpacer(self.topbox, 10)
         self.topbox.Add(self.tempFilterSizer, flag=wx.ALIGN_CENTER)
 
         # comes last
@@ -896,7 +897,7 @@ class Log(wx.Panel):  # Code for each widget is in logClasses.py
         # adjust sub sizers
 
         # adjust main sizers
-        als.AddLinearSpacer(self.vertSizer, 20)
+        gui.AddLinearSpacer(self.vertSizer, 20)
         self.vertSizer.Add(self.logInstance, proportion=1, flag=wx.ALIGN_CENTER | wx.EXPAND)
 
         self.SetSizer(self.vertSizer)
@@ -926,12 +927,12 @@ class Scripting(wx.Panel):  # Code for widgets is in scriptingClasses.py
         self.scriptCommands = sc.ScriptCommands(self)
 
         # adjust main sizers
-        als.AddLinearSpacer(self.horzSizer, 15)
+        gui.AddLinearSpacer(self.horzSizer, 15)
         self.horzSizer.Add(self.scriptStatus, flag=wx.ALIGN_CENTER)
 
-        als.AddLinearSpacer(self.vertSizer, 15)
+        gui.AddLinearSpacer(self.vertSizer, 15)
         self.vertSizer.Add(self.scriptCommands, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.vertSizer, 15)
+        gui.AddLinearSpacer(self.vertSizer, 15)
         self.vertSizer.Add(self.horzSizer, flag=wx.ALIGN_CENTER)
 
         self.SetSizer(self.vertSizer)
@@ -1035,7 +1036,7 @@ class EvoraClient(protocol.ClientFactory):
         """
         exposureInstance = self.gui.takeImage.exposureInstance
         exposureInstance.logFunction = exposureInstance.logExposure
-        logString = als.getLogString("connectLost 1", 'post')
+        logString = log_utils.get_log_str("connectLost 1", 'post')
         exposureInstance.log(exposureInstance.logFunction, logString)
 
         logger.info("connection to E. server lost normally on port 5502")
@@ -1046,7 +1047,7 @@ class EvoraClient(protocol.ClientFactory):
         """
         exposureInstance = self.gui.takeImage.exposureInstance
         exposureInstance.logFunction = exposureInstance.logExposure
-        logString = als.getLogString("connectFailed 1", 'post')
+        logString = log_utils.get_log_str("connectFailed 1", 'post')
         exposureInstance.log(exposureInstance.logFunction, logString)
 
         logger.warning("connection to E. server failed on port 5502")
@@ -1112,12 +1113,12 @@ class FilterForwarder(basic.LineReceiver):
         # self.filterWatchThread.daemon = True
 
         filterInstance.logFunction = filterInstance.logFilter
-        logString = als.getLogString('filter connect', 'pre')
+        logString = log_utils.get_log_str('filter connect', 'pre')
         filterInstance.log(filterInstance.logFunction, logString)
 
         self.gui.stats.SetStatusText("Filter: NEED HOMING", 3)
         # Deprecated: When connection is made get the filter position. Replaced with just telling them to home.
-        # logString = als.getLogString('filter getFilter', 'pre')
+        # logString = log_utils.get_log_str('filter getFilter', 'pre')
         # filterInstance.log(filterInstance.logFunction, logString)
 
         # d = self.sendCommand('getFilter')
@@ -1222,7 +1223,7 @@ class FilterClient(protocol.ClientFactory):
         """
         filterInstance = self.gui.takeImage.filterInstance
         filterInstance.logFunction = filterInstance.logFilter
-        logString = als.getLogString("filter connectLost 1", 'post')
+        logString = log_utils.get_log_str("filter connectLost 1", 'post')
         filterInstance.log(filterInstance.logFunction, logString)
 
         logger.info("connection lost normally on port 5503")
@@ -1233,7 +1234,7 @@ class FilterClient(protocol.ClientFactory):
         """
         filterInstance = self.gui.takeImage.filterInstance
         filterInstance.logFunction = filterInstance.logFilter
-        logString = als.getLogString("filter connectFailed 1", 'post')
+        logString = log_utils.get_log_str("filter connectFailed 1", 'post')
         filterInstance.log(filterInstance.logFunction, logString)
 
         logger.warning("connection failed on port 5503")
@@ -1253,7 +1254,7 @@ class TransferClient(protocol.ClientFactory):
         """
         filterInstance = self.gui.takeImage.filterInstance
         filterInstance.logFunction = filterInstance.logFilter
-        logString = als.getLogString("filter connectLost 1", 'post')
+        logString = log_utils.get_log_str("filter connectLost 1", 'post')
         filterInstance.log(filterInstance.logFunction, logString)
 
         logger.info("connection lost normally on port 5503")
@@ -1264,7 +1265,7 @@ class TransferClient(protocol.ClientFactory):
         """
         filterInstance = self.gui.takeImage.filterInstance
         filterInstance.logFunction = filterInstance.logFilter
-        logString = als.getLogString("filter connectFailed 1", 'post')
+        logString = log_utils.get_log_str("filter connectFailed 1", 'post')
         filterInstance.log(filterInstance.logFunction, logString)
 
         logger.warning("connection failed on port 5503")
@@ -1307,8 +1308,8 @@ class FileClientFactory(protocol.ClientFactory):
 if __name__ == "__main__":
     # Deprecated
     # log.startLogging(sys.stdout)
-    # sys.stdout = als.Logger(sys.stdout)
-    # sys.stderr = als.Logger(sys.stderr)
+    # sys.stdout = gui.Logger(sys.stdout)
+    # sys.stderr = gui.Logger(sys.stderr)
     ftpClientProc = subprocess.Popen("./transferImages.py", shell=True, preexec_fn=os.setsid)
     app = wx.App(False)
     app.frame1 = Evora()

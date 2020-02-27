@@ -8,11 +8,11 @@ from twisted.protocols.ftp import FTPFactory, FTPRealm
 from twisted.cred.portal import Portal
 from twisted.cred.checkers import AllowAnonymousAccess
 
-import add_linear_spacer as als
+import netconsts
 
 p = Portal(FTPRealm("/home/mro/storage/evora_data/"), [AllowAnonymousAccess()])
 f = FTPFactory(p)
 f.timeOut = None
-reactor.listenTCP(als.FTP_TRANSFER_PORT, f)
+reactor.listenTCP(netconsts.FTP_TRANSFER_PORT, f)
 
 reactor.run()

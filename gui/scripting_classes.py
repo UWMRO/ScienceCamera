@@ -5,7 +5,8 @@ from __future__ import print_function, division, absolute_import
 import wx
 import thread
 import fits_utils
-import add_linear_spacer as als
+import gui_elements as gui
+import log_utils
 
 
 class ScriptStatus(wx.Panel):
@@ -59,11 +60,11 @@ class ScriptCommands(wx.Panel):
 
         # adjust subsizers
         self.buttonSizer.Add(self.button, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.buttonSizer, 10)
+        gui.AddLinearSpacer(self.buttonSizer, 10)
         self.buttonSizer.Add(self.upButton, flag=wx.ALIGN_CENTER)
 
         self.subVert.Add(self.commandBox, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.subVert, 15)
+        gui.AddLinearSpacer(self.subVert, 15)
         self.subVert.Add(self.buttonSizer, flag=wx.ALIGN_CENTER)
 
         self.commandFrameSizer.Add(self.subVert, flag=wx.ALIGN_CENTER)
@@ -104,7 +105,7 @@ class ScriptCommands(wx.Panel):
         print("Upload your script")
 
     def sendToStatus(self, string):
-        send = als.timeStamp()
+        send = log_utils.time_stamp()
         send += " " + string
         wx.CallAfter(self.threadSafeScriptingStatus, send)
 

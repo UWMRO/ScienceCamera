@@ -10,8 +10,9 @@ import wx  # get wxPython
 import pandas as pd
 
 # allows widgets to be inserted into wxPython status bar probably won't work on wxPython 3.x
-import add_linear_spacer as als  # get useful methods
+import gui_elements as gui  # get useful methods
 import fits_utils
+import log_utils
 import my_logger
 from Queue import Queue
 
@@ -254,30 +255,30 @@ class Exposure(wx.Panel):
         self.expBoxSizer = wx.StaticBoxSizer(self.expBox, wx.VERTICAL)
 
         # Line up smaller sub sizers
-        als.AddLinearSpacer(self.exposeSizer, 15)
+        gui.AddLinearSpacer(self.exposeSizer, 15)
         self.exposeSizer.Add(self.expTime, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.exposeSizer, 15)
+        gui.AddLinearSpacer(self.exposeSizer, 15)
         self.exposeSizer.Add(self.expValue, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.exposeSizer, 15)
+        gui.AddLinearSpacer(self.exposeSizer, 15)
 
         self.buttonSizer.Add(self.setDirButton, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.buttonSizer, 10)
+        gui.AddLinearSpacer(self.buttonSizer, 10)
         self.buttonSizer.Add(self.expButton, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.buttonSizer, 10)
+        gui.AddLinearSpacer(self.buttonSizer, 10)
         self.buttonSizer.Add(self.stopExp, flag=wx.ALIGN_CENTER)
 
         self.nameSizer.Add(self.name, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.nameSizer, 8)
+        gui.AddLinearSpacer(self.nameSizer, 8)
         self.nameSizer.Add(self.nameField, flag=wx.ALIGN_CENTER)
 
         # Line up larger chuncks with main sizer
-        als.AddLinearSpacer(self.expBoxSizer, 10)
+        gui.AddLinearSpacer(self.expBoxSizer, 10)
         self.expBoxSizer.Add(self.nameSizer, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.expBoxSizer, 5)
+        gui.AddLinearSpacer(self.expBoxSizer, 5)
         self.expBoxSizer.Add(self.exposeSizer, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.expBoxSizer, 5)
+        gui.AddLinearSpacer(self.expBoxSizer, 5)
         self.expBoxSizer.Add(self.buttonSizer, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.expBoxSizer, 5)
+        gui.AddLinearSpacer(self.expBoxSizer, 5)
 
         self.vertSizer.Add(self.expBoxSizer, flag=wx.ALIGN_CENTER)
 
@@ -376,7 +377,7 @@ class Exposure(wx.Panel):
                     self.stopExp.Enable(True)
                     self.abort = True
                     command = "expose " + line
-                    logString = als.getLogString(command, 'pre')
+                    logString = log_utils.get_log_str(command, 'pre')
                     self.log(self.logFunction, logString)
 
                     d = self.protocol.sendCommand(command)
@@ -394,7 +395,7 @@ class Exposure(wx.Panel):
                 d.addCallback(self.displayRealImage)
 
                 command = "real " + line
-                logString = als.getLogString(command, 'pre')
+                logString = log_utils.get_log_str(command, 'pre')
                 self.log(self.logFunction, logString)
 
                 self.ftpLayer.sendCommand("cwd tmp/").addCallback(self.startRealTime, command=command, itime=itime)
@@ -432,7 +433,7 @@ class Exposure(wx.Panel):
                                 d.addCallback(self.displaySeriesImage)
 
                             command = "series " + str(line)
-                            logString = als.getLogString(command, 'pre')
+                            logString = log_utils.get_log_str(command, 'pre')
                             self.log(self.logFunction, logString)
 
                             d = self.protocol.sendCommand(command)
@@ -501,7 +502,7 @@ class Exposure(wx.Panel):
 
             # log the status
             self.logFunction = self.logExposure
-            logString = als.getLogString("expose " + msg + "," + self.currentImage, 'post')
+            logString = log_utils.get_log_str("expose " + msg + "," + self.currentImage, 'post')
 
             line = "%s;%s;single;%s" % (path, name, logString)
             self.imageQueue.addItem(line)
@@ -580,7 +581,7 @@ class Exposure(wx.Panel):
         self.timer.stop()
 
         self.logFunction = self.logExposure
-        logString = als.getLogString("real " + msg, 'post')
+        logString = log_utils.get_log_str("real " + msg, 'post')
         self.log(self.logFunction, logString)
 
         logger.debug("Completed real time series with exit: " + msg)
@@ -635,7 +636,7 @@ class Exposure(wx.Panel):
 
             self.logFunction = self.logExposure
             dataMsg = ",".join(msg)
-            logString = als.getLogString("seriesSent " + dataMsg + "," + self.currentImage, 'post')
+            logString = log_utils.get_log_str("seriesSent " + dataMsg + "," + self.currentImage, 'post')
 
             line = "%s;%s;series;%s" % (path, name, logString)
             self.imageQueue.addItem(line)
@@ -670,14 +671,14 @@ class Exposure(wx.Panel):
 
         dataMsg = ",".join(msg)
         self.logFunction = self.logExposure
-        logString = als.getLogString("series " + dataMsg, 'post')
+        logString = log_utils.get_log_str("series " + dataMsg, 'post')
         self.log(self.logFunction, logString)
         logger.debug("Completed real time series with exit: " + str(msg))
 
     def abort_callback(self, msg):
         # self.parent.parent.parent.expGauge.SetValue(0)  # redundancy to clear the exposure gauge
         self.logFunction = self.logExposure
-        logString = als.getLogString("abort " + msg, 'post')
+        logString = log_utils.get_log_str("abort " + msg, 'post')
         self.log(self.logFunction, logString)
         logger.debug("Aborted " + msg)
 
@@ -801,7 +802,7 @@ class Exposure(wx.Panel):
         Executes when the stop button is pressed.  Sends a command to Evora to stop exposing.
         """
         self.logFunction = self.logExposure
-        logString = als.getLogString("abort", 'pre')
+        logString = log_utils.get_log_str("abort", 'pre')
         self.log(self.logFunction, logString)
 
         d = self.protocol.sendCommand("abort")
@@ -850,7 +851,7 @@ class TypeSelection(wx.Panel):
 
         # Line up sub-chunks
         self.radioSizer.Add(self.imageType)
-        als.AddLinearSpacer(self.radioSizer, 50)
+        gui.AddLinearSpacer(self.radioSizer, 50)
         self.radioSizer.Add(self.exposeType)
 
         # Line up big chuncks
@@ -935,22 +936,22 @@ class TempControl(wx.Panel):
         self.tempBoxSizer = wx.StaticBoxSizer(self.tempBox, wx.VERTICAL)
 
         # Line up smaller sub sizers
-        als.AddLinearSpacer(self.tempSizer, 10)
+        gui.AddLinearSpacer(self.tempSizer, 10)
         self.tempSizer.Add(self.tempText, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.tempSizer, 10)
+        gui.AddLinearSpacer(self.tempSizer, 10)
         self.tempSizer.Add(self.tempValue, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.tempSizer, 25)
+        gui.AddLinearSpacer(self.tempSizer, 25)
 
         self.buttonSizer.Add(self.tempButton, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.buttonSizer, 10)
+        gui.AddLinearSpacer(self.buttonSizer, 10)
         self.buttonSizer.Add(self.stopCool, 1, flag=wx.ALIGN_CENTER)
 
         # Line up larger chunks with main sizer
-        als.AddLinearSpacer(self.tempBoxSizer, 5)
+        gui.AddLinearSpacer(self.tempBoxSizer, 5)
         self.tempBoxSizer.Add(self.tempSizer, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.tempBoxSizer, 5)
+        gui.AddLinearSpacer(self.tempBoxSizer, 5)
         self.tempBoxSizer.Add(self.buttonSizer, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.tempBoxSizer, 15)
+        gui.AddLinearSpacer(self.tempBoxSizer, 15)
         self.vertSizer.Add(self.tempBoxSizer, flag=wx.ALIGN_CENTER)
 
         # Variables
@@ -990,7 +991,7 @@ class TempControl(wx.Panel):
 
                     if answer == wx.ID_OK:
                         self.logFunction = self.logTemp
-                        logString = als.getLogString(command, 'pre')
+                        logString = log_utils.get_log_str(command, 'pre')
                         self.log(self.logFunction, logString)
 
                         d = self.protocol.sendCommand(command)
@@ -1001,7 +1002,7 @@ class TempControl(wx.Panel):
 
                 else:
                     self.logFunction = self.logTemp
-                    logString = als.getLogString(command, 'pre')
+                    logString = log_utils.get_log_str(command, 'pre')
                     self.log(self.logFunction, logString)
 
                     d = self.protocol.sendCommand(command)
@@ -1025,7 +1026,7 @@ class TempControl(wx.Panel):
         Executes when the camera TEC temperature has been set.
         """
         self.logFunction = self.logTemp
-        logString = als.getLogString("setTEC " + msg, 'post')
+        logString = log_utils.get_log_str("setTEC " + msg, 'post')
         self.log(self.logFunction, logString)
         logger.debug("Cooling to: " + msg)
 
@@ -1034,7 +1035,7 @@ class TempControl(wx.Panel):
         When the stop cooling button is pressed this sends a command to Evora to warmup.
         """
         self.logFunction = self.logTemp
-        logString = als.getLogString("warmup", 'pre')
+        logString = log_utils.get_log_str("warmup", 'pre')
         self.log(self.logFunction, logString)
 
         self.stopCool.Enable(False)
@@ -1046,7 +1047,7 @@ class TempControl(wx.Panel):
         Called when the server has completed its warmup routine.
         """
         self.logFunction = self.logTemp
-        logString = als.getLogString("warmup " + msg, 'post')
+        logString = log_utils.get_log_str("warmup " + msg, 'post')
         self.log(self.logFunction, logString)
 
         logger.info("Warmed with exit: " + msg)
@@ -1204,15 +1205,15 @@ class FilterControl(wx.Panel):
 
         # Line Up Smaller Sub Sizers
         self.filterSizer.Add(self.filterText, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.filterSizer, 15)
+        gui.AddLinearSpacer(self.filterSizer, 15)
         self.filterSizer.Add(self.filterMenu, flag=wx.ALIGN_CENTER)
 
         self.buttonSizer.Add(self.homeButton, flag=wx.ALIGN_CENTER)
-        als.AddLinearSpacer(self.buttonSizer, 10)
+        gui.AddLinearSpacer(self.buttonSizer, 10)
         self.buttonSizer.Add(self.filterButton, flag=wx.ALIGN_CENTER)
 
         self.subVert.Add(self.filterSizer)
-        als.AddLinearSpacer(self.subVert, 10)
+        gui.AddLinearSpacer(self.subVert, 10)
         self.subVert.Add(self.buttonSizer, flag=wx.ALIGN_CENTER)
 
         self.filBoxSizer.Add((200, 10))
@@ -1223,7 +1224,7 @@ class FilterControl(wx.Panel):
 
         # Line up larger chunks with main sizers
         self.vertSizer.Add(self.filBoxSizer)
-        # als.AddLinearSpacer(self.vertSizer, 15)
+        # gui.AddLinearSpacer(self.vertSizer, 15)
         # self.vertSizer.Add(self.statusBoxSizer)
 
         # Variables
@@ -1266,11 +1267,11 @@ class FilterControl(wx.Panel):
         self.filterSelection = self.filterMenu.GetValue()
         print(self.currentFilter)
         if self.filterSelection != self.currentFilter and self.filterButton.IsEnabled():
-            als.SetButtonColor(self.filterButton, 'white', 'green')
+            gui.SetButtonColor(self.filterButton, 'white', 'green')
             # self.filterButton.SetBackgroundColour('green')
             # self.filterButton.SetForegroundColour('white')
         else:
-            als.SetButtonColor(self.filterButton, None, None)
+            gui.SetButtonColor(self.filterButton, None, None)
             # self.filterButton.SetBackgroundColour(None)
             # self.filterButton.SetForegroundColour(None)
 
@@ -1300,7 +1301,7 @@ class FilterControl(wx.Panel):
             self.watch = True
 
             self.logFunction = self.logFilter
-            logString = als.getLogString("filter move " + str(self.filterName[pos]), 'pre')
+            logString = log_utils.get_log_str("filter move " + str(self.filterName[pos]), 'pre')
             self.log(self.logFunction, logString)
 
             self.loadingDotsTimer.Start(350)
@@ -1321,7 +1322,7 @@ class FilterControl(wx.Panel):
 
         logger.debug(msg)
 
-        logString = als.getLogString("filter move " + msg, 'post')
+        logString = log_utils.get_log_str("filter move " + msg, 'post')
 
         logger.debug("in rotate callback " + logString)
 
@@ -1339,7 +1340,7 @@ class FilterControl(wx.Panel):
         self.adjusting = True
 
         self.logFunction = self.logFilter
-        logString = als.getLogString("filter findPos None", 'post')
+        logString = log_utils.get_log_str("filter findPos None", 'post')
         self.log(self.logFunction, logString)
 
     def onHome(self, event):
@@ -1347,7 +1348,7 @@ class FilterControl(wx.Panel):
         Starts the homing sequence for the filter.
         """
         self.logFunction = self.logFilter
-        logString = als.getLogString("filter home", 'pre')
+        logString = log_utils.get_log_str("filter home", 'pre')
         self.log(self.logFunction, logString)
 
         d = self.protocol2.sendCommand("home")
@@ -1361,13 +1362,13 @@ class FilterControl(wx.Panel):
 
     def homingCallback(self, msg):
         self.logFunction = self.logFilter
-        logString = als.getLogString("filter home " + msg, 'post')
+        logString = log_utils.get_log_str("filter home " + msg, 'post')
         self.log(self.logFunction, logString)
 
         logger.debug("Done homing: " + msg)
 
         self.logFunction = self.logFilter
-        logString = als.getLogString("filter getFilter", 'pre')
+        logString = log_utils.get_log_str("filter getFilter", 'pre')
         self.log(self.logFunction, logString)
 
         self.loadingDotsTimer.Stop()
@@ -1389,7 +1390,7 @@ class FilterControl(wx.Panel):
 
         self.logFunction = self.logFilter
         if self.targetFilter is not None and self.targetFilter != pos:
-            # logString = als.getLogString("filter getFilter report " + filter, 'post')
+            # logString = log_utils.get_log_str("filter getFilter report " + filter, 'post')
             # self.log(self.logFunction, logString)
 
             # self.statusBar.SetStatusText("Filter:  %s" % (filter+self.loadingDots), 3)
@@ -1399,7 +1400,7 @@ class FilterControl(wx.Panel):
         elif self.targetFilter == pos and self.adjusting:  # Kill the getFilter sequence when adjusting
             self.watch = False
             self.logFunction = self.logFilter
-            # logString = als.getLogString("filter getFilter finding " + filter + "," + str(pos), 'post')
+            # logString = log_utils.get_log_str("filter getFilter finding " + filter + "," + str(pos), 'post')
             # self.log(self.logFunction, logString)
 
             self.filterMenu.SetSelection(pos)
@@ -1412,7 +1413,7 @@ class FilterControl(wx.Panel):
         else:
             self.watch = False
             self.logFunction = self.logFilter
-            # logString = als.getLogString("filter getFilter set " + filter + "," + str(pos), 'post')
+            # logString = log_utils.get_log_str("filter getFilter set " + filter + "," + str(pos), 'post')
             # self.log(self.logFunction, logString)
 
             self.filterMenu.SetSelection(pos)
@@ -1421,7 +1422,7 @@ class FilterControl(wx.Panel):
             self.loadingDotsTimer.Stop()
 
             self.currentFilter = filter
-            als.SetButtonColor(self.filterButton, None, None)
+            gui.SetButtonColor(self.filterButton, None, None)
 
             # self.statusBar.SetStatusText("Filter:   %s" % filter, 3)
             wx.CallAfter(self.statusBar.SetStatusText, "Filter:     %s" % filter, 3)

@@ -12,7 +12,7 @@ import threading
 import time
 
 # GUI element imports
-import AddLinearSpacer as als
+import gui_elements as gui
 
 
 # Global variables
@@ -121,7 +121,7 @@ class Parser(object):
             imageQueue.put(inputs)
             # type = input[4]
             # print(serverImageName, savePath, saveName)
-            # d = ftp.retrieveFile(serverImageName, als.FileBuffer(savePath, saveName), offset=0)
+            # d = ftp.retrieveFile(serverImageName, gui.FileBuffer(savePath, saveName), offset=0)
             # d.addCallback(self.transferDone, file=savePath+saveName)
             # d.addErrback(self.transferFail)
             # print("Transfers:", numberOfTransfers)
@@ -202,7 +202,7 @@ class QueueWatcher(threading.Thread):
             # get from queue
             while imageQueue.qsize() > 0:
                 parser, serverImName, savePath, saveName = imageQueue.get()
-                d = ftp.retrieveFile(serverImName, als.FileBuffer(savePath, saveName), offset=0)
+                d = ftp.retrieveFile(serverImName, gui.FileBuffer(savePath, saveName), offset=0)
 
                 d.addCallback(parser.transferDone, file=savePath+saveName)
                 d.addErrback(parser.transferFail)
@@ -218,7 +218,7 @@ if __name__ == "__main__":
     t = QueueWatcher()
     t.start()
 
-    reactor.connectTCP(als.HEIMDALL_IP, als.FTP_TRANSFER_PORT, ftpFactory)
-    reactor.listenTCP(als.FTP_GET_PORT, fileServerFactory)
+    reactor.connectTCP(gui.HEIMDALL_IP, gui.FTP_TRANSFER_PORT, ftpFactory)
+    reactor.listenTCP(gui.FTP_GET_PORT, fileServerFactory)
 
     reactor.run()

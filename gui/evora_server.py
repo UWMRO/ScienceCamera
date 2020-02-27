@@ -27,7 +27,7 @@ from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
 
 # MRO files
-import add_linear_spacer as als
+import netconsts
 import fits_utils
 import my_logger
 
@@ -1050,7 +1050,7 @@ class FTPThread(threading.Thread):
         p = Portal(FTPRealm("/home/mro/storage/evora_data/"), [AllowAnonymousAccess()])
         f = FTPFactory(p)
         f.timeOut = None
-        reactor.listenTCP(als.FTP_TRANSFER_PORT, f)
+        reactor.listenTCP(netconsts.FTP_TRANSFER_PORT, f)
 """
 
 
@@ -1090,7 +1090,7 @@ if __name__ == "__main__":
         signal.signal(signal.SIGINT, kill)
 
         reactor.suggestThreadPoolSize(30)
-        reactor.listenTCP(als.CAMERA_PORT, EvoraClient())
+        reactor.listenTCP(netconsts.CAMERA_PORT, EvoraClient())
 
         ftp_server = subprocess.Popen("./evora_ftp_server.py", shell=True, preexec_fn=os.setsid)
 
