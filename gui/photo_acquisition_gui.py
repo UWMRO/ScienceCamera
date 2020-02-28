@@ -243,14 +243,14 @@ class Evora(wx.Frame):
             self.connection.disconnect()
 
         filterInstance = self.takeImage.filterInstance
-        if(filterInstance.filterConnection):
+        if filterInstance.filterConnection:
             logger.info("killing F. server connection")
             port_dict.pop('5503').disconnect()
 
         # Kill transfer client
         os.killpg(os.getpgid(ftpClientProc.pid), signal.SIGKILL)
 
-        if(self.imageOpen):
+        if self.imageOpen:
             logger.info("destroying image frame")
             self.imageOpen = False
             self.window.panel.closeFig()
@@ -348,11 +348,11 @@ class Evora(wx.Frame):
 
         logger.debug("status from connect callback: " + str(status))
 
-        if(status == 20075):  # camera is uninitialized
+        if status == 20075:  # camera is uninitialized
             d = self.protocol.sendCommand("connect")
             d.addCallback(self.callStartup)
 
-        elif(status == 20002):  # if camera is already initialized then start server like regular
+        elif status == 20002:  # if camera is already initialized then start server like regular
             # start temperature thread
             t = threading.Thread(target=self.takeImage.tempInstance.watchTemp, args=(), name="temp thread")
             self.takeImage.tempInstance.isConnected = True  # setups infinite loop in watchTemp method
@@ -425,7 +425,7 @@ class Evora(wx.Frame):
 
                 answer = dialog.ShowModal()
                 dialog.Destroy()
-                if(answer == wx.ID_OK):
+                if answer == wx.ID_OK:
                     logger.info("Shutting down camera")
                     d = self.protocol.sendCommand("shutdown")
                     d.addCallback(self.callShutdown)
@@ -1008,7 +1008,7 @@ class EvoraForwarder(basic.LineReceiver):
         """
         Used to get rid of any trailing deferred obejcts (e.g. realSent after an abort)
         """
-        if(string in self._deferreds):
+        if string in self._deferreds:
             self._deferreds.pop(string)
 
     def connectionLost(self, reason):
@@ -1084,7 +1084,7 @@ class FilterForwarder(basic.LineReceiver):
         logger.debug("Sending to filter: " + str(data))
         self.sendLine(data)
         d = None
-        if(data.split(" ")[0] == "move"):
+        if data.split(" ")[0] == "move":
             d = self._deferreds["moved"] = defer.Deferred()
         else:
             d = self._deferreds[data.split(" ")[0]] = defer.Deferred()
@@ -1135,7 +1135,7 @@ class FilterForwarder(basic.LineReceiver):
         """
         Used to get rid of any trailing deferred obejcts (e.g. realSent after an abort)
         """
-        if(string in self._deferreds):
+        if string in self._deferreds:
             self._deferreds.pop(string)
 
     def connectionLost(self, reason):
@@ -1198,7 +1198,7 @@ class TransferForwarder(basic.LineReceiver):
         """
         Used to get rid of any trailing deferred obejcts (e.g. realSent after an abort)
         """
-        if(string in self._deferreds):
+        if string in self._deferreds:
             self._deferreds.pop(string)
 
     def connectionLost(self, reason):

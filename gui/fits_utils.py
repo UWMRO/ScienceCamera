@@ -46,7 +46,7 @@ def get_image_path(type):
     saveDirectory = "/home/mro/storage/evora_data/"
     time = datetime.today()
     fileName = time.strftime("image_%Y%m%d_%H%M%S_%f.fits")
-    if(type == 'real'):
+    if type == 'real':
         return "/home/mro/storage/evora_data/tmp/" + fileName
     else:
         return saveDirectory + fileName
@@ -84,9 +84,9 @@ def iterate_image_counter(name):
     count = int(temp[-1])
     logger.debug(str(count))
     count += 1
-    if(count < 10):
+    if count < 10:
         temp[-1] = "00" + str(count)
-    elif(count < 100):
+    elif count < 100:
         temp[-1] = "0" + str(count)
     else:
         temp[-1] = str(count)

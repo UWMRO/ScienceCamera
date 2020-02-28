@@ -124,8 +124,8 @@ class SampleTimer(object):
         """
         counter = 0
         while not self.stopTimer:
-            if(self.currentTick == self.totalTicks):
-                if(counter == 9):
+            if self.currentTick == self.totalTicks:
+                if counter == 9:
                     self.currentTick = -10
                     counter = 0
                 else:

@@ -367,7 +367,7 @@ class Evora(object):
         setCooler = andor.CoolerOFF()
 
         results = 1
-        if(setFan != andor.DRV_SUCCESS or setCooler != andor.DRV_SUCCESS):
+        if setFan != andor.DRV_SUCCESS or setCooler != andor.DRV_SUCCESS:
             results = 0
         return "warmup " + str(results)
 
@@ -744,11 +744,11 @@ class Evora(object):
         logger.debug('SetImage: ' + str(andor.SetImage(binning, binning, 1, width, 1, height)))
         logger.debug('GetDetector (again): ' + str(andor.GetDetector()))
 
-        if(imType == "bias"):
+        if imType == "bias":
             andor.SetShutter(1, 2, 0, 0)  # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             logger.debug('SetExposureTime: ' + str(andor.SetExposureTime(0)))
         else:
-            if(imType in ['flat', 'object']):
+            if imType in ['flat', 'object']:
                 andor.SetShutter(1, 0, 5, 5)
             else:
                 andor.SetShutter(1, 2, 0, 0)
@@ -777,7 +777,7 @@ class Evora(object):
         result = andor.GetAcquiredData16(data)
 
         success = None
-        if(result == 20002):
+        if result == 20002:
             success = 1  # for true
         else:
             success = 0  # for false
@@ -815,11 +815,11 @@ class Evora(object):
         logger.debug('SetExposureTime: ' + str(andor.SetExposureTime(itime)))
         logger.debug('SetKineticTime: ' + str(andor.SetKineticCycleTime(0)))
 
-        if(imType == "bias"):
+        if imType == "bias":
             andor.SetShutter(1, 2, 0, 0)  # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             logger.debug('SetExposureTime: ' + str(andor.SetExposureTime(0)))
         else:
-            if(imType in ['flat', 'object']):
+            if imType in ['flat', 'object']:
                 andor.SetShutter(1, 0, 5, 5)
             else:
                 andor.SetShutter(1, 2, 0, 0)
@@ -834,18 +834,18 @@ class Evora(object):
         workingImNum = 1
         start = time.time()
         end = 0
-        while(status[1] == andor.DRV_ACQUIRING):
+        while status[1] == andor.DRV_ACQUIRING:
 
             progress = andor.GetAcquisitionProgress()
             currImNum = progress[2]  # won't update until an acquisition is done
             status = andor.GetStatus()
 
-            if(status[1] == andor.DRV_ACQUIRING and currImNum == workingImNum):
+            if status[1] == andor.DRV_ACQUIRING and currImNum == workingImNum:
                 logger.debug("Progress: " + str(andor.GetAcquisitionProgress()))
                 results = andor.GetMostRecentImage16(data)  # store image data
                 logger.debug(str(results) + 'success={}'.format(results == 20002))  # print if the results were successful
 
-                if(results == andor.DRV_SUCCESS):  # if the array filled store successfully
+                if results == andor.DRV_SUCCESS:  # if the array filled store successfully
                     data = data.reshape(width//binning, height//binning)  # reshape into image
                     logger.debug(str(data.shape) + " " + str(data.dtype))
                     hdu = fits.PrimaryHDU(data, do_not_scale_image_data=True, uint=True)
@@ -883,12 +883,12 @@ class Evora(object):
         logger.debug('SetImage: ' + str(andor.SetImage(binning, binning, 1, width, 1, height)))
         logger.debug('GetDetector (again): ' + str(andor.GetDetector()))
 
-        if(imType == "bias"):
+        if imType == "bias":
             itime = 0
             andor.SetShutter(1, 2, 0, 0)  # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             logger.debug('SetExposureTime: ' + str(andor.SetExposureTime(0)))
         else:
-            if(imType in ['flat', 'object']):
+            if imType in ['flat', 'object']:
                 andor.SetShutter(1, 0, 5, 5)
             else:
                 andor.SetShutter(1, 2, 0, 0)
@@ -917,19 +917,19 @@ class Evora(object):
         imageAcquired = False
 
         counter = 1
-        while(status[1] == andor.DRV_ACQUIRING):
+        while status[1] == andor.DRV_ACQUIRING:
             status = andor.GetStatus()
             progress = andor.GetAcquisitionProgress()
 
             runtime = 0
-            if(progress[2] == counter or (not isAborted and progress[2] == 0 and imageAcquired)):
+            if progress[2] == counter or (not isAborted and progress[2] == 0 and imageAcquired):
                 runtime -= time.clock()
                 data = np.zeros(width//binning*height//binning, dtype='uint16')  # reserve room for image
                 results = andor.GetMostRecentImage16(data)  # store image data
                 logger.debug(str(results) + " " + 'success={}'.format(results == 20002))  # print if the results were successful
                 logger.debug('image number: ' + str(progress[2]))
 
-                if(results == andor.DRV_SUCCESS):  # if the array filled store successfully
+                if results == andor.DRV_SUCCESS:  # if the array filled store successfully
                     data = data.reshape(width//binning, height//binning)  # reshape into image
                     logger.debug(str(data.shape) + " " + str(data.dtype))
 
@@ -945,7 +945,7 @@ class Evora(object):
                     # header = self.getHeader(attributes)
                     header = self.getHeader_2(attributes, 'heimdall')
 
-                    if(counter == numexp):
+                    if counter == numexp:
                         logger.info("entered abort")
                         isAborted = True
 
@@ -975,7 +975,7 @@ class Evora(object):
         print('SetExposureTime:', andor.SetExposureTime(itime))
         print('SetKineticTime:', andor.SetKineticCycleTime(0))
 
-        if(imType == "bias"):
+        if imType == "bias":
             itime = 0
             andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             print('SetExposureTime:', andor.SetExposureTime(0))
@@ -992,17 +992,17 @@ class Evora(object):
         print(status)
         counter = 1
 
-        while(status[1]==andor.DRV_ACQUIRING and counter <= numexp):
+        while status[1]==andor.DRV_ACQUIRING and counter <= numexp:
             status = andor.GetStatus()
 
             progress = andor.GetAcquisitionProgress()
             status = andor.GetStatus()
 
-            if(status[1] == andor.DRV_ACQUIRING and progress[2] == counter):
+            if status[1] == andor.DRV_ACQUIRING and progress[2] == counter:
                 results = andor.GetMostRecentImage16(data) # store image data
                 print(results, 'success={}'.format(results == 20002)) # print if the results were successful
 
-                if(results == andor.DRV_SUCCESS): # if the array filled store successfully
+                if results == andor.DRV_SUCCESS: # if the array filled store successfully
                     data=data.reshape(width/binning,height/binning) # reshape into image
                     print(data.shape,data.dtype)
 

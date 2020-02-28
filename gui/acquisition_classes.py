@@ -330,7 +330,7 @@ class Exposure(wx.Panel):
         """
         lessThanZero = True
         if self.timeToSend.isnumeric():
-            if(float(self.timeToSend) < 0):
+            if float(self.timeToSend) < 0:
                 dialog = wx.MessageDialog(None, "Exposure time can not be less than 0...will not expose", "", wx.OK | wx.ICON_ERROR)
                 dialog.ShowModal()
                 dialog.Destroy()
@@ -422,7 +422,7 @@ class Exposure(wx.Panel):
                             overwrite = dialog.ShowModal()
                             dialog.Destroy()
 
-                        if(overwrite is None or overwrite == wx.ID_OK):  # Overwrite existing file
+                        if overwrite is None or overwrite == wx.ID_OK:  # Overwrite existing file
                             self.expButton.Enable(False)
                             self.stopExp.Enable(True)
                             self.abort = True
@@ -619,7 +619,7 @@ class Exposure(wx.Panel):
             directory += i + "/"
         # self.timer_2.stop()
         # no abort then display the image
-        if(imNum <= int(self.seriesImageNumber)):
+        if imNum <= int(self.seriesImageNumber):
             logger.info("Entered to display series image")
 
             # copy image over (counter looks like "_XXX.fits")
@@ -1292,7 +1292,7 @@ class FilterControl(wx.Panel):
             # find position
             pos = None
             for i in range(len(self.filterName)):
-                if(str(self.filterSelection) == self.filterName[i]):
+                if str(self.filterSelection) == self.filterName[i]:
                     pos = self.filterNum[i]
             logger.debug("index: " + str(pos))
 
