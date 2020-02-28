@@ -10,6 +10,7 @@ from twisted.protocols.ftp import FTPClient
 from Queue import Queue
 import threading
 import time
+import netconsts
 
 # GUI element imports
 import gui_elements as gui
@@ -218,7 +219,7 @@ if __name__ == "__main__":
     t = QueueWatcher()
     t.start()
 
-    reactor.connectTCP(gui.HEIMDALL_IP, gui.FTP_TRANSFER_PORT, ftpFactory)
-    reactor.listenTCP(gui.FTP_GET_PORT, fileServerFactory)
+    reactor.connectTCP(netconsts.HEIMDALL_IP, netconsts.FTP_TRANSFER_PORT, ftpFactory)
+    reactor.listenTCP(netconsts.FTP_GET_PORT, fileServerFactory)
 
     reactor.run()

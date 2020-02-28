@@ -9,6 +9,7 @@ import webbrowser
 
 import wx
 import matplotlib
+matplotlib.use("WXAgg")
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -18,6 +19,7 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 # always goes after wxreactor install
 
 from twisted.internet import wxreactor
+wxreactor.install()
 from twisted.internet import defer, protocol, reactor
 from twisted.protocols import basic
 
@@ -33,9 +35,8 @@ import my_logger
 import scripting_classes as sc
 import fits_utils
 import log_utils
+import netconsts
 
-matplotlib.use("WXAgg")
-wxreactor.install()
 """
 # Comment on documentation:
 # When reading the doc strings if "Pre:" is present then this stands for "precondition", or the conditions in order to invoke something.
@@ -323,9 +324,9 @@ class Evora(wx.Frame):
         # reactor.run()
         # self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
         # add filter connection
-        self.connection = port_dict[str(gui.CAMERA_PORT)] = reactor.connectTCP(gui.HEIMDALL_IP, gui.CAMERA_PORT, EvoraClient(app.frame1))
-        # port_dict[str(gui.FTP_TRANSFER_PORT)] = reactor.connectTCP(gui.HEIMDALL_IP, gui.FTP_TRANSFER_PORT, FileClientFactory(app.frame1))
-        port_dict[str(gui.FTP_GET_PORT)] = reactor.connectTCP('localhost', gui.FTP_GET_PORT, TransferClient(app.frame1))
+        self.connection = port_dict[str(netconsts.CAMERA_PORT)] = reactor.connectTCP(netconsts.HEIMDALL_IP, netconsts.CAMERA_PORT, EvoraClient(app.frame1))
+        # port_dict[str(netconsts.FTP_TRANSFER_PORT)] = reactor.connectTCP(netconsts.HEIMDALL_IP, netconsts.FTP_TRANSFER_PORT, FileClientFactory(app.frame1))
+        port_dict[str(netconsts.FTP_GET_PORT)] = reactor.connectTCP('localhost', netconsts.FTP_GET_PORT, TransferClient(app.frame1))
 
     def onConnectCallback(self, msg):
         """
@@ -486,7 +487,7 @@ class Evora(wx.Frame):
         """
         # send command on filter setup
         logger.info("Connect pressed in Filter menu")
-        port_dict[str(gui.FILTER_PORT)] = reactor.connectTCP(gui.FILTER_PI_IP, gui.FILTER_PORT, FilterClient(app.frame1))
+        port_dict[str(netconsts.FILTER_PORT)] = reactor.connectTCP(netconsts.FILTER_PI_IP, netconsts.FILTER_PORT, FilterClient(app.frame1))
 
         # lock the connect button up and unlock the disconnect
         filterSub = self.menuBar.GetMenu(2)  # second index
@@ -618,7 +619,7 @@ class ImageWindow(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.onClose)
 
         # Set Icon
-        ico = wx.Icon("evora_logo_circ.ico", wx.BITMAP_TYPE_ICO)
+        ico = wx.Icon("img/evora_logo_circ.ico", wx.BITMAP_TYPE_ICO)
         self.SetIcon(ico)
 
         self.SetSizer(self.topSizer)
@@ -1310,7 +1311,7 @@ if __name__ == "__main__":
     # log.startLogging(sys.stdout)
     # sys.stdout = gui.Logger(sys.stdout)
     # sys.stderr = gui.Logger(sys.stderr)
-    ftpClientProc = subprocess.Popen("./transferImages.py", shell=True, preexec_fn=os.setsid)
+    ftpClientProc = subprocess.Popen("./transfer_images.py", shell=True, preexec_fn=os.setsid)
     app = wx.App(False)
     app.frame1 = Evora()
     app.frame1.Show()
