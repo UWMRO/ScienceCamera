@@ -1,9 +1,7 @@
 #!/usr/bin/env python2
 
-# For Python 3 like functionality
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
+# For Python3-like functionality
+from __future__ import print_function, division, absolute_import
 
 # Comment on documentation:
 # When reading the doc strings if "Pre:" is present then this stands for "precondition", or the conditions in order to invoke something.
@@ -11,39 +9,30 @@ from __future__ import absolute_import
 
 __author__ = "Tristan J. Hillis"
 
-## Imports
+# Imports
 import glob
 import os
 import signal
 import subprocess
-import sys
 import time
 import pandas as pd
-import Queue
-import thread
 import threading
 from datetime import datetime
-from datetime import date
 
 import andor
 import numpy as np
 from astropy.io import fits
 from astropy.time import Time
-import AddLinearSpacer as als
-import MyLogger
-
 from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
 
-# ftp server imports
-from twisted.protocols.ftp import FTPFactory
-from twisted.protocols.ftp import FTPRealm
-from twisted.cred.portal import Portal
-from twisted.cred.checkers import AllowAnonymousAccess
-
+# MRO files
+import netconsts
+import fits_utils
+import my_logger
 
 # For filter controls
-#from FilterMotor import filtermotor
+# from FilterMotor import filtermotor
 
 # port for evora is 5502
 # port for filter wheel is 5503
@@ -52,13 +41,12 @@ from twisted.cred.checkers import AllowAnonymousAccess
 # Global Variables
 acquired = None
 t = None
-isAborted = None  # tracks globally when the abort has been called.  Every call to the parser
-                  # is an new instance
-logger = MyLogger.myLogger("evora_server.py", "server")
+isAborted = None  # tracks globally when the abort has been called. Every call to the parser is an new instance
+logger = my_logger.myLogger("evora_server.py", "server")
 ftp_server = None
 # Get gregorian date, local
-#d = date.today()
-#logFile = open("/home/mro/ScienceCamera/gui/logs/log_server_" + d.strftime("%Y%m%d") + ".log", "a")
+# d = date.today()
+# logFile = open("/home/mro/ScienceCamera/gui/logs/log_server_" + d.strftime("%Y%m%d") + ".log", "a")
 
 
 class EvoraServer(basic.LineReceiver):
@@ -68,15 +56,15 @@ class EvoraServer(basic.LineReceiver):
     and the resulting data is sent back to the client.  This a threaded server so that long
     running functions in the parser don't hang the whole server.
     """
-    
+
     def connectionMade(self):
         """
         If you send more than one line then the callback to start the gui will completely fail.
         """
         self.factory.clients.append(self)
         ep = EvoraParser(self)
-        command = ep.parse("status") 
-        self.sendMessage(str(command)) # activate the callback to give full control to the camera.
+        command = ep.parse("status")
+        self.sendMessage(str(command))  # activate the callback to give full control to the camera.
 
     def connectionLost(self, reason):
         """
@@ -118,13 +106,14 @@ class EvoraClient(protocol.ServerFactory):
     protocol = EvoraServer
     clients = []
 
-## Evora Parser commands sent here from server where it envokes the camera commands.
+
+# Evora Parser commands sent here from server where it envokes the camera commands.
 class EvoraParser(object):
     """
     This object parses incoming data lines from the client and executes the respective hardware
     driver code.
-    """
-    
+     """
+
     def __init__(self, protocol):
         """
         Trickles down the protocol for potential usage as well as defines an instance of Evora (the object
@@ -135,7 +124,7 @@ class EvoraParser(object):
 
     def parse(self, input=None):
         """
-        Receive an input and splits it up and based on the first argument will execute the right method 
+        Receive an input and splits it up and based on the first argument will execute the right method
         (e.g. input=connect will run the Evora startup routine).
         """
         input = input.split()
@@ -184,37 +173,37 @@ class EvoraParser(object):
 
         if input[0] == "status":
             """
-            Gets the current status of the camera.  For example, it will return an integer code saying it is uninitialized 
+            Gets the current status of the camera.  For example, it will return an integer code saying it is uninitialized
             or, perhaps, currently acquisitioning.
             """
             return self.e.getStatus()
-        
+
         if input[0] == "timings":
             """
             This retrieves the timings for the current Evora settings.  May not work since every new call of the parser
             is a new Evora instance variable.
             """
             return self.e.getTimings()
-        
+
         if input[0] == "vertStats":
             """
             Specify and index as the input. See the Andor SDK documentation for more information.
             """
             return self.e.verticalSpeedStats(int(input[1]))
-        
+
         if input[0] == "horzStats":
             """
             Specify channel, type, and an index as the inputs.  See the Andor SDK documentation for more information.
             """
             return self.e.horizontalSpeedStats(int(input[1]), int(input[2]), int(input[3]))
-        
+
         if input[0] == "abort":
             """
-            Calls the Evora abort command to stop an exposure.  Appears there is no way to then readout the 
+            Calls the Evora abort command to stop an exposure.  Appears there is no way to then readout the
             CCD partially.
             """
             return self.e.abort()
-        
+
         if input[0] == 'expose':
             """
             This if entry exectues a single exposure command.  The required arguements to define (i.e.
@@ -224,7 +213,7 @@ class EvoraParser(object):
 
             Example line: expose object 1 20 2 3 g
             """
-            
+
             # Note to self: get rid of expNum, a different method handles getting multiple images.
             imType = input[1]
             # exposure attributes
@@ -237,9 +226,9 @@ class EvoraParser(object):
                 filter = str(input[6])
             except IndexError:
                 pass
-            
+
             return self.e.expose(imType, expnum, itime, binning, readTime=readoutIndex, filter=filter)
-        
+
         if input[0] == 'real':
             """
             This if entry handles the real time series exposure where the camera runs in RunTillAbort mode.
@@ -255,7 +244,7 @@ class EvoraParser(object):
             itime = float(input[3])
             binning = int(input[4])
             return self.e.realTimeExposure(self.protocol, imType, itime, binning)
-        
+
         if input[0] == 'series':
             """
             This handles taking multiple images in one go.  The arguements to sepcify (ie when using Telnes) are
@@ -287,7 +276,7 @@ class Evora(object):
 
     Replace all the prints with a safe call method.
     """
-    
+
     def __init__(self):
         self.num = 0
 
@@ -302,13 +291,13 @@ class Evora(object):
         return "status " + str(status[0]) + "," + str(status[1])
 
     def startup(self):
-	"""
+        """
         20002 is the magic number.  Any different number and it didn't work.
         """
         logger.debug(str(andor.GetAvailableCameras()))
         camHandle = andor.GetCameraHandle(0)
         logger.debug(str(camHandle))
-        
+
         logger.debug('set camera: ' + str(andor.SetCurrentCamera(camHandle[1])))
 
         init = andor.Initialize("/usr/local/etc/andor")
@@ -317,11 +306,11 @@ class Evora(object):
 
         state = andor.GetStatus()
 
-        logger.debug('Status: ' + str(state)) 
+        logger.debug('Status: ' + str(state))
 
         logger.debug('SetAcquisitionMode: ' + str(andor.SetAcquisitionMode(1)))
 
-        logger.debug('SetShutter: ' + str(andor.SetShutter(1,0,50,50)))
+        logger.debug('SetShutter: ' + str(andor.SetShutter(1, 0, 50, 50)))
 
         # make sure cooling is off when it first starts
         logger.debug('SetTemperature: ' + str(andor.SetTemperature(0)))
@@ -368,7 +357,7 @@ class Evora(object):
         return "setTEC " + str(setPoint)
 
     def warmup(self):
-	"""
+        """
         Pre: Used to warmup camera.
         Post: Sets the temperature to 0 and turns the fan to 0 then turns the cooler off and
         returns 1 that everything worked.
@@ -378,7 +367,7 @@ class Evora(object):
         setCooler = andor.CoolerOFF()
 
         results = 1
-        if(setFan != andor.DRV_SUCCESS or setCooler != andor.DRV_SUCCESS):
+        if setFan != andor.DRV_SUCCESS or setCooler != andor.DRV_SUCCESS:
             results = 0
         return "warmup " + str(results)
 
@@ -432,11 +421,11 @@ class Evora(object):
         """
         Used to get the actual time in seconds the exposure will take.
         """
-        #retval, width, height = andor.GetDetector()
-        #print retval, width, height
+        # retval, width, height = andor.GetDetector()
+        # print retval, width, height
         expTime, accTime, kTime = andor.GetAcquisitionTimings()
         logger.debug(str(expTime) + " " + str(accTime) + " " + str(kTime))
-        
+
         return "timings"
 
     def verticalSpeedStats(self, index):
@@ -454,7 +443,6 @@ class Evora(object):
         """
         logger.debug("GetNumberHSSpeeds: " + str(andor.GetNumberHSSpeeds(channel, type)))
         logger.debug("GetHSSpeed: " + str(andor.GetHSSpeed(channel, type, index)))
-
 
     def abort(self):
         """
@@ -474,7 +462,7 @@ class Evora(object):
         imType, binning, itime, filter = attributes[0], attributes[1], attributes[2], attributes[3]
         # make new fits header object
         header = fits.Header()
-        ut_time = time.gmtime() # get UT time
+        ut_time = time.gmtime()  # get UT time
         dateObs = time.strftime("%Y-%m-%dT%H:%M:%S", ut_time)
         ut_str = time.strftime("%H:%M:%S", ut_time)
         header.append(card=("DATE-OBS", dateObs, "Time at start of exposure"))
@@ -507,7 +495,7 @@ class Evora(object):
         imType, binning, itime, filter = attributes[0], attributes[1], attributes[2], attributes[3]
         # make new fits header object
         header = fits.Header()
-        ut_time = time.gmtime() # get UT time
+        ut_time = time.gmtime()  # get UT time
         dateObs = time.strftime("%Y-%m-%dT%H:%M:%S", ut_time)
         ut_str = time.strftime("%H:%M:%S", ut_time)
         header.append(card=("DATE-OBS", dateObs, "Time at start of exposure"))
@@ -531,12 +519,12 @@ class Evora(object):
         header.append(card=("READTIME", readTime, "Pixel readout time"))
 
         # NEEDED header keywords
-        #Done# RA / Right Ascension
-        #Done# DEC / Declination
-        #Done# EPOCH / Epoch for RA and Dec (years)
-        #Done# ST / local sidereal time (hours)
-        #Done# HA / Hour Angle
-        #Done# ZD / Zenith Angle
+        # Done RA / Right Ascension
+        # Done DEC / Declination
+        # Done EPOCH / Epoch for RA and Dec (years)
+        # Done ST / local sidereal time (hours)
+        # Done HA / Hour Angle
+        # Done ZD / Zenith Angle
         # AIRMASS
         # UTMIDDLE
         # JD
@@ -552,11 +540,11 @@ class Evora(object):
                     ra, dec, epoch, lst, ha, za = results
 
                     airmass = 1.0 / np.cos(np.radians(za))
-                    #airmass = 1.0 / np.sin(np.radians((90-za) + 244/(165+47*(90-za)**1.1)))
+                    # airmass = 1.0 / np.sin(np.radians((90-za) + 244/(165+47*(90-za)**1.1)))
 
                     astroTime = Time(dateObs, scale='utc')
                     print("FROM HEIMDALL LOGS:", results)
-                    
+
                     header.append(card=("RA", ra, "Right Ascension"))
                     header.append(card=("DEC", dec, "Declination"))
                     header.append(card=("EPOCH", epoch, "Epoch for RA and Dec (years)"))
@@ -566,11 +554,8 @@ class Evora(object):
                     header.append(card=("AIRMASS", airmass, "Airmass (X = sec z)"))
                     header.append(card=("JD", str(astroTime.jd), "Julian Date"))
                     header.append(card=("MJD", str(astroTime.mjd), "Modified Julian Date"))
-                                  
-                    
-                    
-                    
-        else: # gtcc
+
+        else:   # gtcc
             print("ACCESSING LOG FILES")
             LogfileList = glob.glob("/home/mro/mnt/gtcc"+'/????-??-??T??:??:??')
             print("FOUND %d LOGS" % len(LogfileList))
@@ -579,7 +564,7 @@ class Evora(object):
             if LogfileName is not None:
                 print("LOG FILE NAME:", LogfileName)
                 ra, dec, epoch, lst, ha, za = self.ParseLogfile(LogfileName, ObsTime)
-                print(ra,dec,epoch,lst,ha,za)
+                print(ra, dec, epoch, lst, ha, za)
 
                 header.append(card=("RA", ra, "Right Ascension"))
                 header.append(card=("DEC", dec, "Declination"))
@@ -587,9 +572,8 @@ class Evora(object):
                 header.append(card=("ST", lst, "local sidereal time (hours)"))
                 header.append(card=("HA", ha, "Hour Angle"))
                 header.append(card=("ZD", za, "Zenith Angle"))
-        
-        return header
 
+        return header
 
     def heimdallChooseLogFile(self, logFileList, obsTime):
         """
@@ -605,10 +589,10 @@ class Evora(object):
         string : Returns the path to the log file that corresponds to the obsTime date.
                  OR if an index wasn't found then None is returned.
         """
-        #print(obsTime)
+        # print(obsTime)
         dateFile = str(obsTime.tm_year) + str(obsTime.tm_mon) + str(obsTime.tm_mday) + ".txt"
-        #dateFile = time.strftime("%Y%m%d", obsTime) + ".log"
-        #print(dateFile)
+        # dateFile = time.strftime("%Y%m%d", obsTime) + ".log"
+        # print(dateFile)
 
         logFileList = np.asarray(logFileList)
         files_nopaths = np.asarray([f.split("/")[-1] for f in logFileList])
@@ -635,24 +619,24 @@ class Evora(object):
         tuple : (ra, dec, epoch, lst, ha)
                 If no best time is found then None is returned.
         """
-        log = pd.read_csv(logFile, delim_whitespace=True, header=None, names=['time','ra', 'dec', 'epoch', 'lst', 'za'])
+        log = pd.read_csv(logFile, delim_whitespace=True, header=None, names=['time', 'ra', 'dec', 'epoch', 'lst', 'za'])
 
         # Create array of decimal time values
         times = [time.strptime(curr_time + " UTC", "%Y%m%dT%H:%M:%S %Z") for curr_time in log['time'].values]
         times_deci = np.asarray([time.mktime(t) for t in times])
         obsTime_deci = time.mktime(obsTime)
-        #print(times[0])
-        #print(time.strftime("%Y%m%dT%H:%M:%S %Z",times[0]))
-        #print(times_deci)
-        #print(obsTime_deci)
+        # print(times[0])
+        # print(time.strftime("%Y%m%dT%H:%M:%S %Z",times[0]))
+        # print(times_deci)
+        # print(obsTime_deci)
         dif = times_deci - obsTime_deci
         val = dif[dif <= 0][-1]
 
         try:
             idx = np.where(dif == val)[0][0]
-            #print(dif)
-            #print(idx)
-            #print(dif[idx])
+            # print(dif)
+            # print(idx)
+            # print(dif[idx])
 
             # now that we have the best idx we grab the relevant data
             ra = log['ra'][idx]
@@ -666,7 +650,7 @@ class Evora(object):
             return (ra, dec, epoch, lst, ha, za)
         except IndexError:
             return None
-    
+
     def ChooseLogfile(self, LogfileList, ObsTime):
         """
         Code provided by add_headers v4.1 written by Oliver Frasier
@@ -677,15 +661,15 @@ class Evora(object):
         one made before the exposure.
         """
         nlogs = len(LogfileList)
-        ObsTime = time.mktime(ObsTime) # convert to float representation
-        besttime = -ObsTime # set a start time way in the past
+        ObsTime = time.mktime(ObsTime)  # convert to float representation
+        besttime = -ObsTime  # set a start time way in the past
         bestindex = 0
         for i in range(nlogs):
             # make a time from the logfile name
             LogfileTime = time.mktime(
-                time.strptime(                     
-                  os.path.basename( LogfileList[i] )
-                  +' UTC', "%Y-%m-%dT%H:%M:%S %Z" # this is the format
+                time.strptime(
+                  os.path.basename(LogfileList[i])
+                  + ' UTC', "%Y-%m-%dT%H:%M:%S %Z"  # this is the format
                 )
               )
             # what's the delta between this and the observation
@@ -697,7 +681,7 @@ class Evora(object):
                 besttime = delTime
                 bestindex = i
         # whew! finally got the logfile we want
-        if besttime > -1800: # difference of 30 minutes
+        if besttime > -1800:  # difference of 30 minutes
             return LogfileList[bestindex]
         else:
             return None
@@ -718,14 +702,14 @@ class Evora(object):
         # now we need to find the smallest time increment between
         # Obstime and the time recorded on each line of the logfile
         # we'll read each line in, then compare
-        data = Log.readline().split() 
+        data = Log.readline().split()
         Time = time.strptime(data[0]+' UTC', "%Y-%m-%dT%H:%M:%S %Z")
-        delTime = abs( time.mktime(Time) - time.mktime(ObsTime) )
+        delTime = abs(time.mktime(Time) - time.mktime(ObsTime))
         # move through and compare each line of the logfile
-        for newline in Log:    
+        for newline in Log:
             newdata = newline.split()
-            newTime = time.strptime( newdata[0]+' UTC', "%Y-%m-%dT%H:%M:%S %Z" )
-            newdelTime = abs( time.mktime(newTime) - time.mktime(ObsTime) )
+            newTime = time.strptime(newdata[0]+' UTC', "%Y-%m-%dT%H:%M:%S %Z")
+            newdelTime = abs(time.mktime(newTime) - time.mktime(ObsTime))
             # this newdelTime should be smaller than delTime
             # since we should be moving closer to the right line.
             # if it's not, then we've gone too far
@@ -733,10 +717,9 @@ class Evora(object):
                 break
             delTime = newdelTime
             data = newdata
-        #filter = data[7].rsplit(':',1)[1] # pull out just the filter number
-        return data[1], data[2], data[3], data[4], data[5], data[6]#, filter
-    
-    
+        # filter = data[7].rsplit(':',1)[1] # pull out just the filter number
+        return data[1], data[2], data[3], data[4], data[5], data[6]  # , filter
+
     def expose(self, imType=None, expnum=None, itime=2, binning=1, filter="", readTime=3):
         """
         expNum is deprecated and should be removed.
@@ -750,7 +733,7 @@ class Evora(object):
         else:
             self.num = expnum
 
-        if imType is None: # if the image type is not specified it defaults to object
+        if imType is None:  # if the image type is not specified it defaults to object
             imType = "object"
 
         retval, width, height = andor.GetDetector()
@@ -758,28 +741,28 @@ class Evora(object):
         # print 'SetImage:', andor.SetImage(1,1,1,width,1,height)
         logger.debug('SetReadMode: ' + str(andor.SetReadMode(4)))
         logger.debug('SetAcquisitionMode: ' + str(andor.SetAcquisitionMode(1)))
-        logger.debug('SetImage: ' + str(andor.SetImage(binning,binning,1,width,1,height)))
+        logger.debug('SetImage: ' + str(andor.SetImage(binning, binning, 1, width, 1, height)))
         logger.debug('GetDetector (again): ' + str(andor.GetDetector()))
 
-        if(imType == "bias"):
-            andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
+        if imType == "bias":
+            andor.SetShutter(1, 2, 0, 0)  # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             logger.debug('SetExposureTime: ' + str(andor.SetExposureTime(0)))
         else:
-            if(imType in ['flat', 'object']):
-                andor.SetShutter(1,0,5,5)
+            if imType in ['flat', 'object']:
+                andor.SetShutter(1, 0, 5, 5)
             else:
-                andor.SetShutter(1,2,0,0)
+                andor.SetShutter(1, 2, 0, 0)
             logger.debug('SetExposureTime: ' + str(andor.SetExposureTime(itime)))  # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
 
         # set Readout speeds 0, 1, 2, or 3
-        #print("SetVSSpeed:", andor.SetVSSpeed(3))
+        # print("SetVSSpeed:", andor.SetVSSpeed(3))
         logger.debug("SetHSSpeed: " + str(andor.SetHSSpeed(0, readTime)))  # default readTime is index 3 which is 0.5 MHz or ~6 sec
 
         results, expTime, accTime, kTime = andor.GetAcquisitionTimings()
         logger.debug("Adjusted Exposure Time: " + str([results, expTime, accTime, kTime]))
 
         attributes = [imType, binning, itime, filter]
-        #header = self.getHeader(attributes)
+        # header = self.getHeader(attributes)
         header = self.getHeader_2(attributes, 'heimdall')
 
         logger.debug('StartAcquisition: ' + str(andor.StartAcquisition()))
@@ -794,21 +777,21 @@ class Evora(object):
         result = andor.GetAcquiredData16(data)
 
         success = None
-        if(result == 20002):
-            success = 1 # for true
+        if result == 20002:
+            success = 1  # for true
         else:
-            success = 0 # for false
+            success = 0  # for false
 
         logger.debug(str(result) + 'success={}'.format(result == 20002))
         filename = None
         if success == 1:
-            data = data.reshape(width//binning,height//binning)
+            data = data.reshape(width//binning, height//binning)
             data = np.fliplr(data)
             logger.debug(str(data.shape) + " " + str(data.dtype))
-            hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True, header=header)
-            #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
-            filename = als.getImagePath('expose')
-            hdu.writeto(filename,clobber=True)
+            hdu = fits.PrimaryHDU(data, do_not_scale_image_data=True, uint=True, header=header)
+            # filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
+            filename = fits_utils.get_image_path('expose')
+            hdu.writeto(filename, clobber=True)
             logger.debug("wrote: {}".format(filename))
         elapse_time += time.clock()
         print("Took %.3f seconds." % elapse_time)
@@ -819,103 +802,101 @@ class Evora(object):
         Inputs are the Evora server protocol, the image type, the integration time, and the binning size.
         Runs camera in RunTillAbort mode.
         """
-        #global acquired
-        retval,width,height = andor.GetDetector()
+        # global acquired
+        retval, width, height = andor.GetDetector()
         logger.debug('GetDetector: ' + str(retval) + " " + str(width) + " " + str(height))
 
         logger.debug("SetAcquisitionMode: " + str(andor.SetAcquisitionMode(5)))
         logger.debug('SetReadMode: ' + str(andor.SetReadMode(4)))
 
-        logger.debug('SetImage: ' + str(andor.SetImage(binning,binning,1,width,1,height)))
+        logger.debug('SetImage: ' + str(andor.SetImage(binning, binning, 1, width, 1, height)))
         logger.debug('GetDetector (again): ' + str(andor.GetDetector()))
 
         logger.debug('SetExposureTime: ' + str(andor.SetExposureTime(itime)))
         logger.debug('SetKineticTime: ' + str(andor.SetKineticCycleTime(0)))
 
-
-        if(imType == "bias"):
-            andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
+        if imType == "bias":
+            andor.SetShutter(1, 2, 0, 0)  # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             logger.debug('SetExposureTime: ' + str(andor.SetExposureTime(0)))
         else:
-            if(imType in ['flat', 'object']):
-                andor.SetShutter(1,0,5,5)
+            if imType in ['flat', 'object']:
+                andor.SetShutter(1, 0, 5, 5)
             else:
-                andor.SetShutter(1,2,0,0)
-            logger.debug('SetExposureTime: ' + str(andor.SetExposureTime(itime))) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
-            
+                andor.SetShutter(1, 2, 0, 0)
+            logger.debug('SetExposureTime: ' + str(andor.SetExposureTime(itime)))  # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
+
         data = np.zeros(width//binning*height//binning, dtype='uint16')
         logger.debug("SetHSSpeed: " + str(andor.SetHSSpeed(0, 1)))  # read time on real is fast because they aren't science images
         logger.debug('StartAcquisition: ' + str(andor.StartAcquisition()))
 
-        
         status = andor.GetStatus()
         logger.debug(str(status))
         workingImNum = 1
         start = time.time()
         end = 0
-        while(status[1]==andor.DRV_ACQUIRING):
-           
+        while status[1] == andor.DRV_ACQUIRING:
+
             progress = andor.GetAcquisitionProgress()
-            currImNum = progress[2] # won't update until an acquisition is done
+            currImNum = progress[2]  # won't update until an acquisition is done
             status = andor.GetStatus()
 
-            if(status[1] == andor.DRV_ACQUIRING and currImNum == workingImNum):
+            if status[1] == andor.DRV_ACQUIRING and currImNum == workingImNum:
                 logger.debug("Progress: " + str(andor.GetAcquisitionProgress()))
-                results = andor.GetMostRecentImage16(data) # store image data
-                logger.debug(str(results) + 'success={}'.format(results == 20002)) # print if the results were successful
-                
-                if(results == andor.DRV_SUCCESS): # if the array filled store successfully
-                    data=data.reshape(width//binning,height//binning) # reshape into image
+                results = andor.GetMostRecentImage16(data)  # store image data
+                logger.debug(str(results) + 'success={}'.format(results == 20002))  # print if the results were successful
+
+                if results == andor.DRV_SUCCESS:  # if the array filled store successfully
+                    data = data.reshape(width//binning, height//binning)  # reshape into image
                     logger.debug(str(data.shape) + " " + str(data.dtype))
-                    hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
-                    #filename = time.strftime('/tmp/image_%Y%m%d_%H%M%S.fits') 
-                    filename = als.getImagePath('real')
-                    hdu.writeto(filename,clobber=True)
+                    hdu = fits.PrimaryHDU(data, do_not_scale_image_data=True, uint=True)
+                    # filename = time.strftime('/tmp/image_%Y%m%d_%H%M%S.fits')
+                    filename = fits_utils.get_image_path('real')
+                    hdu.writeto(filename, clobber=True)
                     logger.debug("wrote: {}".format(filename))
                     data = np.zeros(width//binning*height//binning, dtype='uint16')
 
                     protocol.sendData("realSent %s" % filename)
-                    #print("Sending", "realSent%d" % (workingImNum))
+                    # print("Sending", "realSent%d" % (workingImNum))
                     workingImNum += 1
                     end = time.time()
                     logger.debug("Took %f seconds" % (end-start))
                     start = time.time()
 
-        return "real 1" # exits with 1 for success
+        return "real 1"  # exits with 1 for success
 
     def kseriesExposure(self, protocol, imType, itime, filter="", readTime=3, numexp=1, binning=1, numAccum=1, accumCycleTime=0, kCycleTime=0):
         """
         This handles multiple image acquisition using the camera kinetic series capability.  The basic arguements are
         the passed in protocol, the image type, integration time, filter type, readout index, number of exposures, and binning type.
 
-        In the future this function could be modified to include accumulations or add time the kinetic cycle time.  Accumulations 
+        In the future this function could be modified to include accumulations or add time the kinetic cycle time.  Accumulations
         are how many images should be readout as one, and kCycleTime can add time between each exposure that is taken.
         """
         global isAborted
         isAborted = False
-        retval,width,height = andor.GetDetector()
+        retval, width, height = andor.GetDetector()
         logger.debug('GetDetector: ' + str(retval) + " " + str(width) + " " + str(height))
 
         logger.debug("SetAcquisitionMode: " + str(andor.SetAcquisitionMode(3)))
         logger.debug('SetReadMode: ' + str(andor.SetReadMode(4)))
 
-        logger.debug('SetImage: ' + str(andor.SetImage(binning,binning,1,width,1,height)))
+        logger.debug('SetImage: ' + str(andor.SetImage(binning, binning, 1, width, 1, height)))
         logger.debug('GetDetector (again): ' + str(andor.GetDetector()))
 
-        if(imType == "bias"):
+        if imType == "bias":
             itime = 0
-            andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
+            andor.SetShutter(1, 2, 0, 0)  # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             logger.debug('SetExposureTime: ' + str(andor.SetExposureTime(0)))
         else:
-            if(imType in ['flat', 'object']):
-                andor.SetShutter(1,0,5,5)
+            if imType in ['flat', 'object']:
+                andor.SetShutter(1, 0, 5, 5)
             else:
-                andor.SetShutter(1,2,0,0)
-            logger.debug('SetExposureTime: ' + str(andor.SetExposureTime(itime))) # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
+                andor.SetShutter(1, 2, 0, 0)
+            logger.debug('SetExposureTime: ' + str(andor.SetExposureTime(itime)))  # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
 
-        logger.debug("SetNumberOfAccumulations: " + str(andor.SetNumberAccumulations(numAccum))) # number of exposures to be combined
+        logger.debug("SetNumberOfAccumulations: " + str(andor.SetNumberAccumulations(numAccum)))  # number of exposures to be combined
         logger.debug("SetAccumulationTime: " + str(andor.SetAccumulationCycleTime(accumCycleTime)))
-        logger.debug("SetNumberOfKinetics: " + str(andor.SetNumberKinetics(numexp))) # this is the number of exposures the user wants
+        logger.debug("SetNumberOfKinetics: " + str(andor.SetNumberKinetics(numexp)))  # this is the number of exposures the user wants
         logger.debug('SetKineticTime: ' + str(andor.SetKineticCycleTime(accumCycleTime)))
         logger.debug("SetTriggerMode: " + str(andor.SetTriggerMode(0)))
 
@@ -925,9 +906,9 @@ class Evora(object):
 
         # write headers
         attributes = [imType, binning, itime, filter]
-        #header = self.getHeader(attributes)
+        # header = self.getHeader(attributes)
         header = self.getHeader_2(attributes, 'heimdall')
-        
+
         logger.debug('StartAcquisition: ' + str(andor.StartAcquisition()))
 
         status = andor.GetStatus()
@@ -936,35 +917,35 @@ class Evora(object):
         imageAcquired = False
 
         counter = 1
-        while(status[1] == andor.DRV_ACQUIRING):
+        while status[1] == andor.DRV_ACQUIRING:
             status = andor.GetStatus()
             progress = andor.GetAcquisitionProgress()
 
             runtime = 0
-            if(progress[2] == counter or (not isAborted and progress[2] == 0 and imageAcquired)):
+            if progress[2] == counter or (not isAborted and progress[2] == 0 and imageAcquired):
                 runtime -= time.clock()
                 data = np.zeros(width//binning*height//binning, dtype='uint16')  # reserve room for image
                 results = andor.GetMostRecentImage16(data)  # store image data
                 logger.debug(str(results) + " " + 'success={}'.format(results == 20002))  # print if the results were successful
                 logger.debug('image number: ' + str(progress[2]))
 
-                if(results == andor.DRV_SUCCESS):  # if the array filled store successfully
-                    data=data.reshape(width//binning,height//binning)  # reshape into image
+                if results == andor.DRV_SUCCESS:  # if the array filled store successfully
+                    data = data.reshape(width//binning, height//binning)  # reshape into image
                     logger.debug(str(data.shape) + " " + str(data.dtype))
-                    
-                    hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True, header=header)
-                    #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
-                    filename = als.getImagePath('series')
-                    hdu.writeto(filename,clobber=True)
+
+                    hdu = fits.PrimaryHDU(data, do_not_scale_image_data=True, uint=True, header=header)
+                    # filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
+                    filename = fits_utils.get_image_path('series')
+                    hdu.writeto(filename, clobber=True)
 
                     logger.debug("wrote: {}".format(filename))
-                    
+
                     protocol.sendData("seriesSent"+str(counter)+" "+str(counter)+","+str(itime)+","+filename)
                     # make a new header and write time to it for new exposure.
-                    #header = self.getHeader(attributes)
+                    # header = self.getHeader(attributes)
                     header = self.getHeader_2(attributes, 'heimdall')
 
-                    if(counter == numexp):
+                    if counter == numexp:
                         logger.info("entered abort")
                         isAborted = True
 
@@ -972,17 +953,16 @@ class Evora(object):
                     counter += 1
                 runtime += time.clock()
                 logger.debug("Took %f seconds to write." % runtime)
-        return "series 1,"+str(counter) # exits with 1 for success
-
+        return "series 1,"+str(counter)  # exits with 1 for success
 
     # deprecated to kseriesExposure
     """
     def seriesExposure(self, protocol, imType, itime, numexp=1, binning=1):
         global isAborted
         isAborted = False
-        
+
         This will start and exposure, likely the run till abort setting, and keep reading out images for the specified time.
-        
+
         retval,width,height = andor.GetDetector()
         print('GetDetector:', retval,width,height)
 
@@ -995,7 +975,7 @@ class Evora(object):
         print('SetExposureTime:', andor.SetExposureTime(itime))
         print('SetKineticTime:', andor.SetKineticCycleTime(0))
 
-        if(imType == "bias"):
+        if imType == "bias":
             itime = 0
             andor.SetShutter(1,2,0,0) # TLL mode high, shutter mode Permanently Closed, 0 millisec open/close
             print('SetExposureTime:', andor.SetExposureTime(0))
@@ -1011,28 +991,28 @@ class Evora(object):
 
         print(status)
         counter = 1
-        
-        while(status[1]==andor.DRV_ACQUIRING and counter <= numexp):
+
+        while status[1]==andor.DRV_ACQUIRING and counter <= numexp:
             status = andor.GetStatus()
-            
+
             progress = andor.GetAcquisitionProgress()
             status = andor.GetStatus()
 
-            if(status[1] == andor.DRV_ACQUIRING and progress[2] == counter):
+            if status[1] == andor.DRV_ACQUIRING and progress[2] == counter:
                 results = andor.GetMostRecentImage16(data) # store image data
                 print(results, 'success={}'.format(results == 20002)) # print if the results were successful
-                
-                if(results == andor.DRV_SUCCESS): # if the array filled store successfully
+
+                if results == andor.DRV_SUCCESS: # if the array filled store successfully
                     data=data.reshape(width/binning,height/binning) # reshape into image
                     print(data.shape,data.dtype)
 
                     hdu = fits.PrimaryHDU(data,do_not_scale_image_data=True,uint=True)
-                    #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits') 
-                    filename = als.getImagePath('series')
+                    #filename = time.strftime('/data/forTCC/image_%Y%m%d_%H%M%S.fits')
+                    filename = fits_utils.get_image_path('series')
                     hdu.writeto(filename,clobber=True)
 
                     print("wrote: {}".format(filename))
-                    
+
                     protocol.sendData("seriesSent"+str(counter)+" "+str(counter)+","+itime+","+filename)
 
                 counter += 1
@@ -1040,7 +1020,7 @@ class Evora(object):
         return "series 1,"+str(counter) # exits with 1 for success
     """
 
-    
+
 class Logger(object):
     """
     This class when assigned to sys.stdout or sys.stderr it will write to a file that is opened everytime a new GUI session is started.
@@ -1052,12 +1032,14 @@ class Logger(object):
     def write(self, message):
         self.terminal.flush()
         self.terminal.write(message)
-        logFile.write(self.stamp() + message) # This prints weirdly but works for now
+        logFile.write(self.stamp() + message)  # This prints weirdly but works for now
 
     def stamp(self):
         d = datetime.today()
         string = d.strftime(" [%b %m, %y, %H:%M:%S] ")
         return string
+
+
 """
 class FTPThread(threading.Thread):
     def __init__(self):
@@ -1068,12 +1050,15 @@ class FTPThread(threading.Thread):
         p = Portal(FTPRealm("/home/mro/storage/evora_data/"), [AllowAnonymousAccess()])
         f = FTPFactory(p)
         f.timeOut = None
-        reactor.listenTCP(als.FTP_TRANSFER_PORT, f)
+        reactor.listenTCP(netconsts.FTP_TRANSFER_PORT, f)
 """
+
+
 class FilterThread(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
-        self.on = True # This handles whether the Filter Server is gets shutdown on or not
+        self.on = True  # This handles whether the Filter Server is gets shutdown on or not
+
     def run(self):
         print("Starting server")
         server_pipe = subprocess.Popen('ssh -xtt mro@192.168.1.30', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -1085,41 +1070,43 @@ class FilterThread(threading.Thread):
         server_pipe.wait()
         time.sleep(10)
 
+
 def kill(sig, frame):
     os.killpg(os.getpgid(ftp_server.pid), signal.SIGKILL)
     reactor.stop()
     os._exit(1)
-    #sys.exit(1)
-        
+    # sys.exit(1)
+
+
 if __name__ == "__main__":
     filter_server = None
     try:
-        #sys.stdout = Logger(sys.stdout)
-        #sys.stderr = Logger(sys.stderr)
+        # sys.stdout = Logger(sys.stdout)
+        # sys.stderr = Logger(sys.stderr)
 
-        #ep = Evora()
-        #ep.startup()
+        # ep = Evora()
+        # ep.startup()
 
         signal.signal(signal.SIGINT, kill)
-        
+
         reactor.suggestThreadPoolSize(30)
-        reactor.listenTCP(als.CAMERA_PORT, EvoraClient())
+        reactor.listenTCP(netconsts.CAMERA_PORT, EvoraClient())
 
         ftp_server = subprocess.Popen("./evora_ftp_server.py", shell=True, preexec_fn=os.setsid)
-        
-        # Once the camera server starts start the ftp server
-        #ftp_server = FTPThread()
-        #ftp_server.daemon = True
-        #ftp_server.run()
 
-        #filter_server = FilterThread()
-        #filter_server.daemon = True
-        #filter_server.start()
-        #print("Server ready.")
+        # Once the camera server starts start the ftp server
+        # ftp_server = FTPThread()
+        # ftp_server.daemon = True
+        # ftp_server.run()
+
+        # filter_server = FilterThread()
+        # filter_server.daemon = True
+        # filter_server.start()
+        # print("Server ready.")
         reactor.run()
     except KeyboardInterrupt:
-        #os.killpg(os.getpgid(ftp_server.pid), signal.SIGKILL)
-        #filter_server.on = False
-        #filter_server.stop()
-        #sys.exit(0)
+        # os.killpg(os.getpgid(ftp_server.pid), signal.SIGKILL)
+        # filter_server.on = False
+        # filter_server.stop()
+        # sys.exit(0)
         print("Hello")
