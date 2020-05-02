@@ -1,1 +1,1 @@
-TelescopePi runs the TelescopeServer, which recieves messages from Bifrost via twisted and communicates to the filter wheel on the telescope.
+TelescopePi runs the TelescopeServer, which recieves messages from Evora and commands the filter wheel.
