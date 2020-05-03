@@ -1,1 +1,0 @@
-cmd_/home/tristan/AUEG/ScienceCamera/src/driver/andordrvlx.ko := ld -r -m elf_x86_64 -T /usr/src/linux-headers-3.13.0-85-generic/scripts/module-common.lds --build-id  -o /home/tristan/AUEG/ScienceCamera/src/driver/andordrvlx.ko /home/tristan/AUEG/ScienceCamera/src/driver/andordrvlx.o /home/tristan/AUEG/ScienceCamera/src/driver/andordrvlx.mod.o

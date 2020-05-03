@@ -1,1 +1,0 @@
-rm -rf *.o *.ko *.mod.* .*.cmd

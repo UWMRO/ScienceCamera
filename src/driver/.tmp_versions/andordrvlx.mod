@@ -1,2 +1,0 @@
-/home/tristan/AUEG/ScienceCamera/src/driver/andordrvlx.ko
-/home/tristan/AUEG/ScienceCamera/src/driver/ioctl.o /home/tristan/AUEG/ScienceCamera/src/driver/amcc.o /home/tristan/AUEG/ScienceCamera/src/driver/andor.o /home/tristan/AUEG/ScienceCamera/src/driver/drvmain.o /home/tristan/AUEG/ScienceCamera/src/driver/andor_isr.o /home/tristan/AUEG/ScienceCamera/src/driver/vmops.o /home/tristan/AUEG/ScienceCamera/src/driver/pld.o

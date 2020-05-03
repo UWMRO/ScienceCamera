@@ -1,4 +1,0 @@
-#experimental stuff
-ATTRS{idVendor}=="136e", ATTRS{idProduct}=="0017", MODE="0666"
-ATTRS{idVendor}=="0abf", ATTRS{idProduct}=="03ed", MODE="0666"
-ATTRS{idVendor}=="0403", ATTRS{idProduct}=="d493", MODE="0666"
