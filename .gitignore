@@ -8,3 +8,6 @@ __pycache__/
 
 # Remove virtualenv directory
 venv/
+
+# Remove python packaging things
+*.egg-info

@@ -1,0 +1,3845 @@
+[03:38:58]Connect command pressed
+[Jul 07, 16, 03:38:58] Connection made to E. server on port 5502
+[Jul 07, 16, 03:38:58] Receieved from E. server: status 20075,-952132416
+
+[Jul 07, 16, 03:38:58] 20075,-952132416 Startup callback entered
+('[Jul 07, 16, 03:38:58] key from post:', 'status')
+('[Jul 07, 16, 03:38:58] Stats in log:', ['20075'])
+[Jul 07, 16, 03:38:58] entered logMethod
+[03:38:58]logging from exposure class
+[Jul 07, 16, 03:38:58] status from connect callback 20075
+[Jul 07, 16, 03:38:58] Sent to E. server: connect
+[Jul 07, 16, 03:39:02] Receieved from E. server: connect 20002
+
+('[Jul 07, 16, 03:39:02] key from post:', 'connect')
+('[Jul 07, 16, 03:39:02] Stats in log:', ['20002'])
+[Jul 07, 16, 03:39:02] entered logMethod
+[03:39:02]logging from exposure class
+[Jul 07, 16, 03:39:02] Sent to E. server: temp[Jul 07, 16, 03:39:02] Started up from callStartup method
+
+[Jul 07, 16, 03:39:02] Receieved from E. server: temp 20034,20002,18.7520008087,26.5400009155,295.09677124,0.0
+
+[Jul 07, 16, 03:39:12] Sent to E. server: temp
+[Jul 07, 16, 03:39:12] Receieved from E. server: temp 20034,20002,18.7520008087,26.5400009155,295.09677124,0.0
+
+[Jul 07, 16, 03:39:22] Sent to E. server: temp
+[Jul 07, 16, 03:39:22] Receieved from E. server: temp 20034,20002,19.4009990692,26.5400009155,295.09677124,0.0
+
+[Jul 07, 16, 03:39:32] Sent to E. server: temp
+[Jul 07, 16, 03:39:32] Receieved from E. server: temp 20034,20002,19.4009990692,26.5400009155,295.09677124,0.0
+
+[Jul 07, 16, 03:39:39] -80.0
+[Jul 07, 16, 03:39:39] entered log
+[Jul 07, 16, 03:39:39] logging from temperature class
+[Jul 07, 16, 03:39:39] Sent to E. server: setTEC -80
+[Jul 07, 16, 03:39:39] Receieved from E. server: setTEC -80
+
+('[Jul 07, 16, 03:39:39] key from post:', 'setTEC')
+('[Jul 07, 16, 03:39:39] Stats in log:', ['-80'])
+[Jul 07, 16, 03:39:39] entered log
+[Jul 07, 16, 03:39:39] logging from temperature class
+[Jul 07, 16, 03:39:39] Cooling to: -80
+[Jul 07, 16, 03:39:42] Sent to E. server: temp
+[Jul 07, 16, 03:39:42] Receieved from E. server: temp 20037,20002,19.4009990692,-79.8960037231,299.8387146,0.0
+
+[Jul 07, 16, 03:39:49] Real Time
+[Jul 07, 16, 03:39:50] Object
+[Jul 07, 16, 03:39:52] Sent to E. server: temp
+[Jul 07, 16, 03:39:52] Receieved from E. server: temp 20037,20002,17.454000473,-79.8960037231,301.419342041,0.0
+
+[Jul 07, 16, 03:40:02] Sent to E. server: temp
+[Jul 07, 16, 03:40:02] Receieved from E. server: temp 20037,20002,13.5600004196,-79.8960037231,306.1612854,0.0
+
+[Jul 07, 16, 03:40:12] Sent to E. server: temp
+[Jul 07, 16, 03:40:12] Receieved from E. server: temp 20037,20002,7.71899986267,-79.8960037231,310.90322876,0.0
+
+[Jul 07, 16, 03:40:22] Sent to E. server: temp
+[Jul 07, 16, 03:40:22] Receieved from E. server: temp 20037,20002,1.87800002098,-80.5449981689,314.06451416,0.0
+
+[Jul 07, 16, 03:40:32] Sent to E. server: temp
+[Jul 07, 16, 03:40:32] Receieved from E. server: temp 20037,20002,-4.61199998856,-80.5449981689,315.645172119,0.0
+
+[Jul 07, 16, 03:40:42] Sent to E. server: temp
+[Jul 07, 16, 03:40:42] Receieved from E. server: temp 20037,20002,-10.4530000687,-80.5449981689,317.225799561,0.0
+
+[Jul 07, 16, 03:40:52] Sent to E. server: temp
+[Jul 07, 16, 03:40:52] Receieved from E. server: temp 20037,20002,-16.2940006256,-80.5449981689,320.387084961,0.0
+
+[Jul 07, 16, 03:41:02] Sent to E. server: temp
+[Jul 07, 16, 03:41:02] Receieved from E. server: temp 20037,20002,-22.1350002289,-80.5449981689,320.387084961,0.0
+
+[Jul 07, 16, 03:41:12] Sent to E. server: temp
+[Jul 07, 16, 03:41:12] Receieved from E. server: temp 20037,20002,-27.3269996643,-80.5449981689,320.387084961,0.0
+
+[Jul 07, 16, 03:41:22] Sent to E. server: temp
+[Jul 07, 16, 03:41:22] Receieved from E. server: temp 20037,20002,-31.8700008392,-80.5449981689,321.96774292,0.0
+
+[Jul 07, 16, 03:41:32] Sent to E. server: temp
+[Jul 07, 16, 03:41:32] Receieved from E. server: temp 20037,20002,-36.4129981995,-80.5449981689,321.96774292,0.0
+
+[Jul 07, 16, 03:41:42] Sent to E. server: temp
+[Jul 07, 16, 03:41:42] Receieved from E. server: temp 20037,20002,-40.3069992065,-80.5449981689,321.96774292,0.0
+
+[Jul 07, 16, 03:41:52] Sent to E. server: temp
+[Jul 07, 16, 03:41:52] Receieved from E. server: temp 20037,20002,-44.8499984741,-80.5449981689,321.96774292,0.0
+
+[Jul 07, 16, 03:42:02] Sent to E. server: temp
+[Jul 07, 16, 03:42:02] Receieved from E. server: temp 20037,20002,-48.0950012207,-80.5449981689,321.96774292,0.0
+
+[Jul 07, 16, 03:42:12] Sent to E. server: temp
+[Jul 07, 16, 03:42:12] Receieved from E. server: temp 20037,20002,-51.9889984131,-80.5449981689,321.96774292,0.0
+
+[Jul 07, 16, 03:42:22] Sent to E. server: temp
+[Jul 07, 16, 03:42:22] Receieved from E. server: temp 20037,20002,-55.2340011597,-80.5449981689,321.96774292,0.0
+
+[Jul 07, 16, 03:42:32] Sent to E. server: temp
+[Jul 07, 16, 03:42:32] Receieved from E. server: temp 20037,20002,-58.4790000916,-80.5449981689,321.96774292,0.0
+
+[Jul 07, 16, 03:42:42] Sent to E. server: temp
+[Jul 07, 16, 03:42:42] Receieved from E. server: temp 20037,20002,-61.0750007629,-80.5449981689,321.96774292,0.0
+
+[Jul 07, 16, 03:42:52] Sent to E. server: temp
+[Jul 07, 16, 03:42:52] Receieved from E. server: temp 20037,20002,-64.3199996948,-80.5449981689,321.96774292,0.0
+
+[Jul 07, 16, 03:43:02] Sent to E. server: temp
+[Jul 07, 16, 03:43:02] Receieved from E. server: temp 20037,20002,-66.266998291,-80.5449981689,321.96774292,0.0
+
+[Jul 07, 16, 03:43:12] Sent to E. server: temp
+[Jul 07, 16, 03:43:12] Receieved from E. server: temp 20037,20002,-68.8629989624,-80.5449981689,321.96774292,0.0
+
+[Jul 07, 16, 03:43:22] Sent to E. server: temp
+[Jul 07, 16, 03:43:22] Receieved from E. server: temp 20037,20002,-70.8099975586,-80.5449981689,321.96774292,0.0
+
+[Jul 07, 16, 03:43:32] Sent to E. server: temp
+[Jul 07, 16, 03:43:32] Receieved from E. server: temp 20037,20002,-72.108001709,-80.5449981689,323.548400879,0.0
+
+[Jul 07, 16, 03:43:42] Sent to E. server: temp
+[Jul 07, 16, 03:43:42] Receieved from E. server: temp 20037,20002,-74.7040023804,-80.5449981689,323.548400879,0.0
+
+[Jul 07, 16, 03:43:52] Sent to E. server: temp
+[Jul 07, 16, 03:43:52] Receieved from E. server: temp 20037,20002,-76.0019989014,-80.5449981689,323.548400879,0.0
+
+[Jul 07, 16, 03:44:02] Sent to E. server: temp
+[Jul 07, 16, 03:44:02] Receieved from E. server: temp 20037,20002,-77.3000030518,-80.5449981689,323.548400879,0.0
+
+[Jul 07, 16, 03:44:13] Sent to E. server: temp
+[Jul 07, 16, 03:44:13] Receieved from E. server: temp 20035,20002,-79.2470016479,-80.5449981689,323.548400879,0.0
+
+[Jul 07, 16, 03:44:23] Sent to E. server: temp
+[Jul 07, 16, 03:44:23] Receieved from E. server: temp 20035,20002,-79.8960037231,-80.5449981689,323.548400879,0.0
+
+[Jul 07, 16, 03:44:33] Sent to E. server: temp
+[Jul 07, 16, 03:44:33] Receieved from E. server: temp 20035,20002,-81.1940002441,-80.5449981689,323.548400879,0.0
+
+[Jul 07, 16, 03:44:43] Sent to E. server: temp
+[Jul 07, 16, 03:44:43] Receieved from E. server: temp 20035,20002,-81.8430023193,-80.5449981689,323.548400879,0.0
+
+[Jul 07, 16, 03:44:53] Sent to E. server: temp
+[Jul 07, 16, 03:44:53] Receieved from E. server: temp 20037,20002,-83.1409988403,-80.5449981689,323.548400879,0.0
+
+[Jul 07, 16, 03:45:03] Sent to E. server: temp
+[Jul 07, 16, 03:45:03] Receieved from E. server: temp 20037,20002,-83.1409988403,-80.5449981689,325.12902832,0.0
+
+[Jul 07, 16, 03:45:13] Sent to E. server: temp
+[Jul 07, 16, 03:45:13] Receieved from E. server: temp 20037,20002,-83.7900009155,-80.5449981689,325.12902832,0.0
+
+[Jul 07, 16, 03:45:23] Sent to E. server: temp
+[Jul 07, 16, 03:45:23] Receieved from E. server: temp 20037,20002,-83.1409988403,-80.5449981689,326.709686279,0.0
+
+[Jul 07, 16, 03:45:33] Sent to E. server: temp
+[Jul 07, 16, 03:45:33] Receieved from E. server: temp 20037,20002,-83.1409988403,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:45:43] Sent to E. server: temp
+[Jul 07, 16, 03:45:43] Receieved from E. server: temp 20035,20002,-82.4919967651,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:45:53] Sent to E. server: temp
+[Jul 07, 16, 03:45:53] Receieved from E. server: temp 20035,20002,-81.8430023193,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:45:59] from attributes filter is: 
+[Jul 07, 16, 03:45:59] entered log
+[Jul 07, 16, 03:45:59] logging from exposure class
+[Jul 07, 16, 03:45:59] Sent to E. server: real object 1 1 2 3
+[Jul 07, 16, 03:46:02] Receieved from E. server: realSent /tmp/image_2016718_3462_230713.fits
+
+[Jul 07, 16, 03:46:02] current slider value 60
+[Jul 07, 16, 03:46:02] Opening image window.
+[Jul 07, 16, 03:46:03] Sent to E. server: temp
+[Jul 07, 16, 03:46:03] Receieved from E. server: temp 20035,20002,-81.8430023193,-80.5449981689,329.87097168,0.0
+
+[Jul 07, 16, 03:46:03] Receieved from E. server: realSent /tmp/image_2016718_3463_399523.fits
+
+[Jul 07, 16, 03:46:04] Receieved from E. server: realSent /tmp/image_2016718_3464_568211.fits
+
+[Jul 07, 16, 03:46:05] Receieved from E. server: realSent /tmp/image_2016718_3465_737015.fits
+
+[Jul 07, 16, 03:46:06] Receieved from E. server: realSent /tmp/image_2016718_3466_905846.fits
+
+[Jul 07, 16, 03:46:08] Receieved from E. server: realSent /tmp/image_2016718_3468_74566.fits
+
+[Jul 07, 16, 03:46:09] Receieved from E. server: realSent /tmp/image_2016718_3469_243303.fits
+
+[Jul 07, 16, 03:46:10] Receieved from E. server: realSent /tmp/image_2016718_34610_412095.fits
+
+[Jul 07, 16, 03:46:11] Receieved from E. server: realSent /tmp/image_2016718_34611_580966.fits
+
+[Jul 07, 16, 03:46:12] Receieved from E. server: realSent /tmp/image_2016718_34612_749683.fits
+
+[Jul 07, 16, 03:46:13] Sent to E. server: temp
+[Jul 07, 16, 03:46:13] Receieved from E. server: temp 20035,20002,-81.8430023193,-80.5449981689,329.87097168,0.0
+
+[Jul 07, 16, 03:46:13] Receieved from E. server: realSent /tmp/image_2016718_34613_918463.fits
+
+[Jul 07, 16, 03:46:15] Receieved from E. server: realSent /tmp/image_2016718_34615_87178.fits
+
+[Jul 07, 16, 03:46:16] Receieved from E. server: realSent /tmp/image_2016718_34616_255930.fits
+
+[Jul 07, 16, 03:46:17] Receieved from E. server: realSent /tmp/image_2016718_34617_424648.fits
+
+[Jul 07, 16, 03:46:18] Receieved from E. server: realSent /tmp/image_2016718_34618_593526.fits
+
+[Jul 07, 16, 03:46:19] Receieved from E. server: realSent /tmp/image_2016718_34619_762309.fits
+
+[Jul 07, 16, 03:46:20] Receieved from E. server: realSent /tmp/image_2016718_34620_931101.fits
+
+[Jul 07, 16, 03:46:22] Receieved from E. server: realSent /tmp/image_2016718_34622_99781.fits
+
+[Jul 07, 16, 03:46:23] Sent to E. server: temp
+[Jul 07, 16, 03:46:23] Receieved from E. server: temp 20035,20002,-81.8430023193,-80.5449981689,329.87097168,0.0
+
+[Jul 07, 16, 03:46:23] Receieved from E. server: realSent /tmp/image_2016718_34623_276972.fits
+
+[Jul 07, 16, 03:46:24] Receieved from E. server: realSent /tmp/image_2016718_34624_437364.fits
+
+[Jul 07, 16, 03:46:25] Receieved from E. server: realSent /tmp/image_2016718_34625_606085.fits
+
+[Jul 07, 16, 03:46:26] Receieved from E. server: realSent /tmp/image_2016718_34626_774787.fits
+
+[Jul 07, 16, 03:46:27] Receieved from E. server: realSent /tmp/image_2016718_34627_943599.fits
+
+[Jul 07, 16, 03:46:29] Receieved from E. server: realSent /tmp/image_2016718_34629_112420.fits
+
+[Jul 07, 16, 03:46:30] Receieved from E. server: realSent /tmp/image_2016718_34630_281115.fits
+
+[Jul 07, 16, 03:46:31] Receieved from E. server: realSent /tmp/image_2016718_34631_449996.fits
+
+[Jul 07, 16, 03:46:32] Receieved from E. server: realSent /tmp/image_2016718_34632_618639.fits
+
+[Jul 07, 16, 03:46:33] Sent to E. server: temp
+[Jul 07, 16, 03:46:33] Receieved from E. server: temp 20035,20002,-81.8430023193,-80.5449981689,329.87097168,0.0
+
+[Jul 07, 16, 03:46:33] Receieved from E. server: realSent /tmp/image_2016718_34633_787413.fits
+
+[Jul 07, 16, 03:46:34] Receieved from E. server: realSent /tmp/image_2016718_34634_956171.fits
+
+[Jul 07, 16, 03:46:36] Receieved from E. server: realSent /tmp/image_2016718_34636_124858.fits
+
+[Jul 07, 16, 03:46:37] Receieved from E. server: realSent /tmp/image_2016718_34637_293835.fits
+
+[Jul 07, 16, 03:46:38] Receieved from E. server: realSent /tmp/image_2016718_34638_462597.fits
+
+[Jul 07, 16, 03:46:39] Receieved from E. server: realSent /tmp/image_2016718_34639_631402.fits
+
+[Jul 07, 16, 03:46:40] Receieved from E. server: realSent /tmp/image_2016718_34640_799957.fits
+
+[Jul 07, 16, 03:46:41] Receieved from E. server: realSent /tmp/image_2016718_34641_968948.fits
+
+[Jul 07, 16, 03:46:43] Sent to E. server: temp
+[Jul 07, 16, 03:46:43] Receieved from E. server: temp 20035,20002,-81.1940002441,-80.5449981689,329.87097168,0.0
+
+[Jul 07, 16, 03:46:43] Receieved from E. server: realSent /tmp/image_2016718_34643_145567.fits
+
+[Jul 07, 16, 03:46:44] Receieved from E. server: realSent /tmp/image_2016718_34644_306355.fits
+
+[Jul 07, 16, 03:46:45] Receieved from E. server: realSent /tmp/image_2016718_34645_475046.fits
+
+[Jul 07, 16, 03:46:46] Receieved from E. server: realSent /tmp/image_2016718_34646_643817.fits
+
+[Jul 07, 16, 03:46:47] Receieved from E. server: realSent /tmp/image_2016718_34647_812630.fits
+
+[Jul 07, 16, 03:46:48] Receieved from E. server: realSent /tmp/image_2016718_34648_981357.fits
+
+[Jul 07, 16, 03:46:50] Receieved from E. server: realSent /tmp/image_2016718_34650_150280.fits
+
+[Jul 07, 16, 03:46:51] Receieved from E. server: realSent /tmp/image_2016718_34651_319030.fits
+
+[Jul 07, 16, 03:46:52] Receieved from E. server: realSent /tmp/image_2016718_34652_487648.fits
+
+[Jul 07, 16, 03:46:53] Sent to E. server: temp
+[Jul 07, 16, 03:46:53] Receieved from E. server: temp 20035,20002,-81.1940002441,-80.5449981689,329.87097168,0.0
+
+[Jul 07, 16, 03:46:53] Receieved from E. server: realSent /tmp/image_2016718_34653_656534.fits
+
+[Jul 07, 16, 03:46:54] Receieved from E. server: realSent /tmp/image_2016718_34654_825118.fits
+
+[Jul 07, 16, 03:46:55] Receieved from E. server: realSent /tmp/image_2016718_34655_994090.fits
+
+[Jul 07, 16, 03:46:57] Receieved from E. server: realSent /tmp/image_2016718_34657_162664.fits
+
+[Jul 07, 16, 03:46:58] Receieved from E. server: realSent /tmp/image_2016718_34658_331542.fits
+
+[Jul 07, 16, 03:46:59] Receieved from E. server: realSent /tmp/image_2016718_34659_500285.fits
+
+[Jul 07, 16, 03:47:00] Receieved from E. server: realSent /tmp/image_2016718_3470_668975.fits
+
+[Jul 07, 16, 03:47:01] Receieved from E. server: realSent /tmp/image_2016718_3471_837861.fits
+
+[Jul 07, 16, 03:47:03] Receieved from E. server: realSent /tmp/image_2016718_3473_6628.fits
+
+[Jul 07, 16, 03:47:03] Sent to E. server: temp
+[Jul 07, 16, 03:47:03] Receieved from E. server: temp 20035,20002,-81.1940002441,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:47:04] Receieved from E. server: realSent /tmp/image_2016718_3474_175282.fits
+
+[Jul 07, 16, 03:47:05] Receieved from E. server: realSent /tmp/image_2016718_3475_344102.fits
+
+[Jul 07, 16, 03:47:06] Receieved from E. server: realSent /tmp/image_2016718_3476_512718.fits
+
+[Jul 07, 16, 03:47:07] Receieved from E. server: realSent /tmp/image_2016718_3477_681577.fits
+
+[Jul 07, 16, 03:47:08] Receieved from E. server: realSent /tmp/image_2016718_3478_850396.fits
+
+[Jul 07, 16, 03:47:10] Receieved from E. server: realSent /tmp/image_2016718_34710_19174.fits
+
+[Jul 07, 16, 03:47:11] Receieved from E. server: realSent /tmp/image_2016718_34711_187837.fits
+
+[Jul 07, 16, 03:47:12] Receieved from E. server: realSent /tmp/image_2016718_34712_356646.fits
+
+[Jul 07, 16, 03:47:13] Sent to E. server: temp
+[Jul 07, 16, 03:47:13] Receieved from E. server: temp 20035,20002,-80.5449981689,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:47:13] Receieved from E. server: realSent /tmp/image_2016718_34713_525409.fits
+
+[Jul 07, 16, 03:47:14] Receieved from E. server: realSent /tmp/image_2016718_34714_694237.fits
+
+[Jul 07, 16, 03:47:15] Receieved from E. server: realSent /tmp/image_2016718_34715_863091.fits
+
+[Jul 07, 16, 03:47:17] Receieved from E. server: realSent /tmp/image_2016718_34717_31730.fits
+
+[Jul 07, 16, 03:47:18] Receieved from E. server: realSent /tmp/image_2016718_34718_200505.fits
+
+[Jul 07, 16, 03:47:19] Receieved from E. server: realSent /tmp/image_2016718_34719_369260.fits
+
+[Jul 07, 16, 03:47:20] Receieved from E. server: realSent /tmp/image_2016718_34720_537926.fits
+
+[Jul 07, 16, 03:47:21] Receieved from E. server: realSent /tmp/image_2016718_34721_706832.fits
+
+[Jul 07, 16, 03:47:22] Receieved from E. server: realSent /tmp/image_2016718_34722_875578.fits
+
+[Jul 07, 16, 03:47:23] Sent to E. server: temp
+[Jul 07, 16, 03:47:23] Receieved from E. server: temp 20035,20002,-80.5449981689,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:47:24] Receieved from E. server: realSent /tmp/image_2016718_34724_44388.fits
+
+[Jul 07, 16, 03:47:25] Receieved from E. server: realSent /tmp/image_2016718_34725_213165.fits
+
+[Jul 07, 16, 03:47:26] Receieved from E. server: realSent /tmp/image_2016718_34726_381827.fits
+
+[Jul 07, 16, 03:47:27] Receieved from E. server: realSent /tmp/image_2016718_34727_550604.fits
+
+[Jul 07, 16, 03:47:28] Receieved from E. server: realSent /tmp/image_2016718_34728_719436.fits
+
+[Jul 07, 16, 03:47:29] Receieved from E. server: realSent /tmp/image_2016718_34729_888224.fits
+
+[Jul 07, 16, 03:47:31] Receieved from E. server: realSent /tmp/image_2016718_34731_56978.fits
+
+[Jul 07, 16, 03:47:32] Receieved from E. server: realSent /tmp/image_2016718_34732_225631.fits
+
+[Jul 07, 16, 03:47:33] Sent to E. server: temp
+[Jul 07, 16, 03:47:33] Receieved from E. server: temp 20035,20002,-79.8960037231,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:47:33] Receieved from E. server: realSent /tmp/image_2016718_34733_395573.fits
+
+[Jul 07, 16, 03:47:34] Receieved from E. server: realSent /tmp/image_2016718_34734_563401.fits
+
+[Jul 07, 16, 03:47:35] Receieved from E. server: realSent /tmp/image_2016718_34735_732083.fits
+
+[Jul 07, 16, 03:47:36] Receieved from E. server: realSent /tmp/image_2016718_34736_900691.fits
+
+[Jul 07, 16, 03:47:38] Receieved from E. server: realSent /tmp/image_2016718_34738_69529.fits
+
+[Jul 07, 16, 03:47:38] entered log
+[Jul 07, 16, 03:47:38] logging from exposure class
+[Jul 07, 16, 03:47:38] Sent to E. server: abort
+[Jul 07, 16, 03:47:38] Stop Exposure
+[Jul 07, 16, 03:47:38] Receieved from E. server: real 1
+
+('[Jul 07, 16, 03:47:38] key from post:', 'real')
+('[Jul 07, 16, 03:47:38] Stats in log:', ['1'])
+[Jul 07, 16, 03:47:38] entered log
+[Jul 07, 16, 03:47:38] logging from exposure class
+[Jul 07, 16, 03:47:38] Completed real time series with exit: 1
+[Jul 07, 16, 03:47:38] Receieved from E. server: abort 1
+
+('[Jul 07, 16, 03:47:38] key from post:', 'abort')
+('[Jul 07, 16, 03:47:38] Stats in log:', ['1'])
+[Jul 07, 16, 03:47:38] entered log
+[Jul 07, 16, 03:47:38] logging from exposure class
+[Jul 07, 16, 03:47:38] Aborted 1
+[Jul 07, 16, 03:47:43] Sent to E. server: temp
+[Jul 07, 16, 03:47:43] Receieved from E. server: temp 20035,20002,-79.8960037231,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:47:53] Sent to E. server: temp
+[Jul 07, 16, 03:47:53] Receieved from E. server: temp 20035,20002,-79.8960037231,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:48:03] Sent to E. server: temp
+[Jul 07, 16, 03:48:03] Receieved from E. server: temp 20035,20002,-79.8960037231,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:48:13] Sent to E. server: temp
+[Jul 07, 16, 03:48:13] Receieved from E. server: temp 20035,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:48:23] Sent to E. server: temp
+[Jul 07, 16, 03:48:23] Receieved from E. server: temp 20035,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:48:33] Sent to E. server: temp
+[Jul 07, 16, 03:48:33] Receieved from E. server: temp 20035,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:48:43] Sent to E. server: temp
+[Jul 07, 16, 03:48:43] Receieved from E. server: temp 20035,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:48:53] Sent to E. server: temp
+[Jul 07, 16, 03:48:53] Receieved from E. server: temp 20035,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:49:03] Sent to E. server: temp
+[Jul 07, 16, 03:49:03] Receieved from E. server: temp 20035,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:49:13] Sent to E. server: temp
+[Jul 07, 16, 03:49:13] Receieved from E. server: temp 20035,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:49:23] Sent to E. server: temp
+[Jul 07, 16, 03:49:23] Receieved from E. server: temp 20036,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:49:33] Sent to E. server: temp
+[Jul 07, 16, 03:49:33] Receieved from E. server: temp 20036,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:49:43] Sent to E. server: temp
+[Jul 07, 16, 03:49:43] Receieved from E. server: temp 20036,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:49:53] Sent to E. server: temp
+[Jul 07, 16, 03:49:53] Receieved from E. server: temp 20036,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:50:03] Sent to E. server: temp
+[Jul 07, 16, 03:50:03] Receieved from E. server: temp 20036,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:50:13] Sent to E. server: temp
+[Jul 07, 16, 03:50:13] Receieved from E. server: temp 20036,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:50:23] Sent to E. server: temp
+[Jul 07, 16, 03:50:23] Receieved from E. server: temp 20036,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:50:33] Sent to E. server: temp
+[Jul 07, 16, 03:50:33] Receieved from E. server: temp 20036,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:50:43] Sent to E. server: temp
+[Jul 07, 16, 03:50:43] Receieved from E. server: temp 20036,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:50:53] Sent to E. server: temp
+[Jul 07, 16, 03:50:53] Receieved from E. server: temp 20036,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:51:03] Sent to E. server: temp
+[Jul 07, 16, 03:51:03] Receieved from E. server: temp 20036,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:51:13] Sent to E. server: temp
+[Jul 07, 16, 03:51:13] Receieved from E. server: temp 20036,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:51:23] Sent to E. server: temp
+[Jul 07, 16, 03:51:23] Receieved from E. server: temp 20036,20002,-79.2470016479,-80.5449981689,328.290313721,0.0
+
+[Jul 07, 16, 03:51:24] entered log
+[Jul 07, 16, 03:51:24] logging from temperature class
+[Jul 07, 16, 03:51:24] Sent to E. server: warmup
+[Jul 07, 16, 03:51:24] Receieved from E. server: warmup 1
+
+('[Jul 07, 16, 03:51:24] key from post:', 'warmup')
+('[Jul 07, 16, 03:51:24] Stats in log:', ['1'])
+[Jul 07, 16, 03:51:24] entered log
+[Jul 07, 16, 03:51:24] logging from temperature class
+[Jul 07, 16, 03:51:24] Warmed with exit: 1
+[Jul 07, 16, 03:51:33] Sent to E. server: temp
+[Jul 07, 16, 03:51:33] Receieved from E. server: temp 20034,20002,-77.9489974976,26.5400009155,321.96774292,0.0
+
+[Jul 07, 16, 03:51:43] Sent to E. server: temp
+[Jul 07, 16, 03:51:43] Receieved from E. server: temp 20034,20002,-74.7040023804,26.5400009155,318.80645752,0.0
+
+[Jul 07, 16, 03:51:53] Sent to E. server: temp
+[Jul 07, 16, 03:51:53] Receieved from E. server: temp 20034,20002,-70.1610031128,26.5400009155,315.645172119,0.0
+
+[Jul 07, 16, 03:52:03] Sent to E. server: temp
+[Jul 07, 16, 03:52:03] Receieved from E. server: temp 20034,20002,-65.6179962158,26.5400009155,310.90322876,0.0
+
+[Jul 07, 16, 03:52:13] Sent to E. server: temp
+[Jul 07, 16, 03:52:13] Receieved from E. server: temp 20034,20002,-60.4259986877,26.5400009155,307.741943359,0.0
+
+[Jul 07, 16, 03:52:23] Sent to E. server: temp
+[Jul 07, 16, 03:52:23] Receieved from E. server: temp 20034,20002,-55.8829994202,26.5400009155,304.580657959,0.0
+
+[Jul 07, 16, 03:52:33] Sent to E. server: temp
+[Jul 07, 16, 03:52:33] Receieved from E. server: temp 20034,20002,-51.3400001526,26.5400009155,301.419342041,0.0
+
+[Jul 07, 16, 03:52:43] Sent to E. server: temp
+[Jul 07, 16, 03:52:43] Receieved from E. server: temp 20034,20002,-48.0950012207,26.5400009155,301.419342041,0.0
+
+[Jul 07, 16, 03:52:53] Sent to E. server: temp
+[Jul 07, 16, 03:52:53] Receieved from E. server: temp 20034,20002,-44.2010002136,26.5400009155,299.8387146,0.0
+
+[Jul 07, 16, 03:53:03] Sent to E. server: temp
+[Jul 07, 16, 03:53:03] Receieved from E. server: temp 20034,20002,-40.3069992065,26.5400009155,298.258056641,0.0
+
+[Jul 07, 16, 03:53:13] Sent to E. server: temp
+[Jul 07, 16, 03:53:13] Receieved from E. server: temp 20034,20002,-37.7109985352,26.5400009155,296.677429199,0.0
+
+[Jul 07, 16, 03:53:23] Sent to E. server: temp
+[Jul 07, 16, 03:53:23] Receieved from E. server: temp 20034,20002,-35.1150016785,26.5400009155,295.09677124,0.0
+
+[Jul 07, 16, 03:53:33] Sent to E. server: temp
+[Jul 07, 16, 03:53:33] Receieved from E. server: temp 20034,20002,-31.8700008392,26.5400009155,295.09677124,0.0
+
+[Jul 07, 16, 03:53:43] Sent to E. server: temp
+[Jul 07, 16, 03:53:43] Receieved from E. server: temp 20034,20002,-29.2740001678,26.5400009155,295.09677124,0.0
+
+[Jul 07, 16, 03:53:53] Sent to E. server: temp
+[Jul 07, 16, 03:53:53] Receieved from E. server: temp 20034,20002,-26.6779994965,26.5400009155,295.09677124,0.0
+
+[Jul 07, 16, 03:54:03] Sent to E. server: temp
+[Jul 07, 16, 03:54:03] Receieved from E. server: temp 20034,20002,-24.7310009003,26.5400009155,293.516143799,0.0
+
+[Jul 07, 16, 03:54:13] Sent to E. server: temp
+[Jul 07, 16, 03:54:13] Receieved from E. server: temp 20034,20002,-22.7840003967,26.5400009155,293.516143799,0.0
+
+[Jul 07, 16, 03:54:23] Sent to E. server: temp
+[Jul 07, 16, 03:54:23] Receieved from E. server: temp 20034,20002,-20.1879997253,26.5400009155,291.93548584,0.0
+
+[Jul 07, 16, 03:54:33] Sent to E. server: temp
+[Jul 07, 16, 03:54:33] Receieved from E. server: temp 20034,20002,-18.2409992218,26.5400009155,291.93548584,0.0
+
+[Jul 07, 16, 03:54:43] Sent to E. server: temp
+[Jul 07, 16, 03:54:43] Receieved from E. server: temp 20034,20002,-16.2940006256,26.5400009155,291.93548584,0.0
+
+[Jul 07, 16, 03:54:53] Sent to E. server: temp
+[Jul 07, 16, 03:54:53] Receieved from E. server: temp 20034,20002,-14.3470001221,26.5400009155,290.354827881,0.0
+
+[Jul 07, 16, 03:55:03] Sent to E. server: temp
+[Jul 07, 16, 03:55:03] Receieved from E. server: temp 20034,20002,-13.0489997864,26.5400009155,290.354827881,0.0
+
+[Jul 07, 16, 03:55:13] Sent to E. server: temp
+[Jul 07, 16, 03:55:13] Receieved from E. server: temp 20034,20002,-11.7510004044,26.5400009155,290.354827881,0.0
+
+[Jul 07, 16, 03:55:23] Sent to E. server: temp
+[Jul 07, 16, 03:55:23] Receieved from E. server: temp 20034,20002,-9.80399990082,26.5400009155,290.354827881,0.0
+
+[Jul 07, 16, 03:55:33] Sent to E. server: temp
+[Jul 07, 16, 03:55:33] Receieved from E. server: temp 20034,20002,-8.50599956512,26.5400009155,290.354827881,0.0
+
+[Jul 07, 16, 03:55:43] Sent to E. server: temp
+[Jul 07, 16, 03:55:43] Receieved from E. server: temp 20034,20002,-7.20800018311,26.5400009155,290.354827881,0.0
+
+[Jul 07, 16, 03:55:53] Sent to E. server: temp
+[Jul 07, 16, 03:55:53] Receieved from E. server: temp 20034,20002,-5.90999984741,26.5400009155,290.354827881,0.0
+
+[Jul 07, 16, 03:56:03] Sent to E. server: temp
+[Jul 07, 16, 03:56:03] Receieved from E. server: temp 20034,20002,-4.61199998856,26.5400009155,290.354827881,0.0
+
+[Jul 07, 16, 03:56:13] Sent to E. server: temp
+[Jul 07, 16, 03:56:13] Receieved from E. server: temp 20034,20002,-3.96300005913,26.5400009155,290.354827881,0.0
+
+[Jul 07, 16, 03:56:23] Sent to E. server: temp
+[Jul 07, 16, 03:56:23] Receieved from E. server: temp 20034,20002,-2.01600003242,26.5400009155,290.354827881,0.0
+
+[Jul 07, 16, 03:56:33] Sent to E. server: temp
+[Jul 07, 16, 03:56:33] Receieved from E. server: temp 20034,20002,-1.36699998379,26.5400009155,288.774200439,0.0
+
+[Jul 07, 16, 03:56:43] Sent to E. server: temp
+[Jul 07, 16, 03:56:43] Receieved from E. server: temp 20034,20002,-0.0689999982715,26.5400009155,288.774200439,0.0
+
+[Jul 07, 16, 03:56:53] Sent to E. server: temp
+[Jul 07, 16, 03:56:53] Receieved from E. server: temp 20034,20002,0.579999983311,26.5400009155,288.774200439,0.0
+
+[Jul 07, 16, 03:57:03] Sent to E. server: temp
+[Jul 07, 16, 03:57:03] Receieved from E. server: temp 20034,20002,1.22899997234,26.5400009155,288.774200439,0.0
+
+[Jul 07, 16, 03:57:13] Sent to E. server: temp
+[Jul 07, 16, 03:57:13] Receieved from E. server: temp 20034,20002,1.87800002098,26.5400009155,288.774200439,0.0
+
+[Jul 07, 16, 03:57:19] Sent to E. server: shutdown
+[Jul 07, 16, 03:57:20] Receieved from E. server: shutdown 1
+
+('[Jul 07, 16, 03:57:20] key from post:', 'shutdown')
+('[Jul 07, 16, 03:57:20] Stats in log:', ['1'])
+[Jul 07, 16, 03:57:20] entered logMethod
+[03:57:20]logging from exposure class
+[Jul 07, 16, 03:57:20] Thread with key temp is shutdown
+('[Jul 07, 16, 03:57:20] key from post:', 'connectLost')
+('[Jul 07, 16, 03:57:20] Stats in log:', ['1'])
+[Jul 07, 16, 03:57:20] entered log
+[Jul 07, 16, 03:57:20] logging from exposure class
+[Jul 07, 16, 03:57:20] connection to E. server lost normally on port 5502
+[Jul 07, 16, 03:58:04] Closing down Evora GUI
+[Jul 07, 16, 03:58:04] destroying image frame in quit method
+[Jul 07, 16, 03:58:04] reactor stopped, finished quitting
+Unable to access the X Display, is $DISPLAY set properly?
+Unable to access the X Display, is $DISPLAY set properly?
+[17:23:08]Connect command pressed
+[Jul 07, 16, 17:23:08] Connection made to E. server on port 5502
+[Jul 07, 16, 17:23:08] Receieved from E. server: status 20075,-952132416
+
+[Jul 07, 16, 17:23:08] 20075,-952132416 Startup callback entered
+('[Jul 07, 16, 17:23:08] key from post:', 'status')
+('[Jul 07, 16, 17:23:08] Stats in log:', ['20075'])
+[Jul 07, 16, 17:23:08] entered logMethod
+[17:23:08]logging from exposure class
+[Jul 07, 16, 17:23:08] status from connect callback 20075
+[Jul 07, 16, 17:23:08] Sent to E. server: connect
+[Jul 07, 16, 17:23:13] Receieved from E. server: connect 20002
+
+('[Jul 07, 16, 17:23:13] key from post:', 'connect')
+('[Jul 07, 16, 17:23:13] Stats in log:', ['20002'])
+[Jul 07, 16, 17:23:13] entered logMethod
+[17:23:13]logging from exposure class
+[Jul 07, 16, 17:23:13] Sent to E. server: temp
+[Jul 07, 16, 17:23:13] Started up from callStartup method
+[Jul 07, 16, 17:23:13] Receieved from E. server: temp 20034,20002,22.6459999084,26.5400009155,301.419342041,0.0
+
+[Jul 07, 16, 17:23:23] Sent to E. server: temp
+[Jul 07, 16, 17:23:23] Receieved from E. server: temp 20034,20002,22.6459999084,26.5400009155,301.419342041,0.0
+
+[Jul 07, 16, 17:23:26] Sent to E. server: shutdown
+[Jul 07, 16, 17:23:27] Receieved from E. server: shutdown 1
+
+('[Jul 07, 16, 17:23:27] key from post:', 'shutdown')
+('[Jul 07, 16, 17:23:27] Stats in log:', ['1'])
+[Jul 07, 16, 17:23:27] entered logMethod
+[17:23:27]logging from exposure class
+[Jul 07, 16, 17:23:27] Thread with key temp is shutdown
+('[Jul 07, 16, 17:23:27] key from post:', 'connectLost')
+('[Jul 07, 16, 17:23:27] Stats in log:', ['1'])
+[Jul 07, 16, 17:23:27] entered log
+[Jul 07, 16, 17:23:27] logging from exposure class
+[Jul 07, 16, 17:23:27] connection to E. server lost normally on port 5502
+[Jul 07, 16, 17:23:35] Closing down Evora GUI
+[Jul 07, 16, 17:23:35] reactor stopped, finished quitting
+[17:23:59]Connect command pressed
+('[Jul 07, 16, 17:23:59] key from post:', 'connectFailed')
+('[Jul 07, 16, 17:23:59] Stats in log:', ['1'])
+[Jul 07, 16, 17:23:59] entered log
+[Jul 07, 16, 17:23:59] logging from exposure class
+[Jul 07, 16, 17:23:59] connection to E. server failed on port 5502
+[Jul 07, 16, 17:24:03] Closing down Evora GUI
+[Jul 07, 16, 17:24:03] reactor stopped, finished quitting
+[17:24:37]Connect command pressed
+[Jul 07, 16, 17:24:37] Connection made to E. server on port 5502
+[Jul 07, 16, 17:24:37] Receieved from E. server: status 20075,-1734816576
+
+[Jul 07, 16, 17:24:37] 20075,-1734816576 Startup callback entered
+('[Jul 07, 16, 17:24:37] key from post:', 'status')
+('[Jul 07, 16, 17:24:37] Stats in log:', ['20075'])
+[Jul 07, 16, 17:24:37] entered logMethod
+[17:24:37]logging from exposure class
+[Jul 07, 16, 17:24:37] status from connect callback 20075
+[Jul 07, 16, 17:24:37] Sent to E. server: connect
+[Jul 07, 16, 17:24:48] Receieved from E. server: connect 20002
+
+('[Jul 07, 16, 17:24:48] key from post:', 'connect')
+('[Jul 07, 16, 17:24:48] Stats in log:', ['20002'])
+[Jul 07, 16, 17:24:48] entered logMethod
+[17:24:48]logging from exposure class
+[Jul 07, 16, 17:24:48] Sent to E. server: temp
+[Jul 07, 16, 17:24:48] Started up from callStartup method
+[Jul 07, 16, 17:24:48] Receieved from E. server: temp 20034,20002,22.6459999084,26.5400009155,301.419342041,0.0
+
+[Jul 07, 16, 17:24:58] Sent to E. server: temp
+[Jul 07, 16, 17:24:58] Receieved from E. server: temp 20034,20002,22.6459999084,26.5400009155,301.419342041,0.0
+
+[Jul 07, 16, 17:25:01] Sent to E. server: shutdown
+[Jul 07, 16, 17:25:02] Receieved from E. server: shutdown 1
+
+('[Jul 07, 16, 17:25:02] key from post:', 'shutdown')
+('[Jul 07, 16, 17:25:02] Stats in log:', ['1'])
+[Jul 07, 16, 17:25:02] entered logMethod
+[17:25:02]logging from exposure class
+[Jul 07, 16, 17:25:02] Thread with key temp is shutdown
+('[Jul 07, 16, 17:25:02] key from post:', 'connectLost')
+('[Jul 07, 16, 17:25:02] Stats in log:', ['1'])
+[Jul 07, 16, 17:25:02] entered log
+[Jul 07, 16, 17:25:02] logging from exposure class
+[Jul 07, 16, 17:25:02] connection to E. server lost normally on port 5502
+[Jul 07, 16, 17:25:04] Connect pressed in Filter menu
+[Jul 07, 16, 17:25:04] connection made to filter
+[Jul 07, 16, 17:25:04] entered log in filter classes
+[Jul 07, 16, 17:25:04] logging from exposure class
+[Jul 07, 16, 17:25:04] entered log in filter classes
+[Jul 07, 16, 17:25:04] logging from exposure class
+[17:25:04]Sending to filter: getFilter
+[Jul 07, 16, 17:25:06] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:25:06] position: 3
+('[Jul 07, 16, 17:25:06] key from post:', 'filter')
+('[Jul 07, 16, 17:25:06] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:25:06] entered log in filter classes
+[Jul 07, 16, 17:25:06] logging from exposure class
+[Jul 07, 16, 17:25:06] Filter position is g
+[Jul 07, 16, 17:25:14] entered log in filter classes
+[Jul 07, 16, 17:25:14] logging from exposure class
+[17:25:14]Sending to filter: home
+[Jul 07, 16, 17:25:14] homing...
+[Jul 07, 16, 17:25:28] Receieved from filter (5503): home 1
+
+('[Jul 07, 16, 17:25:28] key from post:', 'filter')
+('[Jul 07, 16, 17:25:28] Stats in log:', ['home'])
+[Jul 07, 16, 17:25:28] entered log in filter classes
+[Jul 07, 16, 17:25:28] logging from exposure class
+[Jul 07, 16, 17:25:28] Done homing: 1
+[Jul 07, 16, 17:25:28] entered log in filter classes
+[Jul 07, 16, 17:25:28] logging from exposure class
+[17:25:28]Sending to filter: getFilter
+[Jul 07, 16, 17:25:28] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:25:28] position: 0
+('[Jul 07, 16, 17:25:28] key from post:', 'filter')
+('[Jul 07, 16, 17:25:28] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:25:28] entered log in filter classes
+[Jul 07, 16, 17:25:28] logging from exposure class
+[Jul 07, 16, 17:25:28] Filter position is Ha
+[Jul 07, 16, 17:25:35] <type 'str'>
+[Jul 07, 16, 17:25:35] index: 0
+[Jul 07, 16, 17:25:35] entered log in filter classes
+[Jul 07, 16, 17:25:35] logging from exposure class
+[17:25:35]Sending to filter: move 0
+[17:25:35]Sending to filter: getFilter
+[Jul 07, 16, 17:25:35] <type 'str'>
+[Jul 07, 16, 17:25:35] index: 0
+[Jul 07, 16, 17:25:35] entered log in filter classes
+[Jul 07, 16, 17:25:35] logging from exposure class
+[17:25:35]Sending to filter: move 0
+[17:25:35]Sending to filter: getFilter
+[Jul 07, 16, 17:25:35] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:25:35] position: 0
+('[Jul 07, 16, 17:25:35] key from post:', 'filter')
+('[Jul 07, 16, 17:25:35] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:25:35] entered log in filter classes
+[Jul 07, 16, 17:25:35] logging from exposure class
+[Jul 07, 16, 17:25:35] Filter position is Ha
+[Jul 07, 16, 17:25:35] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:25:35] 1
+('[Jul 07, 16, 17:25:35] key from post:', 'filter')
+('[Jul 07, 16, 17:25:35] Stats in log:', ['move'])
+[Jul 07, 16, 17:25:35] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:25:35] entered log in filter classes
+[Jul 07, 16, 17:25:35] logging from exposure class
+[Jul 07, 16, 17:25:35] Completed rotation...
+[Jul 07, 16, 17:25:40] selection: B
+[Jul 07, 16, 17:25:41] <type 'unicode'>
+[Jul 07, 16, 17:25:41] index: 1
+[Jul 07, 16, 17:25:41] entered log in filter classes
+[Jul 07, 16, 17:25:41] logging from exposure class
+[17:25:41]Sending to filter: move 1
+[17:25:41]Sending to filter: getFilter
+[Jul 07, 16, 17:25:41] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:25:41] position: 0
+('[Jul 07, 16, 17:25:41] key from post:', 'filter')
+('[Jul 07, 16, 17:25:41] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:25:41] entered log in filter classes
+[Jul 07, 16, 17:25:41] logging from exposure class
+[Jul 07, 16, 17:25:41] Filter position is Ha
+[17:25:42]Sending to filter: getFilter
+[Jul 07, 16, 17:25:42] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:25:42] position: 0
+('[Jul 07, 16, 17:25:42] key from post:', 'filter')
+('[Jul 07, 16, 17:25:42] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:25:42] entered log in filter classes
+[Jul 07, 16, 17:25:42] logging from exposure class
+[Jul 07, 16, 17:25:42] Filter position is Ha
+[17:25:43]Sending to filter: getFilter
+[Jul 07, 16, 17:25:43] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:25:43] position: 1
+('[Jul 07, 16, 17:25:43] key from post:', 'filter')
+('[Jul 07, 16, 17:25:43] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:25:43] entered log in filter classes
+[Jul 07, 16, 17:25:43] logging from exposure class
+[Jul 07, 16, 17:25:43] Filter position is B
+[Jul 07, 16, 17:25:56] selection: V
+[Jul 07, 16, 17:25:57] <type 'unicode'>
+[Jul 07, 16, 17:25:57] index: 2
+[Jul 07, 16, 17:25:57] entered log in filter classes
+[Jul 07, 16, 17:25:57] logging from exposure class
+[17:25:57]Sending to filter: move 2
+[17:25:57]Sending to filter: getFilter
+[Jul 07, 16, 17:25:57] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:25:57] position: 1
+('[Jul 07, 16, 17:25:57] key from post:', 'filter')
+('[Jul 07, 16, 17:25:57] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:25:57] entered log in filter classes
+[Jul 07, 16, 17:25:57] logging from exposure class
+[Jul 07, 16, 17:25:57] Filter position is B
+[17:25:58]Sending to filter: getFilter
+[Jul 07, 16, 17:25:58] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:25:58] position: 1
+('[Jul 07, 16, 17:25:58] key from post:', 'filter')
+('[Jul 07, 16, 17:25:58] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:25:58] entered log in filter classes
+[Jul 07, 16, 17:25:58] logging from exposure class
+[Jul 07, 16, 17:25:58] Filter position is B
+[17:25:59]Sending to filter: getFilter
+[Jul 07, 16, 17:25:59] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:25:59] position: 2
+('[Jul 07, 16, 17:25:59] key from post:', 'filter')
+('[Jul 07, 16, 17:25:59] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:25:59] entered log in filter classes
+[Jul 07, 16, 17:25:59] logging from exposure class
+[Jul 07, 16, 17:25:59] Filter position is V
+[Jul 07, 16, 17:27:18] Disconnect pressed in filter menu
+('[Jul 07, 16, 17:27:18] key from post:', 'filter')
+('[Jul 07, 16, 17:27:18] Stats in log:', ['connectLost'])
+[Jul 07, 16, 17:27:18] entered log in filter classes
+[Jul 07, 16, 17:27:18] logging from exposure class
+[Jul 07, 16, 17:27:18] connection lost normally on port 5503
+[Jul 07, 16, 17:27:29] Closing down Evora GUI
+[Jul 07, 16, 17:27:29] reactor stopped, finished quitting
+[Jul 07, 16, 17:33:56] Connect pressed in Filter menu
+[Jul 07, 16, 17:33:56] connection made to filter
+[Jul 07, 16, 17:33:56] entered log in filter classes
+[Jul 07, 16, 17:33:56] logging from exposure class
+[Jul 07, 16, 17:33:56] entered log in filter classes
+[Jul 07, 16, 17:33:56] logging from exposure class
+[17:33:56]Sending to filter: getFilter
+[Jul 07, 16, 17:33:59] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:33:59] position: 1
+('[Jul 07, 16, 17:33:59] key from post:', 'filter')
+('[Jul 07, 16, 17:33:59] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:33:59] entered log in filter classes
+[Jul 07, 16, 17:33:59] logging from exposure class
+[Jul 07, 16, 17:33:59] Filter position is B
+[Jul 07, 16, 17:34:08] selection: V
+[Jul 07, 16, 17:34:09] <type 'unicode'>
+[Jul 07, 16, 17:34:09] index: 2
+[Jul 07, 16, 17:34:09] entered log in filter classes
+[Jul 07, 16, 17:34:09] logging from exposure class
+[17:34:09]Sending to filter: move 2
+[17:34:09]Sending to filter: getFilter
+[Jul 07, 16, 17:34:09] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:34:09] position: 1
+('[Jul 07, 16, 17:34:09] key from post:', 'filter')
+('[Jul 07, 16, 17:34:09] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:34:09] entered log in filter classes
+[Jul 07, 16, 17:34:09] logging from exposure class
+[Jul 07, 16, 17:34:09] Filter position is B
+[17:34:10]Sending to filter: getFilter
+[Jul 07, 16, 17:34:10] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:34:10] position: 2
+('[Jul 07, 16, 17:34:10] key from post:', 'filter')
+('[Jul 07, 16, 17:34:10] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:34:10] entered log in filter classes
+[Jul 07, 16, 17:34:10] logging from exposure class
+[Jul 07, 16, 17:34:10] Filter position is V
+[Jul 07, 16, 17:35:04] entered log in filter classes
+[Jul 07, 16, 17:35:04] logging from exposure class
+[17:35:04]Sending to filter: home
+[Jul 07, 16, 17:35:04] homing...
+[Jul 07, 16, 17:35:21] Receieved from filter (5503): home 1
+
+('[Jul 07, 16, 17:35:21] key from post:', 'filter')
+('[Jul 07, 16, 17:35:21] Stats in log:', ['home'])
+[Jul 07, 16, 17:35:21] entered log in filter classes
+[Jul 07, 16, 17:35:21] logging from exposure class
+[Jul 07, 16, 17:35:21] Done homing: 1
+[Jul 07, 16, 17:35:21] entered log in filter classes
+[Jul 07, 16, 17:35:21] logging from exposure class
+[17:35:21]Sending to filter: getFilter
+[Jul 07, 16, 17:35:21] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:35:21] position: 0
+('[Jul 07, 16, 17:35:21] key from post:', 'filter')
+('[Jul 07, 16, 17:35:21] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:35:21] entered log in filter classes
+[Jul 07, 16, 17:35:21] logging from exposure class
+[Jul 07, 16, 17:35:21] Filter position is Ha
+[Jul 07, 16, 17:35:36] selection: g
+[Jul 07, 16, 17:35:37] <type 'unicode'>
+[Jul 07, 16, 17:35:37] index: 3
+[Jul 07, 16, 17:35:37] entered log in filter classes
+[Jul 07, 16, 17:35:37] logging from exposure class
+[17:35:37]Sending to filter: move 3
+[17:35:37]Sending to filter: getFilter
+[Jul 07, 16, 17:35:37] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:35:37] position: 0
+('[Jul 07, 16, 17:35:37] key from post:', 'filter')
+('[Jul 07, 16, 17:35:37] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:35:37] entered log in filter classes
+[Jul 07, 16, 17:35:37] logging from exposure class
+[Jul 07, 16, 17:35:37] Filter position is Ha
+[17:35:38]Sending to filter: getFilter
+[Jul 07, 16, 17:35:38] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:35:38] position: 0
+('[Jul 07, 16, 17:35:38] key from post:', 'filter')
+('[Jul 07, 16, 17:35:38] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:35:38] entered log in filter classes
+[Jul 07, 16, 17:35:38] logging from exposure class
+[Jul 07, 16, 17:35:38] Filter position is Ha
+[17:35:39]Sending to filter: getFilter
+[Jul 07, 16, 17:35:39] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:35:39] position: 1
+('[Jul 07, 16, 17:35:39] key from post:', 'filter')
+('[Jul 07, 16, 17:35:39] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:35:39] entered log in filter classes
+[Jul 07, 16, 17:35:39] logging from exposure class
+[Jul 07, 16, 17:35:39] Filter position is B
+[17:35:40]Sending to filter: getFilter
+[Jul 07, 16, 17:35:40] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:35:40] position: 2
+('[Jul 07, 16, 17:35:40] key from post:', 'filter')
+('[Jul 07, 16, 17:35:40] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:35:40] entered log in filter classes
+[Jul 07, 16, 17:35:40] logging from exposure class
+[Jul 07, 16, 17:35:40] Filter position is V
+[17:35:41]Sending to filter: getFilter
+[Jul 07, 16, 17:35:41] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:35:41] position: 2
+('[Jul 07, 16, 17:35:41] key from post:', 'filter')
+('[Jul 07, 16, 17:35:41] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:35:41] entered log in filter classes
+[Jul 07, 16, 17:35:41] logging from exposure class
+[Jul 07, 16, 17:35:41] Filter position is V
+[17:35:42]Sending to filter: getFilter
+[Jul 07, 16, 17:35:42] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:35:42] position: 3
+('[Jul 07, 16, 17:35:42] key from post:', 'filter')
+('[Jul 07, 16, 17:35:42] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:35:42] entered log in filter classes
+[Jul 07, 16, 17:35:42] logging from exposure class
+[Jul 07, 16, 17:35:42] Filter position is g
+[Jul 07, 16, 17:35:42] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:35:42] 1
+('[Jul 07, 16, 17:35:42] key from post:', 'filter')
+('[Jul 07, 16, 17:35:42] Stats in log:', ['move'])
+[Jul 07, 16, 17:35:42] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:35:42] entered log in filter classes
+[Jul 07, 16, 17:35:42] logging from exposure class
+[Jul 07, 16, 17:35:42] Completed rotation...
+[Jul 07, 16, 17:36:01] selection: r
+[Jul 07, 16, 17:36:03] selection: B
+[Jul 07, 16, 17:36:04] <type 'unicode'>
+[Jul 07, 16, 17:36:04] index: 1
+[Jul 07, 16, 17:36:04] entered log in filter classes
+[Jul 07, 16, 17:36:04] logging from exposure class
+[17:36:04]Sending to filter: move 1
+[17:36:04]Sending to filter: getFilter
+[Jul 07, 16, 17:36:04] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:36:04] position: 3
+('[Jul 07, 16, 17:36:04] key from post:', 'filter')
+('[Jul 07, 16, 17:36:04] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:04] entered log in filter classes
+[Jul 07, 16, 17:36:04] logging from exposure class
+[Jul 07, 16, 17:36:04] Filter position is g
+[17:36:05]Sending to filter: getFilter
+[Jul 07, 16, 17:36:05] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:36:05] position: 2
+('[Jul 07, 16, 17:36:05] key from post:', 'filter')
+('[Jul 07, 16, 17:36:05] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:05] entered log in filter classes
+[Jul 07, 16, 17:36:05] logging from exposure class
+[Jul 07, 16, 17:36:05] Filter position is V
+[17:36:06]Sending to filter: getFilter
+[Jul 07, 16, 17:36:07] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:36:07] position: 1
+('[Jul 07, 16, 17:36:07] key from post:', 'filter')
+('[Jul 07, 16, 17:36:07] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:07] entered log in filter classes
+[Jul 07, 16, 17:36:07] logging from exposure class
+[Jul 07, 16, 17:36:07] Filter position is B
+[Jul 07, 16, 17:36:08] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:36:08] 1
+('[Jul 07, 16, 17:36:08] key from post:', 'filter')
+('[Jul 07, 16, 17:36:08] Stats in log:', ['move'])
+[Jul 07, 16, 17:36:08] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:36:08] entered log in filter classes
+[Jul 07, 16, 17:36:08] logging from exposure class
+[Jul 07, 16, 17:36:08] Completed rotation...
+[Jul 07, 16, 17:36:16] selection: i
+[Jul 07, 16, 17:36:17] <type 'unicode'>
+[Jul 07, 16, 17:36:17] index: 5
+[Jul 07, 16, 17:36:17] entered log in filter classes
+[Jul 07, 16, 17:36:17] logging from exposure class
+[17:36:17]Sending to filter: move 5
+[17:36:17]Sending to filter: getFilter
+[Jul 07, 16, 17:36:17] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:36:17] position: 1
+('[Jul 07, 16, 17:36:17] key from post:', 'filter')
+('[Jul 07, 16, 17:36:17] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:17] entered log in filter classes
+[Jul 07, 16, 17:36:17] logging from exposure class
+[Jul 07, 16, 17:36:17] Filter position is B
+[17:36:18]Sending to filter: getFilter
+[Jul 07, 16, 17:36:18] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:36:18] position: 1
+('[Jul 07, 16, 17:36:18] key from post:', 'filter')
+('[Jul 07, 16, 17:36:18] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:18] entered log in filter classes
+[Jul 07, 16, 17:36:18] logging from exposure class
+[Jul 07, 16, 17:36:18] Filter position is B
+[17:36:19]Sending to filter: getFilter
+[Jul 07, 16, 17:36:19] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:36:19] position: 2
+('[Jul 07, 16, 17:36:19] key from post:', 'filter')
+('[Jul 07, 16, 17:36:19] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:19] entered log in filter classes
+[Jul 07, 16, 17:36:19] logging from exposure class
+[Jul 07, 16, 17:36:19] Filter position is V
+[17:36:20]Sending to filter: getFilter
+[Jul 07, 16, 17:36:20] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:36:20] position: 3
+('[Jul 07, 16, 17:36:20] key from post:', 'filter')
+('[Jul 07, 16, 17:36:20] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:20] entered log in filter classes
+[Jul 07, 16, 17:36:20] logging from exposure class
+[Jul 07, 16, 17:36:20] Filter position is g
+[17:36:21]Sending to filter: getFilter
+[Jul 07, 16, 17:36:21] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:36:21] position: 3
+('[Jul 07, 16, 17:36:21] key from post:', 'filter')
+('[Jul 07, 16, 17:36:21] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:21] entered log in filter classes
+[Jul 07, 16, 17:36:21] logging from exposure class
+[Jul 07, 16, 17:36:21] Filter position is g
+[17:36:22]Sending to filter: getFilter
+[Jul 07, 16, 17:36:22] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:36:22] position: 4
+('[Jul 07, 16, 17:36:22] key from post:', 'filter')
+('[Jul 07, 16, 17:36:22] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:22] entered log in filter classes
+[Jul 07, 16, 17:36:22] logging from exposure class
+[Jul 07, 16, 17:36:22] Filter position is r
+[17:36:23]Sending to filter: getFilter
+[Jul 07, 16, 17:36:23] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:36:23] position: 5
+('[Jul 07, 16, 17:36:23] key from post:', 'filter')
+('[Jul 07, 16, 17:36:23] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:23] entered log in filter classes
+[Jul 07, 16, 17:36:23] logging from exposure class
+[Jul 07, 16, 17:36:23] Filter position is i
+[Jul 07, 16, 17:36:23] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:36:23] 1
+('[Jul 07, 16, 17:36:23] key from post:', 'filter')
+('[Jul 07, 16, 17:36:23] Stats in log:', ['move'])
+[Jul 07, 16, 17:36:23] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:36:23] entered log in filter classes
+[Jul 07, 16, 17:36:23] logging from exposure class
+[Jul 07, 16, 17:36:23] Completed rotation...
+[Jul 07, 16, 17:36:27] selection: r
+[Jul 07, 16, 17:36:30] <type 'unicode'>
+[Jul 07, 16, 17:36:30] index: 4
+[Jul 07, 16, 17:36:30] entered log in filter classes
+[Jul 07, 16, 17:36:30] logging from exposure class
+[17:36:30]Sending to filter: move 4
+[17:36:30]Sending to filter: getFilter
+[Jul 07, 16, 17:36:30] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:36:30] position: 5
+('[Jul 07, 16, 17:36:30] key from post:', 'filter')
+('[Jul 07, 16, 17:36:30] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:30] entered log in filter classes
+[Jul 07, 16, 17:36:30] logging from exposure class
+[Jul 07, 16, 17:36:30] Filter position is i
+[17:36:31]Sending to filter: getFilter
+[Jul 07, 16, 17:36:31] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:36:31] position: 4
+('[Jul 07, 16, 17:36:31] key from post:', 'filter')
+('[Jul 07, 16, 17:36:31] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:31] entered log in filter classes
+[Jul 07, 16, 17:36:31] logging from exposure class
+[Jul 07, 16, 17:36:31] Filter position is r
+[Jul 07, 16, 17:36:33] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:36:33] 1
+('[Jul 07, 16, 17:36:33] key from post:', 'filter')
+('[Jul 07, 16, 17:36:33] Stats in log:', ['move'])
+[Jul 07, 16, 17:36:33] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:36:33] entered log in filter classes
+[Jul 07, 16, 17:36:33] logging from exposure class
+[Jul 07, 16, 17:36:33] Completed rotation...
+[Jul 07, 16, 17:36:39] selection: V
+[Jul 07, 16, 17:36:39] <type 'unicode'>
+[Jul 07, 16, 17:36:39] index: 2
+[Jul 07, 16, 17:36:39] entered log in filter classes
+[Jul 07, 16, 17:36:39] logging from exposure class
+[17:36:39]Sending to filter: move 2
+[17:36:39]Sending to filter: getFilter
+[Jul 07, 16, 17:36:39] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:36:39] position: 4
+('[Jul 07, 16, 17:36:39] key from post:', 'filter')
+('[Jul 07, 16, 17:36:39] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:39] entered log in filter classes
+[Jul 07, 16, 17:36:39] logging from exposure class
+[Jul 07, 16, 17:36:39] Filter position is r
+[17:36:40]Sending to filter: getFilter
+[Jul 07, 16, 17:36:40] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:36:40] position: 3
+('[Jul 07, 16, 17:36:40] key from post:', 'filter')
+('[Jul 07, 16, 17:36:40] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:40] entered log in filter classes
+[Jul 07, 16, 17:36:40] logging from exposure class
+[Jul 07, 16, 17:36:40] Filter position is g
+[17:36:41]Sending to filter: getFilter
+[Jul 07, 16, 17:36:41] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:36:41] position: 2
+('[Jul 07, 16, 17:36:41] key from post:', 'filter')
+('[Jul 07, 16, 17:36:41] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:41] entered log in filter classes
+[Jul 07, 16, 17:36:41] logging from exposure class
+[Jul 07, 16, 17:36:41] Filter position is V
+[Jul 07, 16, 17:36:43] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:36:43] 1
+('[Jul 07, 16, 17:36:43] key from post:', 'filter')
+('[Jul 07, 16, 17:36:43] Stats in log:', ['move'])
+[Jul 07, 16, 17:36:43] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:36:43] entered log in filter classes
+[Jul 07, 16, 17:36:43] logging from exposure class
+[Jul 07, 16, 17:36:43] Completed rotation...
+[Jul 07, 16, 17:36:49] <type 'str'>
+[Jul 07, 16, 17:36:49] index: 2
+[Jul 07, 16, 17:36:49] entered log in filter classes
+[Jul 07, 16, 17:36:49] logging from exposure class
+[17:36:49]Sending to filter: move 2
+[17:36:49]Sending to filter: getFilter
+[Jul 07, 16, 17:36:49] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:36:49] 1
+('[Jul 07, 16, 17:36:49] key from post:', 'filter')
+('[Jul 07, 16, 17:36:49] Stats in log:', ['move'])
+[Jul 07, 16, 17:36:49] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:36:49] entered log in filter classes
+[Jul 07, 16, 17:36:49] logging from exposure class
+[Jul 07, 16, 17:36:49] Completed rotation...
+[17:36:50]Sending to filter: getFilter
+[Jul 07, 16, 17:36:50] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:36:50] position: 2
+('[Jul 07, 16, 17:36:50] key from post:', 'filter')
+('[Jul 07, 16, 17:36:50] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:36:50] entered log in filter classes
+[Jul 07, 16, 17:36:50] logging from exposure class
+[Jul 07, 16, 17:36:50] Filter position is V
+[Jul 07, 16, 17:37:02] <type 'str'>
+[Jul 07, 16, 17:37:02] index: 2
+[Jul 07, 16, 17:37:02] entered log in filter classes
+[Jul 07, 16, 17:37:02] logging from exposure class
+[17:37:02]Sending to filter: move 2
+[17:37:02]Sending to filter: getFilter
+[Jul 07, 16, 17:37:03] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:37:03] position: 2
+('[Jul 07, 16, 17:37:03] key from post:', 'filter')
+('[Jul 07, 16, 17:37:03] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:03] entered log in filter classes
+[Jul 07, 16, 17:37:03] logging from exposure class
+[Jul 07, 16, 17:37:03] Filter position is V
+[Jul 07, 16, 17:37:03] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:37:03] 1
+('[Jul 07, 16, 17:37:03] key from post:', 'filter')
+('[Jul 07, 16, 17:37:03] Stats in log:', ['move'])
+[Jul 07, 16, 17:37:03] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:37:03] entered log in filter classes
+[Jul 07, 16, 17:37:03] logging from exposure class
+[Jul 07, 16, 17:37:03] Completed rotation...
+[Jul 07, 16, 17:37:07] selection: g
+[Jul 07, 16, 17:37:07] <type 'unicode'>
+[Jul 07, 16, 17:37:07] index: 3
+[Jul 07, 16, 17:37:07] entered log in filter classes
+[Jul 07, 16, 17:37:07] logging from exposure class
+[17:37:07]Sending to filter: move 3
+[17:37:07]Sending to filter: getFilter
+[Jul 07, 16, 17:37:07] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:37:07] position: 2
+('[Jul 07, 16, 17:37:07] key from post:', 'filter')
+('[Jul 07, 16, 17:37:07] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:07] entered log in filter classes
+[Jul 07, 16, 17:37:07] logging from exposure class
+[Jul 07, 16, 17:37:07] Filter position is V
+[17:37:08]Sending to filter: getFilter
+[Jul 07, 16, 17:37:08] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:37:08] position: 2
+('[Jul 07, 16, 17:37:08] key from post:', 'filter')
+('[Jul 07, 16, 17:37:08] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:08] entered log in filter classes
+[Jul 07, 16, 17:37:08] logging from exposure class
+[Jul 07, 16, 17:37:08] Filter position is V
+[17:37:09]Sending to filter: getFilter
+[Jul 07, 16, 17:37:09] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:37:09] position: 3
+('[Jul 07, 16, 17:37:09] key from post:', 'filter')
+('[Jul 07, 16, 17:37:09] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:09] entered log in filter classes
+[Jul 07, 16, 17:37:09] logging from exposure class
+[Jul 07, 16, 17:37:09] Filter position is g
+[Jul 07, 16, 17:37:09] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:37:09] key from post:', 'filter')
+('[Jul 07, 16, 17:37:09] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:37:10] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:37:10] 11
+('[Jul 07, 16, 17:37:10] key from post:', 'filter')
+('[Jul 07, 16, 17:37:10] Stats in log:', ['move'])
+[Jul 07, 16, 17:37:10] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:37:10] entered log in filter classes
+[Jul 07, 16, 17:37:10] logging from exposure class
+[Jul 07, 16, 17:37:10] Completed rotation...
+[Jul 07, 16, 17:37:17] selection: r
+[Jul 07, 16, 17:37:18] <type 'unicode'>
+[Jul 07, 16, 17:37:18] index: 4
+[Jul 07, 16, 17:37:18] entered log in filter classes
+[Jul 07, 16, 17:37:18] logging from exposure class
+[17:37:18]Sending to filter: move 4
+[17:37:18]Sending to filter: getFilter
+[Jul 07, 16, 17:37:18] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:37:18] position: 3
+('[Jul 07, 16, 17:37:18] key from post:', 'filter')
+('[Jul 07, 16, 17:37:18] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:18] entered log in filter classes
+[Jul 07, 16, 17:37:18] logging from exposure class
+[Jul 07, 16, 17:37:18] Filter position is g
+[17:37:19]Sending to filter: getFilter
+[Jul 07, 16, 17:37:19] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:37:19] position: 3
+('[Jul 07, 16, 17:37:19] key from post:', 'filter')
+('[Jul 07, 16, 17:37:19] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:19] entered log in filter classes
+[Jul 07, 16, 17:37:19] logging from exposure class
+[Jul 07, 16, 17:37:19] Filter position is g
+[17:37:20]Sending to filter: getFilter
+[Jul 07, 16, 17:37:20] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:37:20] position: 4
+('[Jul 07, 16, 17:37:20] key from post:', 'filter')
+('[Jul 07, 16, 17:37:20] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:20] entered log in filter classes
+[Jul 07, 16, 17:37:20] logging from exposure class
+[Jul 07, 16, 17:37:20] Filter position is r
+[Jul 07, 16, 17:37:20] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:37:20] key from post:', 'filter')
+('[Jul 07, 16, 17:37:20] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:37:21] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:37:21] 11
+('[Jul 07, 16, 17:37:21] key from post:', 'filter')
+('[Jul 07, 16, 17:37:21] Stats in log:', ['move'])
+[Jul 07, 16, 17:37:21] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:37:21] entered log in filter classes
+[Jul 07, 16, 17:37:21] logging from exposure class
+[Jul 07, 16, 17:37:21] Completed rotation...
+[Jul 07, 16, 17:37:25] selection: i
+[Jul 07, 16, 17:37:26] <type 'unicode'>
+[Jul 07, 16, 17:37:26] index: 5
+[Jul 07, 16, 17:37:26] entered log in filter classes
+[Jul 07, 16, 17:37:26] logging from exposure class
+[17:37:26]Sending to filter: move 5
+[17:37:26]Sending to filter: getFilter
+[Jul 07, 16, 17:37:26] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:37:26] position: 4
+('[Jul 07, 16, 17:37:26] key from post:', 'filter')
+('[Jul 07, 16, 17:37:26] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:26] entered log in filter classes
+[Jul 07, 16, 17:37:26] logging from exposure class
+[Jul 07, 16, 17:37:26] Filter position is r
+[17:37:27]Sending to filter: getFilter
+[Jul 07, 16, 17:37:27] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:37:27] position: 4
+('[Jul 07, 16, 17:37:27] key from post:', 'filter')
+('[Jul 07, 16, 17:37:27] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:27] entered log in filter classes
+[Jul 07, 16, 17:37:27] logging from exposure class
+[Jul 07, 16, 17:37:27] Filter position is r
+[17:37:28]Sending to filter: getFilter
+[Jul 07, 16, 17:37:28] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:37:28] position: 5
+('[Jul 07, 16, 17:37:28] key from post:', 'filter')
+('[Jul 07, 16, 17:37:28] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:28] entered log in filter classes
+[Jul 07, 16, 17:37:28] logging from exposure class
+[Jul 07, 16, 17:37:28] Filter position is i
+[Jul 07, 16, 17:37:28] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:37:28] key from post:', 'filter')
+('[Jul 07, 16, 17:37:28] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:37:29] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:37:29] 11
+('[Jul 07, 16, 17:37:29] key from post:', 'filter')
+('[Jul 07, 16, 17:37:29] Stats in log:', ['move'])
+[Jul 07, 16, 17:37:29] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:37:29] entered log in filter classes
+[Jul 07, 16, 17:37:29] logging from exposure class
+[Jul 07, 16, 17:37:29] Completed rotation...
+[Jul 07, 16, 17:37:33] selection: V
+[Jul 07, 16, 17:37:34] <type 'unicode'>
+[Jul 07, 16, 17:37:34] index: 2
+[Jul 07, 16, 17:37:34] entered log in filter classes
+[Jul 07, 16, 17:37:34] logging from exposure class
+[17:37:34]Sending to filter: move 2
+[17:37:34]Sending to filter: getFilter
+[Jul 07, 16, 17:37:34] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:37:34] position: 5
+('[Jul 07, 16, 17:37:34] key from post:', 'filter')
+('[Jul 07, 16, 17:37:34] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:34] entered log in filter classes
+[Jul 07, 16, 17:37:34] logging from exposure class
+[Jul 07, 16, 17:37:34] Filter position is i
+[17:37:35]Sending to filter: getFilter
+[Jul 07, 16, 17:37:35] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:37:35] position: 4
+('[Jul 07, 16, 17:37:35] key from post:', 'filter')
+('[Jul 07, 16, 17:37:35] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:35] entered log in filter classes
+[Jul 07, 16, 17:37:35] logging from exposure class
+[Jul 07, 16, 17:37:35] Filter position is r
+[17:37:36]Sending to filter: getFilter
+[Jul 07, 16, 17:37:36] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:37:36] position: 3
+('[Jul 07, 16, 17:37:36] key from post:', 'filter')
+('[Jul 07, 16, 17:37:36] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:36] entered log in filter classes
+[Jul 07, 16, 17:37:36] logging from exposure class
+[Jul 07, 16, 17:37:36] Filter position is g
+[17:37:37]Sending to filter: getFilter
+[Jul 07, 16, 17:37:37] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:37:37] position: 2
+('[Jul 07, 16, 17:37:37] key from post:', 'filter')
+('[Jul 07, 16, 17:37:37] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:37] entered log in filter classes
+[Jul 07, 16, 17:37:37] logging from exposure class
+[Jul 07, 16, 17:37:37] Filter position is V
+[Jul 07, 16, 17:37:40] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:37:40] key from post:', 'filter')
+('[Jul 07, 16, 17:37:40] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:37:41] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:37:41] 11
+('[Jul 07, 16, 17:37:41] key from post:', 'filter')
+('[Jul 07, 16, 17:37:41] Stats in log:', ['move'])
+[Jul 07, 16, 17:37:41] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:37:41] entered log in filter classes
+[Jul 07, 16, 17:37:41] logging from exposure class
+[Jul 07, 16, 17:37:41] Completed rotation...
+[Jul 07, 16, 17:37:49] selection: g
+[Jul 07, 16, 17:37:50] <type 'unicode'>
+[Jul 07, 16, 17:37:50] index: 3
+[Jul 07, 16, 17:37:50] entered log in filter classes
+[Jul 07, 16, 17:37:50] logging from exposure class
+[17:37:50]Sending to filter: move 3
+[17:37:50]Sending to filter: getFilter
+[Jul 07, 16, 17:37:50] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:37:50] position: 2
+('[Jul 07, 16, 17:37:50] key from post:', 'filter')
+('[Jul 07, 16, 17:37:50] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:50] entered log in filter classes
+[Jul 07, 16, 17:37:50] logging from exposure class
+[Jul 07, 16, 17:37:50] Filter position is V
+[17:37:51]Sending to filter: getFilter
+[Jul 07, 16, 17:37:51] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:37:51] position: 2
+('[Jul 07, 16, 17:37:51] key from post:', 'filter')
+('[Jul 07, 16, 17:37:51] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:51] entered log in filter classes
+[Jul 07, 16, 17:37:51] logging from exposure class
+[Jul 07, 16, 17:37:51] Filter position is V
+[17:37:52]Sending to filter: getFilter
+[Jul 07, 16, 17:37:52] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:37:52] position: 3
+('[Jul 07, 16, 17:37:52] key from post:', 'filter')
+('[Jul 07, 16, 17:37:52] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:52] entered log in filter classes
+[Jul 07, 16, 17:37:52] logging from exposure class
+[Jul 07, 16, 17:37:52] Filter position is g
+[Jul 07, 16, 17:37:52] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:37:52] key from post:', 'filter')
+('[Jul 07, 16, 17:37:52] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:37:53] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:37:53] 11
+('[Jul 07, 16, 17:37:53] key from post:', 'filter')
+('[Jul 07, 16, 17:37:53] Stats in log:', ['move'])
+[Jul 07, 16, 17:37:53] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:37:53] entered log in filter classes
+[Jul 07, 16, 17:37:53] logging from exposure class
+[Jul 07, 16, 17:37:53] Completed rotation...
+[Jul 07, 16, 17:37:57] selection: i
+[Jul 07, 16, 17:37:58] <type 'unicode'>
+[Jul 07, 16, 17:37:58] index: 5
+[Jul 07, 16, 17:37:58] entered log in filter classes
+[Jul 07, 16, 17:37:58] logging from exposure class
+[17:37:58]Sending to filter: move 5
+[17:37:58]Sending to filter: getFilter
+[Jul 07, 16, 17:37:58] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:37:58] position: 3
+('[Jul 07, 16, 17:37:58] key from post:', 'filter')
+('[Jul 07, 16, 17:37:58] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:58] entered log in filter classes
+[Jul 07, 16, 17:37:58] logging from exposure class
+[Jul 07, 16, 17:37:58] Filter position is g
+[17:37:59]Sending to filter: getFilter
+[Jul 07, 16, 17:37:59] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:37:59] position: 3
+('[Jul 07, 16, 17:37:59] key from post:', 'filter')
+('[Jul 07, 16, 17:37:59] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:37:59] entered log in filter classes
+[Jul 07, 16, 17:37:59] logging from exposure class
+[Jul 07, 16, 17:37:59] Filter position is g
+[17:38:00]Sending to filter: getFilter
+[Jul 07, 16, 17:38:00] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:38:00] position: 4
+('[Jul 07, 16, 17:38:00] key from post:', 'filter')
+('[Jul 07, 16, 17:38:00] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:00] entered log in filter classes
+[Jul 07, 16, 17:38:00] logging from exposure class
+[Jul 07, 16, 17:38:00] Filter position is r
+[17:38:01]Sending to filter: getFilter
+[Jul 07, 16, 17:38:01] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:38:01] position: 5
+('[Jul 07, 16, 17:38:01] key from post:', 'filter')
+('[Jul 07, 16, 17:38:01] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:01] entered log in filter classes
+[Jul 07, 16, 17:38:01] logging from exposure class
+[Jul 07, 16, 17:38:01] Filter position is i
+[Jul 07, 16, 17:38:01] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:38:01] key from post:', 'filter')
+('[Jul 07, 16, 17:38:01] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:38:02] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:38:02] 11
+('[Jul 07, 16, 17:38:02] key from post:', 'filter')
+('[Jul 07, 16, 17:38:02] Stats in log:', ['move'])
+[Jul 07, 16, 17:38:02] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:38:02] entered log in filter classes
+[Jul 07, 16, 17:38:02] logging from exposure class
+[Jul 07, 16, 17:38:02] Completed rotation...
+[Jul 07, 16, 17:38:05] <type 'str'>
+[Jul 07, 16, 17:38:05] index: 5
+[Jul 07, 16, 17:38:05] entered log in filter classes
+[Jul 07, 16, 17:38:05] logging from exposure class
+[17:38:05]Sending to filter: move 5
+[17:38:05]Sending to filter: getFilter
+[Jul 07, 16, 17:38:05] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:38:05] 1
+('[Jul 07, 16, 17:38:05] key from post:', 'filter')
+('[Jul 07, 16, 17:38:05] Stats in log:', ['move'])
+[Jul 07, 16, 17:38:05] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:38:05] entered log in filter classes
+[Jul 07, 16, 17:38:05] logging from exposure class
+[Jul 07, 16, 17:38:05] Completed rotation...
+[Jul 07, 16, 17:38:05] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:38:05] position: 5
+('[Jul 07, 16, 17:38:05] key from post:', 'filter')
+('[Jul 07, 16, 17:38:05] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:05] entered log in filter classes
+[Jul 07, 16, 17:38:05] logging from exposure class
+[Jul 07, 16, 17:38:05] Filter position is i
+[Jul 07, 16, 17:38:09] selection: Ha
+[Jul 07, 16, 17:38:10] <type 'unicode'>
+[Jul 07, 16, 17:38:10] index: 0
+[Jul 07, 16, 17:38:10] entered log in filter classes
+[Jul 07, 16, 17:38:10] logging from exposure class
+[17:38:10]Sending to filter: move 0
+[17:38:10]Sending to filter: getFilter
+[Jul 07, 16, 17:38:10] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:38:10] position: 5
+('[Jul 07, 16, 17:38:10] key from post:', 'filter')
+('[Jul 07, 16, 17:38:10] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:10] entered log in filter classes
+[Jul 07, 16, 17:38:10] logging from exposure class
+[Jul 07, 16, 17:38:10] Filter position is i
+[17:38:11]Sending to filter: getFilter
+[Jul 07, 16, 17:38:11] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:38:11] position: 4
+('[Jul 07, 16, 17:38:11] key from post:', 'filter')
+('[Jul 07, 16, 17:38:11] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:11] entered log in filter classes
+[Jul 07, 16, 17:38:11] logging from exposure class
+[Jul 07, 16, 17:38:11] Filter position is r
+[17:38:12]Sending to filter: getFilter
+[Jul 07, 16, 17:38:12] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:38:12] position: 3
+('[Jul 07, 16, 17:38:12] key from post:', 'filter')
+('[Jul 07, 16, 17:38:12] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:12] entered log in filter classes
+[Jul 07, 16, 17:38:12] logging from exposure class
+[Jul 07, 16, 17:38:12] Filter position is g
+[17:38:13]Sending to filter: getFilter
+[Jul 07, 16, 17:38:13] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:38:13] position: 2
+('[Jul 07, 16, 17:38:13] key from post:', 'filter')
+('[Jul 07, 16, 17:38:13] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:13] entered log in filter classes
+[Jul 07, 16, 17:38:13] logging from exposure class
+[Jul 07, 16, 17:38:13] Filter position is V
+[17:38:14]Sending to filter: getFilter
+[Jul 07, 16, 17:38:14] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:38:14] position: 2
+('[Jul 07, 16, 17:38:14] key from post:', 'filter')
+('[Jul 07, 16, 17:38:14] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:14] entered log in filter classes
+[Jul 07, 16, 17:38:14] logging from exposure class
+[Jul 07, 16, 17:38:14] Filter position is V
+[17:38:15]Sending to filter: getFilter
+[Jul 07, 16, 17:38:15] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:38:15] position: 1
+('[Jul 07, 16, 17:38:15] key from post:', 'filter')
+('[Jul 07, 16, 17:38:15] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:15] entered log in filter classes
+[Jul 07, 16, 17:38:15] logging from exposure class
+[Jul 07, 16, 17:38:15] Filter position is B
+[17:38:16]Sending to filter: getFilter
+[Jul 07, 16, 17:38:16] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:38:16] position: 0
+('[Jul 07, 16, 17:38:16] key from post:', 'filter')
+('[Jul 07, 16, 17:38:16] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:16] entered log in filter classes
+[Jul 07, 16, 17:38:16] logging from exposure class
+[Jul 07, 16, 17:38:16] Filter position is Ha
+[Jul 07, 16, 17:38:19] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:38:19] 1
+('[Jul 07, 16, 17:38:19] key from post:', 'filter')
+('[Jul 07, 16, 17:38:19] Stats in log:', ['move'])
+[Jul 07, 16, 17:38:19] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:38:19] entered log in filter classes
+[Jul 07, 16, 17:38:19] logging from exposure class
+[Jul 07, 16, 17:38:19] Completed rotation...
+[Jul 07, 16, 17:38:23] selection: r
+[Jul 07, 16, 17:38:24] <type 'unicode'>
+[Jul 07, 16, 17:38:24] index: 4
+[Jul 07, 16, 17:38:24] entered log in filter classes
+[Jul 07, 16, 17:38:24] logging from exposure class
+[17:38:24]Sending to filter: move 4
+[17:38:24]Sending to filter: getFilter
+[Jul 07, 16, 17:38:24] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:38:24] position: 0
+('[Jul 07, 16, 17:38:24] key from post:', 'filter')
+('[Jul 07, 16, 17:38:24] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:24] entered log in filter classes
+[Jul 07, 16, 17:38:24] logging from exposure class
+[Jul 07, 16, 17:38:24] Filter position is Ha
+[17:38:25]Sending to filter: getFilter
+[Jul 07, 16, 17:38:25] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:38:25] position: 0
+('[Jul 07, 16, 17:38:25] key from post:', 'filter')
+('[Jul 07, 16, 17:38:25] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:25] entered log in filter classes
+[Jul 07, 16, 17:38:25] logging from exposure class
+[Jul 07, 16, 17:38:25] Filter position is Ha
+[17:38:26]Sending to filter: getFilter
+[Jul 07, 16, 17:38:26] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:38:26] position: 1
+('[Jul 07, 16, 17:38:26] key from post:', 'filter')
+('[Jul 07, 16, 17:38:26] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:26] entered log in filter classes
+[Jul 07, 16, 17:38:26] logging from exposure class
+[Jul 07, 16, 17:38:26] Filter position is B
+[17:38:27]Sending to filter: getFilter
+[Jul 07, 16, 17:38:27] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:38:27] position: 2
+('[Jul 07, 16, 17:38:27] key from post:', 'filter')
+('[Jul 07, 16, 17:38:27] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:27] entered log in filter classes
+[Jul 07, 16, 17:38:27] logging from exposure class
+[Jul 07, 16, 17:38:27] Filter position is V
+[17:38:28]Sending to filter: getFilter
+[Jul 07, 16, 17:38:28] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:38:28] position: 2
+('[Jul 07, 16, 17:38:28] key from post:', 'filter')
+('[Jul 07, 16, 17:38:28] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:28] entered log in filter classes
+[Jul 07, 16, 17:38:28] logging from exposure class
+[Jul 07, 16, 17:38:28] Filter position is V
+[17:38:29]Sending to filter: getFilter
+[Jul 07, 16, 17:38:29] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:38:29] position: 3
+('[Jul 07, 16, 17:38:29] key from post:', 'filter')
+('[Jul 07, 16, 17:38:29] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:29] entered log in filter classes
+[Jul 07, 16, 17:38:29] logging from exposure class
+[Jul 07, 16, 17:38:29] Filter position is g
+[17:38:30]Sending to filter: getFilter
+[Jul 07, 16, 17:38:30] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:38:30] position: 4
+('[Jul 07, 16, 17:38:30] key from post:', 'filter')
+('[Jul 07, 16, 17:38:30] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:30] entered log in filter classes
+[Jul 07, 16, 17:38:30] logging from exposure class
+[Jul 07, 16, 17:38:30] Filter position is r
+[Jul 07, 16, 17:38:30] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:38:30] key from post:', 'filter')
+('[Jul 07, 16, 17:38:30] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:38:31] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:38:31] 11
+('[Jul 07, 16, 17:38:31] key from post:', 'filter')
+('[Jul 07, 16, 17:38:31] Stats in log:', ['move'])
+[Jul 07, 16, 17:38:31] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:38:31] entered log in filter classes
+[Jul 07, 16, 17:38:31] logging from exposure class
+[Jul 07, 16, 17:38:31] Completed rotation...
+[Jul 07, 16, 17:38:38] selection: i
+[Jul 07, 16, 17:38:39] <type 'unicode'>
+[Jul 07, 16, 17:38:39] index: 5
+[Jul 07, 16, 17:38:39] entered log in filter classes
+[Jul 07, 16, 17:38:39] logging from exposure class
+[17:38:39]Sending to filter: move 5
+[17:38:39]Sending to filter: getFilter
+[Jul 07, 16, 17:38:39] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:38:39] position: 4
+('[Jul 07, 16, 17:38:39] key from post:', 'filter')
+('[Jul 07, 16, 17:38:39] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:39] entered log in filter classes
+[Jul 07, 16, 17:38:39] logging from exposure class
+[Jul 07, 16, 17:38:39] Filter position is r
+[17:38:40]Sending to filter: getFilter
+[Jul 07, 16, 17:38:40] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:38:40] position: 4
+('[Jul 07, 16, 17:38:40] key from post:', 'filter')
+('[Jul 07, 16, 17:38:40] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:40] entered log in filter classes
+[Jul 07, 16, 17:38:40] logging from exposure class
+[Jul 07, 16, 17:38:40] Filter position is r
+[17:38:41]Sending to filter: getFilter
+[Jul 07, 16, 17:38:41] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:38:41] position: 5
+('[Jul 07, 16, 17:38:41] key from post:', 'filter')
+('[Jul 07, 16, 17:38:41] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:38:41] entered log in filter classes
+[Jul 07, 16, 17:38:41] logging from exposure class
+[Jul 07, 16, 17:38:41] Filter position is i
+[Jul 07, 16, 17:38:41] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:38:41] key from post:', 'filter')
+('[Jul 07, 16, 17:38:41] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:38:45] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:38:45] 11
+('[Jul 07, 16, 17:38:45] key from post:', 'filter')
+('[Jul 07, 16, 17:38:45] Stats in log:', ['move'])
+[Jul 07, 16, 17:38:45] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:38:45] entered log in filter classes
+[Jul 07, 16, 17:38:45] logging from exposure class
+[Jul 07, 16, 17:38:45] Completed rotation...
+[Jul 07, 16, 17:38:58] selection: r
+[Jul 07, 16, 17:40:16] selection: g
+[Jul 07, 16, 17:40:17] <type 'unicode'>
+[Jul 07, 16, 17:40:17] index: 3
+[Jul 07, 16, 17:40:17] entered log in filter classes
+[Jul 07, 16, 17:40:17] logging from exposure class
+[17:40:17]Sending to filter: move 3
+[17:40:17]Sending to filter: getFilter
+[Jul 07, 16, 17:40:17] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:40:17] position: 5
+('[Jul 07, 16, 17:40:17] key from post:', 'filter')
+('[Jul 07, 16, 17:40:17] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:40:17] entered log in filter classes
+[Jul 07, 16, 17:40:17] logging from exposure class
+[Jul 07, 16, 17:40:17] Filter position is i
+[17:40:18]Sending to filter: getFilter
+[Jul 07, 16, 17:40:18] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:40:18] position: 4
+('[Jul 07, 16, 17:40:18] key from post:', 'filter')
+('[Jul 07, 16, 17:40:18] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:40:18] entered log in filter classes
+[Jul 07, 16, 17:40:18] logging from exposure class
+[Jul 07, 16, 17:40:18] Filter position is r
+[17:40:19]Sending to filter: getFilter
+[Jul 07, 16, 17:40:19] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:40:19] position: 3
+('[Jul 07, 16, 17:40:19] key from post:', 'filter')
+('[Jul 07, 16, 17:40:19] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:40:19] entered log in filter classes
+[Jul 07, 16, 17:40:19] logging from exposure class
+[Jul 07, 16, 17:40:19] Filter position is g
+[Jul 07, 16, 17:40:21] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:40:21] key from post:', 'filter')
+('[Jul 07, 16, 17:40:21] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:40:22] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:40:22] 11
+('[Jul 07, 16, 17:40:22] key from post:', 'filter')
+('[Jul 07, 16, 17:40:22] Stats in log:', ['move'])
+[Jul 07, 16, 17:40:22] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:40:22] entered log in filter classes
+[Jul 07, 16, 17:40:22] logging from exposure class
+[Jul 07, 16, 17:40:22] Completed rotation...
+[Jul 07, 16, 17:40:28] Disconnect pressed in filter menu
+('[Jul 07, 16, 17:40:28] key from post:', 'filter')
+('[Jul 07, 16, 17:40:28] Stats in log:', ['connectLost'])
+[Jul 07, 16, 17:40:28] entered log in filter classes
+[Jul 07, 16, 17:40:28] logging from exposure class
+[Jul 07, 16, 17:40:28] connection lost normally on port 5503
+[Jul 07, 16, 17:41:01] Closing down Evora GUI
+[Jul 07, 16, 17:41:01] reactor stopped, finished quitting
+[Jul 07, 16, 17:47:48] Connect pressed in Filter menu
+[Jul 07, 16, 17:47:48] connection made to filter
+[Jul 07, 16, 17:47:48] entered log in filter classes
+[Jul 07, 16, 17:47:48] logging from exposure class
+[Jul 07, 16, 17:47:48] entered log in filter classes
+[Jul 07, 16, 17:47:48] logging from exposure class
+[17:47:48]Sending to filter: getFilter
+[Jul 07, 16, 17:47:50] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:47:50] position: 2
+('[Jul 07, 16, 17:47:50] key from post:', 'filter')
+('[Jul 07, 16, 17:47:50] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:47:50] entered log in filter classes
+[Jul 07, 16, 17:47:50] logging from exposure class
+[Jul 07, 16, 17:47:50] Filter position is V
+[Jul 07, 16, 17:47:54] entered log in filter classes
+[Jul 07, 16, 17:47:54] logging from exposure class
+[17:47:54]Sending to filter: home
+[Jul 07, 16, 17:47:54] homing...
+[Jul 07, 16, 17:48:10] Receieved from filter (5503): home 1
+
+('[Jul 07, 16, 17:48:10] key from post:', 'filter')
+('[Jul 07, 16, 17:48:10] Stats in log:', ['home'])
+[Jul 07, 16, 17:48:10] entered log in filter classes
+[Jul 07, 16, 17:48:10] logging from exposure class
+[Jul 07, 16, 17:48:10] Done homing: 1
+[Jul 07, 16, 17:48:10] entered log in filter classes
+[Jul 07, 16, 17:48:10] logging from exposure class
+[17:48:10]Sending to filter: getFilter
+[Jul 07, 16, 17:48:10] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:48:10] position: 0
+('[Jul 07, 16, 17:48:10] key from post:', 'filter')
+('[Jul 07, 16, 17:48:10] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:10] entered log in filter classes
+[Jul 07, 16, 17:48:10] logging from exposure class
+[Jul 07, 16, 17:48:10] Filter position is Ha
+[Jul 07, 16, 17:48:13] selection: g
+[Jul 07, 16, 17:48:14] <type 'unicode'>
+[Jul 07, 16, 17:48:14] index: 3
+[Jul 07, 16, 17:48:14] entered log in filter classes
+[Jul 07, 16, 17:48:14] logging from exposure class
+[17:48:14]Sending to filter: move 3
+[17:48:14]Sending to filter: getFilter
+[Jul 07, 16, 17:48:14] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:48:14] position: 0
+('[Jul 07, 16, 17:48:14] key from post:', 'filter')
+('[Jul 07, 16, 17:48:14] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:14] entered log in filter classes
+[Jul 07, 16, 17:48:14] logging from exposure class
+[Jul 07, 16, 17:48:14] Filter position is Ha
+[17:48:15]Sending to filter: getFilter
+[Jul 07, 16, 17:48:15] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:48:15] position: 0
+('[Jul 07, 16, 17:48:15] key from post:', 'filter')
+('[Jul 07, 16, 17:48:15] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:15] entered log in filter classes
+[Jul 07, 16, 17:48:15] logging from exposure class
+[Jul 07, 16, 17:48:15] Filter position is Ha
+[17:48:16]Sending to filter: getFilter
+[Jul 07, 16, 17:48:16] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:48:16] position: 1
+('[Jul 07, 16, 17:48:16] key from post:', 'filter')
+('[Jul 07, 16, 17:48:16] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:16] entered log in filter classes
+[Jul 07, 16, 17:48:16] logging from exposure class
+[Jul 07, 16, 17:48:16] Filter position is B
+[17:48:17]Sending to filter: getFilter
+[Jul 07, 16, 17:48:18] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:48:18] position: 2
+('[Jul 07, 16, 17:48:18] key from post:', 'filter')
+('[Jul 07, 16, 17:48:18] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:18] entered log in filter classes
+[Jul 07, 16, 17:48:18] logging from exposure class
+[Jul 07, 16, 17:48:18] Filter position is V
+[17:48:18]Sending to filter: getFilter
+[Jul 07, 16, 17:48:18] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:48:18] position: 2
+('[Jul 07, 16, 17:48:18] key from post:', 'filter')
+('[Jul 07, 16, 17:48:18] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:18] entered log in filter classes
+[Jul 07, 16, 17:48:18] logging from exposure class
+[Jul 07, 16, 17:48:18] Filter position is V
+[17:48:19]Sending to filter: getFilter
+[Jul 07, 16, 17:48:19] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:48:19] position: 3
+('[Jul 07, 16, 17:48:19] key from post:', 'filter')
+('[Jul 07, 16, 17:48:19] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:19] entered log in filter classes
+[Jul 07, 16, 17:48:19] logging from exposure class
+[Jul 07, 16, 17:48:19] Filter position is g
+[Jul 07, 16, 17:48:40] selection: i
+[Jul 07, 16, 17:48:41] <type 'unicode'>
+[Jul 07, 16, 17:48:41] index: 5
+[Jul 07, 16, 17:48:41] entered log in filter classes
+[Jul 07, 16, 17:48:41] logging from exposure class
+[17:48:41]Sending to filter: move 5
+[17:48:41]Sending to filter: getFilter
+[Jul 07, 16, 17:48:41] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:48:41] position: 3
+('[Jul 07, 16, 17:48:41] key from post:', 'filter')
+('[Jul 07, 16, 17:48:41] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:41] entered log in filter classes
+[Jul 07, 16, 17:48:41] logging from exposure class
+[Jul 07, 16, 17:48:41] Filter position is g
+[17:48:42]Sending to filter: getFilter
+[Jul 07, 16, 17:48:42] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:48:42] position: 3
+('[Jul 07, 16, 17:48:42] key from post:', 'filter')
+('[Jul 07, 16, 17:48:42] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:42] entered log in filter classes
+[Jul 07, 16, 17:48:42] logging from exposure class
+[Jul 07, 16, 17:48:42] Filter position is g
+[17:48:43]Sending to filter: getFilter
+[Jul 07, 16, 17:48:43] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:48:43] position: 4
+('[Jul 07, 16, 17:48:43] key from post:', 'filter')
+('[Jul 07, 16, 17:48:43] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:43] entered log in filter classes
+[Jul 07, 16, 17:48:43] logging from exposure class
+[Jul 07, 16, 17:48:43] Filter position is r
+[17:48:44]Sending to filter: getFilter
+[Jul 07, 16, 17:48:44] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:48:44] position: 5
+('[Jul 07, 16, 17:48:44] key from post:', 'filter')
+('[Jul 07, 16, 17:48:44] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:44] entered log in filter classes
+[Jul 07, 16, 17:48:44] logging from exposure class
+[Jul 07, 16, 17:48:44] Filter position is i
+[Jul 07, 16, 17:48:44] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:48:44] 1
+('[Jul 07, 16, 17:48:44] key from post:', 'filter')
+('[Jul 07, 16, 17:48:44] Stats in log:', ['move'])
+[Jul 07, 16, 17:48:44] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:48:44] entered log in filter classes
+[Jul 07, 16, 17:48:44] logging from exposure class
+[Jul 07, 16, 17:48:44] Completed rotation...
+[Jul 07, 16, 17:48:46] selection: B
+[Jul 07, 16, 17:48:49] <type 'unicode'>
+[Jul 07, 16, 17:48:49] index: 1
+[Jul 07, 16, 17:48:49] entered log in filter classes
+[Jul 07, 16, 17:48:49] logging from exposure class
+[17:48:49]Sending to filter: move 1
+[17:48:49]Sending to filter: getFilter
+[17:48:50]Sending to filter: getFilter
+[Jul 07, 16, 17:48:50] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:48:50] position: 4
+('[Jul 07, 16, 17:48:50] key from post:', 'filter')
+('[Jul 07, 16, 17:48:50] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:50] entered log in filter classes
+[Jul 07, 16, 17:48:50] logging from exposure class
+[Jul 07, 16, 17:48:50] Filter position is r
+[17:48:51]Sending to filter: getFilter
+[Jul 07, 16, 17:48:51] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:48:51] position: 3
+('[Jul 07, 16, 17:48:51] key from post:', 'filter')
+('[Jul 07, 16, 17:48:51] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:51] entered log in filter classes
+[Jul 07, 16, 17:48:51] logging from exposure class
+[Jul 07, 16, 17:48:51] Filter position is g
+[17:48:52]Sending to filter: getFilter
+[Jul 07, 16, 17:48:52] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:48:52] position: 2
+('[Jul 07, 16, 17:48:52] key from post:', 'filter')
+('[Jul 07, 16, 17:48:52] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:52] entered log in filter classes
+[Jul 07, 16, 17:48:52] logging from exposure class
+[Jul 07, 16, 17:48:52] Filter position is V
+[17:48:53]Sending to filter: getFilter
+[Jul 07, 16, 17:48:53] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:48:53] position: 1
+('[Jul 07, 16, 17:48:53] key from post:', 'filter')
+('[Jul 07, 16, 17:48:53] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:48:53] entered log in filter classes
+[Jul 07, 16, 17:48:53] logging from exposure class
+[Jul 07, 16, 17:48:53] Filter position is B
+[Jul 07, 16, 17:48:56] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:48:56] key from post:', 'filter')
+('[Jul 07, 16, 17:48:56] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:48:56] entered log in filter classes
+[Jul 07, 16, 17:48:56] logging from exposure class
+[Jul 07, 16, 17:48:57] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:48:57] 11
+('[Jul 07, 16, 17:48:57] key from post:', 'filter')
+('[Jul 07, 16, 17:48:57] Stats in log:', ['move'])
+[Jul 07, 16, 17:48:57] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:48:57] entered log in filter classes
+[Jul 07, 16, 17:48:57] logging from exposure class
+[Jul 07, 16, 17:48:57] Completed rotation...
+[Jul 07, 16, 17:49:18] selection: g
+[Jul 07, 16, 17:49:19] <type 'unicode'>
+[Jul 07, 16, 17:49:19] index: 3
+[Jul 07, 16, 17:49:19] entered log in filter classes
+[Jul 07, 16, 17:49:19] logging from exposure class
+[17:49:19]Sending to filter: move 3
+[17:49:19]Sending to filter: getFilter
+[Jul 07, 16, 17:49:19] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:49:19] position: 1
+('[Jul 07, 16, 17:49:19] key from post:', 'filter')
+('[Jul 07, 16, 17:49:19] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:19] entered log in filter classes
+[Jul 07, 16, 17:49:19] logging from exposure class
+[Jul 07, 16, 17:49:19] Filter position is B
+[17:49:20]Sending to filter: getFilter
+[Jul 07, 16, 17:49:20] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:49:20] position: 1
+('[Jul 07, 16, 17:49:20] key from post:', 'filter')
+('[Jul 07, 16, 17:49:20] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:20] entered log in filter classes
+[Jul 07, 16, 17:49:20] logging from exposure class
+[Jul 07, 16, 17:49:20] Filter position is B
+[17:49:21]Sending to filter: getFilter
+[Jul 07, 16, 17:49:21] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:49:21] position: 2
+('[Jul 07, 16, 17:49:21] key from post:', 'filter')
+('[Jul 07, 16, 17:49:21] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:21] entered log in filter classes
+[Jul 07, 16, 17:49:21] logging from exposure class
+[Jul 07, 16, 17:49:21] Filter position is V
+[17:49:22]Sending to filter: getFilter
+[Jul 07, 16, 17:49:22] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:49:22] position: 3
+('[Jul 07, 16, 17:49:22] key from post:', 'filter')
+('[Jul 07, 16, 17:49:22] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:22] entered log in filter classes
+[Jul 07, 16, 17:49:22] logging from exposure class
+[Jul 07, 16, 17:49:22] Filter position is g
+[Jul 07, 16, 17:49:22] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:49:22] key from post:', 'filter')
+('[Jul 07, 16, 17:49:22] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:49:22] entered log in filter classes
+[Jul 07, 16, 17:49:22] logging from exposure class
+[Jul 07, 16, 17:49:23] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:49:23] 11
+('[Jul 07, 16, 17:49:23] key from post:', 'filter')
+('[Jul 07, 16, 17:49:23] Stats in log:', ['move'])
+[Jul 07, 16, 17:49:23] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:49:23] entered log in filter classes
+[Jul 07, 16, 17:49:23] logging from exposure class
+[Jul 07, 16, 17:49:23] Completed rotation...
+[Jul 07, 16, 17:49:28] selection: r
+[Jul 07, 16, 17:49:29] <type 'unicode'>
+[Jul 07, 16, 17:49:29] index: 4
+[Jul 07, 16, 17:49:29] entered log in filter classes
+[Jul 07, 16, 17:49:29] logging from exposure class
+[17:49:29]Sending to filter: move 4
+[17:49:29]Sending to filter: getFilter
+[Jul 07, 16, 17:49:29] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:49:29] position: 3
+('[Jul 07, 16, 17:49:29] key from post:', 'filter')
+('[Jul 07, 16, 17:49:29] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:29] entered log in filter classes
+[Jul 07, 16, 17:49:29] logging from exposure class
+[Jul 07, 16, 17:49:29] Filter position is g
+[17:49:30]Sending to filter: getFilter
+[Jul 07, 16, 17:49:30] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:49:30] position: 3
+('[Jul 07, 16, 17:49:30] key from post:', 'filter')
+('[Jul 07, 16, 17:49:30] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:30] entered log in filter classes
+[Jul 07, 16, 17:49:30] logging from exposure class
+[Jul 07, 16, 17:49:30] Filter position is g
+[17:49:31]Sending to filter: getFilter
+[Jul 07, 16, 17:49:31] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:49:31] position: 4
+('[Jul 07, 16, 17:49:31] key from post:', 'filter')
+('[Jul 07, 16, 17:49:31] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:31] entered log in filter classes
+[Jul 07, 16, 17:49:31] logging from exposure class
+[Jul 07, 16, 17:49:31] Filter position is r
+[Jul 07, 16, 17:49:31] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:49:31] key from post:', 'filter')
+('[Jul 07, 16, 17:49:31] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:49:31] entered log in filter classes
+[Jul 07, 16, 17:49:31] logging from exposure class
+[Jul 07, 16, 17:49:32] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:49:32] 11
+('[Jul 07, 16, 17:49:32] key from post:', 'filter')
+('[Jul 07, 16, 17:49:32] Stats in log:', ['move'])
+[Jul 07, 16, 17:49:32] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:49:32] entered log in filter classes
+[Jul 07, 16, 17:49:32] logging from exposure class
+[Jul 07, 16, 17:49:32] Completed rotation...
+[Jul 07, 16, 17:49:40] selection: i
+[Jul 07, 16, 17:49:41] <type 'unicode'>
+[Jul 07, 16, 17:49:41] index: 5
+[Jul 07, 16, 17:49:41] entered log in filter classes
+[Jul 07, 16, 17:49:41] logging from exposure class
+[17:49:41]Sending to filter: move 5
+[17:49:41]Sending to filter: getFilter
+[Jul 07, 16, 17:49:41] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:49:41] position: 4
+('[Jul 07, 16, 17:49:41] key from post:', 'filter')
+('[Jul 07, 16, 17:49:41] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:41] entered log in filter classes
+[Jul 07, 16, 17:49:41] logging from exposure class
+[Jul 07, 16, 17:49:41] Filter position is r
+[17:49:42]Sending to filter: getFilter
+[Jul 07, 16, 17:49:42] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:49:42] position: 4
+('[Jul 07, 16, 17:49:42] key from post:', 'filter')
+('[Jul 07, 16, 17:49:42] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:42] entered log in filter classes
+[Jul 07, 16, 17:49:42] logging from exposure class
+[Jul 07, 16, 17:49:42] Filter position is r
+[17:49:43]Sending to filter: getFilter
+[Jul 07, 16, 17:49:43] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:49:43] position: 5
+('[Jul 07, 16, 17:49:43] key from post:', 'filter')
+('[Jul 07, 16, 17:49:43] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:43] entered log in filter classes
+[Jul 07, 16, 17:49:43] logging from exposure class
+[Jul 07, 16, 17:49:43] Filter position is i
+[Jul 07, 16, 17:49:43] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:49:43] key from post:', 'filter')
+('[Jul 07, 16, 17:49:43] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:49:43] entered log in filter classes
+[Jul 07, 16, 17:49:43] logging from exposure class
+[Jul 07, 16, 17:49:45] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:49:45] 11
+('[Jul 07, 16, 17:49:45] key from post:', 'filter')
+('[Jul 07, 16, 17:49:45] Stats in log:', ['move'])
+[Jul 07, 16, 17:49:45] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:49:45] entered log in filter classes
+[Jul 07, 16, 17:49:45] logging from exposure class
+[Jul 07, 16, 17:49:45] Completed rotation...
+[Jul 07, 16, 17:49:48] selection: Ha
+[Jul 07, 16, 17:49:49] <type 'unicode'>
+[Jul 07, 16, 17:49:49] index: 0
+[Jul 07, 16, 17:49:49] entered log in filter classes
+[Jul 07, 16, 17:49:49] logging from exposure class
+[17:49:49]Sending to filter: move 0
+[17:49:49]Sending to filter: getFilter
+[Jul 07, 16, 17:49:49] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:49:49] position: 5
+('[Jul 07, 16, 17:49:49] key from post:', 'filter')
+('[Jul 07, 16, 17:49:49] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:49] entered log in filter classes
+[Jul 07, 16, 17:49:49] logging from exposure class
+[Jul 07, 16, 17:49:49] Filter position is i
+[17:49:50]Sending to filter: getFilter
+[Jul 07, 16, 17:49:50] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:49:50] position: 4
+('[Jul 07, 16, 17:49:50] key from post:', 'filter')
+('[Jul 07, 16, 17:49:50] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:50] entered log in filter classes
+[Jul 07, 16, 17:49:50] logging from exposure class
+[Jul 07, 16, 17:49:50] Filter position is r
+[17:49:51]Sending to filter: getFilter
+[Jul 07, 16, 17:49:51] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:49:51] position: 3
+('[Jul 07, 16, 17:49:51] key from post:', 'filter')
+('[Jul 07, 16, 17:49:51] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:51] entered log in filter classes
+[Jul 07, 16, 17:49:51] logging from exposure class
+[Jul 07, 16, 17:49:51] Filter position is g
+[17:49:52]Sending to filter: getFilter
+[Jul 07, 16, 17:49:52] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:49:52] position: 2
+('[Jul 07, 16, 17:49:52] key from post:', 'filter')
+('[Jul 07, 16, 17:49:52] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:52] entered log in filter classes
+[Jul 07, 16, 17:49:52] logging from exposure class
+[Jul 07, 16, 17:49:52] Filter position is V
+[17:49:53]Sending to filter: getFilter
+[Jul 07, 16, 17:49:53] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:49:53] position: 2
+('[Jul 07, 16, 17:49:53] key from post:', 'filter')
+('[Jul 07, 16, 17:49:53] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:53] entered log in filter classes
+[Jul 07, 16, 17:49:53] logging from exposure class
+[Jul 07, 16, 17:49:53] Filter position is V
+[17:49:54]Sending to filter: getFilter
+[Jul 07, 16, 17:49:54] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:49:54] position: 1
+('[Jul 07, 16, 17:49:54] key from post:', 'filter')
+('[Jul 07, 16, 17:49:54] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:54] entered log in filter classes
+[Jul 07, 16, 17:49:54] logging from exposure class
+[Jul 07, 16, 17:49:54] Filter position is B
+[17:49:55]Sending to filter: getFilter
+[Jul 07, 16, 17:49:55] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:49:55] position: 0
+('[Jul 07, 16, 17:49:55] key from post:', 'filter')
+('[Jul 07, 16, 17:49:55] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:49:55] entered log in filter classes
+[Jul 07, 16, 17:49:55] logging from exposure class
+[Jul 07, 16, 17:49:55] Filter position is Ha
+[Jul 07, 16, 17:49:58] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:49:58] 1
+('[Jul 07, 16, 17:49:58] key from post:', 'filter')
+('[Jul 07, 16, 17:49:58] Stats in log:', ['move'])
+[Jul 07, 16, 17:49:58] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:49:58] entered log in filter classes
+[Jul 07, 16, 17:49:58] logging from exposure class
+[Jul 07, 16, 17:49:58] Completed rotation...
+[Jul 07, 16, 17:50:02] selection: B
+[Jul 07, 16, 17:50:03] <type 'unicode'>
+[Jul 07, 16, 17:50:03] index: 1
+[Jul 07, 16, 17:50:03] entered log in filter classes
+[Jul 07, 16, 17:50:03] logging from exposure class
+[17:50:03]Sending to filter: move 1
+[17:50:03]Sending to filter: getFilter
+[Jul 07, 16, 17:50:03] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:50:03] position: 0
+('[Jul 07, 16, 17:50:03] key from post:', 'filter')
+('[Jul 07, 16, 17:50:03] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:03] entered log in filter classes
+[Jul 07, 16, 17:50:03] logging from exposure class
+[Jul 07, 16, 17:50:03] Filter position is Ha
+[17:50:04]Sending to filter: getFilter
+[Jul 07, 16, 17:50:04] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:50:04] position: 0
+('[Jul 07, 16, 17:50:04] key from post:', 'filter')
+('[Jul 07, 16, 17:50:04] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:04] entered log in filter classes
+[Jul 07, 16, 17:50:04] logging from exposure class
+[Jul 07, 16, 17:50:04] Filter position is Ha
+[17:50:05]Sending to filter: getFilter
+[Jul 07, 16, 17:50:05] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:05] position: 1
+('[Jul 07, 16, 17:50:05] key from post:', 'filter')
+('[Jul 07, 16, 17:50:05] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:05] entered log in filter classes
+[Jul 07, 16, 17:50:05] logging from exposure class
+[Jul 07, 16, 17:50:05] Filter position is B
+[Jul 07, 16, 17:50:05] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:50:05] key from post:', 'filter')
+('[Jul 07, 16, 17:50:05] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:50:05] entered log in filter classes
+[Jul 07, 16, 17:50:05] logging from exposure class
+[Jul 07, 16, 17:50:07] selection: V
+[Jul 07, 16, 17:50:08] <type 'unicode'>
+[Jul 07, 16, 17:50:08] index: 2
+[Jul 07, 16, 17:50:08] entered log in filter classes
+[Jul 07, 16, 17:50:08] logging from exposure class
+[17:50:08]Sending to filter: move 2
+[17:50:08]Sending to filter: getFilter
+[Jul 07, 16, 17:50:08] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:08] position: 1
+('[Jul 07, 16, 17:50:08] key from post:', 'filter')
+('[Jul 07, 16, 17:50:08] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:08] entered log in filter classes
+[Jul 07, 16, 17:50:08] logging from exposure class
+[Jul 07, 16, 17:50:08] Filter position is B
+[Jul 07, 16, 17:50:09] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:50:09] 11
+('[Jul 07, 16, 17:50:09] key from post:', 'filter')
+('[Jul 07, 16, 17:50:09] Stats in log:', ['move'])
+[Jul 07, 16, 17:50:09] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:50:09] entered log in filter classes
+[Jul 07, 16, 17:50:09] logging from exposure class
+[Jul 07, 16, 17:50:09] Completed rotation...
+[17:50:09]Sending to filter: getFilter
+[Jul 07, 16, 17:50:09] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:09] position: 1
+('[Jul 07, 16, 17:50:09] key from post:', 'filter')
+('[Jul 07, 16, 17:50:09] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:09] entered log in filter classes
+[Jul 07, 16, 17:50:09] logging from exposure class
+[Jul 07, 16, 17:50:09] Filter position is B
+[17:50:10]Sending to filter: getFilter
+[Jul 07, 16, 17:50:10] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:10] position: 1
+('[Jul 07, 16, 17:50:10] key from post:', 'filter')
+('[Jul 07, 16, 17:50:10] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:10] entered log in filter classes
+[Jul 07, 16, 17:50:10] logging from exposure class
+[Jul 07, 16, 17:50:10] Filter position is B
+[17:50:11]Sending to filter: getFilter
+[Jul 07, 16, 17:50:11] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:11] position: 1
+('[Jul 07, 16, 17:50:11] key from post:', 'filter')
+('[Jul 07, 16, 17:50:11] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:11] entered log in filter classes
+[Jul 07, 16, 17:50:11] logging from exposure class
+[Jul 07, 16, 17:50:11] Filter position is B
+[17:50:12]Sending to filter: getFilter
+[Jul 07, 16, 17:50:12] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:12] position: 1
+('[Jul 07, 16, 17:50:12] key from post:', 'filter')
+('[Jul 07, 16, 17:50:12] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:12] entered log in filter classes
+[Jul 07, 16, 17:50:12] logging from exposure class
+[Jul 07, 16, 17:50:12] Filter position is B
+[17:50:13]Sending to filter: getFilter
+[Jul 07, 16, 17:50:13] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:13] position: 1
+('[Jul 07, 16, 17:50:13] key from post:', 'filter')
+('[Jul 07, 16, 17:50:13] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:13] entered log in filter classes
+[Jul 07, 16, 17:50:13] logging from exposure class
+[Jul 07, 16, 17:50:13] Filter position is B
+[17:50:14]Sending to filter: getFilter
+[Jul 07, 16, 17:50:14] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:14] position: 1
+('[Jul 07, 16, 17:50:14] key from post:', 'filter')
+('[Jul 07, 16, 17:50:14] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:14] entered log in filter classes
+[Jul 07, 16, 17:50:14] logging from exposure class
+[Jul 07, 16, 17:50:14] Filter position is B
+[17:50:15]Sending to filter: getFilter
+[Jul 07, 16, 17:50:15] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:15] position: 1
+('[Jul 07, 16, 17:50:15] key from post:', 'filter')
+('[Jul 07, 16, 17:50:15] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:15] entered log in filter classes
+[Jul 07, 16, 17:50:15] logging from exposure class
+[Jul 07, 16, 17:50:15] Filter position is B
+[17:50:16]Sending to filter: getFilter
+[Jul 07, 16, 17:50:16] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:16] position: 1
+('[Jul 07, 16, 17:50:16] key from post:', 'filter')
+('[Jul 07, 16, 17:50:16] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:16] entered log in filter classes
+[Jul 07, 16, 17:50:16] logging from exposure class
+[Jul 07, 16, 17:50:16] Filter position is B
+[17:50:17]Sending to filter: getFilter
+[Jul 07, 16, 17:50:17] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:17] position: 1
+('[Jul 07, 16, 17:50:17] key from post:', 'filter')
+('[Jul 07, 16, 17:50:17] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:17] entered log in filter classes
+[Jul 07, 16, 17:50:17] logging from exposure class
+[Jul 07, 16, 17:50:17] Filter position is B
+[17:50:18]Sending to filter: getFilter
+[Jul 07, 16, 17:50:18] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:18] position: 1
+('[Jul 07, 16, 17:50:18] key from post:', 'filter')
+('[Jul 07, 16, 17:50:18] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:18] entered log in filter classes
+[Jul 07, 16, 17:50:18] logging from exposure class
+[Jul 07, 16, 17:50:18] Filter position is B
+[17:50:19]Sending to filter: getFilter
+[Jul 07, 16, 17:50:19] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:19] position: 1
+('[Jul 07, 16, 17:50:19] key from post:', 'filter')
+('[Jul 07, 16, 17:50:19] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:19] entered log in filter classes
+[Jul 07, 16, 17:50:19] logging from exposure class
+[Jul 07, 16, 17:50:19] Filter position is B
+[17:50:20]Sending to filter: getFilter
+[Jul 07, 16, 17:50:20] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:20] position: 1
+('[Jul 07, 16, 17:50:20] key from post:', 'filter')
+('[Jul 07, 16, 17:50:20] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:20] entered log in filter classes
+[Jul 07, 16, 17:50:20] logging from exposure class
+[Jul 07, 16, 17:50:20] Filter position is B
+[17:50:21]Sending to filter: getFilter
+[Jul 07, 16, 17:50:21] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:21] position: 1
+('[Jul 07, 16, 17:50:21] key from post:', 'filter')
+('[Jul 07, 16, 17:50:21] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:21] entered log in filter classes
+[Jul 07, 16, 17:50:21] logging from exposure class
+[Jul 07, 16, 17:50:21] Filter position is B
+[17:50:22]Sending to filter: getFilter
+[Jul 07, 16, 17:50:23] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:23] position: 1
+('[Jul 07, 16, 17:50:23] key from post:', 'filter')
+('[Jul 07, 16, 17:50:23] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:23] entered log in filter classes
+[Jul 07, 16, 17:50:23] logging from exposure class
+[Jul 07, 16, 17:50:23] Filter position is B
+[17:50:23]Sending to filter: getFilter
+[Jul 07, 16, 17:50:23] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:23] position: 1
+('[Jul 07, 16, 17:50:23] key from post:', 'filter')
+('[Jul 07, 16, 17:50:23] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:23] entered log in filter classes
+[Jul 07, 16, 17:50:23] logging from exposure class
+[Jul 07, 16, 17:50:23] Filter position is B
+[17:50:24]Sending to filter: getFilter
+[Jul 07, 16, 17:50:24] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:24] position: 1
+('[Jul 07, 16, 17:50:24] key from post:', 'filter')
+('[Jul 07, 16, 17:50:24] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:24] entered log in filter classes
+[Jul 07, 16, 17:50:24] logging from exposure class
+[Jul 07, 16, 17:50:24] Filter position is B
+[17:50:25]Sending to filter: getFilter
+[Jul 07, 16, 17:50:25] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:25] position: 1
+('[Jul 07, 16, 17:50:25] key from post:', 'filter')
+('[Jul 07, 16, 17:50:25] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:25] entered log in filter classes
+[Jul 07, 16, 17:50:25] logging from exposure class
+[Jul 07, 16, 17:50:25] Filter position is B
+[17:50:26]Sending to filter: getFilter
+[Jul 07, 16, 17:50:26] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:26] position: 1
+('[Jul 07, 16, 17:50:26] key from post:', 'filter')
+('[Jul 07, 16, 17:50:26] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:26] entered log in filter classes
+[Jul 07, 16, 17:50:26] logging from exposure class
+[Jul 07, 16, 17:50:26] Filter position is B
+[17:50:27]Sending to filter: getFilter
+[Jul 07, 16, 17:50:27] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:27] position: 1
+('[Jul 07, 16, 17:50:27] key from post:', 'filter')
+('[Jul 07, 16, 17:50:27] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:27] entered log in filter classes
+[Jul 07, 16, 17:50:27] logging from exposure class
+[Jul 07, 16, 17:50:27] Filter position is B
+[17:50:28]Sending to filter: getFilter
+[Jul 07, 16, 17:50:28] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:28] position: 1
+('[Jul 07, 16, 17:50:28] key from post:', 'filter')
+('[Jul 07, 16, 17:50:28] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:28] entered log in filter classes
+[Jul 07, 16, 17:50:28] logging from exposure class
+[Jul 07, 16, 17:50:28] Filter position is B
+[17:50:29]Sending to filter: getFilter
+[Jul 07, 16, 17:50:29] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:29] position: 1
+('[Jul 07, 16, 17:50:29] key from post:', 'filter')
+('[Jul 07, 16, 17:50:29] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:29] entered log in filter classes
+[Jul 07, 16, 17:50:29] logging from exposure class
+[Jul 07, 16, 17:50:29] Filter position is B
+[17:50:30]Sending to filter: getFilter
+[Jul 07, 16, 17:50:30] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:30] position: 1
+('[Jul 07, 16, 17:50:30] key from post:', 'filter')
+('[Jul 07, 16, 17:50:30] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:30] entered log in filter classes
+[Jul 07, 16, 17:50:30] logging from exposure class
+[Jul 07, 16, 17:50:30] Filter position is B
+[17:50:31]Sending to filter: getFilter
+[Jul 07, 16, 17:50:31] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:31] position: 1
+('[Jul 07, 16, 17:50:31] key from post:', 'filter')
+('[Jul 07, 16, 17:50:31] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:31] entered log in filter classes
+[Jul 07, 16, 17:50:31] logging from exposure class
+[Jul 07, 16, 17:50:31] Filter position is B
+[17:50:32]Sending to filter: getFilter
+[Jul 07, 16, 17:50:32] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:32] position: 1
+('[Jul 07, 16, 17:50:32] key from post:', 'filter')
+('[Jul 07, 16, 17:50:32] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:32] entered log in filter classes
+[Jul 07, 16, 17:50:32] logging from exposure class
+[Jul 07, 16, 17:50:32] Filter position is B
+[17:50:33]Sending to filter: getFilter
+[Jul 07, 16, 17:50:33] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:33] position: 1
+('[Jul 07, 16, 17:50:33] key from post:', 'filter')
+('[Jul 07, 16, 17:50:33] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:33] entered log in filter classes
+[Jul 07, 16, 17:50:33] logging from exposure class
+[Jul 07, 16, 17:50:33] Filter position is B
+[17:50:34]Sending to filter: getFilter
+[Jul 07, 16, 17:50:34] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:34] position: 1
+('[Jul 07, 16, 17:50:34] key from post:', 'filter')
+('[Jul 07, 16, 17:50:34] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:34] entered log in filter classes
+[Jul 07, 16, 17:50:34] logging from exposure class
+[Jul 07, 16, 17:50:34] Filter position is B
+[17:50:35]Sending to filter: getFilter
+[Jul 07, 16, 17:50:35] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:35] position: 1
+('[Jul 07, 16, 17:50:35] key from post:', 'filter')
+('[Jul 07, 16, 17:50:35] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:35] entered log in filter classes
+[Jul 07, 16, 17:50:35] logging from exposure class
+[Jul 07, 16, 17:50:35] Filter position is B
+[17:50:36]Sending to filter: getFilter
+[Jul 07, 16, 17:50:36] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:36] position: 1
+('[Jul 07, 16, 17:50:36] key from post:', 'filter')
+('[Jul 07, 16, 17:50:36] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:36] entered log in filter classes
+[Jul 07, 16, 17:50:36] logging from exposure class
+[Jul 07, 16, 17:50:36] Filter position is B
+[17:50:37]Sending to filter: getFilter
+[Jul 07, 16, 17:50:37] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:37] position: 1
+('[Jul 07, 16, 17:50:37] key from post:', 'filter')
+('[Jul 07, 16, 17:50:37] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:37] entered log in filter classes
+[Jul 07, 16, 17:50:37] logging from exposure class
+[Jul 07, 16, 17:50:37] Filter position is B
+[17:50:38]Sending to filter: getFilter
+[Jul 07, 16, 17:50:38] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:38] position: 1
+('[Jul 07, 16, 17:50:38] key from post:', 'filter')
+('[Jul 07, 16, 17:50:38] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:38] entered log in filter classes
+[Jul 07, 16, 17:50:38] logging from exposure class
+[Jul 07, 16, 17:50:38] Filter position is B
+[17:50:39]Sending to filter: getFilter
+[Jul 07, 16, 17:50:39] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:39] position: 1
+('[Jul 07, 16, 17:50:39] key from post:', 'filter')
+('[Jul 07, 16, 17:50:39] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:39] entered log in filter classes
+[Jul 07, 16, 17:50:39] logging from exposure class
+[Jul 07, 16, 17:50:39] Filter position is B
+[17:50:40]Sending to filter: getFilter
+[Jul 07, 16, 17:50:40] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:40] position: 1
+('[Jul 07, 16, 17:50:40] key from post:', 'filter')
+('[Jul 07, 16, 17:50:40] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:40] entered log in filter classes
+[Jul 07, 16, 17:50:40] logging from exposure class
+[Jul 07, 16, 17:50:40] Filter position is B
+[17:50:41]Sending to filter: getFilter
+[Jul 07, 16, 17:50:41] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:41] position: 1
+('[Jul 07, 16, 17:50:41] key from post:', 'filter')
+('[Jul 07, 16, 17:50:41] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:41] entered log in filter classes
+[Jul 07, 16, 17:50:41] logging from exposure class
+[Jul 07, 16, 17:50:41] Filter position is B
+[17:50:42]Sending to filter: getFilter
+[Jul 07, 16, 17:50:42] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:42] position: 1
+('[Jul 07, 16, 17:50:42] key from post:', 'filter')
+('[Jul 07, 16, 17:50:42] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:42] entered log in filter classes
+[Jul 07, 16, 17:50:42] logging from exposure class
+[Jul 07, 16, 17:50:42] Filter position is B
+[17:50:43]Sending to filter: getFilter
+[Jul 07, 16, 17:50:43] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:43] position: 1
+('[Jul 07, 16, 17:50:43] key from post:', 'filter')
+('[Jul 07, 16, 17:50:43] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:43] entered log in filter classes
+[Jul 07, 16, 17:50:43] logging from exposure class
+[Jul 07, 16, 17:50:43] Filter position is B
+[17:50:44]Sending to filter: getFilter
+[Jul 07, 16, 17:50:44] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:44] position: 1
+('[Jul 07, 16, 17:50:44] key from post:', 'filter')
+('[Jul 07, 16, 17:50:44] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:44] entered log in filter classes
+[Jul 07, 16, 17:50:44] logging from exposure class
+[Jul 07, 16, 17:50:44] Filter position is B
+[17:50:45]Sending to filter: getFilter
+[Jul 07, 16, 17:50:45] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:45] position: 1
+('[Jul 07, 16, 17:50:45] key from post:', 'filter')
+('[Jul 07, 16, 17:50:45] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:45] entered log in filter classes
+[Jul 07, 16, 17:50:45] logging from exposure class
+[Jul 07, 16, 17:50:45] Filter position is B
+[17:50:46]Sending to filter: getFilter
+[Jul 07, 16, 17:50:46] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:46] position: 1
+('[Jul 07, 16, 17:50:46] key from post:', 'filter')
+('[Jul 07, 16, 17:50:46] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:46] entered log in filter classes
+[Jul 07, 16, 17:50:46] logging from exposure class
+[Jul 07, 16, 17:50:46] Filter position is B
+[17:50:47]Sending to filter: getFilter
+[Jul 07, 16, 17:50:47] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:47] position: 1
+('[Jul 07, 16, 17:50:47] key from post:', 'filter')
+('[Jul 07, 16, 17:50:47] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:47] entered log in filter classes
+[Jul 07, 16, 17:50:47] logging from exposure class
+[Jul 07, 16, 17:50:47] Filter position is B
+[17:50:48]Sending to filter: getFilter
+[Jul 07, 16, 17:50:48] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:48] position: 1
+('[Jul 07, 16, 17:50:48] key from post:', 'filter')
+('[Jul 07, 16, 17:50:48] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:48] entered log in filter classes
+[Jul 07, 16, 17:50:48] logging from exposure class
+[Jul 07, 16, 17:50:48] Filter position is B
+[17:50:49]Sending to filter: getFilter
+[Jul 07, 16, 17:50:49] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:49] position: 1
+('[Jul 07, 16, 17:50:49] key from post:', 'filter')
+('[Jul 07, 16, 17:50:49] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:49] entered log in filter classes
+[Jul 07, 16, 17:50:49] logging from exposure class
+[Jul 07, 16, 17:50:49] Filter position is B
+[17:50:50]Sending to filter: getFilter
+[Jul 07, 16, 17:50:50] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:50] position: 1
+('[Jul 07, 16, 17:50:50] key from post:', 'filter')
+('[Jul 07, 16, 17:50:50] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:50] entered log in filter classes
+[Jul 07, 16, 17:50:50] logging from exposure class
+[Jul 07, 16, 17:50:50] Filter position is B
+[17:50:51]Sending to filter: getFilter
+[Jul 07, 16, 17:50:51] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:51] position: 1
+('[Jul 07, 16, 17:50:51] key from post:', 'filter')
+('[Jul 07, 16, 17:50:51] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:51] entered log in filter classes
+[Jul 07, 16, 17:50:51] logging from exposure class
+[Jul 07, 16, 17:50:51] Filter position is B
+[17:50:52]Sending to filter: getFilter
+[Jul 07, 16, 17:50:52] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:52] position: 1
+('[Jul 07, 16, 17:50:52] key from post:', 'filter')
+('[Jul 07, 16, 17:50:52] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:52] entered log in filter classes
+[Jul 07, 16, 17:50:52] logging from exposure class
+[Jul 07, 16, 17:50:52] Filter position is B
+[17:50:53]Sending to filter: getFilter
+[Jul 07, 16, 17:50:53] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:53] position: 1
+('[Jul 07, 16, 17:50:53] key from post:', 'filter')
+('[Jul 07, 16, 17:50:53] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:53] entered log in filter classes
+[Jul 07, 16, 17:50:53] logging from exposure class
+[Jul 07, 16, 17:50:53] Filter position is B
+[17:50:54]Sending to filter: getFilter
+[Jul 07, 16, 17:50:54] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:54] position: 1
+('[Jul 07, 16, 17:50:54] key from post:', 'filter')
+('[Jul 07, 16, 17:50:54] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:54] entered log in filter classes
+[Jul 07, 16, 17:50:54] logging from exposure class
+[Jul 07, 16, 17:50:54] Filter position is B
+[17:50:55]Sending to filter: getFilter
+[Jul 07, 16, 17:50:55] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:55] position: 1
+('[Jul 07, 16, 17:50:55] key from post:', 'filter')
+('[Jul 07, 16, 17:50:55] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:55] entered log in filter classes
+[Jul 07, 16, 17:50:55] logging from exposure class
+[Jul 07, 16, 17:50:55] Filter position is B
+[17:50:56]Sending to filter: getFilter
+[Jul 07, 16, 17:50:56] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:56] position: 1
+('[Jul 07, 16, 17:50:56] key from post:', 'filter')
+('[Jul 07, 16, 17:50:56] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:56] entered log in filter classes
+[Jul 07, 16, 17:50:56] logging from exposure class
+[Jul 07, 16, 17:50:56] Filter position is B
+[17:50:57]Sending to filter: getFilter
+[Jul 07, 16, 17:50:57] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:57] position: 1
+('[Jul 07, 16, 17:50:57] key from post:', 'filter')
+('[Jul 07, 16, 17:50:57] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:57] entered log in filter classes
+[Jul 07, 16, 17:50:57] logging from exposure class
+[Jul 07, 16, 17:50:57] Filter position is B
+[17:50:58]Sending to filter: getFilter
+[Jul 07, 16, 17:50:58] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:58] position: 1
+('[Jul 07, 16, 17:50:58] key from post:', 'filter')
+('[Jul 07, 16, 17:50:58] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:58] entered log in filter classes
+[Jul 07, 16, 17:50:58] logging from exposure class
+[Jul 07, 16, 17:50:58] Filter position is B
+[17:50:59]Sending to filter: getFilter
+[Jul 07, 16, 17:50:59] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:50:59] position: 1
+('[Jul 07, 16, 17:50:59] key from post:', 'filter')
+('[Jul 07, 16, 17:50:59] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:50:59] entered log in filter classes
+[Jul 07, 16, 17:50:59] logging from exposure class
+[Jul 07, 16, 17:50:59] Filter position is B
+[17:51:00]Sending to filter: getFilter
+[Jul 07, 16, 17:51:00] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:51:00] position: 1
+('[Jul 07, 16, 17:51:00] key from post:', 'filter')
+('[Jul 07, 16, 17:51:00] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:00] entered log in filter classes
+[Jul 07, 16, 17:51:00] logging from exposure class
+[Jul 07, 16, 17:51:00] Filter position is B
+[17:51:01]Sending to filter: getFilter
+[Jul 07, 16, 17:51:01] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:51:01] position: 1
+('[Jul 07, 16, 17:51:01] key from post:', 'filter')
+('[Jul 07, 16, 17:51:01] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:01] entered log in filter classes
+[Jul 07, 16, 17:51:01] logging from exposure class
+[Jul 07, 16, 17:51:01] Filter position is B
+[17:51:02]Sending to filter: getFilter
+[Jul 07, 16, 17:51:02] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:51:02] position: 1
+('[Jul 07, 16, 17:51:02] key from post:', 'filter')
+('[Jul 07, 16, 17:51:02] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:02] entered log in filter classes
+[Jul 07, 16, 17:51:02] logging from exposure class
+[Jul 07, 16, 17:51:02] Filter position is B
+[17:51:03]Sending to filter: getFilter
+[Jul 07, 16, 17:51:03] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:51:03] position: 1
+('[Jul 07, 16, 17:51:03] key from post:', 'filter')
+('[Jul 07, 16, 17:51:03] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:03] entered log in filter classes
+[Jul 07, 16, 17:51:03] logging from exposure class
+[Jul 07, 16, 17:51:03] Filter position is B
+[17:51:04]Sending to filter: getFilter
+[Jul 07, 16, 17:51:04] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:51:04] position: 1
+('[Jul 07, 16, 17:51:04] key from post:', 'filter')
+('[Jul 07, 16, 17:51:04] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:04] entered log in filter classes
+[Jul 07, 16, 17:51:04] logging from exposure class
+[Jul 07, 16, 17:51:04] Filter position is B
+[17:51:05]Sending to filter: getFilter
+[Jul 07, 16, 17:51:05] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:51:05] position: 1
+('[Jul 07, 16, 17:51:05] key from post:', 'filter')
+('[Jul 07, 16, 17:51:05] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:05] entered log in filter classes
+[Jul 07, 16, 17:51:05] logging from exposure class
+[Jul 07, 16, 17:51:05] Filter position is B
+[17:51:06]Sending to filter: getFilter
+[Jul 07, 16, 17:51:06] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:51:06] position: 1
+('[Jul 07, 16, 17:51:06] key from post:', 'filter')
+('[Jul 07, 16, 17:51:06] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:06] entered log in filter classes
+[Jul 07, 16, 17:51:06] logging from exposure class
+[Jul 07, 16, 17:51:06] Filter position is B
+[17:51:07]Sending to filter: getFilter
+[Jul 07, 16, 17:51:07] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:51:07] position: 1
+('[Jul 07, 16, 17:51:07] key from post:', 'filter')
+('[Jul 07, 16, 17:51:07] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:07] entered log in filter classes
+[Jul 07, 16, 17:51:07] logging from exposure class
+[Jul 07, 16, 17:51:07] Filter position is B
+[17:51:08]Sending to filter: getFilter
+[Jul 07, 16, 17:51:08] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:51:08] position: 1
+('[Jul 07, 16, 17:51:08] key from post:', 'filter')
+('[Jul 07, 16, 17:51:08] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:08] entered log in filter classes
+[Jul 07, 16, 17:51:08] logging from exposure class
+[Jul 07, 16, 17:51:08] Filter position is B
+[17:51:09]Sending to filter: getFilter
+[Jul 07, 16, 17:51:09] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:51:09] position: 1
+('[Jul 07, 16, 17:51:09] key from post:', 'filter')
+('[Jul 07, 16, 17:51:09] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:09] entered log in filter classes
+[Jul 07, 16, 17:51:09] logging from exposure class
+[Jul 07, 16, 17:51:09] Filter position is B
+[Jul 07, 16, 17:51:09] selection: g
+[Jul 07, 16, 17:51:10] <type 'unicode'>
+[Jul 07, 16, 17:51:10] index: 3
+[Jul 07, 16, 17:51:10] entered log in filter classes
+[Jul 07, 16, 17:51:10] logging from exposure class
+[17:51:10]Sending to filter: move 3
+[17:51:10]Sending to filter: getFilter
+[Jul 07, 16, 17:51:10] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:51:10] position: 1
+('[Jul 07, 16, 17:51:10] key from post:', 'filter')
+('[Jul 07, 16, 17:51:10] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:10] entered log in filter classes
+[Jul 07, 16, 17:51:10] logging from exposure class
+[Jul 07, 16, 17:51:10] Filter position is B
+[17:51:10]Sending to filter: getFilter
+[Jul 07, 16, 17:51:10] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:51:10] position: 1
+('[Jul 07, 16, 17:51:10] key from post:', 'filter')
+('[Jul 07, 16, 17:51:10] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:10] entered log in filter classes
+[Jul 07, 16, 17:51:10] logging from exposure class
+[Jul 07, 16, 17:51:10] Filter position is B
+[17:51:11]Sending to filter: getFilter
+[Jul 07, 16, 17:51:11] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:51:11] position: 1
+('[Jul 07, 16, 17:51:11] key from post:', 'filter')
+('[Jul 07, 16, 17:51:11] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:11] entered log in filter classes
+[Jul 07, 16, 17:51:11] logging from exposure class
+[Jul 07, 16, 17:51:11] Filter position is B
+[17:51:11]Sending to filter: getFilter
+[Jul 07, 16, 17:51:11] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:51:11] position: 1
+('[Jul 07, 16, 17:51:11] key from post:', 'filter')
+('[Jul 07, 16, 17:51:11] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:11] entered log in filter classes
+[Jul 07, 16, 17:51:11] logging from exposure class
+[Jul 07, 16, 17:51:11] Filter position is B
+[17:51:12]Sending to filter: getFilter
+[Jul 07, 16, 17:51:12] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:51:12] position: 2
+('[Jul 07, 16, 17:51:12] key from post:', 'filter')
+('[Jul 07, 16, 17:51:12] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:12] entered log in filter classes
+[Jul 07, 16, 17:51:12] logging from exposure class
+[Jul 07, 16, 17:51:12] Filter position is V
+[17:51:12]Sending to filter: getFilter
+[Jul 07, 16, 17:51:12] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:51:12] position: 2
+('[Jul 07, 16, 17:51:12] key from post:', 'filter')
+('[Jul 07, 16, 17:51:12] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:12] entered log in filter classes
+[Jul 07, 16, 17:51:12] logging from exposure class
+[Jul 07, 16, 17:51:12] Filter position is V
+[17:51:13]Sending to filter: getFilter
+[Jul 07, 16, 17:51:13] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:51:13] position: 2
+('[Jul 07, 16, 17:51:13] key from post:', 'filter')
+('[Jul 07, 16, 17:51:13] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:13] entered log in filter classes
+[Jul 07, 16, 17:51:13] logging from exposure class
+[Jul 07, 16, 17:51:13] Filter position is V
+[17:51:13]Sending to filter: getFilter
+[Jul 07, 16, 17:51:13] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:51:13] position: 3
+('[Jul 07, 16, 17:51:13] key from post:', 'filter')
+('[Jul 07, 16, 17:51:13] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:13] entered log in filter classes
+[Jul 07, 16, 17:51:13] logging from exposure class
+[Jul 07, 16, 17:51:13] Filter position is g
+[Jul 07, 16, 17:51:14] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:51:14] key from post:', 'filter')
+('[Jul 07, 16, 17:51:14] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:51:14] entered log in filter classes
+[Jul 07, 16, 17:51:14] logging from exposure class
+[Jul 07, 16, 17:51:28] Disconnect pressed in filter menu
+('[Jul 07, 16, 17:51:28] key from post:', 'filter')
+('[Jul 07, 16, 17:51:28] Stats in log:', ['connectLost'])
+[Jul 07, 16, 17:51:28] entered log in filter classes
+[Jul 07, 16, 17:51:28] logging from exposure class
+[Jul 07, 16, 17:51:28] connection lost normally on port 5503
+[Jul 07, 16, 17:51:43] Connect pressed in Filter menu
+[Jul 07, 16, 17:51:43] connection made to filter
+[Jul 07, 16, 17:51:43] entered log in filter classes
+[Jul 07, 16, 17:51:43] logging from exposure class
+[Jul 07, 16, 17:51:43] entered log in filter classes
+[Jul 07, 16, 17:51:43] logging from exposure class
+[17:51:43]Sending to filter: getFilter
+[Jul 07, 16, 17:51:45] Receieved from filter (5503): getFilter -2
+
+[Jul 07, 16, 17:51:45] position: -2
+('[Jul 07, 16, 17:51:45] key from post:', 'filter')
+('[Jul 07, 16, 17:51:45] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:51:45] entered log in filter classes
+[Jul 07, 16, 17:51:45] logging from exposure class
+[Jul 07, 16, 17:51:45] Filter position is r
+[Jul 07, 16, 17:51:49] entered log in filter classes
+[Jul 07, 16, 17:51:49] logging from exposure class
+[17:51:49]Sending to filter: home
+[Jul 07, 16, 17:51:49] homing...
+[Jul 07, 16, 17:52:02] Receieved from filter (5503): home 1
+
+('[Jul 07, 16, 17:52:02] key from post:', 'filter')
+('[Jul 07, 16, 17:52:02] Stats in log:', ['home'])
+[Jul 07, 16, 17:52:02] entered log in filter classes
+[Jul 07, 16, 17:52:02] logging from exposure class
+[Jul 07, 16, 17:52:02] Done homing: 1
+[Jul 07, 16, 17:52:02] entered log in filter classes
+[Jul 07, 16, 17:52:02] logging from exposure class
+[17:52:02]Sending to filter: getFilter
+[Jul 07, 16, 17:52:02] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:52:02] position: 0
+('[Jul 07, 16, 17:52:02] key from post:', 'filter')
+('[Jul 07, 16, 17:52:02] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:52:02] entered log in filter classes
+[Jul 07, 16, 17:52:02] logging from exposure class
+[Jul 07, 16, 17:52:02] Filter position is Ha
+[Jul 07, 16, 17:52:16] selection: g
+[Jul 07, 16, 17:52:18] <type 'unicode'>
+[Jul 07, 16, 17:52:18] index: 3
+[Jul 07, 16, 17:52:18] entered log in filter classes
+[Jul 07, 16, 17:52:18] logging from exposure class
+[17:52:18]Sending to filter: move 3
+[17:52:18]Sending to filter: getFilter
+[17:52:19]Sending to filter: getFilter
+[Jul 07, 16, 17:52:19] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:52:19] position: 0
+('[Jul 07, 16, 17:52:19] key from post:', 'filter')
+('[Jul 07, 16, 17:52:19] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:52:19] entered log in filter classes
+[Jul 07, 16, 17:52:19] logging from exposure class
+[Jul 07, 16, 17:52:19] Filter position is Ha
+[17:52:20]Sending to filter: getFilter
+[Jul 07, 16, 17:52:20] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:52:20] position: 1
+('[Jul 07, 16, 17:52:20] key from post:', 'filter')
+('[Jul 07, 16, 17:52:20] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:52:20] entered log in filter classes
+[Jul 07, 16, 17:52:20] logging from exposure class
+[Jul 07, 16, 17:52:20] Filter position is B
+[17:52:21]Sending to filter: getFilter
+[Jul 07, 16, 17:52:21] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:52:21] position: 2
+('[Jul 07, 16, 17:52:21] key from post:', 'filter')
+('[Jul 07, 16, 17:52:21] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:52:21] entered log in filter classes
+[Jul 07, 16, 17:52:21] logging from exposure class
+[Jul 07, 16, 17:52:21] Filter position is V
+[17:52:22]Sending to filter: getFilter
+[Jul 07, 16, 17:52:22] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:52:22] position: 2
+('[Jul 07, 16, 17:52:22] key from post:', 'filter')
+('[Jul 07, 16, 17:52:22] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:52:22] entered log in filter classes
+[Jul 07, 16, 17:52:22] logging from exposure class
+[Jul 07, 16, 17:52:22] Filter position is V
+[17:52:23]Sending to filter: getFilter
+[Jul 07, 16, 17:52:23] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:52:23] position: 3
+('[Jul 07, 16, 17:52:23] key from post:', 'filter')
+('[Jul 07, 16, 17:52:23] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:52:23] entered log in filter classes
+[Jul 07, 16, 17:52:23] logging from exposure class
+[Jul 07, 16, 17:52:23] Filter position is g
+[Jul 07, 16, 17:52:23] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:52:23] 1
+('[Jul 07, 16, 17:52:23] key from post:', 'filter')
+('[Jul 07, 16, 17:52:23] Stats in log:', ['move'])
+[Jul 07, 16, 17:52:23] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:52:23] entered log in filter classes
+[Jul 07, 16, 17:52:23] logging from exposure class
+[Jul 07, 16, 17:52:23] Completed rotation...
+[Jul 07, 16, 17:52:34] selection: r
+[Jul 07, 16, 17:52:38] <type 'unicode'>
+[Jul 07, 16, 17:52:38] index: 4
+[Jul 07, 16, 17:52:38] entered log in filter classes
+[Jul 07, 16, 17:52:38] logging from exposure class
+[17:52:38]Sending to filter: move 4
+[17:52:38]Sending to filter: getFilter
+[Jul 07, 16, 17:52:38] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:52:38] position: 3
+('[Jul 07, 16, 17:52:38] key from post:', 'filter')
+('[Jul 07, 16, 17:52:38] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:52:38] entered log in filter classes
+[Jul 07, 16, 17:52:38] logging from exposure class
+[Jul 07, 16, 17:52:38] Filter position is g
+[17:52:39]Sending to filter: getFilter
+[Jul 07, 16, 17:52:39] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:52:39] position: 3
+('[Jul 07, 16, 17:52:39] key from post:', 'filter')
+('[Jul 07, 16, 17:52:39] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:52:39] entered log in filter classes
+[Jul 07, 16, 17:52:39] logging from exposure class
+[Jul 07, 16, 17:52:39] Filter position is g
+[17:52:40]Sending to filter: getFilter
+[Jul 07, 16, 17:52:40] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:52:40] position: 4
+('[Jul 07, 16, 17:52:40] key from post:', 'filter')
+('[Jul 07, 16, 17:52:40] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:52:40] entered log in filter classes
+[Jul 07, 16, 17:52:40] logging from exposure class
+[Jul 07, 16, 17:52:40] Filter position is r
+[Jul 07, 16, 17:52:40] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:52:40] 1
+('[Jul 07, 16, 17:52:40] key from post:', 'filter')
+('[Jul 07, 16, 17:52:40] Stats in log:', ['move'])
+[Jul 07, 16, 17:52:40] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:52:40] entered log in filter classes
+[Jul 07, 16, 17:52:40] logging from exposure class
+[Jul 07, 16, 17:52:40] Completed rotation...
+[Jul 07, 16, 17:52:44] selection: i
+[Jul 07, 16, 17:52:52] <type 'unicode'>
+[Jul 07, 16, 17:52:52] index: 5
+[Jul 07, 16, 17:52:52] entered log in filter classes
+[Jul 07, 16, 17:52:52] logging from exposure class
+[17:52:52]Sending to filter: move 5
+[17:52:52]Sending to filter: getFilter
+[Jul 07, 16, 17:52:52] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:52:52] position: 4
+('[Jul 07, 16, 17:52:52] key from post:', 'filter')
+('[Jul 07, 16, 17:52:52] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:52:52] entered log in filter classes
+[Jul 07, 16, 17:52:52] logging from exposure class
+[Jul 07, 16, 17:52:52] Filter position is r
+[17:52:53]Sending to filter: getFilter
+[Jul 07, 16, 17:52:53] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:52:53] position: 4
+('[Jul 07, 16, 17:52:53] key from post:', 'filter')
+('[Jul 07, 16, 17:52:53] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:52:53] entered log in filter classes
+[Jul 07, 16, 17:52:53] logging from exposure class
+[Jul 07, 16, 17:52:53] Filter position is r
+[17:52:54]Sending to filter: getFilter
+[Jul 07, 16, 17:52:54] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:52:54] position: 5
+('[Jul 07, 16, 17:52:54] key from post:', 'filter')
+('[Jul 07, 16, 17:52:54] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:52:54] entered log in filter classes
+[Jul 07, 16, 17:52:54] logging from exposure class
+[Jul 07, 16, 17:52:54] Filter position is i
+[Jul 07, 16, 17:52:54] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:52:54] 1
+('[Jul 07, 16, 17:52:54] key from post:', 'filter')
+('[Jul 07, 16, 17:52:54] Stats in log:', ['move'])
+[Jul 07, 16, 17:52:54] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:52:54] entered log in filter classes
+[Jul 07, 16, 17:52:54] logging from exposure class
+[Jul 07, 16, 17:52:54] Completed rotation...
+[Jul 07, 16, 17:53:02] <type 'str'>
+[Jul 07, 16, 17:53:02] index: 5
+[Jul 07, 16, 17:53:02] entered log in filter classes
+[Jul 07, 16, 17:53:02] logging from exposure class
+[17:53:02]Sending to filter: move 5
+[17:53:02]Sending to filter: getFilter
+[Jul 07, 16, 17:53:02] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:53:02] 1
+('[Jul 07, 16, 17:53:02] key from post:', 'filter')
+('[Jul 07, 16, 17:53:02] Stats in log:', ['move'])
+[Jul 07, 16, 17:53:02] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:53:02] entered log in filter classes
+[Jul 07, 16, 17:53:02] logging from exposure class
+[Jul 07, 16, 17:53:02] Completed rotation...
+[Jul 07, 16, 17:53:02] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:53:02] position: 5
+('[Jul 07, 16, 17:53:02] key from post:', 'filter')
+('[Jul 07, 16, 17:53:02] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:53:02] entered log in filter classes
+[Jul 07, 16, 17:53:02] logging from exposure class
+[Jul 07, 16, 17:53:02] Filter position is i
+[Jul 07, 16, 17:53:06] selection: B
+[Jul 07, 16, 17:53:14] <type 'unicode'>
+[Jul 07, 16, 17:53:14] index: 1
+[Jul 07, 16, 17:53:14] entered log in filter classes
+[Jul 07, 16, 17:53:14] logging from exposure class
+[17:53:14]Sending to filter: move 1
+[17:53:14]Sending to filter: getFilter
+[Jul 07, 16, 17:53:14] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:53:14] position: 5
+('[Jul 07, 16, 17:53:14] key from post:', 'filter')
+('[Jul 07, 16, 17:53:14] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:53:14] entered log in filter classes
+[Jul 07, 16, 17:53:14] logging from exposure class
+[Jul 07, 16, 17:53:14] Filter position is i
+[17:53:15]Sending to filter: getFilter
+[Jul 07, 16, 17:53:15] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:53:15] position: 4
+('[Jul 07, 16, 17:53:15] key from post:', 'filter')
+('[Jul 07, 16, 17:53:15] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:53:15] entered log in filter classes
+[Jul 07, 16, 17:53:15] logging from exposure class
+[Jul 07, 16, 17:53:15] Filter position is r
+[17:53:16]Sending to filter: getFilter
+[Jul 07, 16, 17:53:16] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:53:16] position: 3
+('[Jul 07, 16, 17:53:16] key from post:', 'filter')
+('[Jul 07, 16, 17:53:16] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:53:16] entered log in filter classes
+[Jul 07, 16, 17:53:16] logging from exposure class
+[Jul 07, 16, 17:53:16] Filter position is g
+[17:53:17]Sending to filter: getFilter
+[Jul 07, 16, 17:53:17] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:53:17] position: 2
+('[Jul 07, 16, 17:53:17] key from post:', 'filter')
+('[Jul 07, 16, 17:53:17] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:53:17] entered log in filter classes
+[Jul 07, 16, 17:53:17] logging from exposure class
+[Jul 07, 16, 17:53:17] Filter position is V
+[17:53:18]Sending to filter: getFilter
+[Jul 07, 16, 17:53:18] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:53:18] position: 2
+('[Jul 07, 16, 17:53:18] key from post:', 'filter')
+('[Jul 07, 16, 17:53:18] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:53:18] entered log in filter classes
+[Jul 07, 16, 17:53:18] logging from exposure class
+[Jul 07, 16, 17:53:18] Filter position is V
+[17:53:19]Sending to filter: getFilter
+[Jul 07, 16, 17:53:19] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:53:19] position: 1
+('[Jul 07, 16, 17:53:19] key from post:', 'filter')
+('[Jul 07, 16, 17:53:19] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:53:19] entered log in filter classes
+[Jul 07, 16, 17:53:19] logging from exposure class
+[Jul 07, 16, 17:53:19] Filter position is B
+[Jul 07, 16, 17:53:21] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:53:21] 1
+('[Jul 07, 16, 17:53:21] key from post:', 'filter')
+('[Jul 07, 16, 17:53:21] Stats in log:', ['move'])
+[Jul 07, 16, 17:53:21] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:53:21] entered log in filter classes
+[Jul 07, 16, 17:53:21] logging from exposure class
+[Jul 07, 16, 17:53:21] Completed rotation...
+[Jul 07, 16, 17:53:24] selection: g
+[Jul 07, 16, 17:53:29] <type 'unicode'>
+[Jul 07, 16, 17:53:29] index: 3
+[Jul 07, 16, 17:53:29] entered log in filter classes
+[Jul 07, 16, 17:53:29] logging from exposure class
+[17:53:29]Sending to filter: move 3
+[17:53:29]Sending to filter: getFilter
+[Jul 07, 16, 17:53:29] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:53:29] position: 1
+('[Jul 07, 16, 17:53:29] key from post:', 'filter')
+('[Jul 07, 16, 17:53:29] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:53:29] entered log in filter classes
+[Jul 07, 16, 17:53:29] logging from exposure class
+[Jul 07, 16, 17:53:29] Filter position is B
+[17:53:30]Sending to filter: getFilter
+[Jul 07, 16, 17:53:30] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:53:30] position: 1
+('[Jul 07, 16, 17:53:30] key from post:', 'filter')
+('[Jul 07, 16, 17:53:30] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:53:30] entered log in filter classes
+[Jul 07, 16, 17:53:30] logging from exposure class
+[Jul 07, 16, 17:53:30] Filter position is B
+[17:53:31]Sending to filter: getFilter
+[Jul 07, 16, 17:53:31] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:53:31] position: 2
+('[Jul 07, 16, 17:53:31] key from post:', 'filter')
+('[Jul 07, 16, 17:53:31] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:53:31] entered log in filter classes
+[Jul 07, 16, 17:53:31] logging from exposure class
+[Jul 07, 16, 17:53:31] Filter position is V
+[17:53:32]Sending to filter: getFilter
+[Jul 07, 16, 17:53:32] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:53:32] position: 3
+('[Jul 07, 16, 17:53:32] key from post:', 'filter')
+('[Jul 07, 16, 17:53:32] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:53:32] entered log in filter classes
+[Jul 07, 16, 17:53:32] logging from exposure class
+[Jul 07, 16, 17:53:32] Filter position is g
+[Jul 07, 16, 17:53:32] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:53:32] 1
+('[Jul 07, 16, 17:53:32] key from post:', 'filter')
+('[Jul 07, 16, 17:53:32] Stats in log:', ['move'])
+[Jul 07, 16, 17:53:32] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:53:32] entered log in filter classes
+[Jul 07, 16, 17:53:32] logging from exposure class
+[Jul 07, 16, 17:53:32] Completed rotation...
+[Jul 07, 16, 17:53:36] selection: r
+[Jul 07, 16, 17:53:37] <type 'unicode'>
+[Jul 07, 16, 17:53:37] index: 4
+[Jul 07, 16, 17:53:37] entered log in filter classes
+[Jul 07, 16, 17:53:37] logging from exposure class
+[17:53:37]Sending to filter: move 4
+[17:53:37]Sending to filter: getFilter
+[17:53:38]Sending to filter: getFilter
+[Jul 07, 16, 17:53:38] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:53:38] position: 3
+('[Jul 07, 16, 17:53:38] key from post:', 'filter')
+('[Jul 07, 16, 17:53:38] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:53:38] entered log in filter classes
+[Jul 07, 16, 17:53:38] logging from exposure class
+[Jul 07, 16, 17:53:38] Filter position is g
+[17:53:39]Sending to filter: getFilter
+[Jul 07, 16, 17:53:39] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:53:39] position: 4
+('[Jul 07, 16, 17:53:39] key from post:', 'filter')
+('[Jul 07, 16, 17:53:39] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:53:39] entered log in filter classes
+[Jul 07, 16, 17:53:39] logging from exposure class
+[Jul 07, 16, 17:53:39] Filter position is r
+[Jul 07, 16, 17:53:39] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:53:39] key from post:', 'filter')
+('[Jul 07, 16, 17:53:39] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:53:39] entered log in filter classes
+[Jul 07, 16, 17:53:39] logging from exposure class
+[Jul 07, 16, 17:53:40] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:53:40] 11
+('[Jul 07, 16, 17:53:40] key from post:', 'filter')
+('[Jul 07, 16, 17:53:40] Stats in log:', ['move'])
+[Jul 07, 16, 17:53:40] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:53:40] entered log in filter classes
+[Jul 07, 16, 17:53:40] logging from exposure class
+[Jul 07, 16, 17:53:40] Completed rotation...
+[Jul 07, 16, 17:53:57] selection: i
+[Jul 07, 16, 17:54:01] <type 'unicode'>
+[Jul 07, 16, 17:54:01] index: 5
+[Jul 07, 16, 17:54:01] entered log in filter classes
+[Jul 07, 16, 17:54:01] logging from exposure class
+[17:54:01]Sending to filter: move 5
+[17:54:01]Sending to filter: getFilter
+[Jul 07, 16, 17:54:01] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:54:01] position: 4
+('[Jul 07, 16, 17:54:01] key from post:', 'filter')
+('[Jul 07, 16, 17:54:01] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:54:01] entered log in filter classes
+[Jul 07, 16, 17:54:01] logging from exposure class
+[Jul 07, 16, 17:54:01] Filter position is r
+[17:54:02]Sending to filter: getFilter
+[Jul 07, 16, 17:54:02] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:54:02] position: 4
+('[Jul 07, 16, 17:54:02] key from post:', 'filter')
+('[Jul 07, 16, 17:54:02] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:54:02] entered log in filter classes
+[Jul 07, 16, 17:54:02] logging from exposure class
+[Jul 07, 16, 17:54:02] Filter position is r
+[17:54:03]Sending to filter: getFilter
+[Jul 07, 16, 17:54:03] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:54:03] position: 5
+('[Jul 07, 16, 17:54:03] key from post:', 'filter')
+('[Jul 07, 16, 17:54:03] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:54:03] entered log in filter classes
+[Jul 07, 16, 17:54:03] logging from exposure class
+[Jul 07, 16, 17:54:03] Filter position is i
+[Jul 07, 16, 17:54:03] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:54:03] key from post:', 'filter')
+('[Jul 07, 16, 17:54:03] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:54:03] entered log in filter classes
+[Jul 07, 16, 17:54:03] logging from exposure class
+[Jul 07, 16, 17:54:04] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:54:04] 11
+('[Jul 07, 16, 17:54:04] key from post:', 'filter')
+('[Jul 07, 16, 17:54:04] Stats in log:', ['move'])
+[Jul 07, 16, 17:54:04] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:54:04] entered log in filter classes
+[Jul 07, 16, 17:54:04] logging from exposure class
+[Jul 07, 16, 17:54:04] Completed rotation...
+[Jul 07, 16, 17:54:10] selection: Ha
+[Jul 07, 16, 17:54:12] selection: V
+[Jul 07, 16, 17:54:13] <type 'unicode'>
+[Jul 07, 16, 17:54:13] index: 2
+[Jul 07, 16, 17:54:13] entered log in filter classes
+[Jul 07, 16, 17:54:13] logging from exposure class
+[17:54:13]Sending to filter: move 2
+[17:54:13]Sending to filter: getFilter
+[Jul 07, 16, 17:54:13] Receieved from filter (5503): getFilter 5
+
+[Jul 07, 16, 17:54:13] position: 5
+('[Jul 07, 16, 17:54:13] key from post:', 'filter')
+('[Jul 07, 16, 17:54:13] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:54:13] entered log in filter classes
+[Jul 07, 16, 17:54:13] logging from exposure class
+[Jul 07, 16, 17:54:13] Filter position is i
+[17:54:14]Sending to filter: getFilter
+[Jul 07, 16, 17:54:14] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:54:14] position: 4
+('[Jul 07, 16, 17:54:14] key from post:', 'filter')
+('[Jul 07, 16, 17:54:14] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:54:14] entered log in filter classes
+[Jul 07, 16, 17:54:14] logging from exposure class
+[Jul 07, 16, 17:54:14] Filter position is r
+[17:54:15]Sending to filter: getFilter
+[Jul 07, 16, 17:54:15] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:54:15] position: 3
+('[Jul 07, 16, 17:54:15] key from post:', 'filter')
+('[Jul 07, 16, 17:54:15] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:54:15] entered log in filter classes
+[Jul 07, 16, 17:54:15] logging from exposure class
+[Jul 07, 16, 17:54:15] Filter position is g
+[17:54:16]Sending to filter: getFilter
+[Jul 07, 16, 17:54:16] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:54:16] position: 2
+('[Jul 07, 16, 17:54:16] key from post:', 'filter')
+('[Jul 07, 16, 17:54:16] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:54:16] entered log in filter classes
+[Jul 07, 16, 17:54:16] logging from exposure class
+[Jul 07, 16, 17:54:16] Filter position is V
+[Jul 07, 16, 17:54:19] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:54:19] key from post:', 'filter')
+('[Jul 07, 16, 17:54:19] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:54:19] entered log in filter classes
+[Jul 07, 16, 17:54:19] logging from exposure class
+[Jul 07, 16, 17:54:20] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:54:20] 11
+('[Jul 07, 16, 17:54:20] key from post:', 'filter')
+('[Jul 07, 16, 17:54:20] Stats in log:', ['move'])
+[Jul 07, 16, 17:54:20] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:54:20] entered log in filter classes
+[Jul 07, 16, 17:54:20] logging from exposure class
+[Jul 07, 16, 17:54:20] Completed rotation...
+[Jul 07, 16, 17:54:25] entered log in filter classes
+[Jul 07, 16, 17:54:25] logging from exposure class
+[17:54:25]Sending to filter: home
+[Jul 07, 16, 17:54:25] homing...
+[Jul 07, 16, 17:54:42] Receieved from filter (5503): home 1
+
+('[Jul 07, 16, 17:54:42] key from post:', 'filter')
+('[Jul 07, 16, 17:54:42] Stats in log:', ['home'])
+[Jul 07, 16, 17:54:42] entered log in filter classes
+[Jul 07, 16, 17:54:42] logging from exposure class
+[Jul 07, 16, 17:54:42] Done homing: 1
+[Jul 07, 16, 17:54:42] entered log in filter classes
+[Jul 07, 16, 17:54:42] logging from exposure class
+[17:54:42]Sending to filter: getFilter
+[Jul 07, 16, 17:54:42] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:54:42] position: 0
+('[Jul 07, 16, 17:54:42] key from post:', 'filter')
+('[Jul 07, 16, 17:54:42] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:54:42] entered log in filter classes
+[Jul 07, 16, 17:54:42] logging from exposure class
+[Jul 07, 16, 17:54:42] Filter position is Ha
+[Jul 07, 16, 17:55:02] Disconnect pressed in filter menu
+('[Jul 07, 16, 17:55:02] key from post:', 'filter')
+('[Jul 07, 16, 17:55:02] Stats in log:', ['connectLost'])
+[Jul 07, 16, 17:55:02] entered log in filter classes
+[Jul 07, 16, 17:55:02] logging from exposure class
+[Jul 07, 16, 17:55:02] connection lost normally on port 5503
+[Jul 07, 16, 17:55:05] Connect pressed in Filter menu
+[Jul 07, 16, 17:55:05] connection made to filter
+[Jul 07, 16, 17:55:05] entered log in filter classes
+[Jul 07, 16, 17:55:05] logging from exposure class
+[Jul 07, 16, 17:55:05] entered log in filter classes
+[Jul 07, 16, 17:55:05] logging from exposure class
+[17:55:05]Sending to filter: getFilter
+[Jul 07, 16, 17:55:07] selection: g
+[Jul 07, 16, 17:55:07] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:55:07] position: 0
+('[Jul 07, 16, 17:55:07] key from post:', 'filter')
+('[Jul 07, 16, 17:55:07] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:55:07] entered log in filter classes
+[Jul 07, 16, 17:55:07] logging from exposure class
+[Jul 07, 16, 17:55:07] Filter position is Ha
+[Jul 07, 16, 17:55:17] <type 'str'>
+[Jul 07, 16, 17:55:17] index: 0
+[Jul 07, 16, 17:55:17] entered log in filter classes
+[Jul 07, 16, 17:55:17] logging from exposure class
+[17:55:17]Sending to filter: move 0
+[17:55:17]Sending to filter: getFilter
+[Jul 07, 16, 17:55:17] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:55:17] position: 0
+('[Jul 07, 16, 17:55:17] key from post:', 'filter')
+('[Jul 07, 16, 17:55:17] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:55:17] entered log in filter classes
+[Jul 07, 16, 17:55:17] logging from exposure class
+[Jul 07, 16, 17:55:17] Filter position is Ha
+[Jul 07, 16, 17:55:22] selection: g
+[Jul 07, 16, 17:55:30] <type 'unicode'>
+[Jul 07, 16, 17:55:30] index: 3
+[Jul 07, 16, 17:55:30] entered log in filter classes
+[Jul 07, 16, 17:55:30] logging from exposure class
+[17:55:30]Sending to filter: move 3
+[17:55:30]Sending to filter: getFilter
+[17:55:31]Sending to filter: getFilter
+[Jul 07, 16, 17:55:31] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:55:31] position: 0
+('[Jul 07, 16, 17:55:31] key from post:', 'filter')
+('[Jul 07, 16, 17:55:31] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:55:31] entered log in filter classes
+[Jul 07, 16, 17:55:31] logging from exposure class
+[Jul 07, 16, 17:55:31] Filter position is Ha
+[17:55:32]Sending to filter: getFilter
+[Jul 07, 16, 17:55:32] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:55:32] position: 1
+('[Jul 07, 16, 17:55:32] key from post:', 'filter')
+('[Jul 07, 16, 17:55:32] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:55:32] entered log in filter classes
+[Jul 07, 16, 17:55:32] logging from exposure class
+[Jul 07, 16, 17:55:32] Filter position is B
+[17:55:33]Sending to filter: getFilter
+[Jul 07, 16, 17:55:33] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:55:33] position: 2
+('[Jul 07, 16, 17:55:33] key from post:', 'filter')
+('[Jul 07, 16, 17:55:33] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:55:33] entered log in filter classes
+[Jul 07, 16, 17:55:33] logging from exposure class
+[Jul 07, 16, 17:55:33] Filter position is V
+[17:55:34]Sending to filter: getFilter
+[Jul 07, 16, 17:55:34] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:55:34] position: 2
+('[Jul 07, 16, 17:55:34] key from post:', 'filter')
+('[Jul 07, 16, 17:55:34] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:55:34] entered log in filter classes
+[Jul 07, 16, 17:55:34] logging from exposure class
+[Jul 07, 16, 17:55:34] Filter position is V
+[17:55:35]Sending to filter: getFilter
+[Jul 07, 16, 17:55:35] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:55:35] position: 3
+('[Jul 07, 16, 17:55:35] key from post:', 'filter')
+('[Jul 07, 16, 17:55:35] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:55:35] entered log in filter classes
+[Jul 07, 16, 17:55:35] logging from exposure class
+[Jul 07, 16, 17:55:35] Filter position is g
+[Jul 07, 16, 17:55:35] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 17:55:35] 1
+('[Jul 07, 16, 17:55:35] key from post:', 'filter')
+('[Jul 07, 16, 17:55:35] Stats in log:', ['move'])
+[Jul 07, 16, 17:55:35] in rotate callback Successfully moved filter...
+[Jul 07, 16, 17:55:35] entered log in filter classes
+[Jul 07, 16, 17:55:35] logging from exposure class
+[Jul 07, 16, 17:55:35] Completed rotation...
+[Jul 07, 16, 17:55:45] selection: r
+[Jul 07, 16, 17:55:46] <type 'unicode'>
+[Jul 07, 16, 17:55:46] index: 4
+[Jul 07, 16, 17:55:46] entered log in filter classes
+[Jul 07, 16, 17:55:46] logging from exposure class
+[17:55:46]Sending to filter: move 4
+[17:55:46]Sending to filter: getFilter
+[Jul 07, 16, 17:55:46] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:55:46] position: 3
+('[Jul 07, 16, 17:55:46] key from post:', 'filter')
+('[Jul 07, 16, 17:55:46] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:55:46] entered log in filter classes
+[Jul 07, 16, 17:55:46] logging from exposure class
+[Jul 07, 16, 17:55:46] Filter position is g
+[17:55:47]Sending to filter: getFilter
+[Jul 07, 16, 17:55:47] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:55:47] position: 3
+('[Jul 07, 16, 17:55:47] key from post:', 'filter')
+('[Jul 07, 16, 17:55:47] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:55:47] entered log in filter classes
+[Jul 07, 16, 17:55:47] logging from exposure class
+[Jul 07, 16, 17:55:47] Filter position is g
+[17:55:48]Sending to filter: getFilter
+[Jul 07, 16, 17:55:48] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:55:48] position: 4
+('[Jul 07, 16, 17:55:48] key from post:', 'filter')
+('[Jul 07, 16, 17:55:48] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:55:48] entered log in filter classes
+[Jul 07, 16, 17:55:48] logging from exposure class
+[Jul 07, 16, 17:55:48] Filter position is r
+[Jul 07, 16, 17:55:55] selection: B
+[Jul 07, 16, 17:55:56] <type 'unicode'>
+[Jul 07, 16, 17:55:56] index: 1
+[Jul 07, 16, 17:55:56] entered log in filter classes
+[Jul 07, 16, 17:55:56] logging from exposure class
+[17:55:56]Sending to filter: move 1
+[17:55:56]Sending to filter: getFilter
+[Jul 07, 16, 17:55:56] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:55:56] position: 4
+('[Jul 07, 16, 17:55:56] key from post:', 'filter')
+('[Jul 07, 16, 17:55:56] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:55:56] entered log in filter classes
+[Jul 07, 16, 17:55:56] logging from exposure class
+[Jul 07, 16, 17:55:56] Filter position is r
+[17:55:57]Sending to filter: getFilter
+[Jul 07, 16, 17:55:57] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:55:57] position: 3
+('[Jul 07, 16, 17:55:57] key from post:', 'filter')
+('[Jul 07, 16, 17:55:57] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:55:57] entered log in filter classes
+[Jul 07, 16, 17:55:57] logging from exposure class
+[Jul 07, 16, 17:55:57] Filter position is g
+[17:55:58]Sending to filter: getFilter
+[Jul 07, 16, 17:55:58] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:55:58] position: 2
+('[Jul 07, 16, 17:55:58] key from post:', 'filter')
+('[Jul 07, 16, 17:55:58] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:55:58] entered log in filter classes
+[Jul 07, 16, 17:55:58] logging from exposure class
+[Jul 07, 16, 17:55:58] Filter position is V
+[17:55:59]Sending to filter: getFilter
+[Jul 07, 16, 17:55:59] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:55:59] position: 1
+('[Jul 07, 16, 17:55:59] key from post:', 'filter')
+('[Jul 07, 16, 17:55:59] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:55:59] entered log in filter classes
+[Jul 07, 16, 17:55:59] logging from exposure class
+[Jul 07, 16, 17:55:59] Filter position is B
+[Jul 07, 16, 17:56:02] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:56:02] key from post:', 'filter')
+('[Jul 07, 16, 17:56:02] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:56:02] entered log in filter classes
+[Jul 07, 16, 17:56:02] logging from exposure class
+[Jul 07, 16, 17:56:03] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:56:03] 11
+('[Jul 07, 16, 17:56:03] key from post:', 'filter')
+('[Jul 07, 16, 17:56:03] Stats in log:', ['move'])
+[Jul 07, 16, 17:56:03] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:56:03] entered log in filter classes
+[Jul 07, 16, 17:56:03] logging from exposure class
+[Jul 07, 16, 17:56:03] Completed rotation...
+[Jul 07, 16, 17:56:15] entered log in filter classes
+[Jul 07, 16, 17:56:15] logging from exposure class
+[17:56:15]Sending to filter: home
+[Jul 07, 16, 17:56:15] homing...
+[Jul 07, 16, 17:56:33] Receieved from filter (5503): home 1
+
+('[Jul 07, 16, 17:56:33] key from post:', 'filter')
+('[Jul 07, 16, 17:56:33] Stats in log:', ['home'])
+[Jul 07, 16, 17:56:33] entered log in filter classes
+[Jul 07, 16, 17:56:33] logging from exposure class
+[Jul 07, 16, 17:56:33] Done homing: 1
+[Jul 07, 16, 17:56:33] entered log in filter classes
+[Jul 07, 16, 17:56:33] logging from exposure class
+[17:56:33]Sending to filter: getFilter
+[Jul 07, 16, 17:56:33] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:56:33] position: 0
+('[Jul 07, 16, 17:56:33] key from post:', 'filter')
+('[Jul 07, 16, 17:56:33] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:56:33] entered log in filter classes
+[Jul 07, 16, 17:56:33] logging from exposure class
+[Jul 07, 16, 17:56:33] Filter position is Ha
+[Jul 07, 16, 17:56:38] selection: r
+[Jul 07, 16, 17:56:39] <type 'unicode'>
+[Jul 07, 16, 17:56:39] index: 4
+[Jul 07, 16, 17:56:39] entered log in filter classes
+[Jul 07, 16, 17:56:39] logging from exposure class
+[17:56:39]Sending to filter: move 4
+[17:56:39]Sending to filter: getFilter
+[Jul 07, 16, 17:56:39] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:56:39] position: 0
+('[Jul 07, 16, 17:56:39] key from post:', 'filter')
+('[Jul 07, 16, 17:56:39] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:56:39] entered log in filter classes
+[Jul 07, 16, 17:56:39] logging from exposure class
+[Jul 07, 16, 17:56:39] Filter position is Ha
+[17:56:40]Sending to filter: getFilter
+[Jul 07, 16, 17:56:40] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 17:56:40] position: 0
+('[Jul 07, 16, 17:56:40] key from post:', 'filter')
+('[Jul 07, 16, 17:56:40] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:56:40] entered log in filter classes
+[Jul 07, 16, 17:56:40] logging from exposure class
+[Jul 07, 16, 17:56:40] Filter position is Ha
+[17:56:41]Sending to filter: getFilter
+[Jul 07, 16, 17:56:41] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 17:56:41] position: 1
+('[Jul 07, 16, 17:56:41] key from post:', 'filter')
+('[Jul 07, 16, 17:56:41] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:56:41] entered log in filter classes
+[Jul 07, 16, 17:56:41] logging from exposure class
+[Jul 07, 16, 17:56:41] Filter position is B
+[17:56:42]Sending to filter: getFilter
+[Jul 07, 16, 17:56:42] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:56:42] position: 2
+('[Jul 07, 16, 17:56:42] key from post:', 'filter')
+('[Jul 07, 16, 17:56:42] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:56:42] entered log in filter classes
+[Jul 07, 16, 17:56:42] logging from exposure class
+[Jul 07, 16, 17:56:42] Filter position is V
+[17:56:43]Sending to filter: getFilter
+[Jul 07, 16, 17:56:43] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 17:56:43] position: 2
+('[Jul 07, 16, 17:56:43] key from post:', 'filter')
+('[Jul 07, 16, 17:56:43] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:56:43] entered log in filter classes
+[Jul 07, 16, 17:56:43] logging from exposure class
+[Jul 07, 16, 17:56:43] Filter position is V
+[17:56:44]Sending to filter: getFilter
+[Jul 07, 16, 17:56:44] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 17:56:44] position: 3
+('[Jul 07, 16, 17:56:44] key from post:', 'filter')
+('[Jul 07, 16, 17:56:44] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:56:44] entered log in filter classes
+[Jul 07, 16, 17:56:44] logging from exposure class
+[Jul 07, 16, 17:56:44] Filter position is g
+[17:56:45]Sending to filter: getFilter
+[Jul 07, 16, 17:56:45] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 17:56:45] position: 4
+('[Jul 07, 16, 17:56:45] key from post:', 'filter')
+('[Jul 07, 16, 17:56:45] Stats in log:', ['getFilter'])
+[Jul 07, 16, 17:56:45] entered log in filter classes
+[Jul 07, 16, 17:56:45] logging from exposure class
+[Jul 07, 16, 17:56:45] Filter position is r
+[Jul 07, 16, 17:56:45] Receieved from filter (5503): findPos 1
+
+('[Jul 07, 16, 17:56:45] key from post:', 'filter')
+('[Jul 07, 16, 17:56:45] Stats in log:', ['findPos'])
+[Jul 07, 16, 17:56:45] entered log in filter classes
+[Jul 07, 16, 17:56:45] logging from exposure class
+[Jul 07, 16, 17:56:46] Receieved from filter (5503): move 11
+
+[Jul 07, 16, 17:56:46] 11
+('[Jul 07, 16, 17:56:46] key from post:', 'filter')
+('[Jul 07, 16, 17:56:46] Stats in log:', ['move'])
+[Jul 07, 16, 17:56:46] in rotate callback Successfully adjusted filter...
+[Jul 07, 16, 17:56:46] entered log in filter classes
+[Jul 07, 16, 17:56:46] logging from exposure class
+[Jul 07, 16, 17:56:46] Completed rotation...
+[Jul 07, 16, 17:59:07] Disconnect pressed in filter menu
+('[Jul 07, 16, 17:59:07] key from post:', 'filter')
+('[Jul 07, 16, 17:59:07] Stats in log:', ['connectLost'])
+[Jul 07, 16, 17:59:07] entered log in filter classes
+[Jul 07, 16, 17:59:07] logging from exposure class
+[Jul 07, 16, 17:59:07] connection lost normally on port 5503
+[Jul 07, 16, 17:59:14] Closing down Evora GUI
+[Jul 07, 16, 17:59:14] reactor stopped, finished quitting
+Traceback (most recent call last):
+  File "./photoAcquisitionGUI.py", line 1043, in <module>
+    app.frame1 = Evora()
+  File "./photoAcquisitionGUI.py", line 78, in __init__
+    page1 = TakeImage(notebook)
+  File "./photoAcquisitionGUI.py", line 745, in __init__
+    self.filterInstance = ac.FilterControl(self)
+  File "/home/mro/ScienceCamera/gui/acquisitionClasses.py", line 1026, in __init__
+    self.enableButtons(False)
+TypeError: enableButtons() takes exactly 1 argument (2 given)
+[Jul 07, 16, 18:03:52] Connect pressed in Filter menu
+[Jul 07, 16, 18:03:52] connection made to filter
+[Jul 07, 16, 18:03:52] entered log in filter classes
+[Jul 07, 16, 18:03:52] logging from exposure class
+[Jul 07, 16, 18:03:52] entered log in filter classes
+[Jul 07, 16, 18:03:52] logging from exposure class
+[18:03:52]Sending to filter: getFilter
+[Jul 07, 16, 18:03:54] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 18:03:54] position: 3
+('[Jul 07, 16, 18:03:54] key from post:', 'filter')
+('[Jul 07, 16, 18:03:54] Stats in log:', ['getFilter'])
+[Jul 07, 16, 18:03:54] entered log in filter classes
+[Jul 07, 16, 18:03:54] logging from exposure class
+[Jul 07, 16, 18:03:54] Filter position is g
+[Jul 07, 16, 18:03:56] entered log in filter classes
+[Jul 07, 16, 18:03:56] logging from exposure class
+[18:03:56]Sending to filter: home
+[Jul 07, 16, 18:03:56] homing...
+[Jul 07, 16, 18:04:10] Receieved from filter (5503): home 1
+
+('[Jul 07, 16, 18:04:10] key from post:', 'filter')
+('[Jul 07, 16, 18:04:10] Stats in log:', ['home'])
+[Jul 07, 16, 18:04:10] entered log in filter classes
+[Jul 07, 16, 18:04:10] logging from exposure class
+[Jul 07, 16, 18:04:10] Done homing: 1
+[Jul 07, 16, 18:04:10] entered log in filter classes
+[Jul 07, 16, 18:04:10] logging from exposure class
+[18:04:10]Sending to filter: getFilter
+[Jul 07, 16, 18:04:10] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 18:04:10] position: 0
+('[Jul 07, 16, 18:04:10] key from post:', 'filter')
+('[Jul 07, 16, 18:04:10] Stats in log:', ['getFilter'])
+[Jul 07, 16, 18:04:10] entered log in filter classes
+[Jul 07, 16, 18:04:10] logging from exposure class
+[Jul 07, 16, 18:04:10] Filter position is Ha
+[Jul 07, 16, 18:04:13] selection: g
+[Jul 07, 16, 18:04:14] <type 'unicode'>
+[Jul 07, 16, 18:04:14] index: 3
+[Jul 07, 16, 18:04:14] entered log in filter classes
+[Jul 07, 16, 18:04:14] logging from exposure class
+[18:04:14]Sending to filter: move 3
+[18:04:14]Sending to filter: getFilter
+[Jul 07, 16, 18:04:14] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 18:04:14] position: 0
+('[Jul 07, 16, 18:04:14] key from post:', 'filter')
+('[Jul 07, 16, 18:04:14] Stats in log:', ['getFilter'])
+[Jul 07, 16, 18:04:14] entered log in filter classes
+[Jul 07, 16, 18:04:14] logging from exposure class
+[Jul 07, 16, 18:04:14] Filter position is Ha
+[18:04:15]Sending to filter: getFilter
+[Jul 07, 16, 18:04:15] Receieved from filter (5503): getFilter 0
+
+[Jul 07, 16, 18:04:15] position: 0
+('[Jul 07, 16, 18:04:15] key from post:', 'filter')
+('[Jul 07, 16, 18:04:15] Stats in log:', ['getFilter'])
+[Jul 07, 16, 18:04:15] entered log in filter classes
+[Jul 07, 16, 18:04:15] logging from exposure class
+[Jul 07, 16, 18:04:15] Filter position is Ha
+[18:04:16]Sending to filter: getFilter
+[Jul 07, 16, 18:04:16] Receieved from filter (5503): getFilter 1
+
+[Jul 07, 16, 18:04:16] position: 1
+('[Jul 07, 16, 18:04:16] key from post:', 'filter')
+('[Jul 07, 16, 18:04:16] Stats in log:', ['getFilter'])
+[Jul 07, 16, 18:04:16] entered log in filter classes
+[Jul 07, 16, 18:04:16] logging from exposure class
+[Jul 07, 16, 18:04:16] Filter position is B
+[18:04:17]Sending to filter: getFilter
+[Jul 07, 16, 18:04:17] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 18:04:17] position: 2
+('[Jul 07, 16, 18:04:17] key from post:', 'filter')
+('[Jul 07, 16, 18:04:17] Stats in log:', ['getFilter'])
+[Jul 07, 16, 18:04:17] entered log in filter classes
+[Jul 07, 16, 18:04:17] logging from exposure class
+[Jul 07, 16, 18:04:17] Filter position is V
+[18:04:18]Sending to filter: getFilter
+[Jul 07, 16, 18:04:18] Receieved from filter (5503): getFilter 2
+
+[Jul 07, 16, 18:04:18] position: 2
+('[Jul 07, 16, 18:04:18] key from post:', 'filter')
+('[Jul 07, 16, 18:04:18] Stats in log:', ['getFilter'])
+[Jul 07, 16, 18:04:18] entered log in filter classes
+[Jul 07, 16, 18:04:18] logging from exposure class
+[Jul 07, 16, 18:04:18] Filter position is V
+[18:04:19]Sending to filter: getFilter
+[Jul 07, 16, 18:04:19] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 18:04:19] position: 3
+('[Jul 07, 16, 18:04:19] key from post:', 'filter')
+('[Jul 07, 16, 18:04:19] Stats in log:', ['getFilter'])
+[Jul 07, 16, 18:04:19] entered log in filter classes
+[Jul 07, 16, 18:04:19] logging from exposure class
+[Jul 07, 16, 18:04:19] Filter position is g
+[Jul 07, 16, 18:04:19] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 18:04:19] 1
+('[Jul 07, 16, 18:04:19] key from post:', 'filter')
+('[Jul 07, 16, 18:04:19] Stats in log:', ['move'])
+[Jul 07, 16, 18:04:19] in rotate callback Successfully moved filter...
+[Jul 07, 16, 18:04:19] entered log in filter classes
+[Jul 07, 16, 18:04:19] logging from exposure class
+[Jul 07, 16, 18:04:19] Completed rotation...
+[Jul 07, 16, 18:04:21] selection: r
+[Jul 07, 16, 18:04:22] <type 'unicode'>
+[Jul 07, 16, 18:04:22] index: 4
+[Jul 07, 16, 18:04:22] entered log in filter classes
+[Jul 07, 16, 18:04:22] logging from exposure class
+[18:04:22]Sending to filter: move 4
+[18:04:22]Sending to filter: getFilter
+[18:04:23]Sending to filter: getFilter
+[Jul 07, 16, 18:04:23] Receieved from filter (5503): getFilter 3
+
+[Jul 07, 16, 18:04:23] position: 3
+('[Jul 07, 16, 18:04:23] key from post:', 'filter')
+('[Jul 07, 16, 18:04:23] Stats in log:', ['getFilter'])
+[Jul 07, 16, 18:04:23] entered log in filter classes
+[Jul 07, 16, 18:04:23] logging from exposure class
+[Jul 07, 16, 18:04:23] Filter position is g
+[18:04:24]Sending to filter: getFilter
+[Jul 07, 16, 18:04:24] Receieved from filter (5503): getFilter 4
+
+[Jul 07, 16, 18:04:24] position: 4
+('[Jul 07, 16, 18:04:24] key from post:', 'filter')
+('[Jul 07, 16, 18:04:24] Stats in log:', ['getFilter'])
+[Jul 07, 16, 18:04:24] entered log in filter classes
+[Jul 07, 16, 18:04:24] logging from exposure class
+[Jul 07, 16, 18:04:24] Filter position is r
+[Jul 07, 16, 18:04:24] Receieved from filter (5503): move 1
+
+[Jul 07, 16, 18:04:24] 1
+('[Jul 07, 16, 18:04:24] key from post:', 'filter')
+('[Jul 07, 16, 18:04:24] Stats in log:', ['move'])
+[Jul 07, 16, 18:04:24] in rotate callback Successfully moved filter...
+[Jul 07, 16, 18:04:24] entered log in filter classes
+[Jul 07, 16, 18:04:24] logging from exposure class
+[Jul 07, 16, 18:04:24] Completed rotation...
+[Jul 07, 16, 18:04:41] Disconnect pressed in filter menu
+('[Jul 07, 16, 18:04:41] key from post:', 'filter')
+('[Jul 07, 16, 18:04:41] Stats in log:', ['connectLost'])
+[Jul 07, 16, 18:04:41] entered log in filter classes
+[Jul 07, 16, 18:04:41] logging from exposure class
+[Jul 07, 16, 18:04:41] connection lost normally on port 5503
+[Jul 07, 16, 18:04:55] Closing down Evora GUI
+[Jul 07, 16, 18:04:55] reactor stopped, finished quitting

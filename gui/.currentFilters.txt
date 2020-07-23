@@ -1,7 +1,0 @@
-position,filter
-0,Ha
-1,B
-2,V
-3,g
-4,r
-5,i
