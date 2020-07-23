@@ -28,3 +28,36 @@
 
 [INFO/photoAcquisitionGUI.py:262] 2020-07-22 20:08:31 (MainProcess/MainThread)
 > reactor stopped, finished quitting
+
+[INFO/photoAcquisitionGUI.py:231] 2020-07-22 20:45:40 (MainProcess/MainThread)
+> Closing down Evora GUI
+
+[INFO/photoAcquisitionGUI.py:261] 2020-07-22 20:45:40 (MainProcess/MainThread)
+> reactor stopped, finished quitting
+
+[INFO/acquisitionClasses.py:885] 2020-07-22 20:49:33 (MainProcess/MainThread)
+> Flat
+
+[INFO/acquisitionClasses.py:885] 2020-07-22 20:49:34 (MainProcess/MainThread)
+> Bias
+
+[INFO/acquisitionClasses.py:885] 2020-07-22 20:49:36 (MainProcess/MainThread)
+> Object
+
+[INFO/acquisitionClasses.py:885] 2020-07-22 20:49:37 (MainProcess/MainThread)
+> Dark
+
+[INFO/acquisitionClasses.py:905] 2020-07-22 20:49:37 (MainProcess/MainThread)
+> Real Time
+
+[INFO/acquisitionClasses.py:905] 2020-07-22 20:49:38 (MainProcess/MainThread)
+> Series
+
+[INFO/acquisitionClasses.py:905] 2020-07-22 20:49:39 (MainProcess/MainThread)
+> Single
+
+[INFO/photoAcquisitionGUI.py:231] 2020-07-22 20:49:56 (MainProcess/MainThread)
+> Closing down Evora GUI
+
+[INFO/photoAcquisitionGUI.py:261] 2020-07-22 20:49:56 (MainProcess/MainThread)
+> reactor stopped, finished quitting

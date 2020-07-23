@@ -19,8 +19,8 @@ import time
 from datetime import datetime
 
 # MRO files
-import fits_utils
-import my_logger
+import evora.common.utils.fits as fits_utils
+from evora.common.logging import my_logger
 import numpy as np
 import pandas as pd
 from astropy.io import fits
