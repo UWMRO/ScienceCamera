@@ -1,7 +1,9 @@
-import os
 import datetime
+import os
+
 import numpy as np
 from astropy.io import fits
+
 import evora.common.logging.my_logger as my_logger
 
 logger = my_logger.myLogger("fits_utils.py", "client")

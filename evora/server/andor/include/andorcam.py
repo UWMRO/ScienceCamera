@@ -1,8 +1,8 @@
 """Python OO interface for controlling an Andor Ikon camera."""
+import andor
+import BaseCam
 import numpy as np
 
-import BaseCam
-import andor
 
 class AndorError(BaseCam.CameraError):
     pass

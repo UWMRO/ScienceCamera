@@ -10,14 +10,19 @@
 
 """
 
-import time
 import os
-from Phidgets.PhidgetException import PhidgetErrorCodes, PhidgetException
-from Phidgets.Events.Events import AttachEventArgs, DetachEventArgs, ErrorEventArgs, InputChangeEventArgs, CurrentChangeEventArgs, StepperPositionChangeEventArgs, VelocityChangeEventArgs
-from Phidgets.Devices.Stepper import Stepper
-from Phidgets.Phidget import PhidgetLogLevel
+import time
+
 import fw_io
 import numpy as np
+from Phidgets.Devices.Stepper import Stepper
+from Phidgets.Events.Events import (AttachEventArgs, CurrentChangeEventArgs,
+                                    DetachEventArgs, ErrorEventArgs,
+                                    InputChangeEventArgs,
+                                    StepperPositionChangeEventArgs,
+                                    VelocityChangeEventArgs)
+from Phidgets.Phidget import PhidgetLogLevel
+from Phidgets.PhidgetException import PhidgetErrorCodes, PhidgetException
 
 
 class FilterMotor(object):

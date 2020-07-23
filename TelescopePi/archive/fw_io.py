@@ -25,8 +25,10 @@ __maintainer__ = "Joseph Huehnerhoff"
 __email__ = ""
 __status__ = "Developement"
 
-import serial
 import time
+
+import serial
+
 
 class FWIO():
     def __init__(self):

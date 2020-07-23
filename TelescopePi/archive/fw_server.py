@@ -1,20 +1,16 @@
 #!/usr/bin/python2
 
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import sys
-
-from twisted.protocols import basic
-from twisted.internet import protocol, reactor, threads
-
-# For filter controls
-from FilterMotor import *
-import Queue
-import thread
 import threading
 
+import Queue
+import thread
+# For filter controls
+from FilterMotor import *
+from twisted.internet import protocol, reactor, threads
+from twisted.protocols import basic
 
 # port for filterwheel is 5503
 

@@ -1,14 +1,19 @@
 #!/usr/bin/env python
 
 #Basic imports
-from ctypes import *
 import sys
 import time
+from ctypes import *
+
+from Phidgets.Devices.Stepper import Stepper
+from Phidgets.Events.Events import (AttachEventArgs, CurrentChangeEventArgs,
+                                    DetachEventArgs, ErrorEventArgs,
+                                    InputChangeEventArgs,
+                                    StepperPositionChangeEventArgs,
+                                    VelocityChangeEventArgs)
+from Phidgets.Phidget import PhidgetLogLevel
 #Phidget specific imports
 from Phidgets.PhidgetException import PhidgetErrorCodes, PhidgetException
-from Phidgets.Events.Events import AttachEventArgs, DetachEventArgs, ErrorEventArgs, InputChangeEventArgs, CurrentChangeEventArgs, StepperPositionChangeEventArgs, VelocityChangeEventArgs
-from Phidgets.Devices.Stepper import Stepper
-from Phidgets.Phidget import PhidgetLogLevel
 
 """
 Haydon Kerk Bipolar Stepper start parameters

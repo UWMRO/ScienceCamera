@@ -1,17 +1,18 @@
 #!/usr/bin/python2
-from __future__ import print_function, division
+from __future__ import division, print_function
 
+import shutil
 # Imports
 # Core Imports
 import threading
 import time
-import shutil
 from io import BytesIO
-import evora.common.logging.my_logger as my_logger
 
 # Third-party imports
 import wx
 from twisted.internet import protocol
+
+import evora.common.logging.my_logger as my_logger
 
 __author__ = "Tristan J. Hillis"
 

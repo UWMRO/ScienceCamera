@@ -1,9 +1,11 @@
 #! /usr/bin/python
 
+import time
+
 import andor
 import numpy as np
 import pyfits
-import time
+
 
 class evora(object):
 

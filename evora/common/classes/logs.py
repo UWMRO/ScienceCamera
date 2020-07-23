@@ -1,7 +1,7 @@
 #!/usr/bin/python2
 
 # Python3-like changes
-from __future__ import print_function, division, absolute_import
+from __future__ import absolute_import, division, print_function
 
 # Comment on documentation:
 # When reading the doc strings if "Pre:" is present then this stands for "precondition", or the conditions in order to invoke something.
@@ -11,6 +11,7 @@ __author__ = "Tristan J. Hillis"
 
 # Imports
 import wx
+
 import evora.common.utils.logs as log_utils
 
 

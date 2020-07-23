@@ -4,8 +4,9 @@ run me with twistd -n -y camera_reactor.py, and then connect with multiple
 telnet clients to port 5502 
 """
 
-from twisted.protocols import basic
 import evora_parser2
+from twisted.protocols import basic
+
 
 class CameraReciever(basic.LineReceiver):
     def connectionMade(self):
@@ -28,8 +29,8 @@ class CameraReciever(basic.LineReceiver):
         self.transport.write(message + '\n')
 
 
+from twisted.application import internet, service
 from twisted.internet import protocol
-from twisted.application import service, internet
 
 factory = protocol.ServerFactory()
 factory.protocol = CameraReciever

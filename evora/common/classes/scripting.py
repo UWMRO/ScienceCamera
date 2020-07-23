@@ -1,12 +1,13 @@
 #!/usr/bin/python2
 
-from __future__ import print_function, division, absolute_import
+from __future__ import absolute_import, division, print_function
 
-import wx
-import thread
 import gui_elements as gui
-import evora.common.utils.logs as log_utils
+import thread
+import wx
+
 import evora.common.utils.fits as fits_utils
+import evora.common.utils.logs as log_utils
 
 
 class ScriptStatus(wx.Panel):

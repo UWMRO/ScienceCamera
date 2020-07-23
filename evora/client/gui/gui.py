@@ -7,32 +7,31 @@ import subprocess
 import threading
 import webbrowser
 
-import wx
 import matplotlib
+import wx
+
 matplotlib.use("WXAgg")
 import matplotlib.pyplot as plt
 import numpy as np
-
 from astropy.io import fits
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+from twisted.internet import wxreactor
 
 # always goes after wxreactor install
 
-from twisted.internet import wxreactor
 wxreactor.install()
+import enhanced_status_bar
 from twisted.internet import defer, protocol, reactor
 from twisted.protocols import basic
-
 # FTP Client Things
 from twisted.protocols.ftp import FTPClient
 
+import evora.client.gui.gui_elements as gui
 # GUI element imports
 import evora.common.classes.acquisition as ac
-import evora.client.gui.gui_elements as gui
-import enhanced_status_bar
 import evora.common.classes.logs as lc
-import evora.common.logging.my_logger as my_logger
 import evora.common.classes.scripting as sc
+import evora.common.logging.my_logger as my_logger
 import evora.common.utils.fits as fits_utils
 import evora.common.utils.logs as log_utils
 from evora.common import netconsts

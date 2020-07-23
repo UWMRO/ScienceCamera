@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import serial
-from Phidget22.Phidget import *
 from Phidget22.Devices.Stepper import *
+from Phidget22.Phidget import *
+
 
 class FilterWheel:
     def __init__(self):

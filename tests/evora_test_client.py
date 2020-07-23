@@ -7,7 +7,9 @@
 An example client. Run simpleserv.py first before running this.
 """
 from __future__ import print_function
-from twisted.internet import reactor, protocol
+
+from twisted.internet import protocol, reactor
+
 # import twisted.protocols.basic import LineReceiver
 
 # a client protocol

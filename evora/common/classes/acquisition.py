@@ -1,20 +1,20 @@
 #!/usr/bin/python2
-from __future__ import print_function, division, absolute_import
+from __future__ import absolute_import, division, print_function
 
+import threading
 # Imports
 import time
-import thread
-import threading
-import wx  # get wxPython
-
-import pandas as pd
 
 # allows widgets to be inserted into wxPython status bar probably won't work on wxPython 3.x
 import gui_elements as gui  # get useful methods
+import pandas as pd
+import thread
+import wx  # get wxPython
+from Queue import Queue
+
+import evora.common.logging.my_logger as my_logger
 import evora.common.utils.fits as fits_utils
 import evora.common.utils.logs as log_utils
-import evora.common.logging.my_logger as my_logger
-from Queue import Queue
 
 __author__ = "Tristan J. Hillis"
 

@@ -11,10 +11,9 @@ test_actor.cooler()
 test_actor.andor.ShutDown()
 """
 
+import andor
 import numpy as np
 import pyfits
-
-import andor
 
 num = 0
 

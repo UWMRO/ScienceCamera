@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 
-from twisted.protocols import basic
-from twisted.internet import protocol, reactor, threads
-
 from FilterWheel import *
+from twisted.internet import protocol, reactor, threads
+from twisted.protocols import basic
 
 # Port for filterwheel is 5503
 

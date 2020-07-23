@@ -1,6 +1,7 @@
 #! /user/bin/python
 # division handles truncation 10/3. ==> 10/3, absolute_import changes where in path is checked for modules
-from __future__ import division, print_function, absolute_import  # this handles truncation 10/3. ==> 10/3
+from __future__ import (  # this handles truncation 10/3. ==> 10/3
+    absolute_import, division, print_function)
 
 """
 transfer.py
@@ -16,8 +17,9 @@ __maintainer__ = "NA"
 __email__ = "NA"
 __status__ = "Developement"
 
-import paramiko
 import os
+
+import paramiko
 
 
 class transfer(object):

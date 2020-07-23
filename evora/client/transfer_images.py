@@ -1,20 +1,18 @@
 #!/usr/bin/env python2
-from __future__ import print_function, division, absolute_import
+from __future__ import absolute_import, division, print_function
 
-from twisted.protocols import basic
+import threading
+import time
+
+from Queue import Queue
 from twisted.internet import protocol, reactor
-
+from twisted.protocols import basic
 # FTP Client Things
 from twisted.protocols.ftp import FTPClient
 
-from Queue import Queue
-import threading
-import time
-import evora.common.netconsts as netconsts
-
 # GUI element imports
 import evora.client.gui.gui_elements as gui
-
+import evora.common.netconsts as netconsts
 
 # Global variables
 ftp = None

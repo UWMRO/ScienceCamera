@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 
 # For Python3-like functionality
-from __future__ import print_function, division, absolute_import
+from __future__ import absolute_import, division, print_function
 
 # Comment on documentation:
 # When reading the doc strings if "Pre:" is present then this stands for "precondition", or the conditions in order to invoke something.
@@ -14,22 +14,22 @@ import glob
 import os
 import signal
 import subprocess
-import time
-import pandas as pd
 import threading
+import time
 from datetime import datetime
-
-from evora.server.andor import andor
-import numpy as np
-from astropy.io import fits
-from astropy.time import Time
-from twisted.protocols import basic
-from twisted.internet import protocol, reactor, threads
-from evora.common import netconsts
 
 # MRO files
 import fits_utils
 import my_logger
+import numpy as np
+import pandas as pd
+from astropy.io import fits
+from astropy.time import Time
+from twisted.internet import protocol, reactor, threads
+from twisted.protocols import basic
+
+from evora.common import netconsts
+from evora.server.andor import andor
 
 # For filter controls
 # from FilterMotor import filtermotor

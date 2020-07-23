@@ -1,8 +1,8 @@
+import distutils.sysconfig as sysconfig
 import glob
 import os
-from graphviz import Digraph
-import distutils.sysconfig as sysconfig
 
+from graphviz import Digraph
 
 imports = []
 dot = Digraph()

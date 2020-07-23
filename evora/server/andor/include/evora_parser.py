@@ -2,6 +2,7 @@
 
 import evora
 
+
 class Parser(object):
 	def __init__(self):
 		self.e = evora.evora()
