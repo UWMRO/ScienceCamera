@@ -94,7 +94,7 @@ class ScriptCommands(wx.Panel):
         Once a command has been inputed to the command prompt
         """
         self.button.SetFocus()
-        if self.command is "":
+        if self.command == "":
             print("No command")
         else:
             # print(self.command)
@@ -167,8 +167,7 @@ class ScriptCommands(wx.Panel):
                         d = self.protocol.addDeferred("seriesSent")
                         d.addCallback(exposeClass.displaySeriesImage_thread)
 
-                        d = self.protocol.sendCommand(sendCommand + " " + imtype + " " + number +
-                                                      " 0 " + str(self.parent.parent.parent.binning))
+                        d = self.protocol.sendCommand(sendCommand + " " + imtype + " " + number + " 0 " + str(self.parent.parent.parent.binning))
                         d.addCallback(exposeClass.seriesCallback)
 
                         # start timer
@@ -191,7 +190,7 @@ class ScriptCommands(wx.Panel):
 
                     if overwrite is not None or overwrite == wx.ID_OK:
                         for i in range(int(number)):
-                            d = self.protocol.addDeferred("seriesSent" + str(i+1))
+                            d = self.protocol.addDeferred("seriesSent" + str(i + 1))
                             d.addCallback(exposeClass.displaySeriesImage_thread)
 
                         d = self.protocol.sendCommand(sendCommand + " " + imtype + " " + number + " " + itime + " " + str(self.parent.parent.parent.binning))
@@ -208,24 +207,24 @@ class ScriptCommands(wx.Panel):
                 helpString = ""
                 if runList[2] == 'abort':
                     helpString += "\"expose abort\" is used to stop the current exposure.  This can be "\
-                                + "an exposure started through the imaging or scripting tab. Invoke with "\
-                                + "\"expose abort\"."
+                        + "an exposure started through the imaging or scripting tab. Invoke with "\
+                        + "\"expose abort\"."
                 if runList[2] == 'bias':
                     helpString += "\"expose bias\" is used to take a number of biases in one command. Invoke this "\
-                               + "command with \"expose bias arg1 arg2\", where arg1 and arg2, in no particular "\
-                               + "order, are time=XX in seconds and basename=imagename."
+                        + "command with \"expose bias arg1 arg2\", where arg1 and arg2, in no particular "\
+                        + "order, are time=XX in seconds and basename=imagename."
                 if runList[2] == 'dark':
                     helpString += "\"expose dark\" is used to take a number of darks in one command. Invoke this "\
-                               + "command with \"expose dark arg1 arg2 arg3\", where arg1, arg2, and arg3, in no particular "\
-                               + "order, are time=XX in seconds, number=XX as an int, and basename=imagename."
+                        + "command with \"expose dark arg1 arg2 arg3\", where arg1, arg2, and arg3, in no particular "\
+                        + "order, are time=XX in seconds, number=XX as an int, and basename=imagename."
                 if runList[2] == 'flat':
                     helpString += "\"expose flat\" is used to take a number of darks in one command. Invoke this "\
-                               + "command with \"expose flat arg1 arg2 arg3\", where arg1, arg2, and arg3, in no particular "\
-                               + "order, are time=XX in seconds, number=XX as an int, and basename=imagename."
+                        + "command with \"expose flat arg1 arg2 arg3\", where arg1, arg2, and arg3, in no particular "\
+                        + "order, are time=XX in seconds, number=XX as an int, and basename=imagename."
                 if runList[2] == 'object':
                     helpString += "\"expose object\" is used to take a number of darks in one command. Invoke this "\
-                               + "command with \"expose object arg1 arg2 arg3\", where arg1, arg2, and arg3, in no particular "\
-                               + "order, are time=XX in seconds, number=XX as an int, and basename=imagename."
+                        + "command with \"expose object arg1 arg2 arg3\", where arg1, arg2, and arg3, in no particular "\
+                        + "order, are time=XX in seconds, number=XX as an int, and basename=imagename."
                 self.sendToStatus(helpString)
 
             # Deal with set commands
@@ -242,9 +241,10 @@ class ScriptCommands(wx.Panel):
                 tempClass.onStopCooling(None)
 
             # command: set filter X
-            if sendCommand == 'set':
-                if runList[1] == 'filter':
-                    pos = int(runList[2])
+            # unused
+            # if sendCommand == 'set':
+            #     if runList[1] == 'filter':
+            #         pos = int(runList[2])
 
             # command: set binning X
             if sendCommand == 'set':
@@ -366,15 +366,14 @@ class ScriptCommands(wx.Panel):
                                 argDict = {}
                                 print(arg1, arg2)
 
-                                if ((len(arg1) == 2 and (arg1[0] in ['basename', 'number'])) and
-                                   (len(arg2) == 2 and (arg2[0] in ['basename', 'number']))):
+                                if ((len(arg1) == 2 and (arg1[0] in ['basename', 'number'])) and (len(arg2) == 2 and (arg2[0] in ['basename', 'number']))):
                                     # map arguements to be able to call them in order
                                     argDict[arg1[0]] = arg1[1]
                                     argDict[arg2[0]] = arg2[1]
 
                                     if argDict['number'].isdigit():
                                         if int(argDict['number']) > 0:
-                                            if argDict['basename'].strip() is not "":
+                                            if argDict['basename'].strip() != "":
                                                 # final stop; everything has been checked so now we build up the list to return
                                                 runList.append('series')
                                                 runList.append(subcommand)
@@ -410,9 +409,7 @@ class ScriptCommands(wx.Panel):
                                 print(arg1, arg2, arg3)
                                 # Makes sure that when args are split by equals that there are two entries and that the first one is
                                 # either time or basename.
-                                if ((len(arg1) == 2 and (arg1[0] in ['time', 'basename', 'number'])) and
-                                   (len(arg2) == 2 and (arg2[0] in ['time', 'basename', 'number'])) and
-                                   (len(arg3) == 2 and (arg3[0] in ['time', 'basename', 'number']))):
+                                if ((len(arg1) == 2 and (arg1[0] in ['time', 'basename', 'number'])) and (len(arg2) == 2 and (arg2[0] in ['time', 'basename', 'number'])) and (len(arg3) == 2 and (arg3[0] in ['time', 'basename', 'number']))):
                                     # map arguments to be able to call them in order
                                     argDict[arg1[0]] = arg1[1]
                                     argDict[arg2[0]] = arg2[1]
@@ -421,7 +418,7 @@ class ScriptCommands(wx.Panel):
                                     if argDict['time'].isnumeric() and argDict['number'].isdigit():
                                         # final stop; everything has been checked so now we build up the list to return
                                         if float(argDict['time']) >= 0 or int(argDict['number']) > 0:
-                                            if argDict['basename'].strip() is not "":
+                                            if argDict['basename'].strip() != "":
                                                 runList.append('series')
                                                 runList.append(subcommand)
                                                 runList.append(int(argDict['number']))

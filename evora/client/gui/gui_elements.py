@@ -62,7 +62,7 @@ class FileWriter(protocol.Protocol):
         """
         Pass full directory in for the file to be saved with just the fileName
         """
-        self.f = open(directory+fileName, 'wb')
+        self.f = open(directory + fileName, 'wb')
 
     def dataReceived(self, data):
         # print("Byte size", len(data))
@@ -79,7 +79,7 @@ class FileBuffer(protocol.Protocol):
         Pass full directory in for the file to be saved with just the fileName
         """
         self.time = 0 - time.clock()
-        self.fileName = directory+fileName
+        self.fileName = directory + fileName
         self.buffer = BytesIO()
 
     def dataReceived(self, data):

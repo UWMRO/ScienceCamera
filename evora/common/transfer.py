@@ -47,8 +47,8 @@ class transfer(object):
         dict = {}
         f_in = open(os.path.join(os.getcwd(), 'transfer.init'), 'r')
         for line in f_in:
-            l = line.split()
-            dict[l[0]] = l[1]
+            split_line = line.split()
+            dict[split_line[0]] = split_line[1]
         f_in.close()
         return dict
 

@@ -204,8 +204,7 @@ class QueueWatcher(threading.Thread):
             while imageQueue.qsize() > 0:
                 parser, serverImName, savePath, saveName = imageQueue.get()
                 d = ftp.retrieveFile(serverImName, gui.FileBuffer(savePath, saveName), offset=0)
-
-                d.addCallback(parser.transferDone, file=savePath+saveName)
+                d.addCallback(parser.transferDone, file=savePath + saveName)
                 d.addErrback(parser.transferFail)
                 imageGet.wait()
             time.sleep(0.01)

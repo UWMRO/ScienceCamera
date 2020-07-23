@@ -1,0 +1,3 @@
+[flake8]
+ignore = E402, E501
+exclude = evora/server/andor/*, evora/client/gui/enhanced_status_bar.py

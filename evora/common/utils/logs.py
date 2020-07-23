@@ -17,7 +17,7 @@ def get_log_str(command, prePost):
         key = command[0]
 
         if key == 'expose':
-            return "Exposing for time %.2f sec" % itime
+            return "Exposing for time %.2f sec" % itime  # noqa: F821
         if key == 'real':
             itime = float(command[3])
             return "Starting real time expsoures with %.2f sec" % itime

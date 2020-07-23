@@ -58,7 +58,7 @@ class ImageQueueWatcher(threading.Thread, object):
                 pass
             while self.exposeClass.imageQueue.qsize() > 0:
                 line = str(self.exposeClass.imageQueue.get()).split(";")
-                image_path = line[0]
+                # image_path = line[0]
                 image_name = line[1]
                 image_type = line[2]
                 logString = line[3]
@@ -67,12 +67,12 @@ class ImageQueueWatcher(threading.Thread, object):
 
                 if image_type != 'real':
                     self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" % (image_name, self.exposeClass.saveDir,
-                                                                               self.exposeClass.currentImage+".fits",
+                                                                               self.exposeClass.currentImage + ".fits",
                                                                                image_type)).addCallback(self.transferCallback, logString=logString)
                 else:
                     self.exposeClass.ftpLayer.sendCommand("get %s %s %s %s" %
                                                           (image_name, "/tmp/", image_name, image_type)) \
-                                                          .addCallback(self.transferCallback, logString=logString)
+                        .addCallback(self.transferCallback, logString=logString)
                 time.sleep(0.01)
 
     def transferCallback(self, msg, logString):
@@ -122,7 +122,7 @@ class ProgressTimer(object):
             integer_ticks = int(exposureTime / 10**-2)  # divide by 10 milliseconds
             self.interval = 10
         elif time <= 10:  # 50 millisecond intervals
-            integer_ticks = int(exposureTime / (8*10**-2))
+            integer_ticks = int(exposureTime / (8 * 10**-2))
             self.interval = 80
         else:  # Any time greater than 10 seconds have 100 millisecond intervals
             integer_ticks = int(exposureTime / 10**-1)
@@ -130,7 +130,7 @@ class ProgressTimer(object):
         self.gauge.SetRange(integer_ticks)
 
         # pass the time in and start
-        self.timer = threading.Timer(self.interval/10**3, self.update)
+        self.timer = threading.Timer(self.interval / 10**3, self.update)
         if integer_ticks > 0:
             wx.CallAfter(self.gauge.SetValue, 1)  # do first tick
         self.timer.start()
@@ -169,11 +169,11 @@ class ProgressTimer(object):
         current = self.gauge.GetValue()
 
         if current < max and max > 2:
-            wx.CallAfter(self.gauge.SetValue, current+1)
+            wx.CallAfter(self.gauge.SetValue, current + 1)
         else:  # do nothing when we reach the end
             self.gauge.Pulse()
 
-        self.timer = threading.Timer(self.interval/10**3, self.update)
+        self.timer = threading.Timer(self.interval / 10**3, self.update)
         self.timer.start()
 
         return None
@@ -352,7 +352,7 @@ class Exposure(wx.Panel):
 
         # if statement here is more for redundancy.  The above MessageDialogs let the user their input is incorrect,
         # else they will enter this if statement just fine.
-        if self.timeToSend.isnumeric() and self.nameToSend is not "" and lessThanZero:
+        if self.timeToSend.isnumeric() and self.nameToSend != "" and lessThanZero:
 
             line = self.getAttributesToSend().split()
 
@@ -429,7 +429,7 @@ class Exposure(wx.Panel):
 
                             # set up all callbacks for series
                             for i in range(int(self.seriesImageNumber)):
-                                d = self.protocol.addDeferred("seriesSent" + str(i+1))
+                                d = self.protocol.addDeferred("seriesSent" + str(i + 1))
                                 d.addCallback(self.displaySeriesImage)
 
                             command = "series " + str(line)
@@ -496,7 +496,7 @@ class Exposure(wx.Panel):
                 path += i + "/"
 
             # get time sent to server
-            time = float(results[2])
+            # time = float(results[2])
 
             logger.debug(path + name)
 
@@ -645,7 +645,7 @@ class Exposure(wx.Panel):
                 print("MAKES IT THIS FAR")
                 if imNum < int(self.seriesImageNumber):
                     print("KEEP GOING")
-                    if time+self.timer._getReadoutTime() >= 1.0:
+                    if time + self.timer._getReadoutTime() >= 1.0:
                         print("MADE IT")
                         self.timer.stop()
                         self.timer.start(time)
@@ -1096,7 +1096,7 @@ class TempControl(wx.Panel):
                 logger.info("Enter")
                 self.stopCool.Enable(True)
             # if self.prevMode is None or self.prevMode != mode:
-                # print("MAKING NEW BITMAP")
+            # print("MAKING NEW BITMAP")
             if mode == 20034 and float(temp) >= 0:
                 # bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('img/greenCirc.png'))
                 bmp = wx.Bitmap("img/greenBar.bmp")
@@ -1128,7 +1128,7 @@ class TempControl(wx.Panel):
             # self.parent.parent.parent.stats.AddWidget(bitmap, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT,
             #                                              verticalalignment=EnhancedStatusBar.ESB_ALIGN_BOTTOM)
             # self.prevMode = mode
-            self.parent.parent.parent.stats.AddWidget(bmp_ctrl, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
+            self.parent.parent.parent.stats.AddWidget(bmp_ctrl, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)  # noqa: F821
 
     def logTemp(self, logmsg):
         """
@@ -1282,7 +1282,7 @@ class FilterControl(wx.Panel):
         This method is called when the "Rotate To" button is pressed.  It is send a command to the Evora Server
         that will slew the filter appropriately.
         """
-        if self.filterSelection is "":
+        if self.filterSelection == "":
             logger.info("No filter selected")
 
         else:
@@ -1448,7 +1448,7 @@ class FilterControl(wx.Panel):
         try:
             # test to see if it imports
             filters = pd.read_csv(".currentFilters.txt")
-            newNum, newName = filters['position'].values.tolist(), filters['filter'].values.tolist()
+            # newNum, newName = filters['position'].values.tolist(), filters['filter'].values.tolist()
             print("Testing suff")
             if (True in filters['position'].isnull()) or (True in filters['filter'].isnull()):
                 print("Stop")

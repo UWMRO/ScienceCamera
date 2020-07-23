@@ -16,8 +16,7 @@ def myLogger(loggerName, fileName=None):
 
     # create formatter
     LOG_DATEFMT = '%Y-%m-%d %H:%M:%S'
-    LOG_FORMAT = ('\n[%(levelname)s/%(name)s:%(lineno)d] %(asctime)s ' +
-                  '(%(processName)s/%(threadName)s)\n> %(message)s')
+    LOG_FORMAT = ('\n[%(levelname)s/%(name)s:%(lineno)d] %(asctime)s ' + '(%(processName)s/%(threadName)s)\n> %(message)s')
     FORMATTER = logging.Formatter(LOG_FORMAT, datefmt=LOG_DATEFMT)
 
     CH = logging.StreamHandler()  # create console handler

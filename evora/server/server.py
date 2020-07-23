@@ -25,9 +25,9 @@ from astropy.io import fits
 from astropy.time import Time
 from twisted.protocols import basic
 from twisted.internet import protocol, reactor, threads
+from evora.common import netconsts
 
 # MRO files
-import evora.common.netconsts
 import fits_utils
 import my_logger
 
@@ -308,8 +308,7 @@ class Evora(object):
         camHandle = andor.GetCameraHandle(0)
         logger.debug(str(camHandle))
 
-        logger.debug('set camera: ' +
-                     str(andor.SetCurrentCamera(camHandle[1])))
+        logger.debug('set camera: ' + str(andor.SetCurrentCamera(camHandle[1])))
 
         init = andor.Initialize("/usr/local/etc/andor")
 
@@ -345,10 +344,10 @@ class Evora(object):
         # 20034 is Off
 
         result = andor.GetTemperatureF()
-        res = coolerStatusNames[result[0] - andor.DRV_TEMPERATURE_OFF]
+        # res = coolerStatusNames[result[0] - andor.DRV_TEMPERATURE_OFF]
         logger.debug(
-            str(coolerStatusNames[result[0] - andor.DRV_TEMPERATURE_OFF]) +
-            " " + str(result[1]))
+            str(coolerStatusNames[result[0] - andor.DRV_TEMPERATURE_OFF]) + " " + str(result[1]))
+
         return_res = "getTEC " + str(result[0]) + "," + str(result[1])
         return return_res
 
@@ -375,7 +374,7 @@ class Evora(object):
         Post: Sets the temperature to 0 and turns the fan to 0 then turns the cooler off and
         returns 1 that everything worked.
         """
-        setTemp = andor.SetTemperature(0)
+        # setTemp = andor.SetTemperature(0)
         setFan = andor.SetFanMode(0)
         setCooler = andor.CoolerOFF()
 
@@ -446,20 +445,16 @@ class Evora(object):
         Gets the vertical readout speed stats.
         """
         logger.debug("GetNumberVSSpeeds: " + str(andor.GetNumberVSSpeeds()))
-        logger.debug("GetNumberVSAmplitudes: " +
-                     str(andor.GetNumberVSAmplitudes()))
+        logger.debug("GetNumberVSAmplitudes: " + str(andor.GetNumberVSAmplitudes()))
         logger.debug("GetVSSpeed: " + str(andor.GetVSSpeed(index)))
-        logger.debug("GetFastestRecommendedVSSpeed: " +
-                     str(andor.GetFastestRecommendedVSSpeed()))
+        logger.debug("GetFastestRecommendedVSSpeed: " + str(andor.GetFastestRecommendedVSSpeed()))
 
     def horizontalSpeedStats(self, channel, type, index):
         """
         Gets the stats of the horizontal readout speed.
         """
-        logger.debug("GetNumberHSSpeeds: " +
-                     str(andor.GetNumberHSSpeeds(channel, type)))
-        logger.debug("GetHSSpeed: " +
-                     str(andor.GetHSSpeed(channel, type, index)))
+        logger.debug("GetNumberHSSpeeds: " + str(andor.GetNumberHSSpeeds(channel, type)))
+        logger.debug("GetHSSpeed: " + str(andor.GetHSSpeed(channel, type, index)))
 
     def abort(self):
         """
@@ -588,8 +583,7 @@ class Evora(object):
 
         else:  # gtcc
             print("ACCESSING LOG FILES")
-            LogfileList = glob.glob("/home/mro/mnt/gtcc" +
-                                    '/????-??-??T??:??:??')
+            LogfileList = glob.glob("/home/mro/mnt/gtcc" + '/????-??-??T??:??:??')
             print("FOUND %d LOGS" % len(LogfileList))
             ObsTime = time.strptime(dateObs + ' UTC', "%Y-%m-%dT%H:%M:%S %Z")
             LogfileName = self.ChooseLogfile(LogfileList, ObsTime)
@@ -784,14 +778,12 @@ class Evora(object):
             imType = "object"
 
         retval, width, height = andor.GetDetector()
-        logger.debug('GetDetector: ' + str(retval) + " " + str(width) + " " +
-                     str(height))
+        logger.debug('GetDetector: ' + str(retval) + " " + str(width) + " " + str(height))
         # print 'SetImage:', andor.SetImage(1,1,1,width,1,height)
         logger.debug('SetReadMode: ' + str(andor.SetReadMode(4)))
         logger.debug('SetAcquisitionMode: ' + str(andor.SetAcquisitionMode(1)))
         logger.debug(
-            'SetImage: ' +
-            str(andor.SetImage(binning, binning, 1, width, 1, height)))
+            'SetImage: ' + str(andor.SetImage(binning, binning, 1, width, 1, height)))
         logger.debug('GetDetector (again): ' + str(andor.GetDetector()))
 
         if imType == "bias":
@@ -815,8 +807,7 @@ class Evora(object):
         )  # default readTime is index 3 which is 0.5 MHz or ~6 sec
 
         results, expTime, accTime, kTime = andor.GetAcquisitionTimings()
-        logger.debug("Adjusted Exposure Time: " +
-                     str([results, expTime, accTime, kTime]))
+        logger.debug("Adjusted Exposure Time: " + str([results, expTime, accTime, kTime]))
 
         attributes = [imType, binning, itime, filter]
         # header = self.getHeader(attributes)
@@ -865,15 +856,13 @@ class Evora(object):
         """
         # global acquired
         retval, width, height = andor.GetDetector()
-        logger.debug('GetDetector: ' + str(retval) + " " + str(width) + " " +
-                     str(height))
+        logger.debug('GetDetector: ' + str(retval) + " " + str(width) + " " + str(height))
 
         logger.debug("SetAcquisitionMode: " + str(andor.SetAcquisitionMode(5)))
         logger.debug('SetReadMode: ' + str(andor.SetReadMode(4)))
 
         logger.debug(
-            'SetImage: ' +
-            str(andor.SetImage(binning, binning, 1, width, 1, height)))
+            'SetImage: ' + str(andor.SetImage(binning, binning, 1, width, 1, height)))
         logger.debug('GetDetector (again): ' + str(andor.GetDetector()))
 
         logger.debug('SetExposureTime: ' + str(andor.SetExposureTime(itime)))
@@ -912,16 +901,14 @@ class Evora(object):
             status = andor.GetStatus()
 
             if status[1] == andor.DRV_ACQUIRING and currImNum == workingImNum:
-                logger.debug("Progress: " +
-                             str(andor.GetAcquisitionProgress()))
+                logger.debug("Progress: " + str(andor.GetAcquisitionProgress()))
                 results = andor.GetMostRecentImage16(data)  # store image data
                 logger.debug(
                     str(results) + 'success={}'.format(results == 20002)
                 )  # print if the results were successful
 
                 if results == andor.DRV_SUCCESS:  # if the array filled store successfully
-                    data = data.reshape(width // binning, height //
-                                        binning)  # reshape into image
+                    data = data.reshape(width // binning, height // binning)  # reshape into image
                     logger.debug(str(data.shape) + " " + str(data.dtype))
                     hdu = fits.PrimaryHDU(data,
                                           do_not_scale_image_data=True,
@@ -963,15 +950,13 @@ class Evora(object):
         global isAborted
         isAborted = False
         retval, width, height = andor.GetDetector()
-        logger.debug('GetDetector: ' + str(retval) + " " + str(width) + " " +
-                     str(height))
+        logger.debug('GetDetector: ' + str(retval) + " " + str(width) + " " + str(height))
 
         logger.debug("SetAcquisitionMode: " + str(andor.SetAcquisitionMode(3)))
         logger.debug('SetReadMode: ' + str(andor.SetReadMode(4)))
 
         logger.debug(
-            'SetImage: ' +
-            str(andor.SetImage(binning, binning, 1, width, 1, height)))
+            'SetImage: ' + str(andor.SetImage(binning, binning, 1, width, 1, height)))
         logger.debug('GetDetector (again): ' + str(andor.GetDetector()))
 
         if imType == "bias":
@@ -989,23 +974,13 @@ class Evora(object):
                 'SetExposureTime: ' + str(andor.SetExposureTime(itime))
             )  # TLL mode high, shutter mode Fully Auto, 5 millisec open/close
 
-        logger.debug("SetNumberOfAccumulations: " +
-                     str(andor.SetNumberAccumulations(numAccum))
-                     )  # number of exposures to be combined
-        logger.debug("SetAccumulationTime: " +
-                     str(andor.SetAccumulationCycleTime(accumCycleTime)))
-        logger.debug("SetNumberOfKinetics: " +
-                     str(andor.SetNumberKinetics(numexp))
-                     )  # this is the number of exposures the user wants
-        logger.debug('SetKineticTime: ' +
-                     str(andor.SetKineticCycleTime(accumCycleTime)))
+        logger.debug("SetNumberOfAccumulations: " + str(andor.SetNumberAccumulations(numAccum)))  # number of exposures to be combined
+        logger.debug("SetAccumulationTime: " + str(andor.SetAccumulationCycleTime(accumCycleTime)))
+        logger.debug("SetNumberOfKinetics: " + str(andor.SetNumberKinetics(numexp)))  # this is the number of exposures the user wants
+        logger.debug('SetKineticTime: ' + str(andor.SetKineticCycleTime(accumCycleTime)))
         logger.debug("SetTriggerMode: " + str(andor.SetTriggerMode(0)))
-
         logger.debug("Timings: " + str(andor.GetAcquisitionTimings()))
-
-        logger.debug(
-            "SetHSSpeed: " + str(andor.SetHSSpeed(0, readTime))
-        )  # default readTime is index 3 which is 0.5 MHz or ~6 sec
+        logger.debug("SetHSSpeed: " + str(andor.SetHSSpeed(0, readTime)))  # default readTime is index 3 which is 0.5 MHz or ~6 sec
 
         # write headers
         attributes = [imType, binning, itime, filter]
@@ -1025,8 +1000,7 @@ class Evora(object):
             progress = andor.GetAcquisitionProgress()
 
             runtime = 0
-            if progress[2] == counter or (not isAborted and progress[2] == 0
-                                          and imageAcquired):
+            if progress[2] == counter or (not isAborted and progress[2] == 0 and imageAcquired):
                 runtime -= time.clock()
                 data = np.zeros(width // binning * height // binning,
                                 dtype='uint16')  # reserve room for image
@@ -1037,8 +1011,7 @@ class Evora(object):
                 logger.debug('image number: ' + str(progress[2]))
 
                 if results == andor.DRV_SUCCESS:  # if the array filled store successfully
-                    data = data.reshape(width // binning, height //
-                                        binning)  # reshape into image
+                    data = data.reshape(width // binning, height // binning)  # reshape into image
                     logger.debug(str(data.shape) + " " + str(data.dtype))
 
                     hdu = fits.PrimaryHDU(data,
@@ -1051,9 +1024,7 @@ class Evora(object):
 
                     logger.debug("wrote: {}".format(filename))
 
-                    protocol.sendData("seriesSent" + str(counter) + " " +
-                                      str(counter) + "," + str(itime) + "," +
-                                      filename)
+                    protocol.sendData("seriesSent" + str(counter) + " " + str(counter) + "," + str(itime) + "," + filename)
                     # make a new header and write time to it for new exposure.
                     # header = self.getHeader(attributes)
                     header = self.getHeader_2(attributes, 'heimdall')
@@ -1145,8 +1116,7 @@ class Logger(object):
     def write(self, message):
         self.terminal.flush()
         self.terminal.write(message)
-        logFile.write(self.stamp() +
-                      message)  # This prints weirdly but works for now
+        # logFile.write(self.stamp() + message)  # This prints weirdly but works for now
 
     def stamp(self):
         d = datetime.today()

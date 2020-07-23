@@ -35,6 +35,7 @@ import evora.common.logging.my_logger as my_logger
 import evora.common.classes.scripting as sc
 import evora.common.utils.fits as fits_utils
 import evora.common.utils.logs as log_utils
+from evora.common import netconsts
 
 """
 # Comment on documentation:
@@ -733,7 +734,7 @@ class DrawImage(wx.Panel):
         """
         Should call updatePassedStats first before calling this. Creates new plot to be drawn.
         """
-        self.mad = np.median(np.abs(data.ravel()-self.median))  # median absolute deviation
+        self.mad = np.median(np.abs(data.ravel() - self.median))  # median absolute deviation
         deviation = scale * self.mad
         self.upper = self.median + deviation
         self.lower = self.median - deviation
@@ -969,7 +970,7 @@ class EvoraForwarder(basic.LineReceiver):
         sep_data = data.rsplit()  # split for multiple lines
         size = len(sep_data)  # size of sep_data will always be even (key followed by data pair)
         for i in range(0, size, 2):
-            singular_sep_data = [sep_data[i], sep_data[i+1]]
+            singular_sep_data = [sep_data[i], sep_data[i + 1]]
 
             if singular_sep_data[0] in self._deferreds:
                 self._deferreds.pop(singular_sep_data[0]).callback(singular_sep_data[1])
@@ -1074,7 +1075,7 @@ class FilterForwarder(basic.LineReceiver):
         sep_data = data.rsplit()  # split for multiple lines
         size = len(sep_data)  # size of sep_data will always be even (key followed by data pair)
         for i in range(0, size, 2):
-            singular_sep_data = [sep_data[i], sep_data[i+1]]
+            singular_sep_data = [sep_data[i], sep_data[i + 1]]
 
             # run singular_sep_data command one at a time
             if singular_sep_data[0] in self._deferreds:
@@ -1167,7 +1168,7 @@ class TransferForwarder(basic.LineReceiver):
         sep_data = data.rsplit()  # split for multiple lines
         size = len(sep_data)  # size of sep_data will always be even (key followed by data pair)
         for i in range(0, size, 2):
-            singular_sep_data = [sep_data[i], sep_data[i+1]]
+            singular_sep_data = [sep_data[i], sep_data[i + 1]]
 
             # run singular_sep_data command one at a time
             if singular_sep_data[0] in self._deferreds:
