@@ -976,7 +976,8 @@ class TempControl(wx.Panel):
         When the cool button is pressed this will check if the entered temperature meets certain requirements, then
         it will send the command to the Evora server to set the TEC cooler.
         """
-        if self.tempToSend.isnumeric():  # Is temp a float?
+        # isnumeric() does not consider negative signs to be numeric
+        if self.tempToSend.lstrip("-").isnumeric():  # Is temp a float?
 
             if float(self.tempToSend) >= -100.0 and float(self.tempToSend) <= -10.0:  # Is it within the hardware bounds?
 
