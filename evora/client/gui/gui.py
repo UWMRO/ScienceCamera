@@ -618,7 +618,7 @@ class ImageWindow(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.onClose)
 
         # Set Icon
-        ico = wx.Icon("img/evora_logo_circ.ico", wx.BITMAP_TYPE_ICO)
+        ico = wx.Icon("client/gui/img/evora_logo_circ.ico", wx.BITMAP_TYPE_ICO)
         self.SetIcon(ico)
 
         self.SetSizer(self.topSizer)
