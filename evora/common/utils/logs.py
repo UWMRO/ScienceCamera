@@ -16,14 +16,13 @@ def get_log_str(command, prePost):
     command = command.split(" ")
     if prePost == 'pre':  # command is split with by white space
         key = command[0]
+        itime = float(command[3])
 
         if key == 'expose':
             return "Exposing for time %.2f sec" % itime  # noqa: F821
         if key == 'real':
-            itime = float(command[3])
             return "Starting real time expsoures with %.2f sec" % itime
         if key == 'series':
-            itime = float(command[3])
             number = int(command[2])
             return "Exposing for %d images with time %.2f sec" % (number, itime)
         if key == 'setTEC':
