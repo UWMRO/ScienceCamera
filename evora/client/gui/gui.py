@@ -952,7 +952,7 @@ class EvoraForwarder(basic.LineReceiver):
         """
         Handles incoming data and starts the proper call back chain based on the key received from the server.
         """
-        logger.debug("Receieved from E. server: " + data)
+        logger.debug("Received from E. server: " + data)
 
         # Get GUI instance
         gui = self.factory.gui
@@ -1066,7 +1066,7 @@ class FilterForwarder(basic.LineReceiver):
         """
         Handles incoming data and executes the appropriate twisted callback method.
         """
-        logger.debug("Receieved from filter (5503): " + data)
+        logger.debug("Received from filter (5503): " + data)
 
         self.gui.takeImage.filterInstance.protocol2 = self
 
@@ -1161,7 +1161,7 @@ class TransferForwarder(basic.LineReceiver):
         """
         Handles incoming data and executes the appropriate twisted callback method.
         """
-        logger.debug("Receieved from transfer server (5505): " + data)
+        logger.debug("Received from transfer server (5505): " + data)
 
         # if there is more than one line that was received
         sep_data = data.rsplit()  # split for multiple lines

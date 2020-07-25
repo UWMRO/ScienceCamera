@@ -329,7 +329,7 @@ class Exposure(wx.Panel):
         to Evora.
         """
         lessThanZero = True
-        if self.timeToSend:
+        if self.timeToSend is not None:
             if float(self.timeToSend) < 0:
                 dialog = wx.MessageDialog(None, "Exposure time can not be less than 0...will not expose", "", wx.OK | wx.ICON_ERROR)
                 dialog.ShowModal()
