@@ -1099,28 +1099,28 @@ class TempControl(wx.Panel):
             # print("MAKING NEW BITMAP")
             if mode == 20034 and float(temp) >= 0:
                 # bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('img/greenCirc.png'))
-                bmp = wx.Bitmap("img/greenBar.bmp")
+                bmp = wx.Bitmap("client/gui/img/greenBar.bmp")
                 bmp.SetWidth(40)
                 bmp_ctrl = wx.StaticBitmap(self.parent.parent.parent.stats, -1, bmp)
                 # self.parent.parent.parent.stats.AddWidget(bmp_ctrl, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
 
             if mode == 20037 or (mode == 20034 and float(temp) < 0):
                 # bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('img/redCirc.png'))
-                bmp = wx.Bitmap("img/redBar.bmp")
+                bmp = wx.Bitmap("client/gui/img/redBar.bmp")
                 bmp.SetWidth(40)
                 bmp_ctrl = wx.StaticBitmap(self.parent.parent.parent.stats, -1, bmp)
                 # self.parent.parent.parent.stats.AddWidget(bmp_ctrl, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
 
             if mode == 20035:
                 # bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('img/yellowCirc.png'))
-                bmp = wx.Bitmap("img/yellowBar.bmp")
+                bmp = wx.Bitmap("client/gui/img/yellowBar.bmp")
                 bmp.SetWidth(40)
                 bmp_ctrl = wx.StaticBitmap(self.parent.parent.parent.stats, -1, bmp)
                 # self.parent.parent.parent.stats.AddWidget(bmp_ctrl, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
 
             if mode == 20036:
                 # bitmap = wx.StaticBitmap(self.parent.parent.parent.stats, -1, wx.Bitmap('img/blueCirc.png'))
-                bmp = wx.Bitmap("img/blueBar.bmp")
+                bmp = wx.Bitmap("client/gui/img/blueBar.bmp")
                 bmp.SetWidth(40)
                 bmp_ctrl = wx.StaticBitmap(self.parent.parent.parent.stats, -1, bmp)
                 # self.parent.parent.parent.stats.AddWidget(bmp_ctrl, pos=0, horizontalalignment=EnhancedStatusBar.ESB_ALIGN_LEFT)
