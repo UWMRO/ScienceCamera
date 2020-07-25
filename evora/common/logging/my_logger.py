@@ -27,7 +27,12 @@ def myLogger(loggerName, fileName=None):
     if fileName is not None:
         # Get gregorian date, local
         d = date.today()
-        FH = logging.FileHandler("common/logging/logs/" + fileName + "_" + d.strftime("%Y%m%d") + ".log")  # create file handler
+
+        try:
+            FH = logging.FileHandler("common/logging/logs/" + fileName + "_" + d.strftime("%Y%m%d") + ".log")  # create file handler
+        except IOError:
+            print("Could not open logs, make sure you are running from the evora directory.")
+
         FH.setLevel(logging.DEBUG)  # set handler level to debug
         FH.setFormatter(FORMATTER)  # add formatter to fh
         LOGGER.addHandler(FH)  # add file handler to logger
