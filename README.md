@@ -2,8 +2,8 @@
 
 Software to control:
 - The primary instrument at Manastash Ridge Observatory (MRO), Evora, an Andor CCD Camera.
-- The filter wheel and associated subsystems, controlled by the TelescopePi.
+- The filter wheel and associated subsystems, via the TelescopeServer running on TelescopePi.
 
-A user manual for the graphical user interface, Evora, and a developer guide are available in the repository's wiki.
+The wiki contains A user manual for the graphical user interface, Evora, and a developer guide.
 
 Developed by the Astronomy Undergraduate Engineering Group (AUEG) at the University of Washington.
