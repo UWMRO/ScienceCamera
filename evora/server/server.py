@@ -29,7 +29,12 @@ from twisted.internet import protocol, reactor, threads
 from twisted.protocols import basic
 
 from evora.common import netconsts
-from evora.server.andor import andor
+
+try:
+    from evora.server.andor import andor
+except(ImportError):
+    print("COULD NOT GET DRIVERS/SDK, STARTING IN DUMMY MODE")
+    import dummy as andor
 
 # For filter controls
 # from FilterMotor import filtermotor
@@ -1180,7 +1185,7 @@ if __name__ == "__main__":
         reactor.suggestThreadPoolSize(30)
         reactor.listenTCP(netconsts.CAMERA_PORT, EvoraClient())
 
-        ftp_server = subprocess.Popen("./evora_ftp_server.py",
+        ftp_server = subprocess.Popen("./server/ftp_server.py",
                                       shell=True,
                                       preexec_fn=os.setsid)
 
