@@ -1,53 +1,65 @@
-# Defines functions usually in andor
+# Replacement constants
+DRV_SUCCESS = 1
+DRV_TEMPERATURE_OFF = 1
 
+
+# Andor SDK replacement functions
 def GetStatus():
     # Means camera is uninitialized
     return 20075
 
+
 def GetAvailableCameras():
     return 1
+
 
 def GetCameraHandle():
     return 1
 
+
 def SetCurrentCamera():
     pass
+
 
 def Initialize(directory):
     return 1
 
+
 def SetAcquisitionMode(mode):
     pass
-    
+
+
 def SetShutter(typ, mode, closingtime, openingtime):
     pass
+
 
 def SetTemperature(temperature):
     pass
 
+
 def SetFanMode(mode):
     pass
+
 
 def CoolerOFF():
     pass
 
+
 def GetTemperatureF(temperature):
     return temperature
 
-def DRV_TEMPERATURE_OFF():
-    pass
 
 def CoolerON():
     pass
 
-def DRV_SUCCESS():
-    pass
 
 def GetTemperatureStatus():
     return 1
 
+
 def GetTemperatureRange(mintemp, maxtemp):
     return maxtemp-mintemp
 
+
 def ShutDown():
-    pass 
+    pass
