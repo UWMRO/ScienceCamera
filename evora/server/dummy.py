@@ -1,6 +1,7 @@
 # Replacement constants
 DRV_SUCCESS = 1
 DRV_TEMPERATURE_OFF = 1
+DRV_ACQUIRING = 0
 
 
 # Andor SDK replacement functions
@@ -63,3 +64,13 @@ def GetTemperatureRange(mintemp, maxtemp):
 
 def ShutDown():
     pass
+
+
+# Acquisition
+def StartAcquisition():
+    # May need to set DRV_ACQUIRING=1 later
+    pass
+
+
+def AbortAcquisition():
+    DRV_ACQUIRING = 0
