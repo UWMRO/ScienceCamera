@@ -42,8 +42,7 @@ def GetTemperatureRange(mintemp, maxtemp):
 
 # Acquisition
 def StartAcquisition():
-    # May need to set DRV_ACQUIRING=1 later
-    pass
+    DRV_ACQUIRING = 1
 
 
 def AbortAcquisition():
