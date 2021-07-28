@@ -65,6 +65,32 @@ def GetAcquiredData16(write_var):
 # These functions do the same thing in this context
 GetMostRecentImage16 = GetAcquiredData16
 
+def GetAcquisitionTimings(*args):
+    return 1
+
+def GetNumberVSSpeeds(*args):
+    return 1
+
+def GetNumberVSAmplitudes(*args):
+    return 1
+
+def GetVSSpeed(index, *args):
+    return 1
+
+def GetFastestRecommendedVSSpeed(*index, *speeds):
+    return 1
+
+def GetNumberHSSpeeds(channel, typ, *speeds):
+    return 1
+
+def GetHSSpeed(channel, typ, index, *speed):
+    return 1
+
+def GetDetector(*xpixels, *ypixels):
+    return 1
+
+def GetAcquisitionProgress(*acc, *series):
+    return 1
 
 # Setter functions
 def noop(*args):
