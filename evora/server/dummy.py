@@ -16,11 +16,11 @@ def GetStatus():
     return 20075
 
 
-def GetAvailableCameras():
+def GetAvailableCameras(status):
     return 1
 
 
-def GetCameraHandle():
+def GetCameraHandle(cameraIndex, cameraHandle):
     return 1
 
 
@@ -32,7 +32,7 @@ def GetTemperatureF(temperature):
     return temperature
 
 
-def GetTemperatureStatus():
+def GetTemperatureStatus(SensorTemp, TargetTemp, AmbientTemp, CoolerVolts):
     return 1
 
 
@@ -65,31 +65,31 @@ def GetAcquiredData16(write_var):
 # These functions do the same thing in this context
 GetMostRecentImage16 = GetAcquiredData16
 
-def GetAcquisitionTimings(*args):
+def GetAcquisitionTimings(exposure, accumulate, kinetic):
     return 1
 
-def GetNumberVSSpeeds(*args):
+def GetNumberVSSpeeds(speeds):
     return 1
 
-def GetNumberVSAmplitudes(*args):
+def GetNumberVSAmplitudes(number):
     return 1
 
-def GetVSSpeed(index, *args):
+def GetVSSpeed(index, speed):
     return 1
 
-def GetFastestRecommendedVSSpeed(*index, *speeds):
+def GetFastestRecommendedVSSpeed(index, speeds):
     return 1
 
-def GetNumberHSSpeeds(channel, typ, *speeds):
+def GetNumberHSSpeeds(channel, typ, speeds):
     return 1
 
-def GetHSSpeed(channel, typ, index, *speed):
+def GetHSSpeed(channel, typ, index, speed):
     return 1
 
-def GetDetector(*xpixels, *ypixels):
+def GetDetector(xpixels, ypixels):
     return 1
 
-def GetAcquisitionProgress(*acc, *series):
+def GetAcquisitionProgress(acc, series):
     return 1
 
 # Setter functions
