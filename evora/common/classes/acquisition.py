@@ -1013,7 +1013,7 @@ class TempControl(wx.Panel):
                         self.stopCool.Enable(True)
 
             else:
-                dialog = wx.MessageDialog(None, "Temperature is not within acceptable bounds (-100.0 to -10.0.)", "", wx.OK | wx.ICON_ERROR)
+                dialog = wx.MessageDialog(None, "Temperature is not within acceptable bounds (-100.0 to -10.0).", "", wx.OK | wx.ICON_ERROR)
                 dialog.ShowModal()
                 dialog.Destroy()
 
