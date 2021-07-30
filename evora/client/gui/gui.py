@@ -321,9 +321,11 @@ class Evora(wx.Frame):
         global port_dict, ftpClientProc
         logger.info("Connect command pressed")
         # reactor.run()
-        # self.connection = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
-        # add filter connection
+
         self.connection = port_dict[str(netconsts.CAMERA_PORT)] = reactor.connectTCP(netconsts.HEIMDALL_IP, netconsts.CAMERA_PORT, EvoraClient(app.frame1))
+        # Uncomment the following for local testing
+        # self.connection = port_dict[str(netconsts.CAMERA_PORT)] = reactor.connectTCP("localhost", 5502, EvoraClient(app.frame1))
+
         # port_dict[str(netconsts.FTP_TRANSFER_PORT)] = reactor.connectTCP(netconsts.HEIMDALL_IP, netconsts.FTP_TRANSFER_PORT, FileClientFactory(app.frame1))
         port_dict[str(netconsts.FTP_GET_PORT)] = reactor.connectTCP('localhost', netconsts.FTP_GET_PORT, TransferClient(app.frame1))
 

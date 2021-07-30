@@ -9,31 +9,37 @@ DRV_SUCCESS = 1
 DRV_TEMPERATURE_OFF = 1
 DRV_ACQUIRING = 0
 
+"""
+SWIG notes
+SWIG seems to change the API from the docs in two major ways
+1. Unsigned int functions actually return [status, return_val] e.g. [DRV_SUCCESS, 35]
+2. Pointer arguments are simply omitted e.g. int SomeFunction(long* input) -> def SomeFunction()...
+"""
 
 # Andor SDK replacement functions with return values
 def GetStatus():
     # Magic number means camera is uninitialized
-    return 20075
+    return [20075, 0]
 
 
-def GetAvailableCameras(status):
+def GetAvailableCameras():
     return 1
 
 
-def GetCameraHandle(cameraIndex, cameraHandle):
-    return 1
+def GetCameraHandle(cameraIndex):
+    return [DRV_SUCCESS, 1]
 
 
 def Initialize(directory):
     return 1
 
 
-def GetTemperatureF(temperature):
-    return temperature
+def GetTemperatureF():
+    return [DRV_SUCCESS, 32]
 
 
-def GetTemperatureStatus(SensorTemp, TargetTemp, AmbientTemp, CoolerVolts):
-    return 1
+def GetTemperatureStatus():
+    return [DRV_SUCCESS, 1]
 
 
 def GetTemperatureRange(mintemp, maxtemp):
