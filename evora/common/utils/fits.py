@@ -46,7 +46,7 @@ def get_image_path(type):
     stamp with accuracy of milliseconds.
     """
     saveDirectory = "/home/mro/storage/evora_data/"
-    time = datetime.today()
+    time = datetime.datetime.today()
     fileName = time.strftime("image_%Y%m%d_%H%M%S_%f.fits")
     if type == 'real':
         return "/home/mro/storage/evora_data/tmp/" + fileName
