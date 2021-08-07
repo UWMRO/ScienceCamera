@@ -839,7 +839,7 @@ class Evora(object):
         filename = None
         if success == 1:
             data = data.reshape(width // binning, height // binning)
-            data = np.fliplr(data)
+            #data = np.fliplr(data)
             logger.debug(str(data.shape) + " " + str(data.dtype))
             hdu = fits.PrimaryHDU(data,
                                   do_not_scale_image_data=True,
