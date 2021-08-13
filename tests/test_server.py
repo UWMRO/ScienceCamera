@@ -29,7 +29,7 @@ class TestEvoraParser(unittest.TestCase):
         split_parse = self.parser.parse('setTEC ' + str(setPoint)).split(' ')
 
         self.assertTrue(split_parse[0] == 'setTEC')
-        self.assertTrue(int(split_parse[1] == setPoint)
+        self.assertTrue(int(split_parse[1]) == setPoint)
 
     def test_parse_getTEC(self):
         self.assertTrue(self.parser.parse('getTEC') == '') # unfinished
