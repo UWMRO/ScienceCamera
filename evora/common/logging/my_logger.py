@@ -30,11 +30,14 @@ def myLogger(loggerName, fileName=None):
 
         try:
             FH = logging.FileHandler("common/logging/logs/" + fileName + "_" + d.strftime("%Y%m%d") + ".log")  # create file handler
+
+            FH.setLevel(logging.DEBUG)  # set handler level to debug
+            FH.setFormatter(FORMATTER)  # add formatter to fh
+            LOGGER.addHandler(FH)  # add file handler to logger
+
+            return LOGGER
+
         except IOError:
             print("Could not open logs, make sure you are running from the evora directory.")
-
-        FH.setLevel(logging.DEBUG)  # set handler level to debug
-        FH.setFormatter(FORMATTER)  # add formatter to fh
-        LOGGER.addHandler(FH)  # add file handler to logger
-
-    return LOGGER
+            print("Exiting...")
+            quit()
