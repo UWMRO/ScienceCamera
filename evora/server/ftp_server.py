@@ -20,7 +20,7 @@ if isdir(data_path):
     f.timeOut = None
     reactor.listenTCP(netconsts.FTP_TRANSFER_PORT, f)
 else:
-    print("Directory at '" + data_path + "' does not exist, exiting...")
+    print("[ftp_server.py] Directory at '" + data_path + "' does not exist, exiting...")
     quit()
 
 reactor.run()

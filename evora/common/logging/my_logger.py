@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 from __future__ import division, print_function
 
+import os
 import logging
 from datetime import date
 
@@ -25,11 +26,18 @@ def myLogger(loggerName, fileName=None):
     LOGGER.addHandler(CH)  # add console handler to logger
 
     if fileName is not None:
-        # Get gregorian date, local
-        d = date.today()
+        # Get local gregorian date in YYYYMMDD format
+        d = date.today().strftime("%Y%m%d")
+
+        # Get path of log directory relative to this file
+        log_directory = os.path.join(os.path.dirname(__file__), "logs/")
+
+        # Construct log file name from fileName passed and date
+        log_file_name = "{}_{}.log".format(fileName, d)
+        log_file = os.path.join(log_directory, log_file_name)
 
         try:
-            FH = logging.FileHandler("common/logging/logs/" + fileName + "_" + d.strftime("%Y%m%d") + ".log")  # create file handler
+            FH = logging.FileHandler(log_file)  # create file handler
 
             FH.setLevel(logging.DEBUG)  # set handler level to debug
             FH.setFormatter(FORMATTER)  # add formatter to fh

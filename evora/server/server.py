@@ -1185,7 +1185,8 @@ if __name__ == "__main__":
         reactor.suggestThreadPoolSize(30)
         reactor.listenTCP(netconsts.CAMERA_PORT, EvoraClient())
 
-        ftp_server = subprocess.Popen("./server/ftp_server.py",
+        ftp_server_path = os.path.join(os.path.dirname(__file__), "ftp_server.py")
+        ftp_server = subprocess.Popen(ftp_server_path,
                                       shell=True,
                                       preexec_fn=os.setsid)
 
@@ -1198,7 +1199,17 @@ if __name__ == "__main__":
         # filter_server.daemon = True
         # filter_server.start()
         # print("Server ready.")
-        reactor.run()
+
+        # Wait 0.5 seconds for ftp_server to start or quit
+        time.sleep(0.5)
+
+        # Make sure ftp_server is actually running
+        if ftp_server.poll() is None:
+            reactor.run()
+        else:
+            print("[server.py] FTP server has exited. Quitting...")
+            quit()
+
     except KeyboardInterrupt:
         # os.killpg(os.getpgid(ftp_server.pid), signal.SIGKILL)
         # filter_server.on = False
