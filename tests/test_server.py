@@ -32,13 +32,12 @@ class TestEvoraParser(unittest.TestCase):
         self.assertTrue(int(split_parse[1]) == setPoint)
 
     def test_parse_getTEC(self):
-        self.assertTrue(self.parser.parse('getTEC') == '') # unfinished
+        self.assertTrue(self.parser.parse('getTEC').contains(',')) 
 
     def test_parse_warmup(self):
-        self.assertTrue(self.parser.parse('warmup') == '') # unfinished
-
+        self.assertTrue(self.parser.parse('warmup').contains('warmup ')) 
     def test_parse_status(self):
-        self.assertTrue(self.parser.parse('status') == '') # unfinished
+        self.assertTrue(self.parser.parse('status').isnumeric()) 
     
     def test_parse_vertStats(self):
         self.assertTrue(self.parser.parse('vertStats') == '') # unfinished
@@ -47,13 +46,16 @@ class TestEvoraParser(unittest.TestCase):
         self.assertTrue(self.parser.parse('horzStats') == '') # unfinished
 
     def test_parse_abort(self):
-        self.assertTrue(self.parser.parse('abort') == '') # unfinished
+        self.assertTrue(self.parser.parse('abort') == 'abort 1') 
 
     def test_parse_expose(self):
-        self.assertTrue(self.parser.parse('expose') == '') # unfinished
+        self.assertTrue(self.parser.parse('expose').contains("expose ")) 
 
     def test_parse_real(self):
-        self.assertTrue(self.parser.parse('real') == '') # unfinished
+        self.assertTrue(self.parser.parse('real') == 'real 1') 
+        
+    def test_parse_series(self):
+        self.assertTrue(self.parser.parse('series').contains('series 1,'))
 
 if __name__ == '__main__':
     unittest.main() 
