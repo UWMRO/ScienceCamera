@@ -2,6 +2,7 @@ import unittest
 from random import seed, randint
 from time import time as epochtime
 from evora.server.server import Evora, EvoraParser
+from mock import patch
 
 
 # Example, does not run currently due to imports
@@ -24,12 +25,14 @@ class TestEvoraParser(unittest.TestCase):
     def test_parse_timings(self):
         self.assertTrue(self.parser.parse('timings') == 'timings')
 
-    def test_parse_setTEC(self):
+    @patch('evora.server.server.andor.SetTemperature')
+    def test_parse_setTEC(self, set_temperature_mock):
         setPoint = randint(-100, -10)
         split_parse = self.parser.parse('setTEC ' + str(setPoint)).split(' ')
 
         self.assertTrue(split_parse[0] == 'setTEC')
         self.assertTrue(int(split_parse[1]) == setPoint)
+        set_temperature_mock.assert_called_once_with(setPoint)
 
     def test_parse_getTEC(self):
         self.assertTrue(self.parser.parse('getTEC').contains(',')) 
