@@ -1,15 +1,11 @@
 import unittest
-from random import seed, randint
-from time import time as epochtime
 from evora.server.server import Evora, EvoraParser
+import evora.server.dummy as andor
 from mock import patch
-
 
 # Example, does not run currently due to imports
 class TestEvoraParser(unittest.TestCase):
     def setUp(self):
-        seed(epochtime())
-
         self.evora = Evora()
         self.parser = EvoraParser(self.evora)
 
@@ -25,20 +21,39 @@ class TestEvoraParser(unittest.TestCase):
     def test_parse_timings(self):
         self.assertTrue(self.parser.parse('timings') == 'timings')
 
-    @patch('evora.server.server.andor.SetTemperature')
-    def test_parse_setTEC(self, set_temperature_mock):
-        setPoint = randint(-100, -10)
-        split_parse = self.parser.parse('setTEC ' + str(setPoint)).split(' ')
+    def test_parse_setTEC_returns_string_with_input_set_point(self):
+        set_point = 32
+        split_parse = self.parser.parse('setTEC ' + str(set_point)).split(' ')
 
         self.assertTrue(split_parse[0] == 'setTEC')
-        self.assertTrue(int(split_parse[1]) == setPoint)
-        set_temperature_mock.assert_called_once_with(setPoint)
+        self.assertTrue(int(split_parse[1]) == set_point)
+
+    @patch('evora.server.server.andor.GetTemperatureF', return_value=[andor.DRV_TEMPERATURE_OFF, 32])
+    @patch('evora.server.server.andor.SetTemperature')
+    @patch('evora.server.server.andor.CoolerON')
+    def test_parse_setTEC_turns_cooler_on_if_it_was_off(self, cooler_on_mock, set_temperature_mock, _):
+        set_point = 72
+        self.parser.parse('setTEC ' + str(set_point))
+
+        cooler_on_mock.assert_called_once()
+        set_temperature_mock.assert_called_once_with(set_point)
+
+    @patch('evora.server.server.andor.GetTemperatureF', return_value=[andor.DRV_TEMPERATURE_STABILIZED, 32])
+    @patch('evora.server.server.andor.SetTemperature')
+    @patch('evora.server.server.andor.CoolerON')
+    def test_parse_setTEC_only_sets_temperature_when_drv_temperature_not_off(self, cooler_on_mock, set_temperature_mock, _):
+        set_point = 55
+        self.parser.parse('setTEC ' + str(set_point))
+
+        cooler_on_mock.not_called()
+        set_temperature_mock.assert_called_once_with(set_point)
 
     def test_parse_getTEC(self):
         self.assertTrue(self.parser.parse('getTEC').contains(',')) 
 
     def test_parse_warmup(self):
-        self.assertTrue(self.parser.parse('warmup').contains('warmup ')) 
+        self.assertTrue(self.parser.parse('warmup').contains('warmup '))
+
     def test_parse_status(self):
         self.assertTrue(self.parser.parse('status').isnumeric()) 
     
