@@ -6,7 +6,8 @@ from random import randint
 
 # Replacement constants
 DRV_SUCCESS = 1
-DRV_TEMPERATURE_OFF = 1
+DRV_TEMPERATURE_OFF = 20034
+DRV_TEMPERATURE_STABILIZED = 20036
 DRV_ACQUIRING = 0
 
 """

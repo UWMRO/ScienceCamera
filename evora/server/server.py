@@ -34,7 +34,7 @@ try:
     from evora.server.andor import andor
 except(ImportError):
     print("COULD NOT GET DRIVERS/SDK, STARTING IN DUMMY MODE")
-    import dummy as andor
+    import evora.server.dummy as andor
 
 # For filter controls
 # from FilterMotor import filtermotor
@@ -156,6 +156,8 @@ class EvoraParser(object):
             Set Thermo-electric cooler target temperature with an input.  Excepts values of -10 to -100 within
             specifications.  Cooler may not be able to push to the furthest end with high ambient temperature.
             """
+            # TODO: return an error string or raise an Error if input does not have a second argument.
+            # We need to figure out a strategy for telling the client it provided invalid input first.
             return self.e.setTEC(input[1])
 
         if input[0] == 'getTEC':
@@ -360,8 +362,7 @@ class Evora(object):
         """
         Turns on TEC and sets the temperature with andor.SetTemperature
         """
-        result = self.getTEC().split(" ")[1].split(",")
-        result = [int(result[0]), float(result[1])]
+        result = andor.GetTemperatureF()
         logger.debug(str(result))
 
         logger.debug(str(setPoint))
@@ -370,7 +371,6 @@ class Evora(object):
             if result[0] == andor.DRV_TEMPERATURE_OFF:
                 andor.CoolerON()
             logger.debug(str(andor.SetTemperature(int(setPoint))))
-            self.getTEC()
         return "setTEC " + str(setPoint)
 
     def warmup(self):
