@@ -3,22 +3,22 @@
 run me with twistd -n -y camera_reactor.py, and then connect with multiple
 telnet clients to port 5502 
 """
-
+from __future__ import print_function
 import evora_parser2
 from twisted.protocols import basic
 
 
 class CameraReciever(basic.LineReceiver):
     def connectionMade(self):
-        print "Got new client!"
+        print("Got new client!")
         self.factory.clients.append(self)
 
     def connectionLost(self, reason):
-        print "Lost a client!"
+        print("Lost a client!")
         self.factory.clients.remove(self)
 
     def lineReceived(self, line):
-        print "received", repr(line)
+        print("received", repr(line))
 	ep = evora_parser2.Parser()	
 	ret = ep.parse(str(line))
 	if ret != None:

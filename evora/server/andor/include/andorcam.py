@@ -1,4 +1,6 @@
 """Python OO interface for controlling an Andor Ikon camera."""
+from __future__ import print_function
+
 import andor
 import BaseCam
 import numpy as np
@@ -51,7 +53,7 @@ class AndorCam(BaseCam.BaseCam):
         Raises descriptive exception on call failure.
         """
         if self.verbose:
-            print 'Calling: {}{}'.format(func.__name__,args)
+            print('Calling: {}{}'.format(func.__name__,args))
         result = func(*args)
         # unpack the result: could be a single return value,
         # return value + one thing, or return value + many things.
