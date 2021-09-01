@@ -44,7 +44,7 @@ def GetTemperatureStatus():
 
 
 def GetTemperatureRange(mintemp, maxtemp):
-    return maxtemp-mintemp
+    return [maxtemp-mintemp, mintemp, maxtemp]
 
 
 # Acquisition
