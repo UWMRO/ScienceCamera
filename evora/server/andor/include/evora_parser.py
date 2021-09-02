@@ -1,5 +1,5 @@
 #! /usr/bin/python
-
+from __future__ import print_function
 import evora
 
 
@@ -8,7 +8,7 @@ class Parser(object):
 		self.e = evora.evora()
 
 	def parse(self, input = None):
-			print input
+			print(input)
 			input = input.split()
 			if input[0] == 'connect':
 				return self.e.startup()
