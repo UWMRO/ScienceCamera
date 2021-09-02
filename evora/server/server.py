@@ -16,8 +16,8 @@ import signal
 import subprocess
 import threading
 import time
+import ConfigParser
 from datetime import datetime
-from configparser import ConfigParser
 
 # MRO files
 import evora.common.utils.fits as fits_utils
