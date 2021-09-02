@@ -54,6 +54,28 @@ class TestEvoraParser(unittest.TestCase):
     def test_parse_warmup(self):
         self.assertTrue(self.parser.parse('warmup').contains('warmup '))
 
+    def test_parse_warmup(self):
+        self.assertTrue(self.parser.parse('warmup').contains('warmup '))
+
+        with patch('evora.server.server.andor.SetFanMode', return_value=andor.DRV_SUCCESS):
+            self.assertTrue(self.parser.parse('warmup').contains('1'))
+                # assert_called_once_with needed?
+
+        failureValues_SetFanMode = [
+            andor.DRV_NOT_INITIALIZED,
+            andor.DRV_ACQUIRING,
+            andor.DRV_I2CTIMEOUT,
+            andor.DRV_I2CDEVNOTFOUND,
+            andor.DRV_ERROR_ACK,
+            andor.DRV_P1INVALID
+        ]
+
+        for drv in failureValues_SetFanMode:
+            with patch('evora.server.server.andor.SetFanMode', return_value=drv):
+                self.assertTrue(self.parser.parse('warmup').contains('0'))
+                # assert_called_once_with needed?
+                
+
     def test_parse_status(self):
         self.assertTrue(self.parser.parse('status').isnumeric()) 
     
