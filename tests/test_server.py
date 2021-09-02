@@ -14,10 +14,17 @@ class TestEvoraParser(unittest.TestCase):
 
     def test_parse_temprange(self):
         self.assertTrue(self.parser.parse('tempRange').contains('-'))
+        
+    @patch('evora.server.server.andor.GetTemperatureRange', return_value = [5, 10, 15])
+    def test_parse_temprange_runs_andor_function(self, get_temp_range_mock):
+        res = self.parser.parse('tempRange')
+        
+        get_temp_range_mock.assert_called_once()
+        self.assertTrue(res.contains('5,10,15'))
 
     def test_parse_shutdown(self):
         self.assertTrue(self.parser.parse('shutdown') == 'shutdown 1')
-
+                
     def test_parse_timings(self):
         self.assertTrue(self.parser.parse('timings') == 'timings')
 
@@ -49,7 +56,7 @@ class TestEvoraParser(unittest.TestCase):
         set_temperature_mock.assert_called_once_with(set_point)
 
     def test_parse_getTEC(self):
-        self.assertTrue(self.parser.parse('getTEC').contains(',')) 
+        self.assertTrue(self.parser.parse('getTEC').contains(','))
 
     def test_parse_warmup(self):
         self.assertTrue(self.parser.parse('warmup').contains('warmup '))
