@@ -17,6 +17,7 @@ import subprocess
 import threading
 import time
 from datetime import datetime
+from configparser import ConfigParser
 
 # MRO files
 import evora.common.utils.fits as fits_utils
@@ -29,6 +30,10 @@ from twisted.internet import protocol, reactor, threads
 from twisted.protocols import basic
 
 from evora.common import netconsts
+
+# Temporary spot to put config path and other info
+config_path = 'config/config.ini'
+section = 'server'
 
 try:
     from evora.server.andor import andor
@@ -49,6 +54,7 @@ t = None
 isAborted = None  # tracks globally when the abort has been called. Every call to the parser is an new instance
 logger = my_logger.myLogger("evora_server.py", "server")
 ftp_server = None
+parser = None
 # Get gregorian date, local
 # d = date.today()
 # logFile = open("/home/mro/ScienceCamera/gui/logs/log_server_" + d.strftime("%Y%m%d") + ".log", "a")
@@ -495,9 +501,9 @@ class Evora(object):
         header.append(card=("READMODE", "Image", "Readout mode"))
         header.append(card=("INSTRUME", "evora",
                             "Instrument used for imaging"))
-        header.append(card=("LATITUDE", 120.744466667,
+        header.append(card=("LATITUDE", config[section]['latitude'],
                             "Decimal degrees of MRO latitude"))
-        header.append(card=("LONGITUD", 46.9528,
+        header.append(card=("LONGITUD", config[section]['longitude'],
                             "Decimal degress of MRO longitude"))
 
         # get readout time and temp
@@ -532,9 +538,9 @@ class Evora(object):
         header.append(card=("READMODE", "Image", "Readout mode"))
         header.append(card=("INSTRUME", "evora",
                             "Instrument used for imaging"))
-        header.append(card=("LONGITUD", 120.744466667,
+        header.append(card=("LONGITUD", config[section]['longitude'],
                             "Decimal degrees of MRO latitude"))
-        header.append(card=("LATITUDE", 46.9528,
+        header.append(card=("LATITUDE", config[section]['latitude'],
                             "Decimal degress of MRO longitude"))
 
         # get readout time and temp
@@ -1173,6 +1179,9 @@ def kill(sig, frame):
 
 if __name__ == "__main__":
     filter_server = None
+    # parse config
+    parser = ConfigParser()
+    parser.read(config_path)
     try:
         # sys.stdout = Logger(sys.stdout)
         # sys.stderr = Logger(sys.stderr)
