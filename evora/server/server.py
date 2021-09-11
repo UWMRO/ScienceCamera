@@ -303,8 +303,8 @@ class Evora(object):
     def __init__(self):
         self.num = 0
         # parse config
-        self.parser = ConfigParser.ConfigParser()
-        self.parser.read(config_path)
+        self.config = ConfigParser.ConfigParser()
+        self.config.read(config_path)
 
     def getStatus(self):
         """
