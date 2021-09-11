@@ -302,6 +302,9 @@ class Evora(object):
     """
     def __init__(self):
         self.num = 0
+        # parse config
+        self.parser = ConfigParser.ConfigParser()
+        self.parser.read(config_path)
 
     def getStatus(self):
         """
@@ -501,9 +504,9 @@ class Evora(object):
         header.append(card=("READMODE", "Image", "Readout mode"))
         header.append(card=("INSTRUME", "evora",
                             "Instrument used for imaging"))
-        header.append(card=("LATITUDE", config[section]['latitude'],
+        header.append(card=("LATITUDE", self.config[section]['latitude'],
                             "Decimal degrees of MRO latitude"))
-        header.append(card=("LONGITUD", config[section]['longitude'],
+        header.append(card=("LONGITUD", self.config[section]['longitude'],
                             "Decimal degress of MRO longitude"))
 
         # get readout time and temp
@@ -538,9 +541,9 @@ class Evora(object):
         header.append(card=("READMODE", "Image", "Readout mode"))
         header.append(card=("INSTRUME", "evora",
                             "Instrument used for imaging"))
-        header.append(card=("LONGITUD", config[section]['longitude'],
+        header.append(card=("LONGITUD", self.config[section]['longitude'],
                             "Decimal degrees of MRO latitude"))
-        header.append(card=("LATITUDE", config[section]['latitude'],
+        header.append(card=("LATITUDE", self.config[section]['latitude'],
                             "Decimal degress of MRO longitude"))
 
         # get readout time and temp
@@ -1179,9 +1182,6 @@ def kill(sig, frame):
 
 if __name__ == "__main__":
     filter_server = None
-    # parse config
-    parser = ConfigParser.ConfigParser()
-    parser.read(config_path)
     try:
         # sys.stdout = Logger(sys.stdout)
         # sys.stderr = Logger(sys.stderr)
