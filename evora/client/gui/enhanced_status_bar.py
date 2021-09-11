@@ -82,7 +82,7 @@ class EnhancedStatusBarItem(object):
 
 
 class EnhancedStatusBar(wx.StatusBar):
-    def __init__(self, parent, id=wx.ID_ANY, style=wx.ST_SIZEGRIP,
+    def __init__(self, parent, id=wx.ID_ANY, style=wx.STB_SIZEGRIP,
                  name="EnhancedStatusBar"):
         """Default Class Constructor.
 

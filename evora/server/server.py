@@ -1180,7 +1180,7 @@ def kill(sig, frame):
 if __name__ == "__main__":
     filter_server = None
     # parse config
-    parser = ConfigParser()
+    parser = ConfigParser.ConfigParser()
     parser.read(config_path)
     try:
         # sys.stdout = Logger(sys.stdout)
