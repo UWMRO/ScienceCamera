@@ -1109,7 +1109,7 @@ class Evora(object):
         return "series 1,"+str(counter) # exits with 1 for success
     """
 
-
+# suspected abandoned code - OJF
 class Logger(object):
     """
     This class when assigned to sys.stdout or sys.stderr it will write to a file that is opened everytime a new GUI session is started.
@@ -1142,7 +1142,7 @@ class FTPThread(threading.Thread):
         reactor.listenTCP(netconsts.FTP_TRANSFER_PORT, f)
 """
 
-
+# abandoned code - OJF
 class FilterThread(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -1197,7 +1197,7 @@ if __name__ == "__main__":
         # filter_server = FilterThread()
         # filter_server.daemon = True
         # filter_server.start()
-        # print("Server ready.")
+        print("Evora server ready.")
         reactor.run()
     except KeyboardInterrupt:
         # os.killpg(os.getpgid(ftp_server.pid), signal.SIGKILL)
