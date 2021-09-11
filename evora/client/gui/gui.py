@@ -20,7 +20,7 @@ from twisted.internet import wxreactor
 # always goes after wxreactor install
 
 wxreactor.install()
-import enhanced_status_bar
+from evora.client.gui import enhanced_status_bar
 from twisted.internet import defer, protocol, reactor
 from twisted.protocols import basic
 # FTP Client Things

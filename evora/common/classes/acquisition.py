@@ -15,6 +15,7 @@ from Queue import Queue
 import evora.common.logging.my_logger as my_logger
 import evora.common.utils.fits as fits_utils
 import evora.common.utils.logs as log_utils
+import evora.client.gui.enhanced_status_bar as EnhancedStatusBar
 
 __author__ = "Tristan J. Hillis"
 
@@ -352,7 +353,8 @@ class Exposure(wx.Panel):
 
         # if statement here is more for redundancy.  The above MessageDialogs let the user their input is incorrect,
         # else they will enter this if statement just fine.
-        if self.timeToSend.isnumeric() and self.nameToSend != "" and lessThanZero:
+        # isnumeric() only defined for utf-8 strings, convert before checking
+        if unicode(str(self.timeToSend), 'utf-8').isnumeric() and self.nameToSend != "" and lessThanZero:
 
             line = self.getAttributesToSend().split()
 
