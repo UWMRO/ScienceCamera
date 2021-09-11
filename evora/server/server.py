@@ -504,9 +504,9 @@ class Evora(object):
         header.append(card=("READMODE", "Image", "Readout mode"))
         header.append(card=("INSTRUME", "evora",
                             "Instrument used for imaging"))
-        header.append(card=("LATITUDE", self.config[section]['latitude'],
+        header.append(card=("LATITUDE", self.config.get(section, 'latitude'),
                             "Decimal degrees of MRO latitude"))
-        header.append(card=("LONGITUD", self.config[section]['longitude'],
+        header.append(card=("LONGITUD", self.config[.get(section, 'longitude'),
                             "Decimal degress of MRO longitude"))
 
         # get readout time and temp
@@ -541,9 +541,9 @@ class Evora(object):
         header.append(card=("READMODE", "Image", "Readout mode"))
         header.append(card=("INSTRUME", "evora",
                             "Instrument used for imaging"))
-        header.append(card=("LONGITUD", self.config[section]['longitude'],
+        header.append(card=("LONGITUD", self.config.get(section, 'longitude'),
                             "Decimal degrees of MRO latitude"))
-        header.append(card=("LATITUDE", self.config[section]['latitude'],
+        header.append(card=("LATITUDE", self.config.get(section, 'latitude'),
                             "Decimal degress of MRO longitude"))
 
         # get readout time and temp
